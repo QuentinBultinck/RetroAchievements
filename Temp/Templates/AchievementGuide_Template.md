@@ -12,11 +12,18 @@ This guide provides comprehensive details on how to unlock each achievement with
 
 <h3 id=ToC> 📑 Table of Contents</h3>
 
-- 💎 **[Achievement Guide](#AchievementGuide)** <sup>(divided by category)</sup>
+- 💎 **[Achievement Guide](#AchievementGuide)**
+
+    <sub> General Info </sub>
+    - 📜 [GeneralInfoSubHeader](#-some_general_info_header)
+    - 📜 [Walkthroughs & Resources](WalkthroughsResources)
+
+    <sub> Achievements </sub>
     - 🏆 *[Progression](#Progression)*
     - 🏆 *[Challenges](#Challenges)*
     - 🏆 *[Unlocks](#Unlocks)*
     - 🏆 *[Misc_AchievementCategory](#Misc_AchievementCategory)*
+
 - 🥇 **[Leaderboard Guide](#LeaderboardGuide)**
 - 📜 **[Credits](#Credits)**
 - ✏️ **[Footnotes](#Footnotes)**
@@ -33,11 +40,14 @@ Set consists of xxxx achievements worth xxx points
 Set released on DD MMMM YYYY
 ```
 
+## 📜 _SOME_GENERAL_INFO_HEADER_
+### _SOME_GENERAL_INFO_SUB_HEADER_
+
 _SOME_GENERAL_INFO_HERE_
 
 
 <h4 id=WalkthroughsResources>
-    Walkthroughs & Resources
+    📜 Walkthroughs & Resources
 </h4>
 
 If the explanation here doesn't suffice feel free to search up some guides, here are a few helpful resources:

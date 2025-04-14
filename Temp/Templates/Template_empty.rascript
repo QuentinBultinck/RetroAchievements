@@ -70,8 +70,27 @@ function util_throwError(string_errMsg) { // This function will throw an error i
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
 
+function util_concatArrays(array_1, array_2) { // This function will concatenate two arrays (add values of array_2 to array_1)
+	let_array_concat = array_1
+	for let_index in range(0, length(array_2) - 1) {
+		array_push(let_array_concat, array_2[let_index])
+	}
+	return let_array_concat}
+
 function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
+
+function util_getIndexOfLastItemInArray(array_a) =>
+	length(array_a) - 1
+
+function util_getLastItemInArray(array_a) =>
+	array_a[util_getIndexOfLastItemInArray(array_a)]
+
+function util_generateArrayOfIntegers_startAtZero(int_lastInteger) {
+	let_array_Integers = []
+	for let_index in range(0, int_lastInteger) 
+		array_push(let_array_Integers, let_index)
+	return let_array_Integers}
 // #endregion UTILITY
 
 // ***************************************************************************************************************************************************************** \\
@@ -166,7 +185,6 @@ function memory_getAddress(string_addrKey, enum_releaseRegion) {
 // #region MEM - utility
 // #region Custom ASCII comparitors
 // NOTE: Custom ASCII comparitors are necessary to use with pointers, built-in RAtools ascii_string_equals() generates weird logic, when using pointers as the memAddrr
-
 function ASCII_Equals(memAddr_ASCII, string_s, wrapper = c => c) {
 	let_array_comparisons = []
 	for let_stepBy4Index in range(0, length(string_s) - 1, step = 4) {
@@ -196,6 +214,98 @@ function wasPrev_ASCII_EqualTo(memAddr_ASCII, string_s) =>
 
 function wasPrev_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
 	ASCII_NotEquals(memAddr_ASCII, string_s, c => prev(c))
+
+memUtil_asciiToHex = {
+  "A": 0x41,  "B": 0x42,  "C": 0x43,  "D": 0x44,  "E": 0x45,  "F": 0x46,  "G": 0x47, 
+  "H": 0x48,  "I": 0x49,  "J": 0x4A,  "K": 0x4B,  "L": 0x4C,  "M": 0x4D,  "N": 0x4E, 
+  "O": 0x4F,  "P": 0x50,  "Q": 0x51,  "R": 0x52,  "S": 0x53,  "T": 0x54,  "U": 0x55, 
+  "V": 0x56,  "W": 0x57,  "X": 0x58,  "Y": 0x59,  "Z": 0x5A,  "a": 0x61,  "b": 0x62, 
+  "c": 0x63,  "d": 0x64,  "e": 0x65,  "f": 0x66,  "g": 0x67,  "h": 0x68,  "i": 0x69, 
+  "j": 0x6A,  "k": 0x6B,  "l": 0x6C,  "m": 0x6D,  "n": 0x6E,  "o": 0x6F,  "p": 0x70, 
+  "q": 0x71,  "r": 0x72,  "s": 0x73,  "t": 0x74,  "u": 0x75,  "v": 0x76,  "w": 0x77, 
+  "x": 0x78,  "y": 0x79,  "z": 0x7A,  "0": 0x30,  "1": 0x31,  "2": 0x32,  "3": 0x33, 
+  "4": 0x34,  "5": 0x35,  "6": 0x36,  "7": 0x37,  "8": 0x38,  "9": 0x39,  " ": 0x20, 
+  "!": 0x21,  "#": 0x23,  "$": 0x24,  "%": 0x25,  "&": 0x26,  "\"": 0x27, 
+  "(": 0x28,  ")": 0x29,  "*": 0x2A,  "+": 0x2B,  ",": 0x2C,  "-": 0x2D,  ".": 0x2E, 
+  "/": 0x2F,  ":": 0x3A,  ";": 0x3B,  "<": 0x3C,  "=": 0x3D,  ">": 0x3E,  "?": 0x3F, 
+  "@": 0x40,  "[": 0x5B,  "\\": 0x5C,  "]": 0x5D,  "^": 0x5E,  "_": 0x5F,  "`": 0x60, 
+  "{": 0x7B,  "|": 0x7C,  "}": 0x7D,  "~": 0x7E}
+ 
+memUtil_asciiToFloat = {
+  "A": 65.0, "B": 66.0, "C": 67.0, "D": 68.0, "E": 69.0, "F": 70.0, "G": 71.0,
+  "H": 72.0, "I": 73.0, "J": 74.0, "K": 75.0, "L": 76.0, "M": 77.0, "N": 78.0,
+  "O": 79.0, "P": 80.0, "Q": 81.0, "R": 82.0, "S": 83.0, "T": 84.0, "U": 85.0,
+  "V": 86.0, "W": 87.0, "X": 88.0, "Y": 89.0, "Z": 90.0, "a": 97.0, "b": 98.0,
+  "c": 99.0, "d": 100.0, "e": 101.0, "f": 102.0, "g": 103.0, "h": 104.0, "i": 105.0,
+  "j": 106.0, "k": 107.0, "l": 108.0, "m": 109.0, "n": 110.0, "o": 111.0, "p": 112.0,
+  "q": 113.0, "r": 114.0, "s": 115.0, "t": 116.0, "u": 117.0, "v": 118.0, "w": 119.0,
+  "x": 120.0, "y": 121.0, "z": 122.0, "0": 48.0, "1": 49.0, "2": 50.0, "3": 51.0,
+  "4": 52.0, "5": 53.0, "6": 54.0, "7": 55.0, "8": 56.0, "9": 57.0, " ": 32.0,
+  "!": 33.0, "#": 35.0, "$": 36.0, "%": 37.0, "&": 38.0, "\"": 39.0,
+  "(": 40.0, ")": 41.0, "*": 42.0, "+": 43.0, ",": 44.0, "-": 45.0, ".": 46.0,
+  "/": 47.0, ":": 58.0, ";": 59.0, "<": 60.0, "=": 61.0, ">": 62.0, "?": 63.0,
+  "@": 64.0, "[": 91.0, "\\": 92.0, "]": 93.0, "^": 94.0, "_": 95.0, "`": 96.0,
+  "{": 123.0, "|": 124.0, "}": 125.0, "~": 126.0}
+
+function memUtil_asciiStringToHexLE(string_s, int_numberOfZeroedOutBytesToCheckBeforeString = 0) { // NOTE: Returns a Little Endian hex; int_numberOfZeroedOutBytesToCheckBeforeString allows for checking zeroud out bytes after the ASCII bytes witin a 32-bit size
+	/* NOTE Example usages
+		- memUtil_asciiStringToHexLE("Wron") --> Returns 0x6E 6F 72 57 ("W": 0x57 - "r": 0x72 - "o": 0x6F - "n": 0x6E)  | String as Little Endian Hex
+			dword(memUtil_asciiStringToHexLE("Wr", 2)) == dword(0x6E6F7257) --LittleEndianView--> [6E 6F 72 57] "Wron"
+		- memUtil_asciiStringToHexLE("Wr", 2) --> Returns 0x72 57 00 00 ("W": 0x57 - "r": 0x72 - 2x zeroedBytes: 0x0000) | String as Little Endian Hex + with 2 zeroed out bytes appended
+			dword(memUtil_asciiStringToHexLE("Wr", 2)) == dword(0x72570000) --LittleEndianView--> [00 00 57 72] "  Wr"
+		*/
+
+	let_stringLength = length(string_s)
+
+	if (let_stringLength == 0 || int_numberOfZeroedOutBytesToCheckBeforeString >= 4)
+		util_throwError("One of the parameters given to memUtil_asciiStringToHexLE() is out of range OR invalid")
+	if (let_stringLength + int_numberOfZeroedOutBytesToCheckBeforeString > 4)
+		util_throwError(format("String length of {0} + {1} zeroed out bytes, is too large to handle", let_stringLength, int_numberOfZeroedOutBytesToCheckBeforeString))
+
+	let_hexValue = 0
+
+	if (int_numberOfZeroedOutBytesToCheckBeforeString == 1) let_hexValue = let_hexValue * 0x100
+	else if (int_numberOfZeroedOutBytesToCheckBeforeString == 2) let_hexValue = let_hexValue * 0x10000
+	else if (int_numberOfZeroedOutBytesToCheckBeforeString == 3) let_hexValue = let_hexValue * 0x1000000
+
+	for let_characterIndex in range(0, let_stringLength - 1) {
+		let_characterAsHex = memUtil_asciiToHex[substring(string_s, let_characterIndex, 1)]
+		if (let_characterIndex == 0) let_hexValue = let_characterAsHex
+		else if (let_characterIndex == 1) let_hexValue = let_hexValue + (let_characterAsHex * 0x100)
+		else if (let_characterIndex == 2) let_hexValue = let_hexValue + (let_characterAsHex * 0x10000)
+		else let_hexValue = let_hexValue + (let_characterAsHex * 0x1000000)}
+
+	return let_hexValue}
+
+function memUtil_asciiStringToHexBE(string_s, int_numberOfZeroedOutBytesToCheckAfterString = 0) { // NOTE: Returns a Big Endian hex; int_numberOfZeroedOutBytesToCheckAfterString allows for checking zeroud out bytes after the ASCII bytes witin a 32-bit size
+	/* NOTE Example usages
+		- memUtil_asciiStringToHexLE("Wron") --> Returns 0x57 72 6F 6E  ("W": 0x57 - "r": 0x72 - "o": 0x6F - "n": 0x6E)  | String as Little Endian Hex
+			dword_be(memUtil_asciiStringToHexLE("Wr", 2)) == dword_be(0x57726F6E) --BigEndianView--> [57 72 6F 6E] "Wron"
+		- memUtil_asciiStringToHexLE("Wr", 2) --> Returns 0x57 72 00 00 ("W": 0x57 - "r": 0x72 - 2x zeroedBytes: 0x0000) | String as Little Endian Hex + with 2 zeroed out bytes appended
+			dword_be(memUtil_asciiStringToHexLE("Wr", 2)) == dword_be(0x57720000) --BigEndianView--> [57 72 00 00] "Wr  "
+		*/
+
+	let_stringLength = length(string_s)
+
+	if (let_stringLength == 0 || int_numberOfZeroedOutBytesToCheckAfterString >= 4)
+		util_throwError("One of the parameters given to memUtil_asciiStringToHexLE() is out of range OR invalid")
+	if (let_stringLength + int_numberOfZeroedOutBytesToCheckAfterString > 4)
+		util_throwError(format("String length of {0} + {1} zeroed out bytes, is too large to handle", let_stringLength, int_numberOfZeroedOutBytesToCheckAfterString))
+
+	let_hexValue = 0
+	for let_characterIndex in range(0, let_stringLength - 1) {
+		let_characterAsHex = memUtil_asciiToHex[substring(string_s, let_characterIndex, 1)]
+		if (let_characterIndex == 0) let_hexValue = let_characterAsHex
+		else if (let_characterIndex == 1) let_hexValue = (let_hexValue * 0x100) + let_characterAsHex
+		else if (let_characterIndex == 2) let_hexValue = (let_hexValue * 0x100) + let_characterAsHex
+		else let_hexValue = (let_hexValue * 0x100) + let_characterAsHex}
+
+	if (int_numberOfZeroedOutBytesToCheckAfterString == 1) let_hexValue = let_hexValue * 0x100
+	else if (int_numberOfZeroedOutBytesToCheckAfterString == 2) let_hexValue = let_hexValue * 0x10000
+	else if (int_numberOfZeroedOutBytesToCheckAfterString == 3) let_hexValue = let_hexValue * 0x1000000
+
+	return let_hexValue}
+
 // #endregion Custom ASCII comparitors
 function is_ReleaseRegion(enum_releaseRegion) { // TODO implement is_ReleaseRegion()
 	let_string_GameID = sNULL
@@ -310,11 +420,11 @@ achievements_coreData = {
 		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_Template": { // Category - info_here
-		"a_Template": 	{
+		"a_Template": {
 			"id": 000000, "points": achievement_POINTS_0, "devInfo": "xxxxxxx"}
 		},
 	"c_Template2": { // Category - info_here
-		"a_Template2": 	{
+		"a_Template2": {
 			"id": 000000, "points": achievement_POINTS_0, "devInfo": "xxxxxxx"}
 		},
 	}
@@ -479,7 +589,7 @@ richPresence_ReleaseRegion_toSuperScript = {
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
 
-funciotn richPresence_getText_withRegionSuperScript(string_textKey, enum_releaseRegion) =>
+function richPresence_getText_withRegionSuperScript(string_textKey, enum_releaseRegion) =>
 	format("{0} {1}", richPresence_ReleaseRegion_toSuperScript[enum_releaseRegion], richPresence_getText(string_textKey))
 
 function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableTextKey) =>
