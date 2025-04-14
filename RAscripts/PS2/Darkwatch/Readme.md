@@ -12,7 +12,13 @@ This guide provides comprehensive details on how to unlock each achievement with
 
 <h3 id=ToC> 📑 Table of Contents</h3>
 
-- 💎 **[Achievement Guide](#AchievementGuide)** <sup>(divided by category)</sup>
+- 💎 **[Achievement Guide](#AchievementGuide)** 
+
+    <sub> General Info </sub>
+    - 📜 [GeneralInfoSubHeader](#-some_general_info_header)
+    - 📜 [Walkthroughs & Resources](WalkthroughsResources)
+
+    <sub> Achievements </sub>
     - 🏆 *[Story Progression](#c_SPstory)*
     - 🏆 *[Story Ending](#c_SPend)*
     - 🏆 *[Singleplayer/Gunslinger Challenges](#c_Gunslinger)*
@@ -33,6 +39,9 @@ Set consists of xxxx achievements worth xxx points
 
 Set released on DD MMMM YYYY
 ```
+
+## 📜 _SOME_GENERAL_INFO_HEADER_
+### _SOME_GENERAL_INFO_SUB_HEADER_
 
 _SOME_GENERAL_INFO_HERE_
 
