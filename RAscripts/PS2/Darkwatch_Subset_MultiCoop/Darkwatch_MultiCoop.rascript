@@ -3113,43 +3113,43 @@ achievements_triggers = {
 		&& is_atMainMenu(enum_releaseRegion)
 		&& on_MainMenu_SubMenu_render(MAINMENU_SUBMENU_ChapterSelectMenu, enum_releaseRegion)),
 	// ----------------c_Story----------------
-	"a_WrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_1_WrongTrain, FMV_Shadow, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_RideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_2_RideDevil, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_Boneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_3_Boneyard, FMV_CassidyDies, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_DevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_4_DevilMine, FMV_TheHaunting, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_DWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_5_Outpost, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_WarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_6_WarTrain, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_TortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_7_TortureMaze, FMV_GiddyUp, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_BaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_8_BaptismFire, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_Rescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_9_Rescue, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_Prism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_10_Prism, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_Invasion": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_11_Invasion, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_Hangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_12_Hangtown, FMV_PromNight, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_MorningAfter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_13_MorningAfter, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_Showdown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_14_Showdown, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_RightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_15_RightTrain, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_Deadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_16_Deadfall, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_WrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_1_WrongTrain, FMV_Shadow, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_RideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_2_RideDevil, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_Boneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_3_Boneyard, FMV_CassidyDies, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_DevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_4_DevilMine, FMV_TheHaunting, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_DWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_5_Outpost, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_WarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_6_WarTrain, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_TortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_7_TortureMaze, FMV_GiddyUp, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_BaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_8_BaptismFire, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_Rescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_9_Rescue, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_Prism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_10_Prism, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_Invasion": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_11_Invasion, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_Hangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_12_Hangtown, FMV_PromNight, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_MorningAfter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_13_MorningAfter, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_Showdown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_14_Showdown, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_RightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_15_RightTrain, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_Deadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_16_Deadfall, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
 	// ----------------c_StoryEnd----------------
-	"a_CurseWestGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_StoryEnd(true, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
-	"a_CurseWestEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-		achGenerate_FullTrigger_StoryEnd(false, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_CurseWestGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_StoryEnd(true, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
+	"a_CurseWestEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_StoryEnd(false, enum_releaseRegion)), // --> (2x) MANUAL_CONSTRUCTION
 	// ----------------c_Challenge----------------
 	"a_ClgWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
@@ -3249,24 +3249,24 @@ achievements_titles = {
 	"a_INFOcoop":		{"en": "Info — Coop Participation Tracking"},
 	// ----------------c_Story----------------
 	"a_WrongTrain":		{"en": "Partners in Derailment"},
-	"a_RideDevil":		{"en": "xxxxxxxxx"},
-	"a_Boneyard":		{"en": "xxxxxxxxx"},
-	"a_DevilMine":		{"en": "xxxxxxxxx"},
-	"a_DWOutpost":		{"en": "xxxxxxxxx"},
-	"a_WarTrain":		{"en": "xxxxxxxxx"},
-	"a_TortureMaze":	{"en": "xxxxxxxxx"},
-	"a_BaptismFire":	{"en": "xxxxxxxxx"},
-	"a_Rescue":			{"en": "xxxxxxxxx"},
-	"a_Prism":			{"en": "xxxxxxxxx"},
-	"a_Invasion":		{"en": "xxxxxxxxx"},
-	"a_Hangtown":		{"en": "xxxxxxxxx"},
-	"a_MorningAfter":	{"en": "xxxxxxxxx"},
-	"a_Showdown":		{"en": "xxxxxxxxx"},
-	"a_RightTrain":		{"en": "xxxxxxxxx"},
-	"a_Deadfall":		{"en": "xxxxxxxxx"},
+	"a_RideDevil":		{"en": "Dust at the Devil"},
+	"a_Boneyard":		{"en": "Among the Graves"},
+	"a_DevilMine":		{"en": "Smoke in the Veins"},
+	"a_DWOutpost":		{"en": "Backs to the Walls"},
+	"a_WarTrain":		{"en": "Two Red Hot Tracks to Hell"},
+	"a_TortureMaze":	{"en": "Brothers in the Blood Maze"},
+	"a_BaptismFire":	{"en": "Anointed in Ash"},
+	"a_Rescue":			{"en": "Not a Drop Between Us"},
+	"a_Prism":			{"en": "Shared Lght, Split Shadows"},
+	"a_Invasion":		{"en": "No Land for the Dead"},
+	"a_Hangtown":		{"en": "Gallows Don't Swing Alone"},
+	"a_MorningAfter":	{"en": "Ashes of the Order"},
+	"a_Showdown":		{"en": "Devil Be Gunned"},
+	"a_RightTrain":		{"en": "Two Tickets to Perdition"},
+	"a_Deadfall":		{"en": "Devil's Hollow"},
 	// ----------------c_StoryEnd----------------
-	"a_CurseWestGood":		{"en": "xxxxxxxxx"},
-	"a_CurseWestEvil":		{"en": "xxxxxxxxx"},
+	"a_CurseWestGood":		{"en": "The Light Between"},
+	"a_CurseWestEvil":		{"en": "The Sovereigns Within"},
 	// ----------------c_Challenge----------------
 	"a_ClgWrongTrain":		{"en": "xxxxxxxxx"},
 	"a_ClgRideDevil":		{"en": "xxxxxxxxx"},
@@ -3297,25 +3297,25 @@ achievements_descriptions = {
 	// ----------------c_Misc----------------
 	"a_INFOcoop":		{"en": "No freeloaders in this posse! Achievements require \"active\" participation of both players. If one player slacks or is not engaging with combat, achievements of the current Chapter will be disabled. See RAguide for details on participation tracking"},
 	// ----------------c_Story----------------
-	"a_WrongTrain":		{"en": "You planned a heist, not a reckoning—now it's two guns against the darkness. Complete Chapter 1, \"The Wrong Train\", from start to finish in a single session"},
-	"a_RideDevil":		{"en": "xxxxxxxxx"},
-	"a_Boneyard":		{"en": "xxxxxxxxx"},
-	"a_DevilMine":		{"en": "xxxxxxxxx"},
-	"a_DWOutpost":		{"en": "xxxxxxxxx"},
-	"a_WarTrain":		{"en": "xxxxxxxxx"},
-	"a_TortureMaze":	{"en": "xxxxxxxxx"},
-	"a_BaptismFire":	{"en": "xxxxxxxxx"},
-	"a_Rescue":			{"en": "xxxxxxxxx"},
-	"a_Prism":			{"en": "xxxxxxxxx"},
-	"a_Invasion":		{"en": "xxxxxxxxx"},
-	"a_Hangtown":		{"en": "xxxxxxxxx"},
-	"a_MorningAfter":	{"en": "xxxxxxxxx"},
-	"a_Showdown":		{"en": "xxxxxxxxx"},
-	"a_RightTrain":		{"en": "xxxxxxxxx"},
-	"a_Deadfall":		{"en": "xxxxxxxxx"},
+	"a_WrongTrain":		{"en": "You planned a heist, not a reckoning—now it's two guns against the darkness. Complete Chapter 1, \"The Wrong Train\", from start to finish in one session"},
+	"a_RideDevil":		{"en": "The Reaper's breathing down both your necks—and the only way out is forward. Complete Chapter 2, \"Ride Like the Devil\", from start to finish in one session"},
+	"a_Boneyard":		{"en": "The dead don't take kindly to visitors, but you came packing iron. Complete Chapter 3, \"Boneyard\", from start to finish in one session"},
+	"a_DevilMine":		{"en": "Two guns, one way through the fog and blood. Complete Chapter 4, \"Devil's Belly Mine\", from start to finish in one session"},
+	"a_DWOutpost":		{"en": "It was supposed to be a refuge. Now it's just the place where legends are born—or buried. Complete Chapter 5, \"Darkwatch Outpost\", from start to finish in one session"},
+	"a_WarTrain":		{"en": "This beast ain't slowing down—and neither are you. Complete Chapter 6, \"War Train\", from start to finish in one session"},
+	"a_TortureMaze":	{"en": "You'll need grit, guts, and each other to claw out of Cartwright's killing grounds. Complete Chapter 7, \"Torture Maze\", from start to finish in one session"},
+	"a_BaptismFire":	{"en": "Welcome to the Darkwatch baptism—fire, steel, and no room for hesitation. Complete Chapter 8, \"Baptism of Fire\", from start to finish in one session"},
+	"a_Rescue":			{"en": "They were left to rot, but not with you two around. Complete Chapter 9, \"Rescue\", from start to finish in one session"},
+	"a_Prism":			{"en": "No monster should wield it. But two might just survive it. Complete Chapter 10, \"The Deadlight Prism\", from start to finish in one session"},
+	"a_Invasion":		{"en": "This land ain't theirs to take, and together, you'll prove it. Complete Chapter 11, \"Invasion\", from start to finish in one session"},
+	"a_Hangtown":		{"en": "The gallows creak, the dead rise—but you're no strangers to final stands. Complete Chapter 12, \"Hangtown\", from start to finish in one session"},
+	"a_MorningAfter":	{"en": "The order fell overnight. Now it's up to two blades in the dark to carry the flame. Complete Chapter 13, \"The Morning After\", from start to finish in one session"},
+	"a_Showdown":		{"en": "The devil's still breathing. Two guns, one shot to end it. Complete Chapter 14, \"Showdown\", from start to finish in one session"},
+	"a_RightTrain":		{"en": "No brakes. No backup. Just two souls strapped to a metal monster bound for hell. Complete Chapter 15, \"The Right Train\", from start to finish in one session"},
+	"a_Deadfall":		{"en": "Hell came to the city, but it found the wrong pair to mess with. Complete Chapter 16, \"Deadfall\", from start to finish in one session"},
 	// ----------------c_StoryEnd----------------
-	"a_CurseWestGood":		{"en": "xxxxxxxxx"},
-	"a_CurseWestEvil":		{"en": "xxxxxxxxx"},
+	"a_CurseWestGood":		{"en": "The curse is broken, the West breathes again. Two guns rode through hell to see the dawn. Achieve the good ending during Chapter 17, \"Curse of the West\", from start to finish in one session"},
+	"a_CurseWestEvil":		{"en": "No gods. No rules. Just two devils left standing. Achieve the evil ending during Chapter 17, \"Curse of the West\", from start to finish in one session"},
 	// ----------------c_Challenge----------------
 	"a_ClgWrongTrain":		{"en": "What started as a score turned into a sentence. Only grit and lead will get you both out. xxxxxxxx"},
 	"a_ClgRideDevil":		{"en": "Two guns, one way out—survive the ride to hell. xxxxxxxxxx"},
@@ -3331,13 +3331,13 @@ achievements_descriptions = {
 	"a_ClgHangtown":		{"en": "xxxxxxxxx"},
 	"a_ClgMorningAfter":	{"en": "xxxxxxxxx"},
 	"a_ClgShowdown":		{"en": "xxxxxxxxx"},
-	"a_ClgRightTrain":		{"en": "The train don’t stop for heroes. Or cowards. xxxxxxxxx"},
+	"a_ClgRightTrain":		{"en": "The train don't stop for heroes. Or cowards. xxxxxxxxx"},
 	"a_ClgDeadfall":		{"en": "xxxxxxxxx"},
 	"a_ClgCurseWest":		{"en": "xxxxxxxxx"},
 	// ----------------c_Bonus----------------
 	"a_MultiKillers":	{"en": "xxxxxxxxx"},
 	"a_SunHi":			{"en": "xxxxxxxxx"},
-	"a_AllEvil":		{"en": "xxxxxxxxx"},
+	"a_AllEvil":		{"en": "Unlock all ev"},
 	"a_AllGood":		{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - text
