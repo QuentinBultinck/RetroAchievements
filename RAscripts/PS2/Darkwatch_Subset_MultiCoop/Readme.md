@@ -51,9 +51,9 @@ Any achievement that requires completing a Chapter from start to finish in a sin
 
 > ### Participation Requirements:
 > #### No Inactivity Over 30 Seconds
-> - Each player must remain active—if any player goes 30 consecutive in-game seconds without input, achievements for the current Chapter will be disabled. All inputs are checked except Start/Select (not during cinematics or when paused). This timer is halted during cinematics and when an in-game menu is displayed. 
+> - Each player must remain active—if any player goes 30 consecutive in-game seconds without input, achievements for the current Chapter will be disabled. All inputs are checked except Start/Select (not during cinematics or when paused). This 30-second timer is halted during cinematics OR when an in-game menu is displayed. The timer is reset when pressing *Restart* OR when loading another ChapterSection.
 > 
-> #### Minimum Gameplay Input Count (30–100)
+> #### Minimum Gameplay Input Count (20–70)
 > - Players must provide a minimum number of valid gameplay inputs (depending on Chapter length). Analog sticks and Start/Select are excluded to prevent idle movements from counting. (Inputs are not counted when in a cinematic or when paused)
 > 
 > #### Combat Participation
