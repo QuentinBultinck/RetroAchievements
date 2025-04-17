@@ -2803,14 +2803,14 @@ achievements_coreData = {
 	// "a_Template": { // CONCEPT a_template
 		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	"c_Misc": { // Category - Misc dummy achievements for player info
-		// "a_INFOcoop": { // VERIFIED
-			// "id": 512749, "points": achievement_POINTS_0, "devInfo": "Info about Participation Tracking"},	
+		// "a_INFOcoop": { // DISABLED - Active participation of both players is implied by it being a multi subset
+			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Info about Participation Tracking"},	
 		},
 	"c_Story": { // Category - Story Progression Achievements
-		"a_WrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 512750, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
+		// "a_WrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 512750, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
 		// "a_RideDevil": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"},
+			// "id": 512749, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"},
 		// "a_Boneyard": { // CONCEPT
 			// "id": 000000, "points": 0000000, "devInfo": "CHAPTER_3_Boneyard Completion"},
 		// "a_DevilMine": { // CONCEPT
