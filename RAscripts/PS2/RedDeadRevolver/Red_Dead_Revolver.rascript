@@ -224,6 +224,8 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x36C, 0x30]},
 			"32-bit:DeathToll": { 
 				"pointerChainOffsets": [0x36C, 0x5C]},
+			"32-bit:DeathToll_B": { 
+				"pointerChainOffsets": [0x36C, 0x60]},			
 			"Float:RawTotalDamageTaken": { 
 				"pointerChainOffsets": [0x36C, 0x70]},
 			"32-bit:ShotsFired(functional)": { 
@@ -2704,8 +2706,23 @@ function current_DeathToll(enum_releaseRegion) {
 function prev_DeathToll(enum_releaseRegion) =>
 	prev(current_DeathToll(enum_releaseRegion))
 
+function current_DeathTollB(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "32-bit:DeathToll_B", let_memAddr_SinglePlayerData)}
+	
+function prev_DeathTollB(enum_releaseRegion) =>
+	prev(current_DeathTollB(enum_releaseRegion))
+
 function on_DeathToll_increment(enum_releaseRegion) => // WARNING This value does not count enemies killed which are riding animals
 	current_DeathToll(enum_releaseRegion) > prev_DeathToll(enum_releaseRegion)
+
+function on_DeathTollB_increment(enum_releaseRegion) => /* NOTE_BUGFIX: Ticket: https://retroachievements.org/ticket/88665 (19 April 2025)
+	- This value [Struct:SinglePlayerMissionStats].[32-bit:DeathToll] is possibly bugged, 
+		This value increments on each kill, 
+		but for some reason in Chapter 11 "Range War" [Struct:SinglePlayerMissionStats].[32-bit:DeathToll_B] increments instead sometimes (this only occurs whilst riding a Bison, not a horse).
+		This is used to count Kills while riding an animal in a_ChallengeChapter11
+	*/
+	current_DeathTollB(enum_releaseRegion) > prev_DeathTollB(enum_releaseRegion)
 
 function current_DamageTaken(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
@@ -3949,6 +3966,15 @@ function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enu
 		|| achievements_generate_3x_AltResetGroup_OnRestartMission(enum_areaId, enum_releaseRegion)
 
 function achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjective(enum_areaId, float_comboTarget, enum_releaseRegion) => 
+	/* NOTE_BUGFIX: This function has been updated on 19 April 2025, to fix a BUG
+		- BUG: 
+			a_BountyHuntChapter21 Measured Indicator was active in AREA_Campaign_Railroaded && AREA_Campaign_Traincar whilst in BountyHunterMode
+			Should only be active in AREA_Campaign_EndOfTheLine
+		- SOLUTION:
+			AltGroups[2+3]: "once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)" has been moved/added into MeasuredIf
+		- NOTES:
+			Solution was only necessary to be implemented for a_BountyHuntChapter21 (although 5 other achievements use this function as well)
+		*/
 	// [1] ==== Core (Alt) Group ====					-> This group is  responsible for unlocking the achievement
 		unless(
 			!is_ReleaseRegion(enum_releaseRegion)
@@ -3981,15 +4007,14 @@ function achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjecti
 			|| !is_Area(enum_areaId, enum_releaseRegion))
 		&& unless(once( // <-- Pause Lock: Cheat Protection
 			is_AnyCheat_active(enum_releaseRegion)))
-
-		&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
-		
 		&& measured(
 			current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion) >= float_comboTarget,
 			when = 
 				once(is_AreaState_InGame(enum_releaseRegion))
 				&& !is_LogoScreenLoading(enum_releaseRegion)
-				&& !is_AnimationLoading(enum_releaseRegion)) 
+				&& !is_AnimationLoading(enum_releaseRegion)
+				&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			) 
 		&& trigger_when(always_false())
 
 	// [3] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying an RAmeasured popup for HIGHEST combo achieved in the mission; It can never unlock the achievement; max_of(this measuredAltGroup or above measuredAltGroup)
@@ -3998,15 +4023,15 @@ function achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjecti
 			|| !is_Playing_BountyHunterMode(enum_releaseRegion)
 			|| !is_Area(enum_areaId, enum_releaseRegion))
 		&& unless(once( // <-- Pause Lock: Cheat Protection
-			is_AnyCheat_active(enum_releaseRegion)))
-
-		&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
-		
-		&& measured(current_HighestCombo(enum_releaseRegion) * current_HighestComboMultiplier(enum_releaseRegion) >= float_comboTarget,
+			is_AnyCheat_active(enum_releaseRegion)))		
+		&& measured(
+			current_HighestCombo(enum_releaseRegion) * current_HighestComboMultiplier(enum_releaseRegion) >= float_comboTarget,
 			when = 
 				once(is_AreaState_InGame(enum_releaseRegion))
 				&& !is_LogoScreenLoading(enum_releaseRegion)
-				&& !is_AnimationLoading(enum_releaseRegion)) 
+				&& !is_AnimationLoading(enum_releaseRegion)
+				&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			)
 		&& trigger_when(always_false())
 
 	// [4] ==== Alt Reset Group ==== 					-> Reset everything when at main menu
@@ -5202,21 +5227,21 @@ achievements_triggers = {
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
-			&& measured(repeated(const_KILLS_REQUIRED, 
+			&& measured(repeated(const_KILLS_REQUIRED,
 				is_PlayerRidingAnimal(enum_releaseRegion)
-				&& on_DeathToll_increment(enum_releaseRegion)))
+				&& (
+					on_DeathToll_increment(enum_releaseRegion)
+					|| on_DeathTollB_increment(enum_releaseRegion) // NOTE_BUGFIX: For details see on_DeathTollB_increment() 
+				))) 
 			&& trigger_when(
 				once(on_RewardMenu_render_short(enum_releaseRegion))
 				&& repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
 					is_RewardMenu_displayed_short(enum_releaseRegion)))
-
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
-
 		// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
