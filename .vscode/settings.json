@@ -48,6 +48,7 @@
         "CONCEPT",
 
         "NOTE",
+        "NOTE_BUGFIX",
 
         "DEV_NOTE"
 
@@ -93,6 +94,10 @@
             "WARNING",
             "MANUAL",
             "MANUAL_CONSTRUCTION",
+        ],
+        "NOTE": [
+            "NOTE",
+            "NOTE_BUGFIX",
         ],
     },
     "todo-tree.highlights.defaultHighlight": {
