@@ -3949,6 +3949,15 @@ function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enu
 		|| achievements_generate_3x_AltResetGroup_OnRestartMission(enum_areaId, enum_releaseRegion)
 
 function achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjective(enum_areaId, float_comboTarget, enum_releaseRegion) => 
+	/* NOTE_BUGFIX: This function has been updated on 19 April 2025, to fix a BUG
+		- BUG: 
+			a_BountyHuntChapter21 Measured Indicator was active in AREA_Campaign_Railroaded && AREA_Campaign_Traincar whilst in BountyHunterMode
+			Should only be active in AREA_Campaign_EndOfTheLine
+		- SOLUTION:
+			AltGroups[2+3]: "once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)" has been moved/added into MeasuredIf
+		- NOTES:
+			Solution was only necessary to be implemented for a_BountyHuntChapter21 (although 5 other achievements use this function as well)
+		*/
 	// [1] ==== Core (Alt) Group ====					-> This group is  responsible for unlocking the achievement
 		unless(
 			!is_ReleaseRegion(enum_releaseRegion)
@@ -3981,15 +3990,14 @@ function achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjecti
 			|| !is_Area(enum_areaId, enum_releaseRegion))
 		&& unless(once( // <-- Pause Lock: Cheat Protection
 			is_AnyCheat_active(enum_releaseRegion)))
-
-		&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
-		
 		&& measured(
 			current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion) >= float_comboTarget,
 			when = 
 				once(is_AreaState_InGame(enum_releaseRegion))
 				&& !is_LogoScreenLoading(enum_releaseRegion)
-				&& !is_AnimationLoading(enum_releaseRegion)) 
+				&& !is_AnimationLoading(enum_releaseRegion)
+				&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			) 
 		&& trigger_when(always_false())
 
 	// [3] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying an RAmeasured popup for HIGHEST combo achieved in the mission; It can never unlock the achievement; max_of(this measuredAltGroup or above measuredAltGroup)
@@ -3998,15 +4006,15 @@ function achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjecti
 			|| !is_Playing_BountyHunterMode(enum_releaseRegion)
 			|| !is_Area(enum_areaId, enum_releaseRegion))
 		&& unless(once( // <-- Pause Lock: Cheat Protection
-			is_AnyCheat_active(enum_releaseRegion)))
-
-		&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
-		
-		&& measured(current_HighestCombo(enum_releaseRegion) * current_HighestComboMultiplier(enum_releaseRegion) >= float_comboTarget,
+			is_AnyCheat_active(enum_releaseRegion)))		
+		&& measured(
+			current_HighestCombo(enum_releaseRegion) * current_HighestComboMultiplier(enum_releaseRegion) >= float_comboTarget,
 			when = 
 				once(is_AreaState_InGame(enum_releaseRegion))
 				&& !is_LogoScreenLoading(enum_releaseRegion)
-				&& !is_AnimationLoading(enum_releaseRegion)) 
+				&& !is_AnimationLoading(enum_releaseRegion)
+				&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			)
 		&& trigger_when(always_false())
 
 	// [4] ==== Alt Reset Group ==== 					-> Reset everything when at main menu
