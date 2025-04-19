@@ -460,7 +460,6 @@ function memory_getAddress(string_addrKey, enum_releaseRegion) {
 // #region MEM - utility
 // #region Custom ASCII comparitors
 // NOTE: Custom ASCII comparitors are necessary to use with pointers, built-in RAtools ascii_string_equals() generates weird logic, when using pointers as the memAddrr
-
 function ASCII_Equals(memAddr_ASCII, string_s, wrapper = c => c) {
 	let_array_comparisons = []
 	for let_stepBy4Index in range(0, length(string_s) - 1, step = 4) {
@@ -2629,15 +2628,6 @@ function on_calculated_TotalStoryTime_whileInGame_overflow(enum_releaseRegion) =
 
 // #endregion Player Data
 
-// ................
-// ◦ Sub_Header_2 ◦
-// ''''''''''''''''
-// #region Sub_Header_2
-
-// ----------------Divider---------------------
-
-// #endregion Sub_Header_2
-
 // =========================
 // • MEMORY initialization •
 // =========================
@@ -2772,6 +2762,7 @@ achievements_coreData = {
 			// "id": 506807, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
+		// TODO add "no deaths" requirement to all c_Gunslinger
 		// "a_GunWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 508863, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunRideDevil": { // QA  // DISABLED - MANUAL_CONSTRUCTION
@@ -2925,33 +2916,34 @@ function achGenerate_4x_AltResetGroups_SingleplayerWinCondition(enum_chapter, en
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			---------
-			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
-			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
-			
-			AddAddress	[Pointer:UIcontrol(preferred)]
-			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
-			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+				AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+				AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+				
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+				Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
 
-			AddAddress	[Pointer:UIcontrol(preferred)]
-			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
-			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
-			
-			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0xB8
-			OrNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
-			
-			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0xB8
-			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
-			
-			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0x7C
-			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+				Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				OrNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+				
+				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0x7C
+				AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 
-			AddAddress	[Pointer:PlayerInput(preferred)]
-			ResetIf		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+				AddAddress	[Pointer:PlayerInput(preferred)]
+				ResetIf		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
-						Val 0x0 == Val 0x1					*/
+							Val 0x0 == Val 0x1					
+				*/
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& on_PauseMenu_Restart_OR_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-4FD]
@@ -4300,6 +4292,7 @@ achievements_triggers = {
 				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < CONST_PLAYER_MAX_HP
 				&& !is_AnyCinematic_active(enum_releaseRegion)
 				&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)))
+			&& always_false()
 		// [4/12] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
@@ -4402,6 +4395,7 @@ achievements_triggers = {
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < CONST_PLAYER_MAX_HP
 				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) == CONST_PLAYER_MAX_HP))
+			&& always_false()
 		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
@@ -4703,6 +4697,7 @@ achievements_triggers = {
 						- prev_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) > 0)						
 				&& is_flagState_InGame_true(enum_releaseRegion)
 				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& always_false()
 		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
@@ -4848,6 +4843,7 @@ achievements_triggers = {
 				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
 				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
 				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& always_false()
 		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
@@ -5380,6 +5376,7 @@ achievements_triggers = {
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
 				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))
+			&& always_false()
 		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
@@ -5530,6 +5527,7 @@ achievements_triggers = {
 				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
 				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
 				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& always_false()
 		// [6/16] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
@@ -5820,7 +5818,7 @@ achievements_titles = {
 	"a_WarTrain":	 			{"en": "Bullet-Storm Express"},
 	"a_TortureMaze":	 		{"en": "Trial by Pain"},
 	"a_BaptismFire":	 		{"en": "Blazing Guns, Burning Souls"}, 
-	"a_Rescue": 				{"en": "No Grave for a Regulator"},
+	"a_Rescue": 				{"en": "No Grave for the Living"},
 	"a_Prism": 					{"en": "A Treasure Worth Dying For"},
 	"a_Invasion": 				{"en": "Warriors of the Shadow"},
 	"a_Hangtown": 				{"en": "Noose and Nightmare"},
@@ -5914,7 +5912,7 @@ achievements_descriptions = {
 	"a_Archive":				{"en": "A gunslinger's tale ain't written in ink—it's carved in blood and lead. Survive the worst, and your legend might outlast you. Unlock the \"Darkwatch Archives\" concept art by completing all Chapters on Deadeye difficulty in Gunslinger Mode"},
 	// --------c_Gunslinger-------- 
 	"a_GunWrongTrain": 			{"en": "No time for second chances—burn through the rails like hell's on your heels. Complete Chapter 1, \"The Wrong Train\", in Gunslinger Mode on Deadeye difficulty in under 4 minutes, without falling below 50% HP"},
-	"a_GunRideDevil": 			{"en": "You ain't just riding—you're making every bullet sing. Complete Chapter 2, \"Ride Like the Devil\", in Gunslinger Mode on Deadeye difficulty with 75% accuracy, without falling below 50% HP"},
+	"a_GunRideDevil": 			{"en": "You ain't just riding—you're making every bullet sing. Complete Chapter 2, \"Ride Like the Devil\", in Gunslinger Mode on Deadeye difficulty with at least 75% accuracy, without falling below 50% HP"},
 	"a_GunBoneyard": 			{"en": "The ground's already full, but you kept digging. Complete Chapter 3, \"Boneyard\", in Gunslinger Mode on Deadeye difficulty using only the Carbine and Crossbow, scoring at least 100 kills, and without throwing a grenade"},
 	"a_GunDevilMine": 			{"en": "The deeper the mine, the louder your pistols echo. Ain't no darkness hiding what you came to do. Complete Chapter 4, \"Devil's Belly Mine\", in Gunslinger Mode on Deadeye difficulty using only the Redeemer and Dual Pistols, without using any powers"},
 	"a_GunDWOutpost": 			{"en": "The station is drowning in blood—and none of it is yours. Complete Chapter 5, \"Darkwatch Outpost\", in Gunslinger Mode on Deadeye difficulty without being below max HP for more than 20 consecutive seconds"},

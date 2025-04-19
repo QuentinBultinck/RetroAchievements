@@ -16,7 +16,7 @@ This guide provides comprehensive details on how to unlock each achievement with
 
     <sub> General Info </sub>
     - 📜 [Co-op Participation Tracking](#-co-op-participation-tracking)
-    - 📜 [📜 Walkthroughs & Resources](WalkthroughsResources)
+    - 📜 [Walkthroughs & Resources](WalkthroughsResources)
 
     <sub> Achievements </sub>
     - 🏆 *[Story Progression](#c_Story)*
@@ -49,27 +49,25 @@ In this multiplayer cooperative subset, achievements are designed to unlock only
 
 Any achievement that requires completing a Chapter from start to finish in a single session will only unlock if both players meet the following criteria:
 
-### Participation Requirements:
+> ### Participation Requirements:
 > #### No Inactivity Over 30 Seconds
-> - Each player must remain active—if any player goes 30 consecutive in-game seconds without input, achievements for the current Chapter will be disabled. (All inputs are checked except Start/Select.)
->
-> #### Minimum Gameplay Input Count (30–100)
-> - Players must provide a minimum number of valid gameplay inputs (depending on Chapter length). Analog sticks and Start/Select are excluded to prevent idle movements from counting.
->
+> - Each player must remain active—if any player goes 30 consecutive in-game seconds without input, achievements for the current Chapter will be disabled. All inputs are checked except Start/Select (not during cinematics or when paused). This 30-second timer is halted during cinematics OR when an in-game menu is displayed. The timer is reset when pressing *Restart* OR when loading another ChapterSection.
+> 
+> #### Minimum Gameplay Input Count (20–70)
+> - Players must provide a minimum number of valid gameplay inputs (depending on Chapter length). Analog sticks and Start/Select are excluded to prevent idle movements from counting. (Inputs are not counted when in a cinematic or when paused)
+> 
 > #### Combat Participation
 > - 5–10% of Total Kills: Each player must contribute at least a small share of the total kills.
 > - 10–50 Shots Fired: A basic level of offensive engagement is required.
 > - 5–10% Accuracy: Encourages players to aim and not fire randomly.
->
+> 
 > The exact values for each requirement scale based on Chapter length—longer Chapters demand slightly more input and involvement.
 
 ### Why Is This System in Place?
 
-This participation check exists to prevent "freeloading"—where one player does all the work while the other remains idle. Since RetroAchievements has specific guidelines for multiplayer subsets, active participation from all players is a requirement to ensure the integrity of the achievement.
+This participation check exists to prevent "*freeloading*"—where one player does all the work while the other remains idle. Since RetroAchievements has specific guidelines for multiplayer subsets, active participation from all players is a requirement to ensure the integrity of the achievement.
 
 This system ensures that achievements are earned cooperatively, reflecting the effort of both players working as a team.
-
-The zero-point achievement ([a_INFOcoop](#a_INFOcoop)) is included in the set to inform players of this system and ensure everyone is aware of the co-op participation rules.
 
 <h2 id=WalkthroughsResources>
     📜 Walkthroughs & Resources
@@ -195,40 +193,6 @@ _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 </h1>
 
 This category of achievements focuses on discovering various small secrets and hidden easter eggs throughout the game.
-
-> [!NOTE]
-> Note_info
-
-> #### Additional Notes
-> - additional_notes
->
-> - additional_notes
->
-> **Sub_Title**: additional_notes
-
-### Misc_AchievementCategory Achievement List
-
-| Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
-|:---:|---|
-| <h3 id=a_INFOcoop>**Info — Coop Participation Tracking**</h3><br><sub>*a_INFOcoop*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | This zero-point achievement exists to inform players that all co-op achievements require active participation from both players. If one player is inactive or not engaging with combat, achievements for that Chapter will be disabled. Refer to [Co-op Participation Tracking](#-co-op-participation-tracking) for details. <br><br> <h4>~~Fail Conditions~~</h4>> <h4>~~Achievement Tracking~~</h4> <br> |
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _GENERAL_EXPLANATION_HERE_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_MISC_NOTE_HERE_* </sub> <br> <sub>**Developer note ⁃** *_DEVELOPER_NOTE_HERE_* </sub> |
-
-🔗 [Back to Table of Contents](#ToC)
-
-🔗 [Back to Top of Achievement Category](#Misc_AchievementCategory)
-
----
-
-
-
-
-
-
-<h1 id=Misc_AchievementCategory>
-    🏆 Misc_AchievementCategory <i><sub><sup>(_COUNT_ achievements - _XX_ points)</sup></sub></i>
-</h1>
-
-General_info_about_achievement_category
 
 > [!NOTE]
 > Note_info
