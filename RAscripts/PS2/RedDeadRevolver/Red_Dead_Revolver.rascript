@@ -5084,7 +5084,7 @@ achievements_triggers = {
 					never(!is_RewardMenu_displayed_short(enum_releaseRegion)) &&
 					is_RewardMenu_displayed_short(enum_releaseRegion)))
 		
-		// [2] ==== Alt RAmeasured Handler Grop ==== 			-> This group is purely responsible for displaying accuracy rating (otherwise not shown during gameplay). This group can never unlock the achievement
+		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group is purely responsible for displaying accuracy rating (otherwise not shown during gameplay). This group can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
