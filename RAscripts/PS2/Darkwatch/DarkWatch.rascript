@@ -3894,7 +3894,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line) 
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					---------
@@ -4037,7 +4037,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line) 
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -4139,11 +4139,11 @@ achievements_triggers = {
 				])
 			&& is_flagState_InGame_true(enum_releaseRegion)
 			&& trigger_when(always_false())
-		// [3/10] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+		// [3/10] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in any ChapterSection
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
-				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+				// && is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion) // DISABLED - Reset not only for ChapterSection_1 but for during all ChapterSections (for this Achievement; because of MeasuredKillCount)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line) 
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					---------
@@ -4231,7 +4231,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line)
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -4297,7 +4297,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line)
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -4400,7 +4400,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line)
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -4556,7 +4556,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line)
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -4702,7 +4702,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line) 
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -4741,7 +4741,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line)
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -4848,7 +4848,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line) 
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -4918,7 +4918,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line)
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -5028,7 +5028,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line) 
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -5169,7 +5169,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line)
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -5276,7 +5276,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line) 
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -5381,7 +5381,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line) 
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -5532,7 +5532,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line)
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
@@ -5598,7 +5598,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line)
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
