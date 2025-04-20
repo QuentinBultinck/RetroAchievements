@@ -4046,7 +4046,10 @@ achievements_triggers = {
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
 	"a_GunBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
-		// NOTE: This Chapter should have 100+ enemies, and even more when the player doesn't instakill the Marks of Evil, which keep spawning enemies
+		/* NOTE: 
+			- This Chapter should have 100+ enemies, and even more when the player doesn't instakill the Marks of Evil, which keep spawning enemies
+			- For this achievement only: ResetOn_PauseMenu_Restart must reset not only for ChapterSection_1 but during all ChapterSections (for this Achievement; because of MeasuredKillCount)
+			*/
 		const_CHAPTER = CHAPTER_3_Boneyard
 		const_REQUIRED_KILLS = 100
 		return	
