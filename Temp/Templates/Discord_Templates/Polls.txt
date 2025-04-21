@@ -1,0 +1,36 @@
+RA_GauntletPoll:
+**************
+
+!poll 'Game: [_GAME_TITLE_ (_CONSOLE_)](_LINK_TO_RA_GAME_PAGE_)'
+
+'Current: _LINK_'
+'Contender 1: _LINK_ _EXTRA_INFO_'
+'Contender 2: _LINK_ _EXTRA_INFO_'
+'Contender 3: _LINK_ _EXTRA_INFO_'
+
+
+
+
+RA_GauntletPoll:
+**************
+
+!poll 'Game: [Darkwatch (PlayStation 2)](https://retroachievements.org/game/19111)'
+
+'Current: https://media.retroachievements.org/Images/061650.png'
+'Contender 1: https://cdn.discordapp.com/attachments/894679616264998993/1363773763178729563/Mastery_B.png?ex=680740ca&is=6805ef4a&hm=4713395ffdccfcd7e3fc66e6fee32bbf716f2e3f15722165468394ed80ca8a14& Just the skull'
+'Contender 2: https://cdn.discordapp.com/attachments/894679616264998993/1363773772011933787/Mastery_C.png?ex=680740cc&is=6805ef4c&hm=ed14454f3035fa12861ddbd5ee65a723037d84bf01f5a240ea84181837d83b31& Inspired by the hardest difficulty'
+'Contender 3: https://cdn.discordapp.com/attachments/894679616264998993/1363773779607683273/Mastery_D.png?ex=680740ce&is=6805ef4e&hm=e63482446dc36c13d636f399167f748d5e074f51be0c7eb698a9129d8fae6176& Current enhanced'
+
+@Icon-Gauntlet
+I thought it was time to give the upcoming set a little extra shine, with a fresh take on the Mastery Badge to crown the experience
+
+
+RA_Poll
+*********
+
+Docs => https://easypoll.bot/commands
+
+/poll 
+question: Achievements for Red Dead Revolver (PS2). Several campaign missions reward you with a score rating (None-Good-Excellent), which is based on a few stats such as accuracy or damage taken during the mission. There will be a few Achievements for completion of a mission, which concludes a story act. How should I set up these single player/campaign achievements?
+answer4: 1 Achievement for mission_completion + 1 Achievement for Good or Excellent (20x2=40)
+answer5: Another suggestion? --> Ping @ASolidSnack in Poll-Discussion
