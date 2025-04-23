@@ -4388,13 +4388,13 @@ achievements_triggers = {
 			&& trigger_when(always_false())
 		// [4/13] ==== Alt Lockout Group ==== 		-> Lockout achievement on challenge fail by Resetting HitCount on [StartCondition]
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& never(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
+			&& never(once( // --Lockout--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)))
-			&& never( // --PauseIf--> MissionTime exceeds time limit
+			&& never( // --Lockout--> MissionTime exceeds time limit
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) > const_TIME_LIMIT)
-			&& never(once( // --PauseLock--> When losing HP
+			&& never(once( // --Lockout--> When losing HP
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < CONST_PLAYER_MAX_HP
 				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) == CONST_PLAYER_MAX_HP))
