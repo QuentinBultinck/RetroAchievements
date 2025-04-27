@@ -2899,11 +2899,12 @@ achievements_coreData = {
 			// "id": 512783, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
 		},
 	"c_Challenge": { // Category - info_here
-		// "a_ClgWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// TODO upload + publish new logic for c_Challenge
+		// "a_ClgWrongTrain": { // CONCEPT Logic Done // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 513820, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty with no deaths and a minimum combined accuracy of xx%"}, 
-		// "a_ClgRideDevil": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgRideDevil": { // CONCEPT Logic Done // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 513876, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty with no deaths and the combined HP never goes below xx%"},
-		// "a_ClgBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgBoneyard": { // CONCEPT Logic Done // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 513877, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty with no deaths, no throwables, using only the Crossbow and Carbine to score at least xx kills total (without restart)"},
 		// "a_ClgDevilMine": { // CONCEPT Logic Done // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty with no deaths and no powers, where one player only uses pistols and the other only two-handed weapons (no explosives)"},
@@ -2939,9 +2940,9 @@ achievements_coreData = {
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Complete a Chapter, where each player scored at least one multikill"}
 		// "a_SunHi": { // CONCEPT
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Both player use powers in sunlight"}
-		// "a_AllEvil": { // CONCEPT
+		// "a_AllEvil": { // CONCEPT a_AllEvil, check if NewPowerMenu functions identical to SinglePlayer
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Unlock all Evil powers"}
-		// "a_AllGood": { // CONCEPT
+		// "a_AllGood": { // CONCEPT a_AllGood, check if NewPowerMenu functions identical to SinglePlayer
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Unlock all Good powers"}
 		},
 	}
@@ -6264,23 +6265,23 @@ achievements_titles = {
 	"a_CurseWestGood":		{"en": "The Light Between"},
 	"a_CurseWestEvil":		{"en": "The Sovereigns Within"},
 	// ----------------c_Challenge----------------
-	"a_ClgWrongTrain":		{"en": "Lead on the Line"},
-	"a_ClgRideDevil":		{"en": "xxxxxxxxx"},
-	"a_ClgBoneyard":		{"en": "xxxxxxxxx"},
-	"a_ClgDevilMine":		{"en": "xxxxxxxxx"},
-	"a_ClgDWOutpost":		{"en": "xxxxxxxxx"},
-	"a_ClgWarTrain":		{"en": "xxxxxxxxx"},
-	"a_ClgTortureMaze":		{"en": "xxxxxxxxx"},
-	"a_ClgBaptismFire":		{"en": "xxxxxxxxx"},
-	"a_ClgRescue":			{"en": "xxxxxxxxx"},
-	"a_ClgPrism":			{"en": "xxxxxxxxx"},
-	"a_ClgInvasion":		{"en": "xxxxxxxxx"},
-	"a_ClgHangtown":		{"en": "xxxxxxxxx"},
-	"a_ClgMorningAfter":	{"en": "xxxxxxxxx"},
-	"a_ClgShowdown":		{"en": "xxxxxxxxx"},
-	"a_ClgRightTrain":		{"en": "xxxxxxxxx"},
-	"a_ClgDeadfall":		{"en": "xxxxxxxxx"},
-	"a_ClgCurseWest":		{"en": "xxxxxxxxx"},
+	"a_ClgWrongTrain":		{"en": "Bullet Ballet"},
+	"a_ClgRideDevil":		{"en": "Rails and Ricochets"},
+	"a_ClgBoneyard":		{"en": "Silver and Ash"},
+	"a_ClgDevilMine":		{"en": "Twin Barrels Through the Dark"},
+	"a_ClgDWOutpost":		{"en": "Rally of Bloodlust"},
+	"a_ClgWarTrain":		{"en": "Ghosts on the Rails"},
+	"a_ClgTortureMaze":		{"en": "Bullet and Stave"},
+	"a_ClgBaptismFire":		{"en": "Anointed in Gunpowder"},
+	"a_ClgRescue":			{"en": "Scarlet Scurry"},
+	"a_ClgPrism":			{"en": "Vestige of Potency"},
+	"a_ClgInvasion":		{"en": "No Breathing Room"},
+	"a_ClgHangtown":		{"en": "Hanging in the Crosshairs"},
+	"a_ClgMorningAfter":	{"en": "Ashes in Their Wake"},
+	"a_ClgShowdown":		{"en": "Contingency in Sanguinity"},
+	"a_ClgRightTrain":		{"en": "Steamed Haste"},
+	"a_ClgDeadfall":		{"en": "Sizzling Precision"},
+	"a_ClgCurseWest":		{"en": "Saviors or Sinners"},
 	// ----------------c_Bonus----------------
 	"a_MultiKillers":	{"en": "xxxxxxxxx"},
 	"a_SunHi":			{"en": "xxxxxxxxx"},
@@ -6313,27 +6314,27 @@ achievements_descriptions = {
 	"a_CurseWestGood":		{"en": "The curse is broken, the West breathes again. Two guns rode through hell to see the dawn. Complete Chapter 17, \"Curse of the West\", from start to finish in one session and achieve the good ending"},
 	"a_CurseWestEvil":		{"en": "No gods. No rules. Just two devils left standing. Complete Chapter 17, \"Curse of the West\", from start to finish in one session and achieve the evil ending"},
 	// ----------------c_Challenge----------------
-	"a_ClgWrongTrain":		{"en": "What started as a score turned into a sentence. Only grit and lead will get you both out. Complete Chapter 1, \"The Wrong Train\", on Deadeye difficulty with no deaths and a minimum combined accuracy of 70%"},
-	"a_ClgRideDevil":		{"en": "Two guns, one way out—survive the ride to hell. xxxxxxxxxx"},
-	"a_ClgBoneyard":		{"en": "xxxxxxxxx"},
-	"a_ClgDevilMine":		{"en": "xxxxxxxxx"},
-	"a_ClgDWOutpost":		{"en": "xxxxxxxxx"},
-	"a_ClgWarTrain":		{"en": "xxxxxxxxx"},
-	"a_ClgTortureMaze":		{"en": "xxxxxxxxx"},
-	"a_ClgBaptismFire":		{"en": "xxxxxxxxx"},
-	"a_ClgRescue":			{"en": "xxxxxxxxx"},
-	"a_ClgPrism":			{"en": "xxxxxxxxx"},
-	"a_ClgInvasion":		{"en": "xxxxxxxxx"},
-	"a_ClgHangtown":		{"en": "xxxxxxxxx"},
-	"a_ClgMorningAfter":	{"en": "xxxxxxxxx"},
-	"a_ClgShowdown":		{"en": "xxxxxxxxx"},
-	"a_ClgRightTrain":		{"en": "The train don't stop for heroes. Or cowards. xxxxxxxxx"},
-	"a_ClgDeadfall":		{"en": "xxxxxxxxx"},
-	"a_ClgCurseWest":		{"en": "xxxxxxxxx"},
+	"a_ClgWrongTrain":		{"en": "What started as a score turned into a sentence. Only grit and lead will get you both out. Complete Chapter 1, \"The Wrong Train\", from start to finish in one session on Deadeye difficulty, with no deaths, and a minimum combined accuracy of 70%"},
+	"a_ClgRideDevil":		{"en": "Death rides your tail and mercy ain't waiting. Complete Chapter 2, \"Ride Like the Devil\", from start to finish in one session on Deadeye difficulty, with no deaths, and without the player's combined HP dropping below 50%"},
+	"a_ClgBoneyard":		{"en": "Iron and grit against the dead. Complete Chapter 3, \"Boneyard\", from start to finish in one session on Deadeye difficulty, with no deaths, achieving at least 100 kills using the Carbine or Crossbow, and without using any throwable explosives"},
+	"a_ClgDevilMine":		{"en": "Fire and grit in the dark. Complete Chapter 4, \"Devil's Belly Mine\", from start to finish in one session on Deadeye difficulty, with no deaths, no powers, no throwable explosives, and with one player only using pistols and the other only 2-handed weapons"},
+	"a_ClgDWOutpost":		{"en": "Not even death cracks true steel. Complete Chapter 5, \"Darkwatch Outpost\", from start to finish in one session on Deadeye difficulty, with no deaths, and where the player's combined HP is never below max HP for more than 30 seconds consecutively"},
+	"a_ClgWarTrain":		{"en": "Two phantoms ride, no blood left behind. Complete Chapter 6, \"War Train\", from start to finish in one session on Deadeye difficulty, within 5 minutes, no deaths, and without either player taking any HP loss"},
+	"a_ClgTortureMaze":		{"en": "One strikes, one shoots, both survive. Complete Chapter 7, \"Torture Maze\", from start to finish in one session on Deadeye difficulty, with no deaths, at least 60% melee kills, and with one player only using melee and the other only shooting"},
+	"a_ClgBaptismFire":		{"en": "No cowards in the fire. Complete Chapter 8, \"Baptism of Fire\", from start to finish in one session on Deadeye difficulty, with no deaths, achieving at least 100 kills using the Redeemer or Rail Rocket, without using any throwable explosives"},
+	"a_ClgRescue":			{"en": "No one gets left behind. Complete Chapter 9, \"Rescue\", from start to finish in one session on Deadeye difficulty, within 10 minutes, no deaths, and without either player dropping below 25% HP"},
+	"a_ClgPrism":			{"en": "Power corrupts, but teamwork endures. Complete Chapter 10, \"The Deadlight Prism\", from start to finish in one session on Deadeye difficulty, with no deaths, where each player can only use each power once"},
+	"a_ClgInvasion":		{"en": "Two barrels, close and personal. Complete Chapter 11, \"Invasion\", from start to finish in one session on Deadeye difficulty, with no deaths, killing only with the Dual Pistols or Shotgun, and without using any throwable explosives"},
+	"a_ClgHangtown":		{"en": "It's a tightrope walk in a noose. Complete Chapter 12, \"Hangtown\", from start to finish in one session on Deadeye difficulty, with no deaths, shooting only with the Range Rifle to acquire a minimum combined accuracy of 75%"},
+	"a_ClgMorningAfter":	{"en": "Darkness rises, but two sparks remain. Complete Chapter 13, \"The Morning After\", from start to finish in one session on Deadeye difficulty, with no deaths, using only tier 2 or 3 powers, and with at least 40% headshot or melee kills"},
+	"a_ClgShowdown":		{"en": "No mercy left to give. Complete Chapter 14, \"Showdown\", from start to finish in one session on Deadeye difficulty, with no deaths, where each player can only use one distinct power, and reaching a minimum combined accuracy of 65%"},
+	"a_ClgRightTrain":		{"en": "No slowing, no bleeding. Complete Chapter 15, \"The Right Train\", from start to finish in one session on Deadeye difficulty, within 7 minutes, no deaths, and without any player dropping below 70% HP"},
+	"a_ClgDeadfall":		{"en": "Fire and ruin can't stop a deadeye's aim. Complete Chapter 16, \"Deadfall\", from start to finish in one session on Deadeye difficulty, with no deaths, killing only with the Range Rifle or Carbine, and with at least 30% headshot kills"},
+	"a_ClgCurseWest":		{"en": "Two against the dying light. Complete Chapter 17, \"Curse of the West\", from start to finish in one session on Deadeye difficulty, with no deaths, and with only 7 allowed power activations"},
 	// ----------------c_Bonus----------------
 	"a_MultiKillers":	{"en": "xxxxxxxxx"},
 	"a_SunHi":			{"en": "xxxxxxxxx"},
-	"a_AllEvil":		{"en": "Unlock all ev"},
+	"a_AllEvil":		{"en": "xxxxxxxxx"},
 	"a_AllGood":		{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - text
