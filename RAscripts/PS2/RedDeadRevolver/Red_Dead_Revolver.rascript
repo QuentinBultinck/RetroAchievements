@@ -7982,7 +7982,7 @@ achievements_descriptions = {
 	"a_ChallengeChapter2":					{"en": "Complete Chapter 2, \"Bounty Hunter\", on hard or very hard difficulty, sustaining less than 50% damage and with the \"No HUD\" cheat enabled"},
 	"a_ChallengeChapter3":					{"en": "Complete Chapter 3, \"Ugly Streetfight\", on very hard difficulty, without picking up any healing items"},
 	"a_ChallengeChapter5":					{"en": "Complete Chapter 5, \"Railroaded\", on hard or very hard difficulty, without stumbling off the train even once"},
-	"a_ChallengeChapter6":					{"en": "In Chapter 6, \"Carnival Life\", on hard or very hard difficulty, achieve a 10-kill streak with the gatling gun in a single, uninterrupted burst without releasing the trigger"},
+	"a_ChallengeChapter6":					{"en": "In Chapter 6, \"Carnival Life\", on hard or very hard difficulty, achieve a 10-kill streak with the gatling gun in a single, uninterrupted volley without releasing the trigger"},
 	"a_ChallengeChapter7":					{"en": "Complete Chapter 7, \"Freak Show\", on very hard difficulty, with an accuracy of 60% or better"},
 	"a_ChallengeChapter8":					{"en": "Complete Chapter 8, \"Rogue Valley\", on very hard difficulty, with the \"Bite the Bullet\" cheat enabled"},
 	"a_ChallengeChapter10":					{"en": "Complete Chapter 10, \"The Cemetery\", on hard or very hard difficulty, with the following cheats enabled: \"No Distortion\", \"Sad Stars\" and \"No HUD\""},
