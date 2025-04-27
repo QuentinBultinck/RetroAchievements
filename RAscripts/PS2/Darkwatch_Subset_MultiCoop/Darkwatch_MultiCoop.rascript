@@ -2936,14 +2936,20 @@ achievements_coreData = {
 			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty with no deaths, with less than xx power activations"},
 		},
 	"c_Bonus": { // Category - Bonus achievements
-		// "a_MultiKillers": { // CONCEPT
+		// "a_MultiKillers": { // CONCEPT a_MultiKillers
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Complete a Chapter, where each player scored at least one multikill"}
-		// "a_SunHi": { // CONCEPT
+		// "a_SunHi": { // CONCEPT a_SunHi
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Both player use powers in sunlight"}
 		// "a_AllEvil": { // CONCEPT a_AllEvil, check if NewPowerMenu functions identical to SinglePlayer
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Unlock all Evil powers"}
 		// "a_AllGood": { // CONCEPT a_AllGood, check if NewPowerMenu functions identical to SinglePlayer
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Unlock all Good powers"}
+		},
+	"c_Versus": { // Category - Versus Mode achievements (purely for showcasing Versus Mode, this is not focus of this Subset)
+		// "a_VSdeathmatch": { // CONCEPT a_VSdeathmatch
+			// "id": 000000, "points": 0000000, "devInfo": "Complete a Versus match in Deathmatch Mode"},
+		// "a_VSsoulhunter": { // CONCEPT a_VSsoulhunter
+			// "id": 000000, "points": 0000000, "devInfo": "Complete a Versus match in Soulhunter Mode"},
 		},
 	}
 // ----------------ENUM:achievement_TYPE---------------------
