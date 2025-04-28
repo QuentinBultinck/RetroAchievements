@@ -8,7 +8,7 @@
 // Platform: PlayStation 2
 // Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Red-Dead-Revolver-(PlayStation-2)
 // RA Game Page: https://retroachievements.org/game/11094
-// #MinimumVersion: 1.15.0 		- Some achievements were coded in RATools 1.14.1
+// #MinimumVersion: 1.15.0 (higher versions not recommended)
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -3416,13 +3416,23 @@ function is_Showdown_PowerUpSetting(enum_powerUpsSetting, enum_releaseRegion) {
 
 // --------------------MultiplayerRewardMenu------------------------
 ASCII_FLAG_IsMultiplayerRewardMenuDisplayed = "mpReward" // "mpRewards_new3"
-ASCII_FLAG_IsPlayerWinner = "Winn" // "Winner"
+ASCII_FLAG_IsPlayerWinner = { // NOTE: PAL-version: this ASCII is different per displayLanguage
+	"en": "Winn", // FullString: "Winner" 
+	"de": "Sieg", // FullString: "Sieger"
+	// ...
+	}
 ASCII_FLAG_IsPlayerNotWinner = {
-	RELEASE_REGION_EUR: "okLa", // "okLable"
-	RELEASE_REGION_USA: "z" // "z Red boss"
+	RELEASE_REGION_EUR: "okLa", // FullString: "okLable"
+	RELEASE_REGION_USA: "z" // FullString: "z Red boss"
 	} 
 
 function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+	/* NOTE_BugFix (27 April 2025): (PAL-version) ASCII_FLAG_IsPlayerWinner is different based on DisplayLanguage
+		- SOLUTION:
+			Don't compare ASCII equals to ASCII_FLAG_IsPlayerWinner, but compare if ASCII NOT equal to ASCII_FLAG_IsPlayerNotWinner
+		*/
+	const_OFFSET_TO_FLAG_NotWinner = 0x1
+
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
 		util_throwError(format("Player index: {0} is not in valid range"))	
 	
@@ -3431,7 +3441,9 @@ function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Play
 	let_pointerChainTo_ASCII = memGenerate_pointerChainAccessor(
 		"Struct:MultiplayerRewardMenuData", let_string_pointerChainKey, let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)
 	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember_byReleaseRegion("Struct:MultiplayerRewardMenuData", let_string_pointerChainKey, enum_releaseRegion)
-	return is_ASCII_EqualTo(let_pointerChainTo_ASCII + let_offsetTo_ASCII, ASCII_FLAG_IsPlayerWinner)}
+	return is_ASCII_notEqualTo(
+		let_pointerChainTo_ASCII + let_offsetTo_ASCII + const_OFFSET_TO_FLAG_NotWinner, 
+		ASCII_FLAG_IsPlayerNotWinner[enum_releaseRegion])}
 
 function is_ShowdownPlayer_NotWinner(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	const_OFFSET_TO_FLAG_NotWinner = 0x1
@@ -3638,198 +3650,198 @@ achievements_coreData = {
 	//	"devInfo": "xxxxxxx"},
 	
 	"c_Story": { // Category - Story Progression (20)
-		"a_CompleteChapter1": { // VERIFIED
-			"id": 448757, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 1"},
-		"a_CompleteChapter2": { // VERIFIED
-			"id": 448758, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 2"},
-		"a_CompleteChapter3": { // VERIFIED
-			"id": 447279, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 3"},
-		"a_CompleteChapter5": { // VERIFIED
-			"id": 447280, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 5"},
-		"a_CompleteChapter6": { // VERIFIED
-			"id": 448763, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 6"},
-		"a_CompleteChapter7": { // VERIFIED
-			"id": 447281, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 7"},
-		"a_CompleteChapter8": { // VERIFIED
-			"id": 448761, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 8"},
-		"a_CompleteChapter10": { // VERIFIED
-			"id": 447270, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 10"},
-		"a_CompleteChapter11": { // VERIFIED
-			"id": 447271, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 11"},
-		"a_CompleteChapter12": { // VERIFIED
-			"id": 448765, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 12"},
-		"a_CompleteChapter13": { // VERIFIED
-			"id": 447272, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 13"},
-		"a_CompleteChapter14": { // VERIFIED
-			"id": 448764, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 14"},
-		"a_CompleteChapter15": { // VERIFIED
-			"id": 447273, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 15"},
-		"a_CompleteChapter17": { // VERIFIED
-			"id": 447274, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 17"},
-		"a_CompleteChapter19": { // VERIFIED
-			"id": 447275, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 19"},
-		"a_CompleteChapter20": { // VERIFIED
-			"id": 447276, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 20"},
-		"a_CompleteChapter22": { // VERIFIED
-			"id": 447277, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 22"},
-		"a_CompleteChapter24": { // VERIFIED
-			"id": 447278, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 24"},
-		"a_CompleteChapter25": { // VERIFIED
-			"id": 443871, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 25"},
-		"a_CompleteChapter27": { // VERIFIED
-			"id": 443703, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_WinCondition,
-			"devInfo": "Complete Chapter 27"},
+		// "a_CompleteChapter1": { // VERIFIED
+			// "id": 448757, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 1"},
+		// "a_CompleteChapter2": { // VERIFIED
+			// "id": 448758, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 2"},
+		// "a_CompleteChapter3": { // VERIFIED
+			// "id": 447279, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 3"},
+		// "a_CompleteChapter5": { // VERIFIED
+			// "id": 447280, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 5"},
+		// "a_CompleteChapter6": { // VERIFIED
+			// "id": 448763, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 6"},
+		// "a_CompleteChapter7": { // VERIFIED
+			// "id": 447281, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 7"},
+		// "a_CompleteChapter8": { // VERIFIED
+			// "id": 448761, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 8"},
+		// "a_CompleteChapter10": { // VERIFIED
+			// "id": 447270, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 10"},
+		// "a_CompleteChapter11": { // VERIFIED
+			// "id": 447271, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 11"},
+		// "a_CompleteChapter12": { // VERIFIED
+			// "id": 448765, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 12"},
+		// "a_CompleteChapter13": { // VERIFIED
+			// "id": 447272, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 13"},
+		// "a_CompleteChapter14": { // VERIFIED
+			// "id": 448764, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 14"},
+		// "a_CompleteChapter15": { // VERIFIED
+			// "id": 447273, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 15"},
+		// "a_CompleteChapter17": { // VERIFIED
+			// "id": 447274, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 17"},
+		// "a_CompleteChapter19": { // VERIFIED
+			// "id": 447275, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 19"},
+		// "a_CompleteChapter20": { // VERIFIED
+			// "id": 447276, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 20"},
+		// "a_CompleteChapter22": { // VERIFIED
+			// "id": 447277, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 22"},
+		// "a_CompleteChapter24": { // VERIFIED
+			// "id": 447278, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 24"},
+		// "a_CompleteChapter25": { // VERIFIED
+			// "id": 443871, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Progression,
+			// "devInfo": "Complete Chapter 25"},
+		// "a_CompleteChapter27": { // VERIFIED
+			// "id": 443703, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_WinCondition,
+			// "devInfo": "Complete Chapter 27"},
 		},
 	"c_Showdown": { // Category - Showdown related achievements (12)
-		"a_BountyHunterKatie": { // VERIFIED
-			"id": 454648, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			"devInfo": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris (P3) and Professor Perry (P4) in Widow's Patch"},
-		"a_BountyHunterBlade": { // VERIFIED
-			"id": 455158, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "As The Blade Slade (P1), win a free-for-all 10k target Bounty Hunter match against Sissy Fess (P2), Rico Pedrosa (P3) and Udo Kang (P4) in Sunset Canyon, using only knives"},
-		"a_BountyHunterAnnie": { // VERIFIED
-			"id": 455172, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "As Annie Stoakes (P1), win a 10k target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
+		// "a_BountyHunterKatie": { // VERIFIED
+			// "id": 454648, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "devInfo": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris (P3) and Professor Perry (P4) in Widow's Patch"},
+		// "a_BountyHunterBlade": { // VERIFIED
+			// "id": 455158, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "As The Blade Slade (P1), win a free-for-all 10k target Bounty Hunter match against Sissy Fess (P2), Rico Pedrosa (P3) and Udo Kang (P4) in Sunset Canyon, using only knives"},
+		// "a_BountyHunterAnnie": { // VERIFIED
+			// "id": 455172, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "As Annie Stoakes (P1), win a 10k target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
 		// "a_BountyHunterCooper": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
-			// 	"id": 455173, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 888%"},
-		"a_BountyHunterWeapons": { // VERIFIED
-			"id": 455443, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			"devInfo": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
-		"a_SundownFallingStar": { // VERIFIED
-			"id": 455174, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			"devInfo": "As Falling Star (P1), with Shadow Wolf (P2) as your ally, win a 5 minute Sundown match against a team of Grizzly (P3) and Standing Snake (P4) in Fallen Creek"},
-		"a_SundownBlack": { // VERIFIED
-			"id": 455175, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "As Mr. Black (P1), win a 5 minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a kill streak of at least 15"},
+			// "id": 455173, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 888%"},
+		// "a_BountyHunterWeapons": { // VERIFIED
+			// "id": 455443, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "devInfo": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
+		// "a_SundownFallingStar": { // VERIFIED
+			// "id": 455174, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "devInfo": "As Falling Star (P1), with Shadow Wolf (P2) as your ally, win a 5 minute Sundown match against a team of Grizzly (P3) and Standing Snake (P4) in Fallen Creek"},
+		// "a_SundownBlack": { // VERIFIED
+			// "id": 455175, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "As Mr. Black (P1), win a 5 minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a kill streak of at least 15"},
 		// "a_SundownGriffon": { // VERIFIED // DISABLED - Manual construction via RAIntegration - complex sumation/AddSource chain
-			// 	"id": 455176, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek, AND collect $15,000"},
+			// "id": 455176, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek, AND collect $15,000"},
 		// "a_SundownNate": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
-			// 	"id": 455178, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 70% or higher, AND collect $12,000"},
-		"a_SundownFlawless": { // VERIFIED
-			"id": 455444, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "1 min Sundown match vs team of 3 CPUs, without dying and kill every enemy once"},
-		"a_HighNoonNatalie": { // VERIFIED
-			"id": 455179, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			"devInfo": "As Natalie (P1), complete a first to 5, free-for-all High Noon match against Mr. Kelley (P2), Red Jr. (P3) and Nate Harlow (P4) on Mansion Grounds + achieve 3 kills + either Natalie or Mr. Kelley wins the match"},
-		"a_HighNoonCurly": { // VERIFIED
-			"id": 455180, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "As Curly Shaw (P1), win a best of 5, free-for-all High Noon match against Bloody Tom (P2), Big Oaf Whitney (P3) and Twiggy Phelps (P4) in Twin Rocks + score 5 headshots"},		
+			// "id": 455178, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 70% or higher, AND collect $12,000"},
+		// "a_SundownFlawless": { // VERIFIED
+			// "id": 455444, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "1 min Sundown match vs team of 3 CPUs, without dying and kill every enemy once"},
+		// "a_HighNoonNatalie": { // VERIFIED
+			// "id": 455179, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "devInfo": "As Natalie (P1), complete a first to 5, free-for-all High Noon match against Mr. Kelley (P2), Red Jr. (P3) and Nate Harlow (P4) on Mansion Grounds + achieve 3 kills + either Natalie or Mr. Kelley wins the match"},
+		// "a_HighNoonCurly": { // VERIFIED
+			// "id": 455180, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "As Curly Shaw (P1), win a best of 5, free-for-all High Noon match against Bloody Tom (P2), Big Oaf Whitney (P3) and Twiggy Phelps (P4) in Twin Rocks + score 5 headshots"},		
 		},
 	"c_Unlocks": { // Category - Unlocking items (9)
-		"a_UnlockStagesAll": { // VERIFIED
-			"id": 444065, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Unlock all 13 Showdown stages"},
-		"a_UnlockCharactersHalf": { // VERIFIED
-			"id": 447034, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Unlock 24 Showdown characters"},
-		"a_UnlockCharactersAll": { // VERIFIED
-			"id": 444067, "points": achievement_POINTS_Hard, "type": achievements_TYPE_Standard,
-			"devInfo": "Unlock all 48 Showdown characters"},
-		"a_CompleteJournalHalf": { // VERIFIED
-			"id": 444490, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete 50% of the journal"},
-		"a_CompleteJournalAll": { // VERIFIED
-			"id": 444489, "points": achievement_POINTS_VeryHard, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete 100% of the journal"},
-		"a_MaxHealth": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
-			"id": 444063, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
-			"devInfo": "Unlock all 7 health upgrades for Red"},
-		"a_MaxDeadEye": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
-			"id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
-			"devInfo": "Unlock all 5 Deadeye upgrades for Red"},
-		"a_UnlockAllWeapons": { // VERIFIED
-			"id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
-			"devInfo": "Unlock all unique weapons in the Story Campaign"},
-		"a_UpgradeAllWeapons": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
-			"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
-			"devInfo": "Unlock all 12 upgradable weapons in the Story Campaign"},
+		// "a_UnlockStagesAll": { // VERIFIED
+			// "id": 444065, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Unlock all 13 Showdown stages"},
+		// "a_UnlockCharactersHalf": { // VERIFIED
+			// "id": 447034, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Unlock 24 Showdown characters"},
+		// "a_UnlockCharactersAll": { // VERIFIED
+			// "id": 444067, "points": achievement_POINTS_Hard, "type": achievements_TYPE_Standard,
+			// "devInfo": "Unlock all 48 Showdown characters"},
+		// "a_CompleteJournalHalf": { // VERIFIED
+			// "id": 444490, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete 50% of the journal"},
+		// "a_CompleteJournalAll": { // VERIFIED
+			// "id": 444489, "points": achievement_POINTS_VeryHard, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete 100% of the journal"},
+		// "a_MaxHealth": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+			// "id": 444063, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
+			// "devInfo": "Unlock all 7 health upgrades for Red"},
+		// "a_MaxDeadEye": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+			// "id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
+			// "devInfo": "Unlock all 5 Deadeye upgrades for Red"},
+		// "a_UnlockAllWeapons": { // VERIFIED
+			// "id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
+			// "devInfo": "Unlock all unique weapons in the Story Campaign"},
+		// "a_UpgradeAllWeapons": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+			// "id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
+			// "devInfo": "Unlock all 12 upgradable weapons in the Story Campaign"},
 		},
 	"c_BountyHunter": { // Category - Bounty Hunter Challenge mode for Story missions (20)
 		// "a_BountyCompletionAll": { // DISABLED - Already incorporated in other achievements
 			// 	"id": 0000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			// 	"devInfo": "Complete all the Bounty Hunter Mode Missions"},
-		"a_BountyHuntChapter1": { // VERIFIED
-			"id": 444681, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 1"},
-		"a_BountyHuntChapter2": { // VERIFIED
-			"id": 443870, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 2"},
-		"a_BountyHuntChapter3": { // VERIFIED
-			"id": 443872, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 3"},
-		"a_BountyHuntChapter5": { // VERIFIED
-			"id": 449110, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 5"},
-		"a_BountyHuntChapter6": { // VERIFIED (RATools v1.15.0)
-			"id": 449109, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 6"},
-		"a_BountyHuntChapter7": { // VERIFIED (RATools v1.15.0)
-			"id": 444682, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 7"},
-		"a_BountyHuntChapter8": { // VERIFIED
-			"id": 449108, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 8"},
-		"a_BountyHuntChapter9": { // VERIFIED
-			"id": 449107, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 9"},
-		"a_BountyHuntChapter11": { // VERIFIED (RATools v1.15.0)
-			"id": 449101, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 11"},
-		"a_BountyHuntChapter12": { // VERIFIED
-			"id": 449100, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 12"},
-		"a_BountyHuntChapter13": { // VERIFIED
-			"id": 449099, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 13"},
-		"a_BountyHuntChapter14": { // VERIFIED
-			"id": 449098, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 14"},
-		"a_BountyHuntChapter15": { // VERIFIED
-			"id": 449097, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 15"},
-		"a_BountyHuntChapter17": { // VERIFIED
-			"id": 449096, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 17"},
-		"a_BountyHuntChapter18": { // VERIFIED
-			"id": 449064, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 18"},
-		"a_BountyHuntChapter20": { // VERIFIED (RATools v1.15.0)
-			"id": 449106, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 20"},
-		"a_BountyHuntChapter21": { // VERIFIED (RATools v1.15.0)
-			"id": 449105, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 21"},
-		"a_BountyHuntChapter24": { // VERIFIED
-			"id": 449104, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 24"},
+		// "a_BountyHuntChapter1": { // VERIFIED
+			// "id": 444681, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 1"},
+		// "a_BountyHuntChapter2": { // VERIFIED
+			// "id": 443870, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 2"},
+		// "a_BountyHuntChapter3": { // VERIFIED
+			// "id": 443872, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 3"},
+		// "a_BountyHuntChapter5": { // VERIFIED
+			// "id": 449110, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 5"},
+		// "a_BountyHuntChapter6": { // VERIFIED (RATools v1.15.0)
+			// "id": 449109, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 6"},
+		// "a_BountyHuntChapter7": { // VERIFIED (RATools v1.15.0)
+			// "id": 444682, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 7"},
+		// "a_BountyHuntChapter8": { // VERIFIED
+			// "id": 449108, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 8"},
+		// "a_BountyHuntChapter9": { // VERIFIED
+			// "id": 449107, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 9"},
+		// "a_BountyHuntChapter11": { // VERIFIED (RATools v1.15.0)
+			// "id": 449101, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 11"},
+		// "a_BountyHuntChapter12": { // VERIFIED
+			// "id": 449100, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 12"},
+		// "a_BountyHuntChapter13": { // VERIFIED
+			// "id": 449099, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 13"},
+		// "a_BountyHuntChapter14": { // VERIFIED
+			// "id": 449098, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 14"},
+		// "a_BountyHuntChapter15": { // VERIFIED
+			// "id": 449097, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 15"},
+		// "a_BountyHuntChapter17": { // VERIFIED
+			// "id": 449096, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 17"},
+		// "a_BountyHuntChapter18": { // VERIFIED
+			// "id": 449064, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 18"},
+		// "a_BountyHuntChapter20": { // VERIFIED (RATools v1.15.0)
+			// "id": 449106, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 20"},
+		// "a_BountyHuntChapter21": { // VERIFIED (RATools v1.15.0)
+			// "id": 449105, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 21"},
+		// "a_BountyHuntChapter24": { // VERIFIED
+			// "id": 449104, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 24"},
 		// "a_BountyHuntChapter25": { // VERIFIED (RATools v1.15.0) // DISABLED - MANUAL_CONSTRUCTION - usage of Remember/Recall
 			// "id": 449103, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Complete Bounty Hunter mission for Chapter 25"},
-		"a_BountyHuntChapter27": { // VERIFIED
-			"id": 449102, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 27"},
+		// "a_BountyHuntChapter27": { // VERIFIED
+			// "id": 449102, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 27"},
 		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements (26) 
 		// "a_BigMoney": { // VERIFIED // DISABLED - Manual edit via RAIntegration - complex sumation/AddSource chain
@@ -3838,78 +3850,78 @@ achievements_coreData = {
 		// "a_PerfectAccuracy": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// 	"id": 455472, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// 	"devInfo": "Finish a mission an accuracy of 90% or higher, without using deadeye ability"},
-		"a_PerfectShootingTutorial": { // VERIFIED
-			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
-		"a_SaveCurly": { // VERIFIED
-			"id": 449378, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Rogue Valley' | After saving Curly Shaw, pick up the $1500 pouch he drops near him"},
+		// "a_PerfectShootingTutorial": { // VERIFIED
+			// "id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Missable,
+			// "devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
+		// "a_SaveCurly": { // VERIFIED
+			// "id": 449378, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Missable,
+			// "devInfo": "Level 'Rogue Valley' | After saving Curly Shaw, pick up the $1500 pouch he drops near him"},
 		// "a_ChallengeChapter1": { // VERIFIED // DISABLED - Manual edit via RAIntegration - complex sumation/AddSource chain
 			// "id": 438677, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater | Very Hard"},
 		// "a_ChallengeChapter2": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
 			// "id": 450183, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Bounty Hunter' | Complete with 'No HUD' cheat and with damage taken less than 50% | Hard or Very Hard"},
-		"a_ChallengeChapter3": { // VERIFIED 
-			"id": 450198, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Ugly Streetfight' | Complete without using any healing items | Very Hard"},
-		"a_ChallengeChapter5": { // VERIFIED
-			"id": 439585, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train | Hard or Very Hard"},
-		"a_ChallengeChapter6": { // VERIFIED
-			"id": 450325, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Carinval Life' | Get a killstreak of 10 using the gatling gun without letting go of the trigger | Hard or Very Hard"},
+		// "a_ChallengeChapter3": { // VERIFIED 
+			// "id": 450198, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Ugly Streetfight' | Complete without using any healing items | Very Hard"},
+		// "a_ChallengeChapter5": { // VERIFIED
+			// "id": 439585, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Railroaded' | Complete the mission without falling of the train | Hard or Very Hard"},
+		// "a_ChallengeChapter6": { // VERIFIED
+			// "id": 450325, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Carinval Life' | Get a killstreak of 10 using the gatling gun without letting go of the trigger | Hard or Very Hard"},
 		// "a_ChallengeChapter7": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
 			// "id": 450393, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Freak Show' | Complete with 60% accuracy or higher | Very Hard"},
-		"a_ChallengeChapter8": { // VERIFIED
-			"id": 451482, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat | Very Hard"},
-		"a_ChallengeChapter10": { // VERIFIED
-			"id": 450554, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'The Cemetery' | Complete with 'No Distortion', 'Sad Stars' and 'No HUD' cheats | Hard or Very Hard"}, 
-		"a_ChallengeChapter11": { // VERIFIED
-			"id": 450845, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Range War' | Ride a bison and kill 15 enemies | Hard or Very Hard"},
+		// "a_ChallengeChapter8": { // VERIFIED
+			// "id": 451482, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat | Very Hard"},
+		// "a_ChallengeChapter10": { // VERIFIED
+			// "id": 450554, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'The Cemetery' | Complete with 'No Distortion', 'Sad Stars' and 'No HUD' cheats | Hard or Very Hard"}, 
+		// "a_ChallengeChapter11": { // VERIFIED
+			// "id": 450845, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Range War' | Ride a bison and kill 15 enemies | Hard or Very Hard"},
 		// "a_ChallengeChapter12": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 450557, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Saloon Fight' | Complete with at least 70% HP remaining | Very Hard"},
-		"a_ChallengeChapter13": { // VERIFIED
-			"id": 450844, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'The Traitor' | Win the battle with 5 allied cannons still operational | Hard or Very Hard"},
+		// "a_ChallengeChapter13": { // VERIFIED
+			// "id": 450844, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'The Traitor' | Win the battle with 5 allied cannons still operational | Hard or Very Hard"},
 		// "a_ChallengeChapter14": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
 			// "id": 450691, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Sunset Canyon' | Complete with less than 90% damage taken | Very Hard"},
-		"a_ChallengeChapter15": { // VERIFIED
-			"id": 450888, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Bear Mountain' | Kill Grizzly only using gun 'Faith' | Very Hard"},
-		"a_ChallengeChapter17": { // VERIFIED
-			"id": 450889, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'The Mine' | Complete using only a knife to damage enemies, in under 1 minute | Hard or Very Hard"},
+		// "a_ChallengeChapter15": { // VERIFIED
+			// "id": 450888, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Bear Mountain' | Kill Grizzly only using gun 'Faith' | Very Hard"},
+		// "a_ChallengeChapter17": { // VERIFIED
+			// "id": 450889, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'The Mine' | Complete using only a knife to damage enemies, in under 1 minute | Hard or Very Hard"},
 		// "a_ChallengeChapter19": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 451499, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Hell Pass' | Complete without letting the coach's HP drop below 40%, using only Buffalo Soldier's deadeye ability to shoot, 'infinite Deadeye' cheat required, melee is allowed | Hard or Very Hard"},
-		"a_ChallengeChapter20": { // VERIFIED
-			"id": 451481, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Fort Diego' | Kill 12 enemies with head shots | Very Hard"},
-		"a_ChallengeChapter22": { // VERIFIED
-			"id": 450943, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Devils and Angels' | Complete in under 3 minutes and only killing General Diego | Hard or Very Hard"},
-		"a_ChallengeChapter24": { // VERIFIED
-			"id": 451042, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Battle Finale' | Complete scoring 5 headshots on Mr. Kelley and without letting any bystanders die | Very Hard"},
+		// "a_ChallengeChapter20": { // VERIFIED
+			// "id": 451481, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Fort Diego' | Kill 12 enemies with head shots | Very Hard"},
+		// "a_ChallengeChapter22": { // VERIFIED
+			// "id": 450943, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Devils and Angels' | Complete in under 3 minutes and only killing General Diego | Hard or Very Hard"},
+		// "a_ChallengeChapter24": { // VERIFIED
+			// "id": 451042, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Battle Finale' | Complete scoring 5 headshots on Mr. Kelley and without letting any bystanders die | Very Hard"},
 		// "a_ChallengeChapter25": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 451044, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'The Siege' | Complete with combined HP of hero trio at 60% or above, with 'Golden Gun' cheat required | Hard or Very Hard"},
 		// "a_ChallengeChapter27": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 450558, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
-		"a_WoodChapter8": { // VERIFIED
-			"id": 453665, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat enabled | Red Wood Revolver"},
-		"a_WoodChapter10": { // VERIFIED
-			"id": 453664, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'The Cemetery' | Only damage enemies with the 'Infinite Deadeye' cheat, melee attacks allowed, shooting isn't | Red Wood Revolver"},
+		// "a_WoodChapter8": { // VERIFIED
+			// "id": 453665, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat enabled | Red Wood Revolver"},
+		// "a_WoodChapter10": { // VERIFIED
+			// "id": 453664, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'The Cemetery' | Only damage enemies with the 'Infinite Deadeye' cheat, melee attacks allowed, shooting isn't | Red Wood Revolver"},
 		},
 	}
 
@@ -5084,7 +5096,7 @@ achievements_triggers = {
 					never(!is_RewardMenu_displayed_short(enum_releaseRegion)) &&
 					is_RewardMenu_displayed_short(enum_releaseRegion)))
 		
-		// [2] ==== Alt RAmeasured Handler Grop ==== 			-> This group is purely responsible for displaying accuracy rating (otherwise not shown during gameplay). This group can never unlock the achievement
+		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group is purely responsible for displaying accuracy rating (otherwise not shown during gameplay). This group can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
@@ -6363,7 +6375,7 @@ achievements_triggers = {
 
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			
-			&& trigger_when(
+			&& trigger_when( // BUG - Doesn't trigger when in EU spanish??
 				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
@@ -7970,7 +7982,7 @@ achievements_descriptions = {
 	"a_ChallengeChapter2":					{"en": "Complete Chapter 2, \"Bounty Hunter\", on hard or very hard difficulty, sustaining less than 50% damage and with the \"No HUD\" cheat enabled"},
 	"a_ChallengeChapter3":					{"en": "Complete Chapter 3, \"Ugly Streetfight\", on very hard difficulty, without picking up any healing items"},
 	"a_ChallengeChapter5":					{"en": "Complete Chapter 5, \"Railroaded\", on hard or very hard difficulty, without stumbling off the train even once"},
-	"a_ChallengeChapter6":					{"en": "In Chapter 6, \"Carnival Life\", on hard or very hard difficulty, achieve a 10-kill streak with the gatling gun in a single, uninterrupted burst without releasing the trigger"},
+	"a_ChallengeChapter6":					{"en": "In Chapter 6, \"Carnival Life\", on hard or very hard difficulty, achieve a 10-kill streak with the gatling gun in a single, uninterrupted volley without releasing the trigger"},
 	"a_ChallengeChapter7":					{"en": "Complete Chapter 7, \"Freak Show\", on very hard difficulty, with an accuracy of 60% or better"},
 	"a_ChallengeChapter8":					{"en": "Complete Chapter 8, \"Rogue Valley\", on very hard difficulty, with the \"Bite the Bullet\" cheat enabled"},
 	"a_ChallengeChapter10":					{"en": "Complete Chapter 10, \"The Cemetery\", on hard or very hard difficulty, with the following cheats enabled: \"No Distortion\", \"Sad Stars\" and \"No HUD\""},
@@ -9610,23 +9622,23 @@ leaderboards_coreData = {
 		// "devInfo": "Best Stats - Red Wood revolver"},
 
 	// "lb_StoryNormal": { // CONCEPT lb_StoryNormal
-	// 	"id": 000000, "isLowerBetter": false, 
-	// 	"leaderboardFormat": "VALUE",
-	// 	"devInfo": "Complete Story on normal (session-based)"},
+		// "id": 000000, "isLowerBetter": false, 
+		// "leaderboardFormat": "VALUE",
+		// "devInfo": "Complete Story on normal (session-based)"},
 	// },
 	
-	"lb_ShowdownFastestBounty": { // VERIFIED - Starts at beginning of match with timer RAoverlay
-		"id": 112549, "isLowerBetter": true, 
-		"leaderboardFormat": "SECS",
-		"devInfo": "Bounty Hunter match with 3 CPUs: Fastest to collect 15k"},
+	// "lb_ShowdownFastestBounty": { // VERIFIED - Starts at beginning of match with timer RAoverlay
+		// "id": 112549, "isLowerBetter": true, 
+		// "leaderboardFormat": "SECS",
+		// "devInfo": "Bounty Hunter match with 3 CPUs: Fastest to collect 15k"},
 	// "lb_ShowdownLargestBounty": { // VERIFIED - Instant Start/Submit at end of Showdown match // DISABLED - Manual edit via RAIntegration - complex sumation/AddSource chain
 		// "id": 112550, "isLowerBetter": false, 
 		// "leaderboardFormat": "VALUE",
 		// "devInfo": "Sundown match with 3 CPUs: largest bounty collection in 10 min"},
-	"lb_ShowdownBestCombo": { // VERIFIED - Instant Start/Submit at end of Showdown match
-		"id": 112548, "isLowerBetter": false, 
-		"leaderboardFormat": "VALUE",
-		"devInfo": "Any Showdown match with 3 CPUs: highest combo"},
+	// "lb_ShowdownBestCombo": { // VERIFIED - Instant Start/Submit at end of Showdown match
+		// "id": 112548, "isLowerBetter": false, 
+		// "leaderboardFormat": "VALUE",
+		// "devInfo": "Any Showdown match with 3 CPUs: highest combo"},
 	}
 
 // ===================================
