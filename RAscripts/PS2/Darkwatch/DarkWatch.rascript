@@ -3,8 +3,8 @@
 //	 █▄▀ █▀█ █▀▄ █░█ ▀▄▀▄▀ █▀█ ░█░ █▄▄ █▀█	 \\
 // ***************************************** \\
 // #ID = 19111
-// md5: 
-// RA Hash: 0e21d37f63246c5a7bb32e074ce43f8b (PAL) -- 00bead17cad153878fc25b8985187192 (NTSC-U)
+// md5 (base, without RApatches): 8E6C817041ADC5B20F3011CD0F945F9D (PAL) - 9CE6383CB5260E300CACDE569EA5916D (NTSC-U)
+// RA Hash: https://retroachievements.org/game/19111/hashes
 // Platform: PlayStation 2
 // Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
 // RA Game Page: https://retroachievements.org/game/19111
@@ -2489,12 +2489,12 @@ function current_SavedStatGunslinger_WeaponEquipTime(enum_chapter, enum_weapon, 
 function current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
-	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_offsetToMember_Pointer_SavedStat = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
 	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MissionTime") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
-		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToMember_Pointer_SavedStat,
 		let_offsetToIndexedMember_SavedStat
 	]
 
@@ -2503,12 +2503,12 @@ function current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) {
 function current_SavedStatStory_Difficulty(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
-	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_offsetToMember_Pointer_SavedStat = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
 	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
-		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToMember_Pointer_SavedStat,
 		let_offsetToIndexedMember_SavedStat
 	]
 
@@ -2517,12 +2517,12 @@ function current_SavedStatStory_Difficulty(enum_chapter, enum_releaseRegion) {
 function current_SavedStatStory_PlayerDeaths(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
-	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_offsetToMember_Pointer_SavedStat = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
 	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:PlayerDeaths") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
-		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToMember_Pointer_SavedStat,
 		let_offsetToIndexedMember_SavedStat
 	]
 
@@ -2531,12 +2531,12 @@ function current_SavedStatStory_PlayerDeaths(enum_chapter, enum_releaseRegion) {
 function current_SavedStatStory_HeadshotKills(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
-	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_offsetToMember_Pointer_SavedStat = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
 	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:HeadshotKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
-		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToMember_Pointer_SavedStat,
 		let_offsetToIndexedMember_SavedStat
 	]
 
@@ -2545,12 +2545,12 @@ function current_SavedStatStory_HeadshotKills(enum_chapter, enum_releaseRegion) 
 function current_SavedStatStory_Kills(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
-	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_offsetToMember_Pointer_SavedStat = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
 	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:Kills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
-		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToMember_Pointer_SavedStat,
 		let_offsetToIndexedMember_SavedStat
 	]
 
@@ -2559,12 +2559,12 @@ function current_SavedStatStory_Kills(enum_chapter, enum_releaseRegion) {
 function current_SavedStatStory_MeleeKills(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
-	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_offsetToMember_Pointer_SavedStat = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
 	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MeleeKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
-		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToMember_Pointer_SavedStat,
 		let_offsetToIndexedMember_SavedStat
 	]
 
@@ -2573,12 +2573,12 @@ function current_SavedStatStory_MeleeKills(enum_chapter, enum_releaseRegion) {
 function current_SavedStatStory_ShotsFired(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
-	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_offsetToMember_Pointer_SavedStat = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
 	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsFired") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
-		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToMember_Pointer_SavedStat,
 		let_offsetToIndexedMember_SavedStat
 	]
 
@@ -2587,12 +2587,12 @@ function current_SavedStatStory_ShotsFired(enum_chapter, enum_releaseRegion) {
 function current_SavedStatStory_ShotsHit(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
-	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_offsetToMember_Pointer_SavedStat = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
 	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsHit") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
-		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToMember_Pointer_SavedStat,
 		let_offsetToIndexedMember_SavedStat
 	]
 
@@ -7597,7 +7597,7 @@ leaderboards_cancelTriggers = {
 		// 	|| is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
-	// ------lb_Chapters------
+	// ------lb_Watchers------
 	"lb_WatchersWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_1_WrongTrain, enum_releaseRegion)),
 	"lb_WatchersRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -7826,7 +7826,7 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (3x) MANUAL_
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
 	
 	function valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion) => // ValueMeasure[2,5,8,11/14,17,20,23] --> ValueMeasure when the Chapter is finished in SinglePlayer; This ValueMeasure is submitted in SinglePlayer Mode
-		//NOTE: In SinglePlayer, ChapterStats saved during gameplay are zeroed out when the Chapter finishes, thus this ValueMeasure is necessary to submit in SinglePlayer
+		//NOTE: In SinglePlayer or MultiplayerCoop, ChapterStats during gameplay are copied/saved to [Array:SavedStats], afterwards ChapterStats during gameplay is zeroed out when the Chapter finishes, thus this ValueMeasure uses [Array:SavedStats]
 		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterCompleted_SinglePlayer - (below Measured) R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
 			PAL:	I:0xX00965cd8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00965cd8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00965cd8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000002c*f20.0_K:{recall}_K:{recall}*4_M:{recall}
@@ -7975,7 +7975,7 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
 	
 	function valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion) => // ValueMeasure[2,5,8,11/14,17,20,23] --> ValueMeasure when the Chapter is finished in SinglePlayer; This ValueMeasure is submitted in SinglePlayer Mode
-		//NOTE: In SinglePlayer, ChapterStats saved during gameplay are zeroed out when the Chapter finishes, thus this ValueMeasure is necessary to submit in SinglePlayer
+		//NOTE: In SinglePlayer or MultiplayerCoop, ChapterStats during gameplay are copied/saved to [Array:SavedStats], afterwards ChapterStats during gameplay is zeroed out when the Chapter finishes, thus this ValueMeasure uses [Array:SavedStats]
 		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterCompleted_SinglePlayer - (below Measured) R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
 			PAL:	I:0xX00965cd8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00965cd8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00965cd8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000002c*f20.0_K:{recall}_K:{recall}*4_M:{recall}
