@@ -6295,7 +6295,7 @@ function achievements_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
-// TODO lb_Watchers logic coded - MANUAL_CONSTRUCTION left todo
+// TODO lb_Watchers logic coded - MANUAL_CONSTRUCTION for VALUEMEASURE's left todo
 
 // =========================
 // • LEADERBOARD core data •
@@ -6340,39 +6340,39 @@ leaderboards_coreData = {
 	// "lb_Template": { // CONCEPT lb_template
 		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
 	// ------lb_Watchers------
-	// "lb_WatchersWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127404, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_1_WrongTrain, from start to finish (single session)"},
-	// "lb_WatchersRideDevil": { // QA  // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersRideDevil": { // QA  // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127405, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_2_RideDevil, from start to finish (single session)"},
-	// "lb_WatchersBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127406, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_3_Boneyard, from start to finish (single session)"},
-	// "lb_WatchersDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127407, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_4_DevilMine, from start to finish (single session)"},
-	// "lb_WatchersDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127408, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_5_Outpost, from start to finish (single session)"},
-	// "lb_WatchersWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127409, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_6_WarTrain, from start to finish (single session)"},
-	// "lb_WatchersTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127410, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_7_TortureMaze, from start to finish (single session)"},
-	// "lb_WatchersBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127411, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_8_BaptismFire, from start to finish (single session)"},
-	// "lb_WatchersRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127412, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_9_Rescue, from start to finish (single session)"},
-	// "lb_WatchersPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127413, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_10_Prism, from start to finish (single session)"},
-	// "lb_WatchersInvasion": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersInvasion": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127414, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_11_Invasion, from start to finish (single session)"},
-	// "lb_WatchersHangtown": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersHangtown": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127417, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_12_Hangtown, from start to finish (single session)"},
-	// "lb_WatchersMorningAfter": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersMorningAfter": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127416, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_13_MorningAfter, from start to finish (single session)"},
-	// "lb_WatchersShowdown": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersShowdown": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127419, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_14_Showdown, from start to finish (single session)"},
-	// "lb_WatchersRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127418, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_15_RightTrain, from start to finish (single session)"},
-	// "lb_WatchersDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127415, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_16_Deadfall, from start to finish (single session)"},	
-	// "lb_WatchersCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION (VALUEMEASURE)
+	// "lb_WatchersCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127420, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_17_CurseWest, from start to finish (single session)"},
 	
 	}
@@ -6390,7 +6390,7 @@ function lbGenerate_FullStartTrigger_ChapterCompletion(enum_chapter, enum_releas
 		&& is_flagState_InGame_true(enum_releaseRegion)
 		&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion)
 
-function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) =>
+function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[4])
 	// [1] ==== Alt Cancel Group ====		-> Cancel when LevelID is incorrect
 		is_ReleaseRegion(enum_releaseRegion)
 		&& !is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
@@ -6401,11 +6401,66 @@ function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_relea
 		|| is_ReleaseRegion(enum_releaseRegion)
 		&& current_MissionTime_ChapterTotal(enum_releaseRegion) > LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime
 		&& prev_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime
-	// [4] ==== Alt Cancel Group ====		-> Cancel when entering MainMenu
-		|| is_ReleaseRegion(enum_releaseRegion)
-		&& on_MainMenu_enter(enum_releaseRegion)
+	// [4] ==== Alt Cancel Group ====		-> Cancel on PauseMenu->Quit
+		/* MANUAL_CONSTRUCTION[FD1-FD3]:CancelOn_PauseMenu_Quit (AltGroup[4]) - R/R usage
+		PAL: 	P:0xX007215cc!=1397050451_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._0=1.2.
+		NTSCU: 	P:0xX0071fccc!=1398099027_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._0=1.2.
+		-----------
+			PauseIf		!is_ReleaseRegion(enum_releaseRegion)
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+
+			---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| ResetNextIf: MEM FrameTitle == "Quit"
+			---------ResetNextIf_A2--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| CheckIf: MEM FrameTitle != "Quit"
+
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			ResetNextIf	->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 		(2)	| ResetNextIf: PRIOR FrameTitle == "Quit"
+			---------AddHit_A--------- (-> when any player presses X while at QuitConfirmationMenu, whilst YES highlighted)
+			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+			AddAddress	[Pointer:PlayerInput(preferred)]
+			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+
+			AddAddress	[Pointer:PlayerInput(preferred)]
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
+
+			---------ResetNextIf_B--------- (-> when pressing Quit, [Lower4:ActiveMenuPointerIndex] becomes 0, the next frame)
+			ResetNextIf	Mem [Lower4:ActiveMenuPointerIndex] != 0x0 			| ResetNextIf: [Lower4:ActiveMenuPointerIndex] != 0
+			---------AddHit_B--------
+			AndNext		Mem [Lower4:ActiveMenuPointerIndex] == 0x0		
+			AddHits		Delta [Lower4:ActiveMenuPointerIndex] != 0x0	(1)		| CheckIf: [Lower4:ActiveMenuPointerIndex] turns 0
+
+						Val 0x0 == Val 0x1		(2)		| always_false() 			*/
+		|| unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& on_PauseMenu_Quit(enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION[FD1-FD3]
+	// [5] ==== Alt Reset Group ====		-> Reset when entering MainMenu (to reset HitCount in AltGroup[4], after PauseMenu->Quit)
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_MainMenu_enter(enum_releaseRegion))
 		
-function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) =>
+function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[4])
 	// NOTE: In Single Player OR MultiplayerCoop, the ChapterStats saved during gameplay are zeroed out when game saves them to [Array:SavedStats_Story]
 	// [1] ==== Alt Submit Group ====	-> Submit when Chapter was started from beginning AND finished, then submits on_Loading_start()
 		unless(
@@ -6442,10 +6497,61 @@ function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_relea
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& !is_InMultiplayerCoopMode(enum_releaseRegion))
-	// [4] ==== Alt Reset Group ==== 		-> Reset when entering MainMenu
+	// [4] ==== Alt Reset Group ==== 		-> Reset on PauseMenu->Quit
+		/* MANUAL_CONSTRUCTION[FD1-FD3]:ResetOn_PauseMenu_Quit (AltGroup[4]) - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._R:0=1.2._0=1
+		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._R:0=1.2._0=1
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+
+			---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| ResetNextIf: MEM FrameTitle == "Quit"
+			---------ResetNextIf_A2--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| CheckIf: MEM FrameTitle != "Quit"
+
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			ResetNextIf	->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 		(2)	| ResetNextIf: PRIOR FrameTitle == "Quit"
+			---------AddHit_A--------- (-> when any player presses X while at QuitConfirmationMenu, whilst YES highlighted)
+			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+			AddAddress	[Pointer:PlayerInput(preferred)]
+			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+
+			AddAddress	[Pointer:PlayerInput(preferred)]
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
+
+			---------ResetNextIf_B--------- (-> when pressing Quit, [Lower4:ActiveMenuPointerIndex] becomes 0, the next frame)
+			ResetNextIf	Mem [Lower4:ActiveMenuPointerIndex] != 0x0 			| ResetNextIf: [Lower4:ActiveMenuPointerIndex] != 0
+			---------AddHit_B--------
+			AndNext		Mem [Lower4:ActiveMenuPointerIndex] == 0x0		
+			AddHits		Delta [Lower4:ActiveMenuPointerIndex] != 0x0	(1)		| CheckIf: [Lower4:ActiveMenuPointerIndex] turns 0
+
+			ResetIf		Val 0x0 == Val 0x1		(2)
+			
+						Val 0x0 == Val 0x1				| always_false() */
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
-			&& on_MainMenu_enter(enum_releaseRegion))
+			&& on_PauseMenu_Quit(enum_releaseRegion))
 
 // #endregion LB - trigger generators
 
