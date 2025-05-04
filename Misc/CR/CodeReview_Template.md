@@ -20,7 +20,7 @@
 🎓 	🎮
 
 
-------TODO------
+------TODO Legend------
 🔲 TODO — Not started
 🔄 WIP — Work in progress
 ✅ DONE — Completed
@@ -65,6 +65,28 @@ Hello @_JR_DEV_USERNAME_
 Your Code Review for [_GAME_TITLE_ (_CONSOLE_)](_UNOFFICIAL_ACHIEVEMENT_LIST_LINK_) has finally arrived!
 Please take some time to review everything I've written below. If you have any questions, feel free to reach out.
 
+### 📑 Table of Contents
+
+🧠 Memory Work & Internal Notes _MSG_LINK_ (xx TODOs)
+- 🛠️ RAM Digging & Code Notes
+- 🧾 Additional Developer Notes
+- 🧪 Testing & Debugging Results
+
+🎮 Achievement Set Design _MSG_LINK_ (xx TODOs)
+- 🎯 Overall Set Design
+- 📝 Titles & Descriptions
+- 🖼️ Badges
+- 🎖️ Point Values
+
+⚙️ Technical Implementation _MSG_LINK_ (xx TODOs)
+- 🧩 Achievement Logic
+- 🏆 Leaderboard Logic
+- 📺 Rich Presence Logic
+
+🔑 Misc Prerequisites _MSG_LINK_ (xx TODOs)
+
+📜 Summary & Final Notes _MSG_LINK_
+
 
 # ✦───────✦ 🧠 Memory Work & Internal Notes ✦───────✦
 // Grouped to represent all the under-the-hood work.
@@ -85,20 +107,20 @@ Please take some time to review everything I've written below. If you have any q
 // Conform to https://docs.retroachievements.org/guidelines/content/achievement-set-requirements.html  
 //         and https://docs.retroachievements.org/developer-docs/achievement-development-overview.html
 
-## 🎯 Overall Set Design  
+## 🎯 Overall Set Design
 /// Balance, creativity, progression, and content coverage.  
 /// Achievement types: https://docs.retroachievements.org/guidelines/content/progression-and-win-condition-guidelines.html  
 /// Difficulty balance: https://docs.retroachievements.org/developer-docs/difficulty-scale-and-balance.html
 /// Any unwelcome concepts? https://docs.retroachievements.org/guidelines/content/unwelcome-concepts.html
 
-## 📝 Titles & Descriptions  
+## 📝 Titles & Descriptions
 /// Conform to https://docs.retroachievements.org/guidelines/content/writing-policy.html
 
-## 🖼️ Badges  
+## 🖼️ Badges
 /// Conform to https://docs.retroachievements.org/guidelines/content/badge-and-icon-guidelines.html  
 ///          and https://docs.retroachievements.org/developer-docs/badge-and-icon-creation.html
 
-## 🎖️ Point Values  
+## 🎖️ Point Values
 /// Conform to https://docs.retroachievements.org/developer-docs/achievement-scoring.html
 
 
@@ -113,25 +135,16 @@ Please take some time to review everything I've written below. If you have any q
 /// Protections: Demo/Cheat/Save/Bios/DipSwitch?  
 /// Were flags used correctly? 
 
-## 🏆 Leaderboards 
+## 🏆 Leaderboard Logic
 /// Instant Start/Submit implemented?
 
-## 📺 Rich Presence  
+## 📺 Rich Presence Logic 
 /// Is a dynamic RP present? Not overly bloated or using unsupported Unicode.  
 /// Macros and lookupTables used appropriately?  
 /// Refer to https://docs.retroachievements.org/developer-docs/rich-presence.html#rich-presence
 
 
-
-# ✦───────✦ 🚧 Generam Issues & Questions ✦───────✦
-// Callout section for anything actionable or in doubt.
-
-## ❗ General Issues 
-
-## ❓ General Questions / Clarifications Needed
-
-
-# ✦───────✦ 🔑 Promotion Prerequisites ✦───────✦
+# ✦───────✦ 🔑 Misc Prerequisites ✦───────✦
 
 ## 🔲 🧭 Hubs & Similar Games
 /// Any hubs to add? (Refer to https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html)
