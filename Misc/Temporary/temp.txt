@@ -1,0 +1,5 @@
+# Code Note Removal
+`$0x10d2` by [Mugenista](https://retroachievements.org/user/Mugenista)
+```
+lives
+```
