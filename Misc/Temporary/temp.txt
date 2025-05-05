@@ -1,3 +1,5 @@
-0xX007215f0=3735928559
-
-0xX0071fcf0=3735928559
+# Code Note Removal
+`$0x10d2` by [Mugenista](https://retroachievements.org/user/Mugenista)
+```
+lives
+```

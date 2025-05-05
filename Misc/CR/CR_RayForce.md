@@ -79,7 +79,7 @@ I’m unsure how extensively the achievements have been tested. Could you share 
 - Were there any bugs or edge cases you had to deal with?
 - Did you have concepts that couldn’t be implemented?
 - Were any softcore/hardcore differences considered?
-A brief overview here (and/or in the forum thread) would be helpful.
+A brief overview here would be helpful (and/or in the forum thread for any achievement concepts you were unable to create).
 
 
 
@@ -104,7 +104,7 @@ I think the following achievements could reasonably be flagged as `missable`:
 These seem like optional or "side-quest"-type achievements. Think about a player going for a one-and-done playthrough to earn the `Beaten` status — they could easily miss these without realizing. Elaborate what you think would be the best approach, as you know more of the game than I do.
 
 ### 🔲 ❓ Game Difficulty
-All achievements and leaderboards currently work regardless of difficulty. Please elaborate on why this was chosen.
+All achievements and leaderboards currently work regardless of selected difficulty. Please elaborate on why this was chosen.
 
 How does the game differentiate difficulty levels? Is it just enemy quantity, or do mechanics change as well? Given that the player always dies in one hit, difficulty differences may not be obvious — but that makes it even more important to consider unique challenges for higher difficulty modes.
 
@@ -119,7 +119,7 @@ Instead of keeping it as-is, consider embedding this information (how to change 
 It works fine, but might be more satisfying if it only unlocked after killing all 8 locked-on enemies with a single volley. Not sure if this is technically feasible or trackable with current tools — but if it is, it could elevate the design somewhat.
 
 ### 🔲 ❓ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) - Viability & Difficulty + Player Death Reset Not Mentioned
-Is this actually viable? How can the player beat Stage 1 without defeating the boss? Can they simply dodge until a the stage just moves on to the next one?
+Is this actually viable? How can the player beat Stage 1 without defeating the boss? Can they simply dodge until the stage just moves on to the next one?
 Also, you’re not mentioning in the description whether dying resets progress. It does work like that in logic from what I've seen, this is critical information for an achievement like this.
 
 
@@ -138,7 +138,7 @@ A single-letter title? Could you clarify the intent behind this choice?
 `was Broken` ---should be written as---> `Was Broken`. This issue was documented by the latest version of the [AutoCR tool](https://authorblues.github.io/retroachievements/AutoCR/).
 
 ### 🔲 ❓ Leaderboard Series [High Score at Stage 1 End](https://retroachievements.org/leaderboardinfo.php?i=122264)
-Why does this leaderboard series stop at Stage 3? Is it a limitation, oversight, or intentional design choice, please elaborate?
+Why are there only 3 of these leaderboards when the game has 7 stages? Please clarify your design choice—was this an intentional cutoff, or are the others pending?.
 
 ### 🔲 ❗ Progression & WinCondition Achievements: Titles Using Level Name
 These use the stage names as titles. While that’s technically allowed, it doesn’t make for very engaging design.
@@ -172,7 +172,7 @@ Consider increasing the point values for later-stage achievements, such as:
 - [Toward the Darkness](https://retroachievements.org/achievement/482081)
 - [The End of Deep Layer](https://retroachievements.org/achievement/482082)
 - [Releasing Infinitely](https://retroachievements.org/achievement/482083)
-This could be offset by slightly lowering the earlier ones to create a more rewarding progression curve — similar to your “no-death stage completion” achievements.
+This could be offset by slightly lowering the points for the earlier achievements to create a more rewarding progression curve — similar to your “no-death stage completion” achievements. 
 
 
 
@@ -196,7 +196,7 @@ Are the challenge achievements appropriately balanced for two players?
 
 **Opt-in/Opt-out Behavior**
 I've tested it—Player 1 and 2 can join or leave at any time, based on game settings or on death. Since this behavior wasn’t considered in the design, you’ll likely need to either:
-- Redesign a large portion of the set to account for both players, or
+- Redesign a large portion of the set to account for both players (you would earn some browny points)
 - Update the achievement descriptions to explicitly state that they apply only to Player 1 (this is the simpler option).
 
 Ideally, I’d recommend redesigning everything with Player 2 in mind—it would significantly improve your skill and the quality of the set.
@@ -313,9 +313,7 @@ Currently, playing on the hardest difficulty yields the same score as playing on
 - OR, adding a difficulty modifier to the score (eg. multiplying the score or applying a scaling formula)
 The challenge is that modifying the score means the RA-submitted value won't match what’s shown in-game. If you go this route, document it clearly in the leaderboard name or description.
 Alternatively, consider polling the community in the [#poll-me](https://discord.com/channels/310192285306454017/511718348178849792) RAdiscord channel for opinions.
- 	
-### 🔲 ❓ Leaderboard Series [High Score at Stage 1 End](https://retroachievements.org/leaderboardinfo.php?i=122264)
-Why are there only 3 of these leaderboards when the game has 7 stages? Please clarify your design choice—was this an intentional cutoff, or are the others pending?.
+
 
 ### 🔲 ❗ Leaderboard Spam
 All your leaderboards appear to activate at the game's start, causing 20+ seconds of constant RA overlay popups. Consider minimizing this “leaderboard spam”:
@@ -387,7 +385,7 @@ Before promotion, **every major concern listed in this review must be addressed*
 - If multiplayer functionality will be partially or fully supported, consider a [Subset - Multiplayer Cooperative] as discussed, or implement proper flag tracking across both player slots for fairness and clarity.
 
 ### Final Readiness
-You’ve demonstrated creative intent and some technically sound implementation, but the current state of the set still falls short of promotion readiness. Once the core issues outlined above are resolved—and if you can confidently ensure proper behavior across both single and multiplayer use cases—this set will be much stronger and ready for broader recognition.
+You’ve demonstrated creative intent and some technically sound implementation, but the current state of the set still falls short of set promotion readiness. Once the core issues outlined above are resolved—and if you can confidently ensure proper behavior across both single and multiplayer use cases—this set will be much stronger and ready for broader recognition.
 
 
 
