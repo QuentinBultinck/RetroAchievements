@@ -1,27 +1,3 @@
-// TODO List (for Code-Reviewer)
-- Edit intro
-- Review: Memory Work & Internal Notes
-    - RAM Digging & Code Notes 
-    - Additional Developer Notes AND Testing & Debugging Results 
-- Review: Achievement Set Design
-    - Overall Set Design AND Point Values
-    - Titles & Descriptions AND Badges
-- Review Technical Implementation
-    - Achievement Logic
-    - Leaderboards
-    - Rich Presence
-- Any Generam Issues & Questions?
-- Any Promotion Prerequisites?
-- Write Summary & Final Thoughts
-- Proof Read (with AI)
-
-
-- Fill out this TODO list
-- Go over all achievements and leaderboard again to check logic
-- Check point distribution
-- Write Summary & Final Thoughts
-
-
 
 
 Hello @kssfilo
