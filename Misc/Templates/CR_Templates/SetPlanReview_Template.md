@@ -57,7 +57,7 @@ I have some remarks regarding your set design plan. I have looked at some video'
 
 
 
-# ――――――――――――――――― 🔍 Set Plan Review ――――――――――――――――― // TODO
+# ――――――――――――――――― 🔍 Set Plan Review 🔍 ――――――――――――――――― // TODO
 
 ## 🎯 Overal Set Design (progression/missables) // TODO
 /// Balance, creativity, progression, and content coverage. 
@@ -87,21 +87,21 @@ I have some remarks regarding your set design plan. I have looked at some video'
 
 
 
-# ――――――――――――――――― ℹ️ Optional Considerations ――――――――――――――――― // TODO
+# ――――――――――――――――― ℹ️ Optional Considerations ℹ️ ――――――――――――――――― // TODO
 
-This section is `optional` at this stage, but it may prove useful for your growth as a junior developer later on.
+> This section is `optional` at this stage, but it may prove useful for your growth as a junior developer later on.
 
-### 🚦 Features Usage (Trigger / Measured) // TODO
+## 🚦 Features Usage (Trigger / Measured) // TODO
 - Consider using RA’s `Trigger` and `Measured` features where appropriate to provide clearer feedback to players.
 - These tools help improve the clarity, functionality, and overall user experience of your achievements.
 
-### 🏁 Leaderboards & Rich Presence // TODO
+## 🏁 Leaderboards & Rich Presence // TODO
 - Leaderboards are optional but strongly encouraged.
   Refer to [Leaderboards Guide](https://docs.retroachievements.org/developer-docs/leaderboards.html#leaderboards)
 - Rich Presence is **required** before requesting set review down the line.
   Reference: [Rich Presence Guide](https://docs.retroachievements.org/developer-docs/rich-presence.html#rich-presence)
 
-### 📖 Writing RAguide // TODO
+## 📖 Writing RAguide // TODO
 - Consider preparing a RAguide for the [📚 RAguides/Wiki](https://github.com/RetroAchievements/guides/wiki)
 
 
@@ -110,11 +110,14 @@ This section is `optional` at this stage, but it may prove useful for your growt
 Before we move you forward into the Junior Developer Program, please address the remarks and suggestions above. Once everything is in order, we can move ahead with the next steps.  
 > You may skip the **Considerations** section (these aren't HARD requirement for joining).
 
-
-
+# 📍 Initial Set Plan (For Reference)
+_screenshot of Set Plan before review_
 
 # %%%%%%%%%%%%% POST-INITIAL SET PLAN REVIEW %%%%%%%%%%%%% #
 # '''''''''''''''''''''''''''''''''''''''''''''''''''''''' #
+
+# 📍 Altered Set Plan (For Reference)
+_screenshot of Set Plan after alterations_ // If no changes, then remove this section
 
 # 🎉 Final Words // TODO
 _Add your final encouragement or notes here when submitting them to the Junior Dev Program._

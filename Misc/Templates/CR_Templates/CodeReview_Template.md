@@ -81,7 +81,7 @@ Please take some time to review everything I've written below. If you have any q
 *(xx TODOs)*
 ### 📜 Summary & Final Notes _MSG_LINK_
 
-# ✦───────✦ 🧠 Memory Work & Internal Notes ✦───────✦ // TODO
+# ✦───────🧠 Memory Work & Internal Notes 🧠───────✦ // TODO
 // Grouped to represent all the under-the-hood work.
 
 ## 🛠️ RAM Digging & Code Notes // TODO
@@ -93,7 +93,7 @@ Please take some time to review everything I've written below. If you have any q
 ## 🧪 Testing & Debugging Results // TODO
 /// Mentioned bugs, testing methods, hardcore/softcore checks, peer testing, issues encountered during development, and any achievement concepts that could not be implemented.
 
-# ✦───────✦ 🎮 Achievement Set Design ✦───────✦ // TODO
+# ✦───────🎮 Achievement Set Design 🎮───────✦ // TODO
 // Grouped to cover all visible/user-facing parts.
 // Conform to https://docs.retroachievements.org/guidelines/content/achievement-set-requirements.html  
 //         and https://docs.retroachievements.org/developer-docs/achievement-development-overview.html
@@ -115,7 +115,7 @@ Please take some time to review everything I've written below. If you have any q
 ## 🎖️ Point Values // TODO
 /// Conform to https://docs.retroachievements.org/developer-docs/achievement-scoring.html
 
-# ✦───────✦ ⚙️ Technical Implementation ✦───────✦ // TODO
+# ✦───────⚙️ Technical Implementation ⚙️───────✦ // TODO
 // Grouped for logic quality and RA feature usage.
 
 ## 🧩 Achievement Logic // TODO
@@ -131,20 +131,20 @@ Please take some time to review everything I've written below. If you have any q
 /// Macros and lookupTables used appropriately?  
 /// Refer to https://docs.retroachievements.org/developer-docs/rich-presence.html#rich-presence
 
-# ✦───────✦ 🔑 Misc Prerequisites ✦───────✦
+# ✦───────🔑 Misc Prerequisites 🔑───────✦
 
 ## 🔲 🧭 Hubs & Similar Games // TODO
-/// Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html)
+/// Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html))
 
 ## 🔲 🗂️ Game Page Metadata // TODO
 /// Is everything correctly filled out on the Manage page?
 
-# ✦───────✦ 📜 Summary & Final Thoughts ✦───────✦ // TODO
+# ✦───────📜 Summary & Final Thoughts 📜───────✦ // TODO
 // Overview and high-level review conclusion.  
 // What still needs to be proven or improved?  
 // Was everything from https://docs.retroachievements.org/developer-docs/am-i-ready-for-review.html covered?
 
-## 📋 Set Promotion TODO Checklist
+## 📋 Set Promotion TODO Checklist 📋
 
 Please update below list as you work through items. I would advise copying/updating it here or in a document online, which I can view/follow.
 I may update this list here as you progress through the items, as well.
