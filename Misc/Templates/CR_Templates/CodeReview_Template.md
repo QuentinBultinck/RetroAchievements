@@ -1,4 +1,5 @@
 # %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
+# ''''''''''''''''''''''''''''''''''''''''''''''' #
  
 # ------TODO List------
 - Edit intro
@@ -49,12 +50,8 @@ Broken because ...
 ### ✅ ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) Improvement Suggestion
 Do this instead of that...
 
-
-
-
-
-
 # %%%%%%%%%%%%% CODE REVIEW TEMPLATE %%%%%%%%%%%%% #
+# '''''''''''''''''''''''''''''''''''''''''''''''' #
 
 # ------Intro------
 
@@ -164,7 +161,7 @@ I may update this list here as you progress through the items, as well.
 🔲 🧭 Hubs & Similar Games
 🔲 🗂️ Game Page Metadata
 
-### 📌 Additional Tasks
+### 📌 Wrap-Up Tasks (before set promotion)
 🔲 Testing after logic changes
 🔲 ...
 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
@@ -174,14 +171,39 @@ When the full checklist is completed and confirmed, we can proceed with finalizi
 
 ## 📚 Final Thoughts
 
-
-
-
-
-
 # %%%%%%%%%%%%% POST-INITIAL CODE REVIEW %%%%%%%%%%%%% #
+# '''''''''''''''''''''''''''''''''''''''''''''''''''' #
 
+# ✦───────✦ 🔍 Reassessment Round #1  ✦───────✦
 
-# ✔️ Wrap-Up & Next Steps
+## 🛠️ Tasks / Issues
+
+## 📋 Set Promotion TODO Checklist (6 May 2025)
+
+### 📐 Legend - TODO
+🔲 TODO — Not started
+🔄 WIP — Work in progress
+✅ DONE — Completed
+❌ CANCELED — No longer planned
+
+### 📌 Initial Code Review Tasks
+🔲 ❗ ...
+🔲 ❓ ...
+🔲 🧭 Hubs & Similar Games
+🔲 🗂️ Game Page Metadata
+
+### 📌 Reassessment Round #1 Tasks
+🔲 ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
+🔲 ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
+🔲 ❗ Achievements Descriptions (solo only, without dying)
+🔲 ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
+
+### 📌 Wrap-Up Tasks (before set promotion)
+🔲 Testing after logic changes
+🔲 ...
+🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
+🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
+
+#  ✦───────✦ ✔️ Wrap-Up & Next Steps ✦───────✦ // TODO
 ## 🎓 Reflection & Suggestions
 /// Reflection on what was learned + Feedforward (suggestions for future Jr. Dev process).

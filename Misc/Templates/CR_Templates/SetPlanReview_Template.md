@@ -1,4 +1,5 @@
 # %%%%%%%%%%%%% SET PLAN REVIEW NOTES %%%%%%%%%%%%% #
+# ''''''''''''''''''''''''''''''''''''''''''''''''' #
  
 # ------TODO List------
 - Labels `progression` `win condition` `missable` correctly used
@@ -41,6 +42,7 @@ Do this instead of that...
 
 
 # %%%%%%%%%%%%% SET PLAN REVIEW TEMPLATE %%%%%%%%%%%%% #
+# '''''''''''''''''''''''''''''''''''''''''''''''''''' #
 // Review [RAdocs - Junior Developer Program Rules](https://docs.retroachievements.org/developer-docs/jr-dev-rules.html#junior-developer-program-rules)
 // Check [Rules and Restrictions](https://docs.retroachievements.org/developer-docs/jr-dev-rules.html#rules-and-restrictions)
 
@@ -108,6 +110,11 @@ This section is `optional` at this stage, but it may prove useful for your growt
 Before we move you forward into the Junior Developer Program, please address the remarks and suggestions above. Once everything is in order, we can move ahead with the next steps.  
 > You may skip the **Considerations** section (these aren't HARD requirement for joining).
 
+
+
+
+# %%%%%%%%%%%%% POST-INITIAL SET PLAN REVIEW %%%%%%%%%%%%% #
+# '''''''''''''''''''''''''''''''''''''''''''''''''''''''' #
 
 # 🎉 Final Words // TODO
 _Add your final encouragement or notes here when submitting them to the Junior Dev Program._

@@ -46,8 +46,6 @@ If so, please make sure this distinction is clearly described in the relevant co
 ## 🧾 Additional Developer Notes
 N/A
 
-
-
 ## 🧪 Testing & Debugging Results
 
 ### 🔲 ❓ Testing Clarification
@@ -127,7 +125,7 @@ Consider renaming them with more creative or thematic titles — see [RAdocs - C
 Badge art is... serviceable, but minimal. Most look like cropped screenshots with simple borders. They technically match the associated achievement, but lack polish.
 Some are difficult to visually identify. If you're low on ideas or need help, consider using the [#art-requests](https://discord.com/channels/310192285306454017/1048102604963586048) channel on Discord.
 
-### 🔲 ❓ Badge Art Question: Non-game Art
+### 🔲 ❓ Badge Art Question - Non-game Art
 For the following achievements:
 - [8 Ball](https://retroachievements.org/achievement/482545)
 - [Pacifist Pilot](https://retroachievements.org/achievement/482547)
@@ -366,6 +364,115 @@ You’ve demonstrated creative intent and some technically sound implementation,
 
 
 
+# %%%%%%%%%%%%% POST-INITIAL CODE REVIEW %%%%%%%%%%%%% #
+# '''''''''''''''''''''''''''''''''''''''''''''''''''' #
 
---------------
-I think I discovered why this set I'm reviewing was so long in the backlog at number 1. It looked fine at first glance, but I discovered some glaring issues, it's kinda abysmal under the hood. The whole set has to be remade, logic wise, because the dev didn't account for player 2's slot in any assets. Player 2 can opt-in at any time during the game + Player 2's slot could be the only one which is active instead of Player 1's slot.
+# ✦───────✦ 🔍 Reassessment Round #1  ✦───────✦
+
+## 🛠️ Tasks / Issues
+
+### 🔲 ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
+You may want to consider making this a zero-point achievement if you still want to include it in the set.
+
+If the difficulty setting doesn’t meaningfully affect gameplay mechanics, is it really necessary to require the player to use a specific difficulty level or a specific number of lives?
+In cases like this, it’s usually best to let the player choose whichever settings they prefer, especially if it won’t impact the challenge or experience in any significant way.
+
+Then ask yourself again should an achievement like this, be in the set? It feels purely informational in that case to let the player know he has to put chose specific game settings, that actually aren't checked within any of achievements logic. Well that's my take on it, it's up to you to make the choice to keep it or remove it. Do what you feel is best.
+
+### 🔲 ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
+Current logic:
+```
+1:  Delta 8-bit 0x000105ff =   Value       0x0          (1)
+2:  Mem   8-bit 0x000105ff =   Value       0x48         (0)
+...
+```
+You probably want to check if `[Game State] $0x105ff` changes from 0x0 to 0x48 instead.
+By doing the following:
+```
+AndNext   Delta 8-bit 0x000105ff =   Value       0x0          (0)
+          Mem   8-bit 0x000105ff =   Value       0x48         (1)
+...
+```
+This properly checks if the game was started from the beginning or not. Do you see why your code wouldn't have properly checked this?
+I think this may have been an oversight because you're doing it correctly for achievement [Space Ace Pilot](https://retroachievements.org/achievement/482889).
+
+### 🔲 ❗ Achievements Descriptions (solo only, without dying)
+You added the requirements `solo only` and `without dying` to certain descriptions, but I think they would be better written if you added in some comma's and moved some parts around.
+**Improvement Examples**:
+- Complete Stage 1 in solo mode, without shooting or dying
+- Complete Stage 1 in solo mode, without dying
+
+### 🔲 ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
+Current description feels a little too convoluted, especially the first half.
+**Current**: `Start the game using the 2P start button before the 1P start button, and reach the boss of Stage 1 without controlling 2P and before all of 2P's lives are lost.`
+**Suggestion**: `Start the game using the 2P start button, then join as 1P and reach the Stage 1 boss without losing all of 2P's lives, without taking control of 2P`
+
+
+
+## 📋 Set Promotion TODO Checklist (6 May 2025)
+
+### 📐 Legend - TODO
+🔲 TODO — Not started
+🔄 WIP — Work in progress
+✅ DONE — Completed
+❌ CANCELED — No longer planned
+
+### 📌 Initial Code Review Tasks
+✅ ❓ Code Notes *"Fingerprint"*
+> These code notes have been changed, they're much more clear to understand.
+✅ ❓ Code Notes *"Stage Progression"*
+> Code notes have been updated, they're understandable now, although yes somewhat still abstract, put use cases are clear.
+✅ ❓ Code Notes `$0x38d0` & `$0x38ce`
+> Code notes are much more clear this time. I like that you added the formula, very good.
+✅ ❓ Testing Clarification
+🔲 ❓ Missables
+🔲 ❓ Game Difficulty
+✅ ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580)
+✅ ❓ Achievement [8 Ball](https://retroachievements.org/achievement/482545)
+✅ ❓ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) - Viability & Difficulty + Player Death Reset Not Mentioned
+> Achievement is viable + Player Death requirements has been added to description
+✅ ❓ Achievement [G](https://retroachievements.org/achievement/482465)
+✅ ❗ Leaderboard Title Case
+✅ ❓ Leaderboard Series [High Score at Stage 1 End](https://retroachievements.org/leaderboardinfo.php?i=122264)
+> Dev feels like leaderboards for stages 4-7 wouldn't be engaging enough, since they're very hard. (very well)
+✅ ❗ Progression & WinCondition Achievements - Titles Using Level Name
+> Made [post in Writing-Forum](https://discord.com/channels/310192285306454017/1315144417375424552), so titles are already fine.
+🔄 ❓ Badge Art Question - Non-game Art
+> [Post in Art-Forum](https://discord.com/channels/310192285306454017/1369176386538962944) to improve badge art is ongoing.
+✅ ❓ Progression & WinCondition Achievements - Points
+> Now there's more gradual increase in points through progression achievements.
+🔲 ❗ Player 2 Issue (Achievements, Leaderboards, RP)
+✅ ❓ Achievement [Space Ace Pilot](https://retroachievements.org/achievement/482889) 
+🔲 ❓ Achievement [Penetration](https://retroachievements.org/achievement/482464) - Slight Change
+🔲 ❓ Achievement [Island Downfall](https://retroachievements.org/achievement/484612) - HitCount
+✅ ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) - Possible Problems
+🔲 ❗ Submit Groups: Missing Delta's
+🔲 ❓ Leaderboards & Difficulty Scaling
+🔲 ❗ Leaderboard Spam
+🔲 ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) & [My Shot Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123856) Submit vs Cancel
+🔲 ❗ Frame Counter Issue
+🔲 🧭 Hubs & Similar Games
+✅ 🗂️ Game Page Metadata
+
+### 📌 Reassessment Round #1 Tasks
+🔲 ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
+🔲 ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
+🔲 ❗ Achievements Descriptions (solo only, without dying)
+🔲 ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
+
+### 📌 Wrap-Up Tasks (before set promotion)
+🔄 Testing after logic changes
+🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
+🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
+
+
+
+
+#  ✦───────✦ ✔️ Wrap-Up & Next Steps ✦───────✦ // TODO
+## 🎓 Reflection & Suggestions
+/// Reflection on what was learned + Feedforward (suggestions for future Jr. Dev process).
+
+
+
+
+
