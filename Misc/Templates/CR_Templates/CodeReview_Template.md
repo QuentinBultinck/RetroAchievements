@@ -1,6 +1,4 @@
-/ =================== \
-/ CODE REVIEWER NOTES \
-/ =================== \
+# %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
  
 # ------TODO List------
 - Edit intro
@@ -42,49 +40,49 @@
 ✅ DONE — Completed
 ❌ CANCELED — No longer planned
 
-Examples:
-
-### 🔲 ❓ Achievement [G](https://retroachievements.org/achievement/482465)
+### 🔲 ❓ Achievement [G](https://retroachievements.org/achievement/482465) Single Letter Title
 Only one letter title? Could you elaborate on this choice?
 
-### ✅ ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) & [My Shot Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123856)
-`was Broken` ---should be written as---> `Was Broken`
-This issue was documented by the latest version of the [AutoCR tool](https://authorblues.github.io/retroachievements/AutoCR/).
+### 🔲 ❗ Achievement [G](https://retroachievements.org/achievement/482465) Broken
+Broken because ...
+
+### ✅ ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) Improvement Suggestion
+Do this instead of that...
 
 
 
-/ ==================== \
-/ CODE REVIEW TEMPLATE \
-/ ==================== \
+
+
+
+# %%%%%%%%%%%%% CODE REVIEW TEMPLATE %%%%%%%%%%%%% #
+
+# ------Intro------
 
 Hello @_JR_DEV_USERNAME_
 
 Your Code Review for [_GAME_TITLE_ (_CONSOLE_)](_UNOFFICIAL_ACHIEVEMENT_LIST_LINK_) has finally arrived!
 Please take some time to review everything I've written below. If you have any questions, feel free to reach out.
 
-### 📑 Table of Contents
-
-🧠 Memory Work & Internal Notes _MSG_LINK_ (xx TODOs)
+# 📑 Table of Contents
+### 🧠 Memory Work & Internal Notes _MSG_LINK_ 
+*(xx TODOs)*
 - 🛠️ RAM Digging & Code Notes
 - 🧾 Additional Developer Notes
 - 🧪 Testing & Debugging Results
-
-🎮 Achievement Set Design _MSG_LINK_ (xx TODOs)
+### 🎮 Achievement Set Design _MSG_LINK_
+*(xx TODOs)*
 - 🎯 Overall Set Design
 - 📝 Titles & Descriptions
 - 🖼️ Badges
 - 🎖️ Point Values
-
-⚙️ Technical Implementation _MSG_LINK_ (xx TODOs)
+### ⚙️ Technical Implementation _MSG_LINK_
+*(xx TODOs)*
 - 🧩 Achievement Logic
 - 🏆 Leaderboard Logic
 - 📺 Rich Presence Logic
-
-🔑 Misc Prerequisites _MSG_LINK_ (xx TODOs)
-
-📜 Summary & Final Notes _MSG_LINK_
-
-
+### 🔑 Misc Prerequisites _MSG_LINK_
+*(xx TODOs)*
+### 📜 Summary & Final Notes _MSG_LINK_
 
 # ✦───────✦ 🧠 Memory Work & Internal Notes ✦───────✦ // TODO
 // Grouped to represent all the under-the-hood work.
@@ -148,3 +146,42 @@ Please take some time to review everything I've written below. If you have any q
 // Overview and high-level review conclusion.  
 // What still needs to be proven or improved?  
 // Was everything from https://docs.retroachievements.org/developer-docs/am-i-ready-for-review.html covered?
+
+## 📋 Set Promotion TODO Checklist
+
+Please update below list as you work through items. I would advise copying/updating it here or in a document online, which I can view/follow.
+I may update this list here as you progress through the items, as well.
+
+### 📐 Legend - TODO
+🔲 TODO — Not started
+🔄 WIP — Work in progress
+✅ DONE — Completed
+❌ CANCELED — No longer planned
+
+### 📌 Active Tasks
+🔲 ❗ ...
+🔲 ❓ ...
+🔲 🧭 Hubs & Similar Games
+🔲 🗂️ Game Page Metadata
+
+### 📌 Additional Tasks
+🔲 Testing after logic changes
+🔲 ...
+🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
+🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
+
+When the full checklist is completed and confirmed, we can proceed with finalizing the review and begin discussing the set’s promotion. Until then, feel free to ping me anytime if you’ve completed the task list or have further questions, I’ll be happy to review things again when ready.
+
+## 📚 Final Thoughts
+
+
+
+
+
+
+# %%%%%%%%%%%%% POST-INITIAL CODE REVIEW %%%%%%%%%%%%% #
+
+
+# ✔️ Wrap-Up & Next Steps
+## 🎓 Reflection & Suggestions
+/// Reflection on what was learned + Feedforward (suggestions for future Jr. Dev process).
