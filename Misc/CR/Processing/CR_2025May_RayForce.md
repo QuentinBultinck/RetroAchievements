@@ -407,9 +407,30 @@ Current description feels a little too convoluted, especially the first half.
 **Current**: `Start the game using the 2P start button before the 1P start button, and reach the boss of Stage 1 without controlling 2P and before all of 2P's lives are lost.`
 **Suggestion**: `Start the game using the 2P start button, then join as 1P and reach the Stage 1 boss without losing all of 2P's lives, without taking control of 2P`
 
+### 🔲 ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
+**Stage 2 Requirements**
+This leaderboard only submits when past Stage 1, according to SUBMIT:CoreGroup:Line[2], this is very well. But make sure this requireement is also reflected into the description. Regard this remark for all leaderboard where you implemented/changed this.
 
+**Logic Question**
+I don't seem to understand SUBMIT:AltGroup[1]:Line[1]. Are you sure this works, looks kinda weird, but idk exactly how value work, from your documentation in the code notes. It feels like something weird is going on there.
+SUBMIT:AltGroup[1] Logic:
+```
+1:  Delta 8-bit 0x00004b94 >=  Mem   8-bit 0x000022b3 (0)
+2:  Mem   8-bit 0x00004b94 <   Delta 8-bit 0x00004b94 (0)
+```
 
-## 📋 Set Promotion TODO Checklist (6 May 2025)
+**Instant Start/Submit?**
+This leaderboard also uses the highscore in VALUE, I would also suggest you find a way to make this leaderboard also work with an instant Start/Submit. 
+Possible Solution: ||Try to start/submit when the player dies||
+This in contrast to leaderboard [High Score](https://retroachievements.org/leaderboardinfo.php?i=122181), which instant Start/Submits when either:
+- Back to mainMenu (from in-game)
+- Game Ending achieved
+- All lives lost?? (I don't know if this is a thing, what about continues?)
+
+### 🔲 ❓ Rich Presence 1P - 2P
+You edited the RP regarding 2P, which is great, but does RP still work when only 2P is connected?
+
+## 📋 Set Promotion TODO Checklist (7 May 2025)
 
 ### 📐 Legend - TODO
 🔲 TODO — Not started
@@ -425,8 +446,10 @@ Current description feels a little too convoluted, especially the first half.
 ✅ ❓ Code Notes `$0x38d0` & `$0x38ce`
 > Code notes are much more clear this time. I like that you added the formula, very good.
 ✅ ❓ Testing Clarification
-🔲 ❓ Missables
-🔲 ❓ Game Difficulty
+✅ ❓ Missables
+> Added missables where dev deemed necessary
+✅ ❓ Game Difficulty
+> Difficulty differences not noticeable, thus disregard this game mechanic
 ✅ ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580)
 ✅ ❓ Achievement [8 Ball](https://retroachievements.org/achievement/482545)
 ✅ ❓ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) - Viability & Difficulty + Player Death Reset Not Mentioned
@@ -441,17 +464,23 @@ Current description feels a little too convoluted, especially the first half.
 > [Post in Art-Forum](https://discord.com/channels/310192285306454017/1369176386538962944) to improve badge art is ongoing.
 ✅ ❓ Progression & WinCondition Achievements - Points
 > Now there's more gradual increase in points through progression achievements.
-🔲 ❗ Player 2 Issue (Achievements, Leaderboards, RP)
+🔲  ❗ Player 2 Issue (Achievements, Leaderboards, RP)
+> Achievement logic ✅ 
+> Leaderboards 🔄 issue persists 
+> RP 🔄 changed, but may still have problems, refer to `Reassessment Round #1 Tasks[❓ Rich Presence 1P - 2P]`
 ✅ ❓ Achievement [Space Ace Pilot](https://retroachievements.org/achievement/482889) 
-🔲 ❓ Achievement [Penetration](https://retroachievements.org/achievement/482464) - Slight Change
-🔲 ❓ Achievement [Island Downfall](https://retroachievements.org/achievement/484612) - HitCount
+🔄 ❓ Achievement [Penetration](https://retroachievements.org/achievement/482464) - Slight Change
+> Was updated with Player 2 Issue, but redundant line still exists
+✅ ❓ Achievement [Island Downfall](https://retroachievements.org/achievement/484612) - HitCount
 ✅ ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) - Possible Problems
-🔲 ❗ Submit Groups: Missing Delta's
-🔲 ❓ Leaderboards & Difficulty Scaling
-🔲 ❗ Leaderboard Spam
-🔲 ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) & [My Shot Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123856) Submit vs Cancel
-🔲 ❗ Frame Counter Issue
-🔲 🧭 Hubs & Similar Games
+✅ ❗ Submit Groups: Missing Delta's
+✅ ❓ Leaderboards & Difficulty Scaling
+✅ ❗ Leaderboard Spam
+> Implemented instant Start/Submit leaderboards
+✅ ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) & [My Shot Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123856) Submit vs Cancel
+✅ ❗ Frame Counter Issue
+✅ 🧭 Hubs & Similar Games
+> May consider Similar Games[Xevious,After Burner]
 ✅ 🗂️ Game Page Metadata
 
 ### 📌 Reassessment Round #1 Tasks
@@ -459,6 +488,8 @@ Current description feels a little too convoluted, especially the first half.
 🔲 ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
 🔲 ❗ Achievements Descriptions (solo only, without dying)
 🔲 ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
+🔲 ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
+🔲 ❓ Rich Presence 1P - 2P
 
 ### 📌 Wrap-Up Tasks (before set promotion)
 🔄 Testing after logic changes

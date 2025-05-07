@@ -51,12 +51,6 @@ Broken because ...
 ### ✅ ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) Improvement Suggestion
 Do this instead of that...
 
-
-
-
-
-
-
 # %%%%%%%%%%%%% CODE REVIEW TEMPLATE %%%%%%%%%%%%% #
 
 # ------Intro------
