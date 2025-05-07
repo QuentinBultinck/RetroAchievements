@@ -303,6 +303,8 @@ memory_StructDefs = {
 		},
 	"Struct:PlayerEntityData": {
 		"pointerChainToMember": {
+			"BitFlag:IsPlayerMounted": {
+				"pointerChainOffsets": [0x58, 0x64, 0x28]},
 			"Float:PlayerHealth(functional)": {
 				"pointerChainOffsets": [0x58, 0x7C, 0x98]},
 			"Float:VampireShield(functional)": {
@@ -1990,6 +1992,7 @@ function on_HUDcontrolGear_LoadedBullets_decrement(enum_releaseRegion) =>
 // ◦ Player Data ◦
 // '''''''''''''''
 // #region Player Data
+// #region Misc Player Data
 PLAYER_1 = "1"
 PLAYER_2 = "2"
 
@@ -2051,8 +2054,27 @@ function ASCII_MEM_ADDR_ControllerConfig(enum_player, enum_releaseRegion) {
 
 function is_ControllerConfig(enum_player, enum_controllerConfig, enum_releaseRegion) =>
 	is_ASCII_EqualTo(ASCII_MEM_ADDR_ControllerConfig(enum_player, enum_releaseRegion), enum_controllerConfig)
+// -------------------------------------
+function current_flagState_IsPlayerMounted(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer(EntityData_B):PlayerActorData-Player{0}", enum_player)
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerEntityData", "BitFlag:IsPlayerMounted", let_memAddr_BasePointer,
+		memAccessorFunction_toPointedToMember = bit0)}
 
+function prev_flagState_IsPlayerMounted(enum_player, enum_releaseRegion) =>
+	prev(current_flagState_IsPlayerMounted(enum_player, enum_releaseRegion))
 
+function on_flagState_IsPlayerMounted_change(enum_player, enum_releaseRegion) => 
+	current_flagState_IsPlayerMounted(enum_player, enum_releaseRegion) != prev_flagState_IsPlayerMounted(enum_player, enum_releaseRegion)
+
+function on_Player_mount(enum_player, enum_releaseRegion) =>
+	current_flagState_IsPlayerMounted(enum_player, enum_releaseRegion) > prev_flagState_IsPlayerMounted(enum_player, enum_releaseRegion)
+
+function on_Player_dismount(enum_player, enum_releaseRegion) =>
+	current_flagState_IsPlayerMounted(enum_player, enum_releaseRegion) < prev_flagState_IsPlayerMounted(enum_player, enum_releaseRegion)
+
+// #endregion Misc Player Data
 // #region Player Gauges
 // ----------------Health (HP)---------------------
 CONST_PLAYER_MAX_HP = 100.0
@@ -2072,6 +2094,16 @@ function prev_Player_HP(enum_player, enum_releaseRegion) =>
 function on_Player_death(enum_player, enum_releaseRegion) =>
 	current_Player_HP(enum_player, enum_releaseRegion) == 0 
 	&& prev_Player_HP(enum_player, enum_releaseRegion) > 0
+// ----------------VampireShield---------------------
+function current_Player_VampireShield(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer(EntityData_B):PlayerActorData-Player{0}", enum_player)
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerEntityData", "Float:VampireShield(functional)", let_memAddr_BasePointer,
+		memAccessorFunction_toPointedToMember = float)}
+
+function prev_Player_VampireShield(enum_player, enum_releaseRegion) =>
+	prev(current_Player_VampireShield(enum_player, enum_releaseRegion))
 // ----------------BloodPowerGauge---------------------
 function current_Player_BloodPowerGauge(enum_player, enum_releaseRegion) {
 	let_memAddrKey = format("Pointer(EntityData_B):PlayerActorData-Player{0}", enum_player)
@@ -2762,49 +2794,48 @@ achievements_coreData = {
 			// "id": 506807, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
-		// TODO update all c_Gunslinger with new "no deaths" logic (logic implemented, only needs to be updated)
-		// "a_GunWrongTrain": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 508863, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
-		// "a_GunRideDevil": { // PENDING  // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunRideDevil": { // QA  // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 509576, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a minimum accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
-		// "a_GunBoneyard": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 510041, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring at least 100 kills with the Crossbow and Carbine equipped (without using throwables)"},
-		// "a_GunDevilMine": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 510690, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty, killing only with the Redeemer and Dual Pistols equipped (without using any powers, Neutral powers excluded)"},
-		// "a_GunDWOutpost": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511019, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty, without being below max HP for xx seconds consecutively"},
-		// "a_GunWarTrain": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511009, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty, within xx time and without losing any HP (vampire shield excluded)"},
-		// "a_GunTortureMaze": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511010, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty, only killing with the Scepter and Shotgun equipped, with at least 80% melee kills"},
-		// "a_GunBaptismFire": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511021, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, only killing with the Redeemer and Rail Rocket equipped, and without scoring 5 body-shot kills in a row—mix it up with headshots or melee kills to break the chain"},
-		// "a_GunRescue": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511013, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty, without losing any HP (vampire shield excluded)"},
-		// "a_GunPrism": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511014, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty, within xx time and killing only with the Dual Pistols or Shotgun equipped"},
-		// "a_GunInvasion": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunInvasion": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511016, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty, using only 1 distinct power (Neutral powers excluded) and using it less than xx times"},
-		// "a_GunHangtown": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunHangtown": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511017, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty, using the Range Rifle as the only means of shooting, with a minimum accuracy of xx%"},
-		// "a_GunMorningAfter": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunMorningAfter": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511015, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty, using only tier 2 or tier 3 powers with at least 45% melee kills"},
-		// "a_GunShowdown": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunShowdown": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511011, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty, with a minimum accuracy of xx% using only tier 1 powers"},
-		// "a_GunRightTrain": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511012, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
-		// "a_GunDeadfall": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511018, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty, only kill with the Range Rifle and Carbine equipped and with at least xx% headshot kills"},
-		// "a_GunCurseWest": { // PENDING // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511020, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty, with less than xx power activations (Neutral powers excluded) and without dropping below xx% HP"}, 
 		// "a_WeaponMaster": { // DISCONTINUED - Exceeds achievement logic size; weapon usage is incorporated into other achievements
 			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 Darkwatch weapons registered as a 'Favorite Weapon' for at least one Chapter in Gunslinger Mode (Pistol is excluded)"},
 		},
 	"c_Bonus": { // Category - Bonus/Easter Egg Achievements
-		// "a_GatlingRightTrain": { // CONCEPT a_GatlingRightTrain, using GatlingGun in CHAPTER_15_RightTrain
-			// "id": 000000, "points": 0000000, "devInfo": "In CHAPTER_15_RightTrain, use the gatling gun to kill xx enemies without getting off the gun and without taking a hit"},
-		// "a_GatlingPrism": { // CONCEPT a_GatlingPrism, using GatlingGun in last ChapterSection of CHAPTER_10_Prism
-			// "id": 000000, "points": 0000000, "devInfo": "In the last section of CHAPTER_10_Prism, use the gatling gun to kill xx enemies without getting off the gun and without taking a hit"},
+		// "a_GatlingRightTrain": { // VERIFIED
+			// "id": 518404, "points": 0000000, "devInfo": "In CHAPTER_15_RightTrain (only 1 CHAPTER_SECTION), use the gatling gun to kill xx enemies in a row without getting off, and without any HP damage on Shootist difficulty or higher. Enemies killed by exploding barrels are not counted"},
+		// "a_GatlingPrism": { // VERIFIED
+			// "id": 518403, "points": 0000000, "devInfo": "Last CHAPTER_SECTION of CHAPTER_10_Prism, use the gatling gun to kill xx enemies in a row without getting off, and without any HP damage on Shootist difficulty or higher. Enemies killed by exploding barrels are not counted"},
 		// "a_Souler": { // CONCEPT a_Souler, something about finding all those taintedSouls??, although this is may only be trackable per Chapter??
 			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 		// "a_Jacker": { // CONCEPT a_Jacker (jack of all trades), possible to unlock 3 powers of each evil/good??
@@ -2979,11 +3010,7 @@ function achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(enum_chapte
 	// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when at MainMenu || on PauseMenu->Restart OR on PauseMenu->Quit
 		|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 
-function achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-	/* MANUAL_CONSTRUCTION (AltGroup[5/10])
-		PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
-		NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
-		*/
+function achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[5])
 	// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
 		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
@@ -3003,7 +3030,7 @@ function achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(enum_chapter
 		|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 
 // ---------------GunslingerUnlocks----------------------
-function achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION 
+function achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[4])
 	// [1] ==== Reset Groups ==== 			-> Reset when not in Gunslinger Mode
 		never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
@@ -3017,7 +3044,7 @@ function achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_re
 			is_ReleaseRegion(enum_releaseRegion)
 			&& !is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
 	// [4] ==== Alt Reset Group ==== 		-> Reset when pressing PauseMenu->Quit
-		/* MANUAL_CONSTRUCTION (AltGroup[4]): R/R usage
+		/* MANUAL_CONSTRUCTION (AltGroup[4]) - R/R usage
 			--> MANUAL_CONSTRUCTION[1FD-3FD] with ResetIf+AndNext (refer to on_PauseMenu_Quit())
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
@@ -3047,7 +3074,7 @@ function achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_re
 							Val 0x0 == Val 0x1					*/	
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
-			&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
+			&& on_PauseMenu_Quit(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-3FD]
 
 function achGenerate_FullTrigger_GunslingerUnlock_Difficulty(enum_chapter, enum_minRequiredDifficulty, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
 	/* MANUAL_CONSTRUCTION (AltGroup[6])
@@ -3343,12 +3370,52 @@ function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, in
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			*/
 		|| achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+// ----------------Bonus---------------------
+function achGenerate_FullTrigger_GatlingGunner(enum_chapter, enum_chapterSectionWithGatlingGun, enum_difficultyMinimum, int_requiredGatlingGunKillStreak, enum_releaseRegion) => 
+	// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+		measured(
+			repeated(int_requiredGatlingGunKillStreak,
+				never( // --ResetNextIf--> When player vampire shield below 50%.
+					current_flagState_IsPlayerMounted(PLAYER_1, enum_releaseRegion) == 1
+					&& current_Player_VampireShield(PLAYER_1, enum_releaseRegion) < CONST_PLAYER_MAX_VAMPIRESHIELD * 0.50)
+				&& current_flagState_IsPlayerMounted(PLAYER_1, enum_releaseRegion) == 1
+				&& is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)),
+			when =
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_flagState_InGame_true(enum_releaseRegion)
+				&& is_DifficultyOrHarder(enum_difficultyMinimum, enum_releaseRegion)
+				&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
+				&& is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
+				&& is_ChapterSection(enum_chapter, enum_chapterSectionWithGatlingGun, enum_releaseRegion)
+				&& once(on_Player_mount(PLAYER_1, enum_releaseRegion))
+		)
+	// [2] ==== Alt Trigger Group ====		--> Group is only responsible for displaying a Trigger Indicator when on the gatling gun.
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& is_flagState_InGame_true(enum_releaseRegion)
+		&& is_DifficultyOrHarder(enum_difficultyMinimum, enum_releaseRegion)
+		&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
+		&& is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
+		&& is_ChapterSection(enum_chapter, enum_chapterSectionWithGatlingGun, enum_releaseRegion)
+		&& current_Player_VampireShield(PLAYER_1, enum_releaseRegion) >= CONST_PLAYER_MAX_VAMPIRESHIELD * 0.50 // --CheckIf--> Vampire Shield >= 50%
+		&& once(on_Player_mount(PLAYER_1, enum_releaseRegion))
+		&& trigger_when(always_false())
+	// [3] ==== Alt Reset Group ====		--> Reset when dismounting the gatling gun
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& on_Player_dismount(PLAYER_1, enum_releaseRegion))
+	// [4] ==== Alt Reset Group ====		--> Reset when CHAPTER_SECTION with GatlingGun starts from beginning
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_ChapterSection_startFromBeginning(enum_chapter, enum_chapterSectionWithGatlingGun, enum_releaseRegion))
 // -------------------------------------
+
 function achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion) =>
 	// [5/] ==== Alt Lockout Group ==== 		-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
 		never( // --Lockout--> When PLAYER_1 dies
 			is_ReleaseRegion(enum_releaseRegion)
-			&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+			&& is_flagState_InGame_true(enum_releaseRegion)
 			&& on_Player_death(PLAYER_1, enum_releaseRegion))
 		&& always_false()
 function achGenerate_Measured_GunslingerChaptersCompletedOnDeadeyeDifficulty(enum_releaseRegion) {
@@ -3913,6 +3980,8 @@ achievements_triggers = {
 					---------
 						AndNext		[8-bit:GameState] == 0x3						| CheckIf: is_AnyInGameMenu_active() 
 
+						-----Start of MANUAL_CONSTRUCTION-----
+
 						AddAddress	[Pointer:UIcontrol(preferred)]
 						Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
 						Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
@@ -3928,6 +3997,8 @@ achievements_triggers = {
 						AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 						AddAddress	->[Mem 32-bit] 0x7C
 						AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
+
+						-----End of MANUAL_CONSTRUCTION-----
 
 						AddAddress	[Pointer:PlayerInput(preferred)]
 						AndNext		->[Mem Bit0] 0xF 	> 	->[Delta Bit0] 0xF		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
@@ -5712,6 +5783,10 @@ achievements_triggers = {
 				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 		}),
 	// --------c_Bonus--------
+	"a_GatlingRightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achGenerate_FullTrigger_GatlingGunner(CHAPTER_15_RightTrain, CHAPTER_SECTION_1, DIFFICULTY_Shootist, 15, enum_releaseRegion)),
+	"a_GatlingPrism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achGenerate_FullTrigger_GatlingGunner(CHAPTER_10_Prism, CHAPTER_SECTION_5, DIFFICULTY_Shootist, 15, enum_releaseRegion)),
 	"a_SunPower": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			unless(
@@ -5748,7 +5823,9 @@ achievements_triggers = {
 			&& is_flagState_InGame_true(enum_releaseRegion)
 			&& on_Kills_Temp_minIncrementBy(const_MULTI_KILL_COUNT, PLAYER_1, enum_releaseRegion) // --CheckIf--> Kills increment by xx amount or higher in 1 delta frame
 		}),
-	"a_AllPowersEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+	"a_AllPowersEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[1])
+		const_NEWPOWERMENU_TEXTLOOKUPKEY_LastEvilPower = TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SoulStealer
+		return
 		/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
 			// WARNING - Edit in enum_textLookupKeyPowerName
 			PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=1_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
@@ -5810,36 +5887,32 @@ achievements_triggers = {
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_InSinglePlayerMode(enum_releaseRegion))
-			// && never(repeated(2, 
-			// 	!is_NewPowerMenu_displayed(enum_releaseRegion)))
 			&& once(
 				is_flagState_InGame_true(enum_releaseRegion)
-				&& is_NewPowerMenu_Power(TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SoulStealer, enum_releaseRegion)
-				&& dword(0xbb) == TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SoulStealer
-				// && on_NewPowerMenu_render(enum_releaseRegion)
+				&& is_NewPowerMenu_Power(const_NEWPOWERMENU_TEXTLOOKUPKEY_LastEvilPower, enum_releaseRegion)
+				&& dword(0xDEADBEEF) == const_NEWPOWERMENU_TEXTLOOKUPKEY_LastEvilPower
 				)
 			&& trigger_when(on_NewPowerMenu_close(enum_releaseRegion))
-		),
-	"a_AllPowersGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_AllPowersGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[1])
+		const_NEWPOWERMENU_TEXTLOOKUPKEY_LastGoodPower = TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator
+		return
 		/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
 			// WARNING - Edit in enum_textLookupKeyPowerName
 			PAL:	xxxx
 			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_R:0xX0000006c!=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=1995014642.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
 				*/	
-		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement					
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_InSinglePlayerMode(enum_releaseRegion))
-			// && never(repeated(2, 
-			// 	!is_NewPowerMenu_displayed(enum_releaseRegion)))
 			&& once(
 				is_flagState_InGame_true(enum_releaseRegion)
-				&& is_NewPowerMenu_Power(TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator, enum_releaseRegion)
-				&& dword(0xbb) == TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator
-				// && on_NewPowerMenu_render(enum_releaseRegion)
+				&& is_NewPowerMenu_Power(const_NEWPOWERMENU_TEXTLOOKUPKEY_LastGoodPower, enum_releaseRegion)
+				&& dword(0xDEADBEEF) == TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator
 				)
 			&& trigger_when(on_NewPowerMenu_close(enum_releaseRegion))
-		),
+		}),
 	}
 // #endregion ACH - triggers
 
@@ -5913,6 +5986,8 @@ achievements_titles = {
 	"a_GunCurseWest": 			{"en": "Balance of Blood"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	// --------c_Bonus--------
+	"a_GatlingRightTrain":		{"en": "Rotary of Damnation"},
+	"a_GatlingPrism":			{"en": "Circle of Suppression"},
 	"a_SunPower":				{"en": "Sun-Kissed Suicide"},
 	"a_Multikill":				{"en": "Hell's Choir"},
 	"a_AllPowersEvil":			{"en": "Righteous Revenant"},
@@ -5960,12 +6035,12 @@ achievements_descriptions = {
 	"a_Archive":				{"en": "A gunslinger's tale ain't written in ink—it's carved in blood and lead. Survive the worst, and your legend might outlast you. Unlock the \"Darkwatch Archives\" concept art by completing all Chapters on Deadeye difficulty in Gunslinger Mode"},
 	// --------c_Gunslinger-------- 
 	"a_GunWrongTrain": 			{"en": "No time for second chances—burn through the rails like hell's on your heels. Complete Chapter 1, \"The Wrong Train\", in Gunslinger Mode on Deadeye difficulty, within 4 minutes, no deaths, and without dropping below 50% HP"},
-	"a_GunRideDevil": 			{"en": "You ain't just riding—you're making every bullet sing. Complete Chapter 2, \"Ride Like the Devil\", in Gunslinger Mode on Deadeye on Deadeye difficulty, with no deaths, at least 75% accuracy, and without falling below 50% HP"},
-	"a_GunBoneyard": 			{"en": "The ground's already full, but you kept digging. Complete Chapter 3, \"Boneyard\", in Gunslinger Mode on Deadeye on Deadeye difficulty, with no deaths, achieving at least 100 kills using the Carbine or Crossbow, and without throwing any explosives"},
-	"a_GunDevilMine": 			{"en": "Ain't no darkness hiding what you came to do. Complete Chapter 4, \"Devil's Belly Mine\", in Gunslinger Mode on Deadeye on Deadeye difficulty, with no deaths, using only the Redeemer or Dual Pistols, and without using any powers"},
-	"a_GunDWOutpost": 			{"en": "The station is drowning in blood—and none of it is yours. Complete Chapter 5, \"Darkwatch Outpost\", in Gunslinger Mode on Deadeye on Deadeye difficulty, with no deaths, and without being below max HP for more than 20 consecutive seconds"},
+	"a_GunRideDevil": 			{"en": "You ain't just riding—you're making every bullet sing. Complete Chapter 2, \"Ride Like the Devil\", in Gunslinger Mode on Deadeye difficulty, with no deaths, at least 75% accuracy, and without falling below 50% HP"},
+	"a_GunBoneyard": 			{"en": "The ground's already full, but you kept digging. Complete Chapter 3, \"Boneyard\", in Gunslinger Mode on Deadeye difficulty, with no deaths, achieving at least 100 kills using the Carbine or Crossbow, and without throwing any explosives"},
+	"a_GunDevilMine": 			{"en": "Ain't no darkness hiding what you came to do. Complete Chapter 4, \"Devil's Belly Mine\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only the Redeemer or Dual Pistols, and without using any powers"},
+	"a_GunDWOutpost": 			{"en": "The station is drowning in blood—and none of it is yours. Complete Chapter 5, \"Darkwatch Outpost\", in Gunslinger Mode on Deadeye difficulty, with no deaths, and without being below max HP for more than 20 consecutive seconds"},
 	"a_GunWarTrain": 			{"en": "The train kept running. You didn't bleed. Complete Chapter 6, \"War Train\", in Gunslinger Mode on Deadeye difficulty, within 5 minutes, no deaths, and without losing any HP"},
-	"a_GunTortureMaze": 		{"en": "This ain't no gunfight—it's a sermon of steel. Complete Chapter 7, \"Torture Maze\", in Gunslinger Mode on Deadeye on Deadeye difficulty, with no deaths, only killing with the Scepter or Shotgun, and with at least 80% melee kills"},
+	"a_GunTortureMaze": 		{"en": "This ain't no gunfight—it's a sermon of steel. Complete Chapter 7, \"Torture Maze\", in Gunslinger Mode on Deadeye difficulty, with no deaths, only killing with the Scepter or Shotgun, and with at least 80% melee kills"},
 	"a_GunBaptismFire": 		{"en": "This baptism ain't in water. Complete Chapter 8, \"Baptism of Fire\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only the Redeemer or Rail Rocket, and without scoring 5 body-shot kills in a row—mix it up with headshot or melee kills"},
 	"a_GunRescue": 				{"en": "Bullets flew, the dead swarmed—and you walked out clean. Complete Chapter 9, \"Rescue\", in Gunslinger Mode on Deadeye difficulty, with no deaths, and without losing any HP"},
 	"a_GunPrism": 				{"en": "The canyon lit up like Judgment Day—and you brought the thunder. Complete Chapter 10, \"The Deadlight Prism\", in Gunslinger Mode on Deadeye difficulty within 15 minutes, no deaths, and killing only with the Dual Pistols or Shotgun"},
@@ -5974,10 +6049,12 @@ achievements_descriptions = {
 	"a_GunMorningAfter": 		{"en": "The citadel burns, but your powers cut clean and your hands cut cleaner. Complete Chapter 13, \"The Morning After\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only tier 2 or 3 powers, and with at least 45% melee kills"},
 	"a_GunShowdown": 			{"en": "No tricks, no frills—just clean shots and first-tier fury. Complete Chapter 14, \"Showdown\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only tier 1 powers, and with at least 65% accuracy"},
 	"a_GunRightTrain": 			{"en": "That train didn't slow down and neither did you. Complete Chapter 15, \"The Right Train\", in Gunslinger Mode on Deadeye difficulty within 7 minutes, no deaths, and without dropping below 70% HP"},
-	"a_GunDeadfall": 			{"en": "The streets were hell, but your aim never flinched. Complete Chapter 16, \"Deadfall\", in Gunslinger Mode on Deadeye on Deadeye difficulty, with no deaths, achieving at least 30% headshot kills using only the Range Rifle or Carbine"},
+	"a_GunDeadfall": 			{"en": "The streets were hell, but your aim never flinched. Complete Chapter 16, \"Deadfall\", in Gunslinger Mode on Deadeye difficulty, with no deaths, achieving at least 30% headshot kills using only the Range Rifle or Carbine"},
 	"a_GunCurseWest": 			{"en": "You walked the line between damnation and salvation—and bled for neither. Complete Chapter 17, \"Curse of the West\", in Gunslinger Mode on Deadeye difficulty, with no deaths, never dropping below 40% HP, and with only 7 allowed power activations"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	// --------c_Bonus--------
+	"a_GatlingRightTrain":		{"en": "Spin it up and hold the line. In Chapter 15, \"The Right Train\", kill 15 undead in a row with the gatling gun without dismounting or going below 50% vampire shield, on Shootist difficulty or higher. Enemies killed by exploding barrels are not counted"},
+	"a_GatlingPrism":			{"en": "The artefact won't defend itself. In Chapter 10, \"The Deadlight Prism\", rack up 15 kills with the gatling gun without dismounting or or going below 50% vampire shield, on Shootist difficulty or higher. Enemies killed by exploding barrels are not counted"},
 	"a_SunPower":				{"en": "The sun burns down on you, but you refuse to yield. Activate Vampire Vision repeatedly under its relentless heat and see how long you can endure, in Single Player or Gunslinger Mode"},
 	"a_Multikill":				{"en": "Send four souls screaming to the afterlife at the same time in Single Player or Gunslinger Mode"},
 	"a_AllPowersEvil":			{"en": "No redemption, no regret—only power. Unlock all Evil powers in Single Player"},
