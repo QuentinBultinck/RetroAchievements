@@ -1,27 +1,54 @@
-:white_check_mark: Achievement Count
-Very well—if you feel all of the game’s content is covered and there's enough challenge variety, then that’s fair.
+# Set Plan Review
 
-:white_check_mark: Achievement Description Formatting
-Your updated descriptions look good.
-Yes, many older sets haven’t been updated to match the current guidelines yet. It’s our shared responsibility as devs to gradually bring everything up to standard—this is a community effort.
+Hello @_USERNAME_
 
-:white_check_mark: Challenge Achievement Variety
-Understood—if this is all the game offers in terms of meaningful variation, then that’s what it is.
+I have some remarks regarding your set design plan. 
 
-:white_check_mark: Multiplayer Requirement
-Unique challenges are always great to see—nicely done. Before your set goes live down the line, make sure to clarify your stance on multiplayer eligibility using one of the following Meta tags:
-- [Meta - Set Disallows Multiplayer](https://retroachievements.org/hub/26213) (This would then require proper achievement logic to check against multiplayer)
-- [Meta - Set Allows Multiplayer](https://retroachievements.org/hub/22986)
-- [Meta - Set Partially Allows Multiplayer](https://retroachievements.org/hub/7115)
+### 👉 Titles // TODO
+// Title Cased
+// Copy pasted level names?
+Title look fine
 
-:white_check_mark: Ghost Tap
-Ah, so that’s how it functions—very well.
-Good call checking how other sets approached this. Shows strong initiative and research effort.
+### 👉 Descriptions // DONE
+I think you've already read up on this [RAdocs - Brackets/Parentheses](https://docs.retroachievements.org/guidelines/content/writing-policy.html#brackets-parentheses).
+If possible, it's often requested that you don't use any parentheses in descriptions, it looks less professional. Alas, do what you think is best. I think it's fine imo.
 
-Closing Thoughts
-You’ve clearly taken the time to process the feedback thoroughly and have demonstrated a solid understanding of the game. Your responsiveness and attention to detail reflect a good mindset for set development.
-It’s also evident that you’re eager to contribute meaningfully to the RAproject. Everything looks in order from my side, and I believe you're ready to move forward.
+### 👉 Point Distribution // TODO
+I think most of the achievement are scored very well.
 
-@maintainer — I’ll leave the final steps to you.
+### 👉 Achievements Types/Labels (progression/missables) // TODO
+**Missables**
+I don't think you're using this label correctly, you've put them onto challenge achievement which I feel don't necessarily need them. Elaborate on your choice if you think it's best to keep them there.
 
+### 👉 Challenges & Variety // TODO
+I have looked at some video's of the game, there seems to be a few features or gameplay mechanics which might not be touched upon in your achievement list.
 
+- Strength Power-up & Hammer upgrades 
+> You have 1 achievement for this I think it's `Collect a hammer upgrade.`
+> I think something like `Collect a total of xx power-ups and finish the stage` could be interesting
+> Perhaps there could be collection achievements for gathering all power-ups in a stage
+
+- Highscore
+> You have one achievement for this. But I think you could make some more concepts with this. 
+
+- Attack Methods?
+> Are there any special methods for killing enemies besides swinging or tossing?
+> You try to incorporate them into the challenge achievements.
+
+**Variety**
+Try to make each challenge achievement unique in a way. Over the stages, I see a lot of returning challenges. This makes every challenge feel kinda the same, making it more testing musclee memory. If you're able to make each achievement as unique as possible, with as little repetition as possible, I think that would be better design. Having some repition here and there is fine, but I feel like it's overdone in your set plan. Try to mix gameplay/seperate challenges together into one big one. 
+
+My suggestion would be the following:
+Extend the challenges `Complete xx stage on Hard difficulty` with a few idea's like:
+ `Complete xx stage on Hard difficulty, without tossing the hammer`, `Complete xx stage on Hard difficulty, killing only the boss`, `Complete xx stage on Hard difficulty, killing all enemies` or `Complete xx stage on Hard difficulty, within xx time`
+
+# Considerations
+### 🔶 Features Usage (Trigger/Measured) // TODO
+Consider using the Trigger/Measured features of RA's achievement toolkit for any achievement you deem necessary, especially if you consider any collection achievements or specific challenges.
+
+### 🔶 Leaderboards & Rich Presence // TODO
+Leaderboards easily fit the games design. Make sure to design them once you get that far down the line. 
+Rich Presence is a requirement before you put the set into review state, down the line. So thinking about this is advised.
+
+# Wrap-Up & next steps
+Try to adress all points above and we'll see how we can get you into the Junior Developer Program

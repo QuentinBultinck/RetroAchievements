@@ -16,6 +16,7 @@
         "VERIFIED",
         "MODIFIED",
         "UPDATED",
+        "DONE",
 
         "TODO",
         "PENDING",
@@ -62,7 +63,8 @@
         "VERIFIED": [
             "VERIFIED",
             "MODIFIED",
-            "UPDATED"
+            "UPDATED",
+            "DONE"
         ],
         "TODO": [
             "TODO",
