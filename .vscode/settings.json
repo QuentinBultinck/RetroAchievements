@@ -20,6 +20,7 @@
 
         "TODO",
         "PENDING",
+        "CR_TODO"
         
         "TODO_OPTIONAL",
         
@@ -70,6 +71,7 @@
         "TODO": [
             "TODO",
             "PENDING",
+            "CR_TODO",
         ],
         "BUG": [
             "ERROR",
