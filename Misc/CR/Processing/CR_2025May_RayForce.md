@@ -6,7 +6,7 @@ Your Code Review for [RayForce | Gunlock (Arcade)](https://retroachievements.org
 Please take some time to review everything I've written below. If you have any questions, feel free to reach out and ping me.
 
 
-# ✦───────✦ 🧠 Memory Work & Internal Notes ✦───────✦
+# ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦
 
 
 
@@ -58,7 +58,7 @@ A brief overview here would be helpful (and/or in the forum thread for any achie
 
 
 
-# ✦───────✦ 🎮 Achievement Set Design ✦───────✦
+# ✦═══════✦ 🎮 Achievement Set Design ✦═══════✦
 
 
 ## 🎯 Overall Set Design  
@@ -152,7 +152,7 @@ This could be offset by slightly lowering the points for the earlier achievement
 
 
 
-# ✦───────✦ ⚙️ Technical Implementation ✦───────✦
+# ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦
 
 ### 🔲 ❗ Player 2 Issue (Achievements, Leaderboards, RP)
 From what I can tell, you're not accounting for Player 2 in most of the set. Only the achievement [Body Guard](https://retroachievements.org/achievement/482594) partially considers Player 2, but even that’s incidental because of the challenge itself.
@@ -322,7 +322,7 @@ That said, Player 2’s data is not included—you may want to consider adding t
 ### 🔲 ❗ Frame Counter Issue
 `$0x38c8` is used to determine seconds passed while in-game I presume. But this 16-bit value only counts up to 0xFFFF (= 65535 seconds), I've tested this RAM address and it seems to stop at 18:20. Since the fastest speedrun is above 20 mins, I have doubts this could be used to determine time spent in-game. Try to find another way to make this work if possible, otherwise remove this from RP. 
 
-# ✦───────✦ 🔑 Misc Prerequisites ✦───────✦
+# ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦
 
 ## 🔲 🧭 Hubs & Similar Games
 Are there any additional hub tags or similar game links you can add to the game page?
@@ -341,7 +341,7 @@ No immediate issues here.
 
 
 
-# ✦───────✦ 📜 Summary & Final Notes ✦───────✦
+# ✦═══════✦ 📜 Summary & Final Notes ✦═══════✦
 You've created a solid foundational set, and despite the game’s relatively simple design, you've succeeded in crafting several thoughtful and creative challenges that extend its replayability and test the player's mastery. The achievement logic demonstrates a growing familiarity with RA’s toolset and suggests a desire to engage with both gameplay design and technical nuance.
 
 However, there are still numerous design oversights and inconsistencies, many of which are highlighted in the ❗(critical) and ❓(questionable) notes throughout this review. These include:
@@ -367,11 +367,11 @@ You’ve demonstrated creative intent and some technically sound implementation,
 # %%%%%%%%%%%%% POST-INITIAL CODE REVIEW %%%%%%%%%%%%% #
 # '''''''''''''''''''''''''''''''''''''''''''''''''''' #
 
-# ✦───────✦ 🔍 Reassessment Round #1  ✦───────✦
+# ✦═══════✦ 🔍 CR Reassessment Round #1  ✦═══════✦
 
-## 🛠️ Tasks / Issues
+## ∘───── 🛠️ Tasks / Issues ─────∘ 
 
-### 🔲 ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
+### ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
 You may want to consider making this a zero-point achievement if you still want to include it in the set.
 
 If the difficulty setting doesn’t meaningfully affect gameplay mechanics, is it really necessary to require the player to use a specific difficulty level or a specific number of lives?
@@ -379,7 +379,7 @@ In cases like this, it’s usually best to let the player choose whichever setti
 
 Then ask yourself again should an achievement like this, be in the set? It feels purely informational in that case to let the player know he has to put chose specific game settings, that actually aren't checked within any of achievements logic. Well that's my take on it, it's up to you to make the choice to keep it or remove it. Do what you feel is best.
 
-### 🔲 ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
+### ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
 Current logic:
 ```
 1:  Delta 8-bit 0x000105ff =   Value       0x0          (1)
@@ -396,18 +396,18 @@ AndNext   Delta 8-bit 0x000105ff =   Value       0x0          (0)
 This properly checks if the game was started from the beginning or not. Do you see why your code wouldn't have properly checked this?
 I think this may have been an oversight because you're doing it correctly for achievement [Space Ace Pilot](https://retroachievements.org/achievement/482889).
 
-### 🔲 ❗ Achievements Descriptions (solo only, without dying)
+### ❗ Achievements Descriptions (solo only, without dying)
 You added the requirements `solo only` and `without dying` to certain descriptions, but I think they would be better written if you added in some comma's and moved some parts around.
 **Improvement Examples**:
 - Complete Stage 1 in solo mode, without shooting or dying
 - Complete Stage 1 in solo mode, without dying
 
-### 🔲 ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
+### ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
 Current description feels a little too convoluted, especially the first half.
 **Current**: `Start the game using the 2P start button before the 1P start button, and reach the boss of Stage 1 without controlling 2P and before all of 2P's lives are lost.`
 **Suggestion**: `Start the game using the 2P start button, then join as 1P and reach the Stage 1 boss without losing all of 2P's lives, without taking control of 2P`
 
-### 🔲 ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
+### ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
 **Stage 2 Requirements**
 This leaderboard only submits when past Stage 1, according to SUBMIT:CoreGroup:Line[2], this is very well. But make sure this requireement is also reflected into the description. Regard this remark for all leaderboard where you implemented/changed this.
 
@@ -427,79 +427,80 @@ This in contrast to leaderboard [High Score](https://retroachievements.org/leade
 - Game Ending achieved
 - All lives lost?? (I don't know if this is a thing, what about continues?)
 
-### 🔲 ❓ Rich Presence 1P - 2P
+### ❓ Rich Presence 1P - 2P
 You edited the RP regarding 2P, which is great, but does RP still work when only 2P is connected?
 
-## 📋 Set Promotion TODO Checklist (7 May 2025)
+## ∘───── 📋 TODO Checklist (7 May 2025) ─────∘ 
 
-### 📐 Legend - TODO
-🔲 TODO — Not started
-🔄 WIP — Work in progress
-✅ DONE — Completed
-❌ CANCELED — No longer planned
+### ---⇢ 📐 TODO Legend ⇠---
+- 🔲 TODO — Task identified but not yet started
+- 🔄 WIP — Task is in progress
+- ✅ DONE — Task has been completed successfully
+- 🟨 DISMISSED – Task was reviewed and ruled out
+- ❌ CANCELED — Task was dropped or no longer applicable
 
-### 📌 Initial Code Review Tasks
-✅ ❓ Code Notes *"Fingerprint"*
-> These code notes have been changed, they're much more clear to understand.
-✅ ❓ Code Notes *"Stage Progression"*
-> Code notes have been updated, they're understandable now, although yes somewhat still abstract, put use cases are clear.
-✅ ❓ Code Notes `$0x38d0` & `$0x38ce`
-> Code notes are much more clear this time. I like that you added the formula, very good.
-✅ ❓ Testing Clarification
-✅ ❓ Missables
-> Added missables where dev deemed necessary
-✅ ❓ Game Difficulty
-> Difficulty differences not noticeable, thus disregard this game mechanic
-✅ ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580)
-✅ ❓ Achievement [8 Ball](https://retroachievements.org/achievement/482545)
-✅ ❓ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) - Viability & Difficulty + Player Death Reset Not Mentioned
-> Achievement is viable + Player Death requirements has been added to description
-✅ ❓ Achievement [G](https://retroachievements.org/achievement/482465)
-✅ ❗ Leaderboard Title Case
-✅ ❓ Leaderboard Series [High Score at Stage 1 End](https://retroachievements.org/leaderboardinfo.php?i=122264)
-> Dev feels like leaderboards for stages 4-7 wouldn't be engaging enough, since they're very hard. (very well)
-✅ ❗ Progression & WinCondition Achievements - Titles Using Level Name
-> Made [post in Writing-Forum](https://discord.com/channels/310192285306454017/1315144417375424552), so titles are already fine.
-🔄 ❓ Badge Art Question - Non-game Art
-> [Post in Art-Forum](https://discord.com/channels/310192285306454017/1369176386538962944) to improve badge art is ongoing.
-✅ ❓ Progression & WinCondition Achievements - Points
-> Now there's more gradual increase in points through progression achievements.
-🔲  ❗ Player 2 Issue (Achievements, Leaderboards, RP)
-> Achievement logic ✅ 
-> Leaderboards 🔄 issue persists 
-> RP 🔄 changed, but may still have problems, refer to `Reassessment Round #1 Tasks[❓ Rich Presence 1P - 2P]`
-✅ ❓ Achievement [Space Ace Pilot](https://retroachievements.org/achievement/482889) 
-🔄 ❓ Achievement [Penetration](https://retroachievements.org/achievement/482464) - Slight Change
-> Was updated with Player 2 Issue, but redundant line still exists
-✅ ❓ Achievement [Island Downfall](https://retroachievements.org/achievement/484612) - HitCount
-✅ ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) - Possible Problems
-✅ ❗ Submit Groups: Missing Delta's
-✅ ❓ Leaderboards & Difficulty Scaling
-✅ ❗ Leaderboard Spam
-> Implemented instant Start/Submit leaderboards
-✅ ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) & [My Shot Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123856) Submit vs Cancel
-✅ ❗ Frame Counter Issue
-✅ 🧭 Hubs & Similar Games
-> May consider Similar Games[Xevious,After Burner]
-✅ 🗂️ Game Page Metadata
+### ---⇢ 📌 Initial Code Review Tasks ⇠---
+### ✅ ❓ Code Notes *"Fingerprint"*
+These code notes have been changed, they're much more clear to understand.
+### ✅ ❓ Code Notes *"Stage Progression"*
+Code notes have been updated, they're understandable now, although yes somewhat still abstract, put use cases are clear.
+### ✅ ❓ Code Notes `$0x38d0` & `$0x38ce`
+Code notes are much more clear this time. I like that you added the formula, very good.
+### ✅ ❓ Testing Clarification
+### ✅ ❓ Missables
+Added missables where dev deemed necessary
+### ✅ ❓ Game Difficulty
+Difficulty differences not noticeable, thus disregard this game mechanic
+### ✅ ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580)
+### ✅ ❓ Achievement [8 Ball](https://retroachievements.org/achievement/482545)
+### ✅ ❓ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) - Viability & Difficulty + Player Death Reset Not Mentioned
+Achievement is viable + Player Death requirements has been added to description
+### ✅ ❓ Achievement [G](https://retroachievements.org/achievement/482465)
+### ✅ ❗ Leaderboard Title Case
+### ✅ ❓ Leaderboard Series [High Score at Stage 1 End](https://retroachievements.org/leaderboardinfo.php?i=122264)
+Dev feels like leaderboards for stages 4-7 wouldn't be engaging enough, since they're very hard. (very well)
+### ✅ ❗ Progression & WinCondition Achievements - Titles Using Level Name
+Made [post in Writing-Forum](https://discord.com/channels/310192285306454017/1315144417375424552), so titles are already fine.
+### 🔄 ❓ Badge Art Question - Non-game Art
+[Post in Art-Forum](https://discord.com/channels/310192285306454017/1369176386538962944) to improve badge art is ongoing.
+### ✅ ❓ Progression & WinCondition Achievements - Points
+Now there's more gradual increase in points through progression achievements.
+### 🔲  ❗ Player 2 Issue (Achievements, Leaderboards, RP)
+- ✅  Achievement logic  
+- 🔄  Leaderboards issue persists 
+- 🔄  RP changed, but may still have problems, refer to `Reassessment Round #1 Tasks[❓ Rich Presence 1P - 2P]`
+### ✅ ❓ Achievement [Space Ace Pilot](https://retroachievements.org/achievement/482889) 
+### 🔄 ❓ Achievement [Penetration](https://retroachievements.org/achievement/482464) - Slight Change
+Was updated with Player 2 Issue, but redundant line still exists
+### ✅ ❓ Achievement [Island Downfall](https://retroachievements.org/achievement/484612) - HitCount
+### ✅ ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) - Possible Problems
+### ✅ ❗ Submit Groups: Missing Delta's
+### ✅ ❓ Leaderboards & Difficulty Scaling
+### ✅ ❗ Leaderboard Spam
+Implemented instant Start/Submit leaderboards
+### ✅ ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) & [My Shot Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123856) Submit vs Cancel
+### ✅ ❗ Frame Counter Issue
+### ✅ 🧭 Hubs & Similar Games
+May consider Similar Games[Xevious,After Burner]
+### ✅ 🗂️ Game Page Metadata
 
-### 📌 Reassessment Round #1 Tasks
-🔲 ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
-🔲 ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
-🔲 ❗ Achievements Descriptions (solo only, without dying)
-🔲 ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
-🔲 ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
-🔲 ❓ Rich Presence 1P - 2P
+### -⇢ 📌 Reassessment Round #1 Tasks ⇠─
+### 🔲 ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
+### 🔲 ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
+### 🔲 ❗ Achievements Descriptions (solo only, without dying)
+### 🔲 ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
+### 🔲 ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
+### 🔲 ❓ Rich Presence 1P - 2P
 
-### 📌 Wrap-Up Tasks (before set promotion)
-🔄 Testing after logic changes
-🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
-🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
-
-
+### -⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠-
+### 🔄 Testing after logic changes
+### 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
+### 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
 
 
-#  ✦───────✦ ✔️ Wrap-Up & Next Steps ✦───────✦ // TODO
+
+
+#  ✦═══════✦ ✔️ Wrap-Up & Next Steps ✦═══════✦ // TODO
 ## 🎓 Reflection & Suggestions
 /// Reflection on what was learned + Feedforward (suggestions for future Jr. Dev process).
 

@@ -1,7 +1,6 @@
 # %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
-# ''''''''''''''''''''''''''''''''''''''''''''''' #
  
-# ------TODO List------
+# ------CR TODO List------ (for use by CR)
 - Edit intro
 - Review: Memory Work & Internal Notes
     - RAM Digging & Code Notes 
@@ -18,12 +17,20 @@
 - Write Summary & Final Thoughts
 - Proof Read (with AI)
 
+# ------TODO Legend------
+- 🔲 TODO — Task identified but not yet started
+- 🔄 WIP — Task is in progress
+- ✅ DONE — Task has been completed successfully
+- 🟨 DISMISSED – Task was reviewed and ruled out
+- ❌ CANCELED — Task was dropped or no longer applicable
+
 # ------Usefull unicode characters------
 ✅ ☑️ ✔️ 🆗
 ℹ️   🛈
 ❌  ✖️
-❗  ‼️  ⚠️
+❗  ‼️  ⚠️ 🟨
 ❓ ⁉️  🚩
+💡
 👆  👉  👌  👍
 ➡   ➡️
 ↩   ↩️   🔄
@@ -34,24 +41,19 @@
 ⛏️  🔨  🔧  🗝️  🔑  🔒  ⚒️ ⚒ ⛏ ⚖️
 🖋️  🖌️  🖍️  🔎
 🎓 	🎮
+⏳
 
-# ------TODO Legend------
-🔲 TODO — Not started
-🔄 WIP — Work in progress
-✅ DONE — Completed
-❌ CANCELED — No longer planned
-
-### 🔲 ❓ Achievement [G](https://retroachievements.org/achievement/482465) Single Letter Title
+### ❓ Achievement [G](https://retroachievements.org/achievement/482465) Single Letter Title
 Only one letter title? Could you elaborate on this choice?
 
-### 🔲 ❗ Achievement [G](https://retroachievements.org/achievement/482465) Broken
+### ❗ Achievement [G](https://retroachievements.org/achievement/482465) Broken
 Broken because ...
 
-### ✅ ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) Improvement Suggestion
+### ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) Improvement Suggestion
 Do this instead of that...
 
-# %%%%%%%%%%%%% CODE REVIEW TEMPLATE %%%%%%%%%%%%% #
-# '''''''''''''''''''''''''''''''''''''''''''''''' #
+
+# %%%%%%%%%%%%% CODE REVIEW _GAME_TITLE_ %%%%%%%%%%%%% #
 
 # ------Intro------
 
@@ -62,106 +64,123 @@ Please take some time to review everything I've written below. If you have any q
 
 # 📑 Table of Contents
 ### 🧠 Memory Work & Internal Notes _MSG_LINK_ 
-*(xx TODOs)*
+`xx TODOs`
 - 🛠️ RAM Digging & Code Notes
-- 🧾 Additional Developer Notes
+- 🧷 Additional Developer Notes
 - 🧪 Testing & Debugging Results
-### 🎮 Achievement Set Design _MSG_LINK_
-*(xx TODOs)*
+### 🕹️ Achievement Set Design _MSG_LINK_
+`xx TODOs`
 - 🎯 Overall Set Design
-- 📝 Titles & Descriptions
-- 🖼️ Badges
-- 🎖️ Point Values
+- ✍️ Titles & Descriptions
+- 🖼️ Badge Art
+- ⚖️ Point Distribution
 ### ⚙️ Technical Implementation _MSG_LINK_
-*(xx TODOs)*
+`xx TODOs`
 - 🧩 Achievement Logic
-- 🏆 Leaderboard Logic
-- 📺 Rich Presence Logic
+- 🔧 Rich Presence Logic
+- 🔢 Leaderboard Logic
 ### 🔑 Misc Prerequisites _MSG_LINK_
-*(xx TODOs)*
+`xx TODOs`
 ### 📜 Summary & Final Notes _MSG_LINK_
 
-# ✦───────🧠 Memory Work & Internal Notes 🧠───────✦ // TODO
+# ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦ // TODO
 // Grouped to represent all the under-the-hood work.
 
-## 🛠️ RAM Digging & Code Notes // TODO
+## ∘───── 🛠️ RAM Digging & Code Notes ─────∘  // TODO
 /// Conform to https://docs.retroachievements.org/guidelines/content/code-notes.html
 
-## 🧾 Additional Developer Notes // TODO
-/// [Optional] Comments left in logic, RAScript, or planning documents.
+## ∘───── 🧷 Additional Developer Notes ─────∘  // TODO
+/// [Optional] Comments left in logic, RAScript, planning documents, other threads on discord.
 
-## 🧪 Testing & Debugging Results // TODO
+## ∘───── 🧪 Testing & Debugging Results ─────∘  // TODO
 /// Mentioned bugs, testing methods, hardcore/softcore checks, peer testing, issues encountered during development, and any achievement concepts that could not be implemented.
 
-# ✦───────🎮 Achievement Set Design 🎮───────✦ // TODO
+# ✦═══════✦ 🕹️ Achievement Set Design ✦═══════✦ // TODO
 // Grouped to cover all visible/user-facing parts.
 // Conform to https://docs.retroachievements.org/guidelines/content/achievement-set-requirements.html  
 //         and https://docs.retroachievements.org/developer-docs/achievement-development-overview.html
 
-## 🎯 Overall Set Design // TODO
+## ∘───── 🎯 Overall Set Design ─────∘  // TODO
 /// Balance, creativity, progression, and content coverage.  
 /// Achievement types: https://docs.retroachievements.org/guidelines/content/progression-and-win-condition-guidelines.html  
 /// Difficulty balance: https://docs.retroachievements.org/developer-docs/difficulty-scale-and-balance.html
 /// Any unwelcome concepts? https://docs.retroachievements.org/guidelines/content/unwelcome-concepts.html
 /// Leaderboards present, no leaderboard spam?
+/// Rich Presence design, all content covered?
 
-## 📝 Titles & Descriptions // TODO
+### ---⇢ 🏆 Achievements ⇠---
+### ---⇢ 📺 Rich Presence ⇠---
+### ---⇢ 🌐 Leaderboards ⇠---
+
+
+## ∘───── ✍️ Titles & Descriptions ─────∘  // TODO
 /// Conform to https://docs.retroachievements.org/guidelines/content/writing-policy.html
+/// Rich Presence text
 
-## 🖼️ Badges // TODO
+## ∘───── 🖼️ Badge Art ─────∘  // TODO
 /// Conform to https://docs.retroachievements.org/guidelines/content/badge-and-icon-guidelines.html  
 ///          and https://docs.retroachievements.org/developer-docs/badge-and-icon-creation.html
+/// Badge Style & Consistency, Visual Badge Quality
 
-## 🎖️ Point Values // TODO
+## ∘───── ⚖️ Point Distribution ─────∘  // TODO
 /// Conform to https://docs.retroachievements.org/developer-docs/achievement-scoring.html
 
-# ✦───────⚙️ Technical Implementation ⚙️───────✦ // TODO
+# ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦ // TODO
 // Grouped for logic quality and RA feature usage.
 
-## 🧩 Achievement Logic // TODO
+## ∘───── 🧩 Achievement Logic ─────∘  // TODO
 /// Triggers, reset conditions, edge cases. Were flags used correctly? Refer to the Proficiency-Checklist
 /// Multi-hash support?
 /// Protections: Demo/Cheat/Save/Bios/DipSwitch?  
 
-## 🏆 Leaderboard Logic // TODO
-/// Leaderboards with instant Start/Submit implemented?
-
-## 📺 Rich Presence Logic // TODO
+## ∘───── 🔧 Rich Presence Logic ─────∘  // TODO
 /// Is a dynamic RP present? Not overly bloated or using unsupported Unicode.  
 /// Macros and lookupTables used appropriately?  
 /// Refer to https://docs.retroachievements.org/developer-docs/rich-presence.html#rich-presence
 
-# ✦───────🔑 Misc Prerequisites 🔑───────✦
+## ∘───── 🔢 Leaderboard Logic ─────∘  // TODO
+/// Leaderboards with instant Start/Submit implemented?
 
-## 🔲 🧭 Hubs & Similar Games // TODO
-/// Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html))
+# ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦ // TODO
 
-## 🔲 🗂️ Game Page Metadata // TODO
-/// Is everything correctly filled out on the Manage page?
+### 🧭❓ Hubs & Similar Games // TODO
+Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html))
+Any similar games to add? Think of games that may fit the same genre or games of the same series, perhaps.
 
-# ✦───────📜 Summary & Final Thoughts 📜───────✦ // TODO
+### 🗂️❓ Game Page Metadata // TODO
+Is everything correctly filled out on the **manage page** and **game page**?
+
+# ✦═══════✦📜 Summary & Final Thoughts 📜✦═══════❖ // TODO
 // Overview and high-level review conclusion.  
 // What still needs to be proven or improved?  
 // Was everything from https://docs.retroachievements.org/developer-docs/am-i-ready-for-review.html covered?
 
-## 📋 Set Promotion TODO Checklist 📋
+## ∘───── 📋 TODO Checklist ─────∘ // TODO
+```
+Initially Posted on: DD Month YYYY
+Last Updated on: DD Month YYYY
+```
 
 Please update below list as you work through items. I would advise copying/updating it here or in a document online, which I can view/follow.
 I may update this list here as you progress through the items, as well.
 
-### 📐 Legend - TODO
-🔲 TODO — Not started
-🔄 WIP — Work in progress
-✅ DONE — Completed
-❌ CANCELED — No longer planned
+### --⇢ 📐 TODO Legend ⇠--
+- 🔲 TODO — Task identified but not yet started
+- 🔄 WIP — Task is in progress
+- ✅ DONE — Task has been completed successfully
+- 🟨 DISMISSED – Task was reviewed and ruled out
+- ❌ CANCELED — Task was dropped or no longer applicable
 
-### 📌 Active Tasks
-🔲 ❗ ...
-🔲 ❓ ...
-🔲 🧭 Hubs & Similar Games
-🔲 🗂️ Game Page Metadata
+### ---⇢ 📌 Initial Code Review Tasks ⇠--- // TODO
+### 🔲 🧪❗ ...
+### 🔲 🖼️❓ ...
+### 🔲 🧩❓ ...
+### 🔲 🧩❗ ...
+### 🔲 🔧❓ ...
+### 🔲 🧭❓ Hubs & Similar Games
+### 🔲 🗂️❓ Game Page Metadata
 
-### 📌 Wrap-Up Tasks (before set promotion)
+### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠--- // TODO
 🔲 Testing after logic changes
 🔲 ...
 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
@@ -169,41 +188,50 @@ I may update this list here as you progress through the items, as well.
 
 When the full checklist is completed and confirmed, we can proceed with finalizing the review and begin discussing the set’s promotion. Until then, feel free to ping me anytime if you’ve completed the task list or have further questions, I’ll be happy to review things again when ready.
 
-## 📚 Final Thoughts
+## ∘───── 📚 Final Thoughts ─────∘ // TODO
 
 # %%%%%%%%%%%%% POST-INITIAL CODE REVIEW %%%%%%%%%%%%% #
-# '''''''''''''''''''''''''''''''''''''''''''''''''''' #
 
-# ✦───────✦ 🔍 Reassessment Round #1  ✦───────✦
+# ✦═══════✦ 🔍 CR Reassessment Round #1  ✦═══════✦ // TODO
 
-## 🛠️ Tasks / Issues
+## ∘───── 🛠️ Tasks / Issues ─────∘ // TODO
 
-## 📋 Set Promotion TODO Checklist (6 May 2025)
+## ∘───── 📋 TODO Checklist ─────∘ // TODO
+```
+- **Initially Posted on**: `DD Montet YYYY`
+- **Last Updated on**: `DD Montet YYYY` - `Checklist Assessment #xx` // CR_TODO Checklist Assessment #_next_
+```
+Please update this checklist as you work through items. I would advise copying/updating it here or in a document online, which you and I can view/follow.
+If you don't, I may update this list here via this discord thread.
 
-### 📐 Legend - TODO
-🔲 TODO — Not started
-🔄 WIP — Work in progress
-✅ DONE — Completed
-❌ CANCELED — No longer planned
+### ---⇢ 🗃️ TODO Legend ⇠---
+- 🔲 TODO — Task identified but not yet started
+- 🔄 WIP — Task is in progress
+- ✅ DONE — Task has been completed successfully
+- 🟨 DISMISSED – Task was reviewed and ruled out
+- ❌ CANCELED — Task was dropped or no longer applicable
 
-### 📌 Initial Code Review Tasks
-🔲 ❗ ...
-🔲 ❓ ...
-🔲 🧭 Hubs & Similar Games
-🔲 🗂️ Game Page Metadata
+### ---⇢ 📌 Initial Code Review Tasks ⇠--- // TODO
+### 🔲 🧪❗ ...
+### 🔲 🖼️❓ ...
+### 🔲 🧩❓ ...
+### 🔲 🧩❗ ...
+### 🔲 🔧❓ ...
+### 🔲 🧭❓ Hubs & Similar Games
+### 🔲 🗂️❓ Game Page Metadata
 
-### 📌 Reassessment Round #1 Tasks
-🔲 ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
-🔲 ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
-🔲 ❗ Achievements Descriptions (solo only, without dying)
-🔲 ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
+### ---⇢ 📌 Reassessment Round #1 Tasks ⇠--- // TODO
+### 🔲 🛠️❗ ...
+### 🔲 🧩❓ ...
+### 🔲 🧩❗ ...
+### 🔲 🔧❓ ...
 
-### 📌 Wrap-Up Tasks (before set promotion)
+### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠--- // TODO
 🔲 Testing after logic changes
 🔲 ...
 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
 
-#  ✦───────✦ ✔️ Wrap-Up & Next Steps ✦───────✦ // TODO
-## 🎓 Reflection & Suggestions
+#  ✦═══════✦ ✔️ Wrap-Up & Next Steps ✦═══════✦ // TODO
+## 🎓 ∘───── Reflection & Suggestions ─────∘ 
 /// Reflection on what was learned + Feedforward (suggestions for future Jr. Dev process).

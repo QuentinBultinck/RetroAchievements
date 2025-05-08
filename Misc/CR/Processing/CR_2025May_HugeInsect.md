@@ -394,10 +394,8 @@ Could you try to make one final list of any more hubs/similar games to add? Thin
 # ✦───────✦ 📜 Summary & Final Thoughts ✦───────✦ 
 
 ## 📋 TODO Checklist 
-```
-Initially Posted on: 6 May 2025
-Last Updated on: 8 May 2025
-```
+- **Initially Posted on**: `6 May 2025`
+- **Last Updated on**: `8 May 2025` - `Checklist Assessment #1` // CR_TODO Checklist Assessment #2
 Please update below list as you work through items. I would advise copying/updating it here or in a document online, which I can view/follow.
 I may update this list here as you progress through the items, as well.
 
