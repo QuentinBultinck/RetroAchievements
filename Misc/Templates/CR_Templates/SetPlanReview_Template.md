@@ -73,6 +73,7 @@ Once you’ve gone through everything and made any needed adjustments, we’ll g
 
 ### 👉 Achievements Types/Labels (progression/missables) // TODO
 // Achievement types: https://docs.retroachievements.org/guidelines/content/progression-and-win-condition-guidelines.html
+Any `missable` achievements? Think of a player that only wants to play through this game once in order to earn the `Beaten` status, and maybe earn some extra achievements along the way... Again you make this choice, since you know the game best. If there's none it's fine.
 
 ### 👉 Difficulty Balancing // TODO
 // Difficulty balance: [RAdocs - Difficulty Guidelines](https://docs.retroachievements.org/developer-docs/difficulty-scale-and-balance.html)  
