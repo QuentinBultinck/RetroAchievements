@@ -194,10 +194,6 @@ Relevant hubs:
 - [Meta - Set Allows Multiplayer](https://retroachievements.org/hub/22986)
 - [Meta - Set Partially Allows Multiplayer](https://retroachievements.org/hub/7115)
 
-
-
-
-
 ## 🧩 Achievement Logic 
 
 ### 🔲 ❓ Achievement [Space Ace Pilot](https://retroachievements.org/achievement/482889) 
@@ -430,7 +426,9 @@ This in contrast to leaderboard [High Score](https://retroachievements.org/leade
 ### ❓ Rich Presence 1P - 2P
 You edited the RP regarding 2P, which is great, but does RP still work when only 2P is connected?
 
-## ∘───── 📋 TODO Checklist (7 May 2025) ─────∘ 
+## ∘───── 📋 TODO Checklist  ─────∘ 
+- **Initially Posted on**: `7 May YYYY` - `Reassessment Round #1`
+- **Last Updated on**: `DD Month YYYY` - `Checklist Assessment #xx` // CR_TODO Checklist Assessment #_next_
 
 ### ---⇢ 📐 TODO Legend ⇠---
 - 🔲 TODO — Task identified but not yet started
@@ -462,7 +460,8 @@ Dev feels like leaderboards for stages 4-7 wouldn't be engaging enough, since th
 ### ✅ ❗ Progression & WinCondition Achievements - Titles Using Level Name
 Made [post in Writing-Forum](https://discord.com/channels/310192285306454017/1315144417375424552), so titles are already fine.
 ### 🔄 ❓ Badge Art Question - Non-game Art
-[Post in Art-Forum](https://discord.com/channels/310192285306454017/1369176386538962944) to improve badge art is ongoing.
+[Post in Art-Forum](https://discord.com/channels/310192285306454017/1369176386538962944) to improve badge art is done.
+Only thing that is left to do is: upload them and give credits
 ### ✅ ❓ Progression & WinCondition Achievements - Points
 Now there's more gradual increase in points through progression achievements.
 ### 🔲  ❗ Player 2 Issue (Achievements, Leaderboards, RP)
@@ -484,7 +483,7 @@ Implemented instant Start/Submit leaderboards
 May consider Similar Games[Xevious,After Burner]
 ### ✅ 🗂️ Game Page Metadata
 
-### -⇢ 📌 Reassessment Round #1 Tasks ⇠─
+### ---⇢ 📌 Reassessment Round #1 Tasks ⇠---
 ### 🔲 ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
 ### 🔲 ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
 ### 🔲 ❗ Achievements Descriptions (solo only, without dying)
@@ -492,13 +491,11 @@ May consider Similar Games[Xevious,After Burner]
 ### 🔲 ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
 ### 🔲 ❓ Rich Presence 1P - 2P
 
-### -⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠-
+### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠---
 ### 🔄 Testing after logic changes
+### 🔲 Upload & Credit New Badges by `@Vlt0`, refer to https://discord.com/channels/310192285306454017/1369176386538962944
 ### 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
 ### 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
-
-
-
 
 #  ✦═══════✦ ✔️ Wrap-Up & Next Steps ✦═══════✦ // TODO
 ## 🎓 Reflection & Suggestions

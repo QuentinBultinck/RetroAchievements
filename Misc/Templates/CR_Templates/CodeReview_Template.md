@@ -156,10 +156,8 @@ Is everything correctly filled out on the **manage page** and **game page**?
 // Was everything from https://docs.retroachievements.org/developer-docs/am-i-ready-for-review.html covered?
 
 ## ∘───── 📋 TODO Checklist ─────∘ // TODO
-```
-Initially Posted on: DD Month YYYY
-Last Updated on: DD Month YYYY
-```
+- **Initially Posted on**: `DD Month YYYY` - `Initial Code Review`
+- **Last Updated on**: `DD Month YYYY` - `Checklist Assessment #0-[ChecklistAssessmentNumber]` // CR_TODO Perform next Checklist Assessment Round
 
 Please update below list as you work through items. I would advise copying/updating it here or in a document online, which I can view/follow.
 I may update this list here as you progress through the items, as well.
@@ -197,10 +195,8 @@ When the full checklist is completed and confirmed, we can proceed with finalizi
 ## ∘───── 🛠️ Tasks / Issues ─────∘ // TODO
 
 ## ∘───── 📋 TODO Checklist ─────∘ // TODO
-```
-- **Initially Posted on**: `DD Montet YYYY`
-- **Last Updated on**: `DD Montet YYYY` - `Checklist Assessment #xx` // CR_TODO Checklist Assessment #_next_
-```
+- **Initially Posted on**: `DD Month YYYY` - `Reassessment Round #xx`
+- **Last Updated on**: `DD Month YYYY` - `Checklist Assessment #[ReassessmentRoundNumber]-[ChecklistAssessmentNumber]` // CR_TODO Perform next Checklist Assessment Round
 Please update this checklist as you work through items. I would advise copying/updating it here or in a document online, which you and I can view/follow.
 If you don't, I may update this list here via this discord thread.
 
