@@ -484,16 +484,23 @@ May consider Similar Games[Xevious,After Burner]
 ### ✅ 🗂️ Game Page Metadata
 
 ### ---⇢ 📌 Reassessment Round #1 Tasks ⇠---
-### 🔲 ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
-### 🔲 ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
-### 🔲 ❗ Achievements Descriptions (solo only, without dying)
-### 🔲 ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
-### 🔲 ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
-### 🔲 ❓ Rich Presence 1P - 2P
+### 🔄 ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
+Dev has considered removing this achievement.
+### 🔄 ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
+Dev will review and fix logic
+### 🔄 ❗ Achievements Descriptions (solo only, without dying)
+Dev will update descriptions
+### 🔄 ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
+Dev will update descriptions
+### 🔄 ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
+Dev is revamping logic, based on new findings
+### 🔄 ❓ Rich Presence 1P - 2P
+Dev is looking into ways to fix this issue
 
 ### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠---
 ### 🔄 Testing after logic changes
-### 🔲 Upload & Credit New Badges by `@Vlt0`, refer to https://discord.com/channels/310192285306454017/1369176386538962944
+### ✅ Upload & Credit New Badges by `@Vlt0`
+New Art has been uploaded and credited, refer to https://discord.com/channels/310192285306454017/1369176386538962944
 ### 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
 ### 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
 
