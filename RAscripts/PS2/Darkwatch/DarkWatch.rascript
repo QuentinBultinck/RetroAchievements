@@ -49,23 +49,6 @@
 //		-- Enable: Markdown Enhanced Preview => Install extension: 'Markdown Preview Enhanced' by 'Yiyi Wang'
 //  - VScode extension list: Region Viewer Extension - Todo Tree - Markdown Preview Enhanced
 
-/* TODO list 
-	(Optional) Find code note for:
-	- Minimatic/Cinematic ID (probably best do check IsCinematic active with checks on PlayerLocation + hitcount how many cinematics were activated)
-	- UnlockFlags for Concept Art (Only unlockable through  Gunslinger Mode)
-	- Enemy EntityData (HP, Location, Type) --> cheevo's for killing specific enemies
-	
-	Hubs to add:
-	- [Feature - PvP] 							https://retroachievements.org/game/9377
-	- [Perspective - 1st-Person] 				https://retroachievements.org/game/3401
-	- [Feature - Co-op] 						https://retroachievements.org/game/24859
-	- [Protagonist - Cowboy] 					https://retroachievements.org/game/18941
-	- [Protagonist - Vampire Hunter] 			https://retroachievements.org/game/18940
-	- [Meta - Has RAGuide]  					https://retroachievements.org/game/4637
-	- [Meta - Quality of Life Patch Available]	https://retroachievements.org/game/30636
-
-	*/
-
 /* DEV_NOTE - Game Logic Notes:
 	- MainMenu Flag with Sofdec or IsInGame flag
 
