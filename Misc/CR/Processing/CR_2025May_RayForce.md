@@ -507,8 +507,8 @@ This in contrast to leaderboard [High Score](https://retroachievements.org/leade
 You edited the RP regarding 2P, which is great, but does RP still work when only 2P is connected?
 
 ## ∘───── 📋 TODO Checklist  ─────∘ 
-- **Initially Posted on**: `7 May YYYY` - `Reassessment Round #1`
-- **Last Updated on**: `DD Month YYYY` - `Checklist Assessment #xx` // CR_TODO Checklist Assessment #_next_
+- **Initially Posted on**: `7 May 2025` - `Reassessment Round #1`
+- **Last Updated on**: `12 May 2025` - `Checklist Assessment #1-1` // CR_TODO Checklist Assessment #_next_
 
 ### ---⇢ 📐 TODO Legend ⇠---
 - 🔲 TODO — Task identified but not yet started
@@ -566,14 +566,14 @@ May consider Similar Games[Xevious,After Burner]
 ### ---⇢ 📌 Reassessment Round #1 Tasks ⇠---
 ### 🔄 ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
 Dev has considered removing this achievement.
-### 🔄 ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
-Dev will review and fix logic
-### 🔄 ❗ Achievements Descriptions (solo only, without dying)
-Dev will update descriptions
-### 🔄 ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
-Dev will update descriptions
+### ✅ ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
+Logic has been fixed
+### ✅ ❗ Achievements Descriptions (solo only, without dying)
+Descriptions updated
+### ✅ ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
+Description updated
 ### 🔄 ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
-Dev is revamping logic, based on new findings
+Dev has revamped logic to only allow entries with a min. score of 100,000 points. Although the description could be updated to reflect this minimum requirement.
 ### 🔄 ❓ Rich Presence 1P - 2P
 Dev is looking into ways to fix this issue
 
