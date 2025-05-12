@@ -3,9 +3,8 @@
 # ------Links Related to Code Review------
 Code Review => _DISCORD_LINK_TO_CODE_REVIEW_
 Set Plan Review => _DISCORD_LINK_TO_SET_PLAN_REVIEW_
-Ready for Review Thread => _DISCORD_LINK_TO_READY_FOR_REVIEW_
-Play Test Thread => _DISCORD_LINK_TO_PLAY_TEST_
-RA Game Page => _LINK_TO_RA_GAME_PAGE_
+Ready for Review Thread => https://discord.com/channels/310192285306454017/1342358688249151539
+RA Game Page => https://retroachievements.org/game/19403
  
 # ------CR TODO List------ (for use by CR)
 - Discord Code Review Naming Scheme: `Code Review - [GameTitle] - [DevName]`
@@ -61,7 +60,7 @@ Broken because ...
 Do this instead of that...
 
 
-# %%%%%%%%%%%%% CODE REVIEW: _GAME_TITLE_ %%%%%%%%%%%%% #
+# %%%%%%%%%%%%% CODE REVIEW: Treasures of the Deep %%%%%%%%%%%%% #
 
 # ------Intro------
 
@@ -89,15 +88,24 @@ Please take some time to review everything I've written below. If you have any q
 
 ## ∘───── Related Links ─────∘ // TODO, link these
 Set Plan Review/Jr. Dev Request
-Ready for Review Thread
-Play Test Thread
-RA Game Page
+[Ready for Review Thread](https://discord.com/channels/310192285306454017/1342358688249151539)
+[Play Test Thread](https://discord.com/channels/310192285306454017/1344510362674008104)
+[RA Game Page](https://retroachievements.org/game/19403)
 
 # ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦ // TODO
 // Grouped to represent all the under-the-hood work.
 
 ## ∘───── 🛠️ RAM Digging & Code Notes ─────∘  // TODO
 /// Conform to https://docs.retroachievements.org/guidelines/content/code-notes.html
+
+### ❓ Code Note `0x11c508` Undocumented Value
+In a achievement [It's All Coming Together](https://retroachievements.org/achievement/497647):Core:Line[15] you have the following:
+```
+ResetIf	    Mem	8-bit	0x0011c508 !=	Value	0x0F
+```
+Value 0x0F isn't documented for this code note.
+
+I think I found one more occurence where `$0x11c508` was compared against 0x0F, but I can't seem to re-locate it. May have been my imagination.
 
 ## ∘───── 🧷 Additional Developer Notes ─────∘  // TODO
 /// [Optional] Comments left in logic, RAScript, planning documents, other threads on discord.
@@ -142,6 +150,17 @@ RA Game Page
 /// Triggers, reset conditions, edge cases. Were flags used correctly? Refer to the Proficiency-Checklist
 /// Multi-hash support?
 /// Protections: Demo/Cheat/Save/Bios/DipSwitch?  
+Only 1 hash supported (USA)
+
+You used a checkpoint HitCount to check if the player has started a specific mission from the beginning. Then you would `ResetIf` this when cheats are activated 
+
+### ❓ Cheats: Questions
+This game has lots of cheats and you were able protect the set against it very well. 
+But I would love if you could elaborate on your cheat-protection somewhat: 
+- Seems like all cheats need to be input via the PauseMenu? 
+- I reckon from your achievement logic, you only protected against certain types of cheats, or did you protect against all? 
+
+
 
 ## ∘───── 🔧 Rich Presence Logic ─────∘  // TODO
 /// Is a dynamic RP present? Not overly bloated or using unsupported Unicode.  
