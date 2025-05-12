@@ -1,10 +1,90 @@
+# %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
 
+# ------Links Related to Code Review------
+Code Review => _DISCORD_LINK_TO_CODE_REVIEW_
+Set Plan Review => _DISCORD_LINK_TO_SET_PLAN_REVIEW_
+Ready for Review Thread => _DISCORD_LINK_TO_READY_FOR_REVIEW_
+RA Game Page => https://retroachievements.org/game/13588?f=5
+ 
+# ------CR TODO List------ (for use by CR)
+- Edit intro
+- Review: Memory Work & Internal Notes
+    - RAM Digging & Code Notes 
+    - Additional Developer Notes AND Testing & Debugging Results 
+- Review: Achievement Set Design
+    - Overall Set Design AND Point Values
+    - Titles & Descriptions AND Badges
+- Review Technical Implementation
+    - Achievement Logic
+    - Leaderboards
+    - Rich Presence
+- Any Generam Issues & Questions?
+- Any Promotion Prerequisites?
+- Write Summary & Final Thoughts
+- Proof Read (with AI)
+
+# ------TODO Legend------
+- 🔲 TODO — Task identified but not yet started
+- 🔄 WIP — Task is in progress
+- ✅ DONE — Task has been completed successfully
+- 🟨 DISMISSED – Task was reviewed and ruled out
+- ❌ CANCELED — Task was dropped or no longer applicable
+
+# ------Usefull unicode characters------
+✅ ☑️ ✔️ 🆗
+ℹ️   🛈
+❌  ✖️
+❗  ‼️  ⚠️ 🟨
+❓ ⁉️  🚩
+💡
+👆  👉  👌  👍
+➡   ➡️
+↩   ↩️   🔄
+·
+📝  ✏️  📜  💬  📑  📌  📍  ✍️  ✒️
+💎 🏆  💠 🏅 
+♦  🔶 ♦️  ⭐️  🔶  🌀  ⚜️  ⏺️ 
+⛏️  🔨  🔧  🗝️  🔑  🔒  ⚒️ ⚒ ⛏ ⚖️
+🖋️  🖌️  🖍️  🔎
+🎓 	🎮
+⏳
+
+### ❓ Achievement [G](https://retroachievements.org/achievement/482465) Single Letter Title
+Only one letter title? Could you elaborate on this choice?
+
+### ❗ Achievement [G](https://retroachievements.org/achievement/482465) Broken
+Broken because ...
+
+### ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) Improvement Suggestion
+Do this instead of that...
+
+# %%%%%%%%%%%%% CODE REVIEW: RayForce %%%%%%%%%%%%% #
 
 Hello @kssfilo
 
 Your Code Review for [RayForce | Gunlock (Arcade)](https://retroachievements.org/game/13588?f=5) is finally locked and loaded!
 Please take some time to review everything I've written below. If you have any questions, feel free to reach out and ping me.
 
+# 📑 Table of Contents
+### 🧠 Memory Work & Internal Notes _MSG_LINK_ 
+`xx TODOs`
+- 🛠️ RAM Digging & Code Notes
+- 🧷 Additional Developer Notes
+- 🧪 Testing & Debugging Results
+### 🕹️ Achievement Set Design _MSG_LINK_
+`xx TODOs`
+- 🎯 Overall Set Design
+- ✍️ Titles & Descriptions
+- 🖼️ Badge Art
+- ⚖️ Point Distribution
+### ⚙️ Technical Implementation _MSG_LINK_
+`xx TODOs`
+- 🧩 Achievement Logic
+- 🔧 Rich Presence Logic
+- 🔢 Leaderboard Logic
+### 🔑 Misc Prerequisites _MSG_LINK_
+`xx TODOs`
+### 📜 Summary & Final Notes _MSG_LINK_
 
 # ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦
 

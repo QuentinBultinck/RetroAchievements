@@ -1,5 +1,11 @@
 # %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
- 
+
+# ------Links Related to Code Review------
+Code Review Thread - https://discord.com/channels/310192285306454017/1369304895106322594
+Set Plan Review Thread => https://discord.com/channels/310192285306454017/1339961840947560498
+Ready for Review Thread => https://discord.com/channels/310192285306454017/1342175550017503362
+RA Game Page => https://retroachievements.org/game/8506
+
 # ------CR TODO List------
 - Edit intro
 - Review: Memory Work & Internal Notes

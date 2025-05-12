@@ -1,11 +1,6 @@
 # %%%%%%%%%%%%% SET PLAN REVIEW NOTES %%%%%%%%%%%%% #
-# ''''''''''''''''''''''''''''''''''''''''''''''''' #
  
-# ------TODO List------
-- Labels `progression` `win condition` `missable` correctly used
-- Text conform to [RAdocs - Writing Policy](https://docs.retroachievements.org/guidelines/content/writing-policy.html)
-- Check challenge variety, based on what features/mechanics the game has (HP, shooting, weapons, abilities, enemies, bosses...)
--
+# ------TODO List------ (for use by CR)
 
 # ------Usefull unicode characters------
 ✅ ☑️ ✔️ 🆗
@@ -39,10 +34,7 @@ Broken because ...
 ### ✅ ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) Improvement Suggestion
 Do this instead of that...
 
-
-
-# %%%%%%%%%%%%% SET PLAN REVIEW TEMPLATE %%%%%%%%%%%%% #
-# '''''''''''''''''''''''''''''''''''''''''''''''''''' #
+# %%%%%%%%%%%%% SET PLAN REVIEW %%%%%%%%%%%%% #
 // Review [RAdocs - Junior Developer Program Rules](https://docs.retroachievements.org/developer-docs/jr-dev-rules.html#junior-developer-program-rules)
 // Check [Rules and Restrictions](https://docs.retroachievements.org/developer-docs/jr-dev-rules.html#rules-and-restrictions)
 
@@ -151,7 +143,6 @@ Once everything is in order, just give us or me another ping, and we’ll procee
 _screenshot of Set Plan before review_
 
 # %%%%%%%%%%%%% POST-INITIAL SET PLAN REVIEW %%%%%%%%%%%%% #
-# '''''''''''''''''''''''''''''''''''''''''''''''''''''''' #
 
 # 📍 Altered Set Plan (For Reference)
 _screenshot of Set Plan after alterations_ // If no changes, then remove this section

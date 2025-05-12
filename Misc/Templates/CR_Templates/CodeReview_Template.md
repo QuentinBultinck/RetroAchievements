@@ -1,6 +1,13 @@
 # %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
+
+# ------Links Related to Code Review------
+Code Review => _DISCORD_LINK_TO_CODE_REVIEW_
+Set Plan Review => _DISCORD_LINK_TO_SET_PLAN_REVIEW_
+Ready for Review Thread => _DISCORD_LINK_TO_READY_FOR_REVIEW_
+RA Game Page => _LINK_TO_RA_GAME_PAGE_
  
 # ------CR TODO List------ (for use by CR)
+- Discord Code Review Naming Scheme: `Code Review - [GameTitle] - [DevName]`
 - Edit intro
 - Review: Memory Work & Internal Notes
     - RAM Digging & Code Notes 
@@ -53,7 +60,7 @@ Broken because ...
 Do this instead of that...
 
 
-# %%%%%%%%%%%%% CODE REVIEW _GAME_TITLE_ %%%%%%%%%%%%% #
+# %%%%%%%%%%%%% CODE REVIEW: _GAME_TITLE_ %%%%%%%%%%%%% #
 
 # ------Intro------
 
@@ -62,26 +69,27 @@ Hello @_JR_DEV_USERNAME_
 Your Code Review for [_GAME_TITLE_ (_CONSOLE_)](_UNOFFICIAL_ACHIEVEMENT_LIST_LINK_) has finally arrived!
 Please take some time to review everything I've written below. If you have any questions, feel free to reach out.
 
-# 📑 Table of Contents
+## ∘───── 📑 Table of Contents ─────∘ // TODO, link these
 ### 🧠 Memory Work & Internal Notes _MSG_LINK_ 
-`xx TODOs`
 - 🛠️ RAM Digging & Code Notes
 - 🧷 Additional Developer Notes
 - 🧪 Testing & Debugging Results
 ### 🕹️ Achievement Set Design _MSG_LINK_
-`xx TODOs`
 - 🎯 Overall Set Design
 - ✍️ Titles & Descriptions
 - 🖼️ Badge Art
 - ⚖️ Point Distribution
 ### ⚙️ Technical Implementation _MSG_LINK_
-`xx TODOs`
 - 🧩 Achievement Logic
 - 🔧 Rich Presence Logic
 - 🔢 Leaderboard Logic
 ### 🔑 Misc Prerequisites _MSG_LINK_
-`xx TODOs`
 ### 📜 Summary & Final Notes _MSG_LINK_
+
+## ∘───── Related Links ─────∘ // TODO, link these
+Set Plan Review/Jr. Dev Request
+Ready for Review Thread
+RA Game Page
 
 # ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦ // TODO
 // Grouped to represent all the under-the-hood work.
