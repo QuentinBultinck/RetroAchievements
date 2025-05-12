@@ -2737,45 +2737,46 @@ achievements_coreData = {
 		// "a_INFOcoop": { // DISABLED - Active participation of both players is implied by it being a multi subset
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Info about Participation Tracking"},	
 		},
+	// TODO update all achievements, new logic for on_PauseMenu_Restart && on_PauseMenu_Quit
 	"c_Story": { // Category - Story Progression Achievements
-		// "a_WrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512750, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
-		// "a_RideDevil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512749, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"},
-		// "a_Boneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512769, "points": 0000000, "devInfo": "CHAPTER_3_Boneyard Completion"},
-		// "a_DevilMine": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512770, "points": 0000000, "devInfo": "CHAPTER_4_DevilMine Completion"},
-		// "a_DWOutpost": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512771, "points": 0000000, "devInfo": "CHAPTER_5_Outpost Completion"},
-		// "a_WarTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512772, "points": 0000000, "devInfo": "CHAPTER_6_WarTrain Completion"}, 
-		// "a_TortureMaze": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512773, "points": 0000000, "devInfo": "CHAPTER_7_TortureMaze Completion"}, 
-		// "a_BaptismFire": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512774, "points": 0000000, "devInfo": "CHAPTER_8_BaptismFire Completion"}, 
-		// "a_Rescue": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512775, "points": 0000000, "devInfo": "CHAPTER_9_Rescue Completion"},
-		// "a_Prism": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512776, "points": 0000000, "devInfo": "CHAPTER_10_Prism Completion"},
-		// "a_Invasion": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512777, "points": 0000000, "devInfo": "CHAPTER_11_Invasion Completion"},
-		// "a_Hangtown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512778, "points": 0000000, "devInfo": "CHAPTER_12_Hangtown Completion"},
-		// "a_MorningAfter": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512779, "points": 0000000, "devInfo": "CHAPTER_13_MorningAfter Completion"},
-		// "a_Showdown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512780, "points": 0000000, "devInfo": "CHAPTER_14_Showdown Completion"},
-		// "a_RightTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512781, "points": 0000000, "devInfo": "CHAPTER_15_RightTrain Completion"},
-		// "a_Deadfall": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512782, "points": 0000000, "devInfo": "CHAPTER_16_Deadfall Completion"},
+		"a_WrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 512750, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
+		"a_RideDevil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 512749, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"},
+		"a_Boneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513469, "points": 0000000, "devInfo": "CHAPTER_3_Boneyard Completion"},
+		"a_DevilMine": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513470, "points": 0000000, "devInfo": "CHAPTER_4_DevilMine Completion"},
+		"a_DWOutpost": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513471, "points": 0000000, "devInfo": "CHAPTER_5_Outpost Completion"},
+		"a_WarTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513472, "points": 0000000, "devInfo": "CHAPTER_6_WarTrain Completion"}, 
+		"a_TortureMaze": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513473, "points": 0000000, "devInfo": "CHAPTER_7_TortureMaze Completion"}, 
+		"a_BaptismFire": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513474, "points": 0000000, "devInfo": "CHAPTER_8_BaptismFire Completion"}, 
+		"a_Rescue": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513475, "points": 0000000, "devInfo": "CHAPTER_9_Rescue Completion"},
+		"a_Prism": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513476, "points": 0000000, "devInfo": "CHAPTER_10_Prism Completion"},
+		"a_Invasion": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513477, "points": 0000000, "devInfo": "CHAPTER_11_Invasion Completion"},
+		"a_Hangtown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513478, "points": 0000000, "devInfo": "CHAPTER_12_Hangtown Completion"},
+		"a_MorningAfter": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513479, "points": 0000000, "devInfo": "CHAPTER_13_MorningAfter Completion"},
+		"a_Showdown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513480, "points": 0000000, "devInfo": "CHAPTER_14_Showdown Completion"},
+		"a_RightTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513481, "points": 0000000, "devInfo": "CHAPTER_15_RightTrain Completion"},
+		"a_Deadfall": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513482, "points": 0000000, "devInfo": "CHAPTER_16_Deadfall Completion"},
 		},
 	"c_StoryEnd": { // Category - Story Win Condition Achievements
-		// "a_CurseWestGood": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512784, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
-		// "a_CurseWestEvil": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512783, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
+		"a_CurseWestGood": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513484, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
+		"a_CurseWestEvil": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513483, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
 		},
 	"c_Challenge": { // Category - info_here
 		// "a_ClgWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
@@ -2785,35 +2786,36 @@ achievements_coreData = {
 		// "a_ClgBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
 		// 	"id": 513877, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty with no deaths, no throwables, using only the Crossbow and Carbine to score at least xx kills total (without restart)"},
 		// "a_ClgDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty with no deaths and no powers, where one player only uses pistols and the other only two-handed weapons (no explosives)"},
+		// 	"id": 513977, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty with no deaths and no powers, where one player only uses pistols and the other only two-handed weapons (no explosives)"},
 		// "a_ClgDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty with no deaths and the combined HP never being below max HP for xx seconds consecutively"},
+		// 	"id": 515978, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty with no deaths and the combined HP never being below max HP for xx seconds consecutively"},
 		// "a_ClgWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty with no deaths, within xx time and without any player losing any HP"}, 
+		// 	"id": 515981, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty with no deaths, within xx time and without any player losing any HP"}, 
 		// "a_ClgTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty with no deaths, with at least xx% melee kills, where one player only uses the Scepter and the other only shoots (powers allowed)"}, 
+		// 	"id": 515982, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty with no deaths, with at least xx% melee kills, where one player only uses the Scepter and the other only shoots (powers allowed)"}, 
 		// "a_ClgBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty with no deaths, no throwables, using only the Redeemer and the Rail Rocket to score at least xx kills total (without restart)"}, 
+		// 	"id": 515980, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty with no deaths, no throwables, using only the Redeemer and the Rail Rocket to score at least xx kills total (without restart)"}, 
 		// "a_ClgRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty with within xx time and without any player going below xx% HP"},
+		// 	"id": 515985, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty with within xx time and without any player going below xx% HP"},
 		// "a_ClgPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty with no deaths, where each player can only use each power once"},
+		// 	"id": 515975, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty with no deaths, where each player can only use each power once"},
 		// "a_ClgInvasion": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty with no deaths using only the Dual Pistols or Shotgun (no explosives)"},
+		// 	"id": 515976, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty with no deaths using only the Dual Pistols or Shotgun (no explosives)"},
 		// "a_ClgHangtown": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty with no deaths using the Range Rifle as the only means of shooting, with a minimum combined accuracy of xx%"},
+		// 	"id": 515987, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty with no deaths using the Range Rifle as the only means of shooting, with a minimum combined accuracy of xx%"},
 		// "a_ClgMorningAfter": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty with no deaths using only tier 2 and 3 powers, with at least xx% headshot or melee kills"},
+		// 	"id": 515986, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty with no deaths using only tier 2 and 3 powers, with at least xx% headshot or melee kills"},
 		// "a_ClgShowdown": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty with no deaths, with a minimum combined accuracy of xx% and where each player can only use 1 distinct power"},
+		// 	"id": 515983, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty with no deaths, with a minimum combined accuracy of xx% and where each player can only use 1 distinct power"},
 		// "a_ClgRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty with no deaths within xx time and without any player going below xx% HP"},
+		// 	"id": 515984, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty with no deaths within xx time and without any player going below xx% HP"},
 		// "a_ClgDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty with no deaths, killing only with the Range Rifle and Carbine equipped and with at least xx% headshot kills (throwables allowed)"},
+		// 	"id": 515988, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty with no deaths, killing only with the Range Rifle and Carbine equipped and with at least xx% headshot kills (throwables allowed)"},
 		// "a_ClgCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION
 		// 	"id": 515979, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty with no deaths, with less than xx power activations"},
 		},
 	"c_Bonus": { // Category - Bonus achievements
+		// TODO c_Bonus
 		// "a_MultiKillers": { // CONCEPT a_MultiKillers
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Complete a Chapter, where each player scored at least one multikill"}
 		// "a_SunHi": { // CONCEPT a_SunHi
@@ -2824,6 +2826,7 @@ achievements_coreData = {
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Unlock all Good powers"}
 		},
 	"c_Versus": { // Category - Versus Mode achievements (purely for showcasing Versus Mode, this is not focus of this Subset)
+		// TODO c_Versus
 		// "a_VSdeathmatch": { // CONCEPT a_VSdeathmatch
 			// "id": 000000, "points": 0000000, "devInfo": "Complete a Versus match in Deathmatch Mode"},
 		// "a_VSsoulhunter": { // CONCEPT a_VSsoulhunter
@@ -6625,7 +6628,6 @@ function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_relea
 		- In Single Player OR MultiplayerCoop, the ChapterStats saved during gameplay are zeroed out when game saves them to [Array:SavedStats_Story]
 		- HitCounts seperated into PLAYER_1 & PLAYER_2, because [Pointer(EntityData_B):PlayerActorData] don't change at same frame. to detect flagState_InGame
 		*/
-	// TODO lb_watchers -> implement Participation Tracking into SUBMIT+CANCEL
 	PARTICIPATION_TRACKING_MinRequiredInputs = PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(enum_chapter)
 	PARTICIPATION_TRACKING_MinRequiredShotsHit = PARTICIPATION_TRACKING_DATA_getMinRequiredShotsHit(enum_chapter)
 	PARTICIPATION_TRACKING_MinRequiredAccuracyPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredAccuracyPercent(enum_chapter)
