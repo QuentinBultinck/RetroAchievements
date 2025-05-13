@@ -8,7 +8,7 @@ Play Test Thread => _DISCORD_LINK_TO_PLAY_TEST_
 RA Game Page => _LINK_TO_RA_GAME_PAGE_
  
 # ------CR TODO List------ (for use by CR)
-- Discord Code Review Naming Scheme: `Code Review - [GameTitle] - [DevName]`
+- Discord Code Review Naming Scheme: `Code Review - [GameTitle (Console)] - [DevName]`
 - Edit intro
 - Review: Memory Work & Internal Notes
     - RAM Digging & Code Notes 
@@ -24,13 +24,14 @@ RA Game Page => _LINK_TO_RA_GAME_PAGE_
 - Any Promotion Prerequisites?
 - Write Summary & Final Thoughts
 - Proof Read (with AI)
+- Remove all comments ///
 
 # ------TODO Legend------
 - 🔲 TODO — Task identified but not yet started
 - 🔄 WIP — Task is in progress
 - ✅ DONE — Task has been completed successfully
-- 🟨 DISMISSED – Task was reviewed and ruled out
-- ❌ CANCELED — Task was dropped or no longer applicable
+- 🟨 DISMISSED – Task was reviewed and ruled out (by CR)
+- ❌ CANCELED — Task was dropped or no longer applicable (by Reviewee)
 
 # ------Usefull unicode characters------
 ✅ ☑️ ✔️ 🆗
@@ -88,13 +89,14 @@ Please take some time to review everything I've written below. If you have any q
 ### 📜 Summary & Final Notes _MSG_LINK_
 
 ## ∘───── Related Links ─────∘ // TODO, link these
-Set Plan Review/Jr. Dev Request
-Ready for Review Thread
-Play Test Thread
-RA Game Page
+Junior Developer => _LINK_TO_USER_
+Set Plan Review/Jr. Dev Request => _LINK_
+Ready for Review Thread => _LINK_
+Play Test Thread => _LINK_
+RA Game Page => _LINK_
 
 # ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦ // TODO
-// Grouped to represent all the under-the-hood work.
+/// Grouped to represent all the under-the-hood work.
 
 ## ∘───── 🛠️ RAM Digging & Code Notes ─────∘  // TODO
 /// Conform to https://docs.retroachievements.org/guidelines/content/code-notes.html
@@ -106,10 +108,10 @@ RA Game Page
 /// Mentioned bugs, testing methods, hardcore/softcore checks, peer testing, issues encountered during development, and any achievement concepts that could not be implemented.
 
 # ✦═══════✦ 🕹️ Achievement Set Design ✦═══════✦ // TODO
-// Grouped to cover all visible/user-facing parts.
-// Conform to https://docs.retroachievements.org/guidelines/content/achievement-set-requirements.html  
-//         and https://docs.retroachievements.org/developer-docs/achievement-development-overview.html
-// [#poll-me](https://discord.com/channels/310192285306454017/511718348178849792) on RAdiscord
+/// Grouped to cover all visible/user-facing parts.
+/// Conform to https://docs.retroachievements.org/guidelines/content/achievement-set-requirements.html  
+///         and https://docs.retroachievements.org/developer-docs/achievement-development-overview.html
+/// [#poll-me](https://discord.com/channels/310192285306454017/511718348178849792) on RAdiscord
 
 ## ∘───── 🎯 Overall Set Design ─────∘  // TODO
 /// Balance, creativity, progression, and content coverage.  
@@ -140,8 +142,8 @@ RA Game Page
 /// Conform to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html)
 
 # ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦ // TODO
-// Grouped for logic quality and RA feature usage.
-// [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/)
+/// Grouped for logic quality and RA feature usage.
+/// [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/)
 
 ### 👍 Positive Observations
 
@@ -160,31 +162,32 @@ RA Game Page
 
 # ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦ // TODO
 
-### 🧭❓ Hubs & Similar Games // TODO
-Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html))
+### ❓ Hubs & Similar Games // TODO
+Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html) and [RAweb - All Hubs](https://retroachievements.org/hubs))
 Any similar games to add? Think of games that may fit the same genre or games of the same series, perhaps.
 
-### 🗂️❓ Game Page Metadata // TODO
+### ❓ Game Page Metadata // TODO
 Is everything correctly filled out on the **manage page** and **game page**?
 
 # ✦═══════✦📜 Summary & Final Thoughts 📜✦═══════❖ // TODO
-// Overview and high-level review conclusion.  
-// What still needs to be proven or improved?  
-// Was everything from https://docs.retroachievements.org/developer-docs/am-i-ready-for-review.html covered?
+/// Overview and high-level review conclusion.  
+/// What still needs to be proven or improved?  
+/// Was everything from https://docs.retroachievements.org/developer-docs/am-i-ready-for-review.html covered?
 
 ## ∘───── 📋 TODO Checklist ─────∘ // TODO
 - **Initially Posted on**: `DD Month YYYY` - `Initial Code Review`
 - **Last Updated on**: `DD Month YYYY` - `Checklist Assessment #0-[ChecklistAssessmentNumber]` // CR_TODO Perform next Checklist Assessment Round
 
-Please update below list as you work through items. I would advise copying/updating it here or in a document online, which I can view/follow.
-I may update this list here as you progress through the items, as well.
+Please use the list below as a working guideline. I recommend copying it or creating your own version, ideally in a format I can also access and follow along with. A good option would be to add a new tab in your existing Set Plan Excel document for this purpose.
+
+I'll be using this list here to track your progress as well. As you work through the items, feel free to update your version, and I’ll mirror any changes here in the thread to keep everything in sync. This way, we can easily monitor what's been completed and what still needs attention.
 
 ### --⇢ 📐 TODO Legend ⇠--
 - 🔲 TODO — Task identified but not yet started
 - 🔄 WIP — Task is in progress
 - ✅ DONE — Task has been completed successfully
-- 🟨 DISMISSED – Task was reviewed and ruled out
-- ❌ CANCELED — Task was dropped or no longer applicable
+- 🟨 DISMISSED – Task was reviewed and ruled out (by CR)
+- ❌ CANCELED — Task was dropped or no longer applicable (by Reviewee)
 
 ### ---⇢ 📌 Initial Code Review Tasks ⇠--- // TODO
 ### 🔲 🧪❗ ...
@@ -192,8 +195,8 @@ I may update this list here as you progress through the items, as well.
 ### 🔲 🧩❓ ...
 ### 🔲 🧩❗ ...
 ### 🔲 🔧❓ ...
-### 🔲 🧭❓ Hubs & Similar Games
-### 🔲 🗂️❓ Game Page Metadata
+### 🔲 🔑❓ Hubs & Similar Games
+### 🔲 🔑❓ Game Page Metadata
 
 ### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠--- // TODO
 🔲 Testing after logic changes
@@ -214,15 +217,17 @@ When the full checklist is completed and confirmed, we can proceed with finalizi
 ## ∘───── 📋 TODO Checklist ─────∘ // TODO
 - **Initially Posted on**: `DD Month YYYY` - `Reassessment Round #xx`
 - **Last Updated on**: `DD Month YYYY` - `Checklist Assessment #[ReassessmentRoundNumber]-[ChecklistAssessmentNumber]` // CR_TODO Perform next Checklist Assessment Round
-Please update this checklist as you work through items. I would advise copying/updating it here or in a document online, which you and I can view/follow.
-If you don't, I may update this list here via this discord thread.
+
+Please use the list below as a working guideline. I recommend copying it or creating your own version, ideally in a format I can also access and follow along with. A good option would be to add a new tab in your existing Set Plan Excel document for this purpose.
+
+I'll be using this list here to track your progress as well. As you work through the items, feel free to update your version, and I’ll mirror any changes here in the thread to keep everything in sync. This way, we can easily monitor what's been completed and what still needs attention.
 
 ### ---⇢ 🗃️ TODO Legend ⇠---
 - 🔲 TODO — Task identified but not yet started
 - 🔄 WIP — Task is in progress
 - ✅ DONE — Task has been completed successfully
-- 🟨 DISMISSED – Task was reviewed and ruled out
-- ❌ CANCELED — Task was dropped or no longer applicable
+- 🟨 DISMISSED – Task was reviewed and ruled out (by CR)
+- ❌ CANCELED — Task was dropped or no longer applicable (by Reviewee)
 
 ### ---⇢ 📌 Initial Code Review Tasks ⇠--- // TODO
 ### 🔲 🧪❗ ...

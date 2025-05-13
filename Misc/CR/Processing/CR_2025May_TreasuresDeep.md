@@ -7,7 +7,7 @@ Ready for Review Thread => https://discord.com/channels/310192285306454017/13423
 RA Game Page => https://retroachievements.org/game/19403
  
 # ------CR TODO List------ (for use by CR)
-- Discord Code Review Naming Scheme: `Code Review - [GameTitle] - [DevName]`
+- Discord Code Review Naming Scheme: `Code Review - [GameTitle (Console)] - [DevName]`
 - Edit intro
 - Review: Memory Work & Internal Notes
     - RAM Digging & Code Notes 
@@ -28,8 +28,8 @@ RA Game Page => https://retroachievements.org/game/19403
 - 🔲 TODO — Task identified but not yet started
 - 🔄 WIP — Task is in progress
 - ✅ DONE — Task has been completed successfully
-- 🟨 DISMISSED – Task was reviewed and ruled out
-- ❌ CANCELED — Task was dropped or no longer applicable
+- 🟨 DISMISSED – Task was reviewed and ruled out (by CR)
+- ❌ CANCELED — Task was dropped or no longer applicable (by Reviewee)
 
 # ------Usefull unicode characters------
 ✅ ☑️ ✔️ 🆗
@@ -64,39 +64,37 @@ Do this instead of that...
 
 # ------Intro------
 
-Hello @_JR_DEV_USERNAME_
+Hello @stoneskipper42
 
-Your Code Review for [_GAME_TITLE_ (_CONSOLE_)](_UNOFFICIAL_ACHIEVEMENT_LIST_LINK_) has finally arrived!
+Your Code Review for [Treasures of the Deep (PlayStation)](https://retroachievements.org/game/19403?f=5) has finally been dredged from the abyss!
 Please take some time to review everything I've written below. If you have any questions, feel free to reach out.
 
-## ∘───── 📑 Table of Contents ─────∘ // TODO, link these
-### 🧠 Memory Work & Internal Notes _MSG_LINK_ 
+## ∘───── 📑 Table of Contents ─────∘
+### 🧠 Memory Work & Internal Notes https://discord.com/channels/310192285306454017/1371969269759213708/1371969414865621102 
 - 🛠️ RAM Digging & Code Notes
 - 🧷 Additional Developer Notes
 - 🧪 Testing & Debugging Results
-### 🕹️ Achievement Set Design _MSG_LINK_
+### 🕹️ Achievement Set Design https://discord.com/channels/310192285306454017/1371969269759213708/1371969638690459769
 - 🎯 Overall Set Design
 - ✍️ Titles & Descriptions
 - 🖼️ Badge Art
 - ⚖️ Point Distribution
-### ⚙️ Technical Implementation _MSG_LINK_
+### ⚙️ Technical Implementation https://discord.com/channels/310192285306454017/1371969269759213708/1371969784169889922
 - 🧩 Achievement Logic
 - 🔧 Rich Presence Logic
 - 🔢 Leaderboard Logic
-### 🔑 Misc Prerequisites _MSG_LINK_
-### 📜 Summary & Final Notes _MSG_LINK_
+### 🔑 Misc Prerequisites https://discord.com/channels/310192285306454017/1371969269759213708/1371969971571130469
+### 📜 Summary & Final Notes https://discord.com/channels/310192285306454017/1371969269759213708/1371970029377294487
 
-## ∘───── Related Links ─────∘ // DONE
-Set Plan Review/Jr. Dev Request
-[Ready for Review Thread](https://discord.com/channels/310192285306454017/1342358688249151539)
-[Play Test Thread](https://discord.com/channels/310192285306454017/1344510362674008104)
-[RA Game Page](https://retroachievements.org/game/19403)
+## ∘───── Related Links ─────∘
+Set Plan Review/Jr. Dev Request => Not re-located
+Ready for Review Thread => https://discord.com/channels/310192285306454017/1342358688249151539
+Play Test Thread => https://discord.com/channels/310192285306454017/1344510362674008104
+RA Game Page => https://retroachievements.org/game/19403
 
-# ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦ // DONE
-// Grouped to represent all the under-the-hood work.
+# ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦
 
 ## ∘───── 🛠️ RAM Digging & Code Notes ─────∘
-/// Conform to https://docs.retroachievements.org/guidelines/content/code-notes.html
 A whopping 547 code notes, great work on RAM digging and thoroughly documenting all the relevant addresses. While a few notes were contributed by others, it's clear that the vast majority of the work was done by you, and I really appreciate that you even took the time to credit other devs where appropriate, love to see it.
 
 I do have a few remarks on specific code notes that could benefit from a bit more explanation to better convey what’s happening. If any of these notes aren't used in any current logic, it’s not critical — but ideally, all documented addresses should be clear and informative. If you're unsure about some of them, I would just add a tag `(unverified)` or `(inconsistent)`
@@ -139,8 +137,6 @@ This too functions as an 8-bit flag, which could be better expressed using bit0.
 
 You do have a well-documented bitflag example at `$0x4400c`, although that one was contributed by another developer. Personally, I would phrase that as:
 `[8-bit BitFlags]` or `[8-bit BitSet]`
-Another example of a RAM address documneted is `$0x40836` `[8-bit] Bermuda Triangle level complete`
-This functions as another `8-bit Flag`, which can be accessed with `bit0`.
 
 **Conclusion Regarding Flag Documentation**
 It’s clear you understand how these values behave and how to use them properly in logic, which is great! The only gap here is in applying the correct terminology in the code notes. You're treating them as flags, but documenting and using them with too broad of a memory accessor (e.g., full byte instead of bit-level).
@@ -152,7 +148,6 @@ Pre-mission, what does this entail?
 This seems to also be used within *"Best Scores"* leaderboards under VALUE. Does "pre-mission wealth" imply gold/wealth that's within the player's bank between missions? In that case code note `$0x0406c0` could also be updated, to include how this is used to calculate the effective wealth gathered during the mission?
 
 ## ∘───── 🧷 Additional Developer Notes ─────∘
-/// [Optional] Comments left in logic, RAScript, planning documents, other threads on discord.
 I was not able to relocate the Set Plan Review/Jr. Dev Request thread regarding this title. 
 
 Your Ready for Review Thread was exceptionally annotated, you proactivly explained a lot of concerns there may be, love to see that.
@@ -160,7 +155,6 @@ Your Ready for Review Thread was exceptionally annotated, you proactivly explain
 Seems like you got lucky with your play-test-request and you got a playtester, I also did some basic testing and from what I can gather everything seems to function properly. you've also seemed to have asked for feedback relating the set within this thread, very good. Asking others 
 
 ## ∘───── 🧪 Testing & Debugging Results ─────∘
-/// Mentioned bugs, testing methods, hardcore/softcore checks, peer testing, issues encountered during development, and any achievement concepts that could not be implemented.
 Within your Ready for Review Thread you explained very well, how the testing was accomplished, nice. Testing results of play-test-request are all fine. 
 
 ### ❓ Development Questions
@@ -169,10 +163,7 @@ Please answer following questions, just to give us an idea of how your process w
 - Have you had any problems whilst RAM digging?
 - What other problems did you run into whilst developping this set? How did you fix these?
 
-# ✦═══════✦ 🕹️ Achievement Set Design ✦═══════✦ // DONE
-// Grouped to cover all visible/user-facing parts.
-// Conform to https://docs.retroachievements.org/guidelines/content/achievement-set-requirements.html  
-//         and https://docs.retroachievements.org/developer-docs/achievement-development-overview.html
+# ✦═══════✦ 🕹️ Achievement Set Design ✦═══════✦
 
 ## ∘───── 🎯 Overall Set Design ─────∘
 Overall, your set design is exquisite, a real treasure beneath the surface. You've done more than just skim the top; you've explored the depths of the game's content with purpose and creativity. Your achievements don’t just reward progress, they guide the player’s attention toward hidden features and overlooked side content, enhancing the experience in meaningful ways.
@@ -180,7 +171,7 @@ Overall, your set design is exquisite, a real treasure beneath the surface. You'
 It’s clear you’ve taken time to understand the current, not just follow it. I like how those hidden/easter egg achievements feel like a discovery, not just a checkbox. This is S+ design across the board. Fantastic work, love to see it!
 
 ### ---⇢ 🏆 Achievements ⇠---
-/// Smart usage of `Measured` & `Trigger` flags
+Smart usage of `Measured` & `Trigger` flags.
 
 ### ❓ Missables Question
 You currently have three achievements marked as missable, one example being [Comprehensive Cargo Cleanup](https://retroachievements.org/achievement/498042). I saw that you’ve addressed this in your Ready for Review thread, but I still find the reasoning a bit unclear.
@@ -193,6 +184,7 @@ Alternatively, it might be worth opening a poll with the community in [#poll-me]
 
 ### ---⇢ 📺 Rich Presence ⇠---
 Very well designed, looks like all content and every game screen has corresponding Rich Presence strings. Usage of unicode characters is great, not too spammy, indicates the presented values well.
+
 ### ---⇢ 🌐 Leaderboards ⇠---
 "Best Scores" leaderboards function with instant Start/Submit, this is a very good choice, since the thing they're tracking is already displayed in-game.
 "Best Times" leaderboards function normally, to display in-game time, otherwise not displaying within game, very nice.
@@ -222,12 +214,11 @@ Personally I would increase [It's All Coming Together](https://retroachievements
 
 These are purely suggestions, you make the choice in the end, you know the game best.
 
-# ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦ // TODO
+# ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦
 
 Overal the logical implementation of all of your assets is up to our coding standards, there are only a small few things I noted down futher below, I'm not entirely understanding correctly.
 
-## ∘───── 🧩 Achievement Logic ─────∘  // TODO, fill out Proficiency-Checklist, else this section is DONE
-/// Triggers, reset conditions, edge cases. Were flags used correctly? Refer to the Proficiency-Checklist
+## ∘───── 🧩 Achievement Logic ─────∘
 
 ### 👍 Positive Observations
 - You seem to use PauseLocks without actually using PauseLocks. I call them something like ResetLocks/Lockouts. 
@@ -238,6 +229,11 @@ In most of your assets, achievements and leaderboards, you use a checkpoint HitC
 - Deltas used correctly
 - Checkpoint Hitcounts
 - 1 Pointer has been documented and used within achievement logic, love to see this within a first set.
+
+### ❗ Achievement [Ride the Ray](https://retroachievements.org/achievement/497654) - Additional Delta 
+The achievement logic works, but I think you could probably add a delta check for `Ray Ridden [8-bit]` within pointer at `$0x10d724`, next to the normal current frame check. So it checks for a change from "not ridden" to "ridden", this would primarily add some extra protection against loading a savestate from within the specific mission, which already has ridden on the ray. 
+
+In general, you wanna use deltas as much as possible, not just once, especially whenever you can check for a change on a certain value, within a single frame. The more you have them within your logic, the more robust the achievement. I'm pretty sure this was just a minor oversight, since you do add deltas everywhere else.
 
 ### ❓ Achievement [It's All Coming Together](https://retroachievements.org/achievement/497647) - Logic Question
 Core:Lines[14-15], also within the alt groups:
@@ -253,10 +249,8 @@ But I would love if you could elaborate on your cheat-protection somewhat:
 - Seems like all cheats need to be input via the PauseMenu? 
 - I reckon from your achievement logic, you only protected against certain types of cheats, or did you protect against all? 
 
-## ∘───── 🔧 Rich Presence Logic ─────∘  // TODO
-/// Is a dynamic RP present? Not overly bloated or using unsupported Unicode.  
-/// Macros and lookupTables used appropriately?  
-/// Refer to https://docs.retroachievements.org/developer-docs/rich-presence.html#rich-presence
+## ∘───── 🔧 Rich Presence Logic ─────∘
+
 Lots of conditional display strings, with a few lookups and macros used, splendid job!
 
 ### ❓ Macro Usage - @Score vs @Number
@@ -275,57 +269,71 @@ FormatType=VALUE
 ```
 Now you could just use it as `@LevelsCompleted(...)` & `@TabletsCollected(...)`, making the RP perhaps somewhat more easier to read. Personally I never use this formatting feature as I code everything in RAscript.
 
+## ∘───── 🔢 Leaderboard Logic ─────∘
+2 types of leaderboards have been implemented, 2 for each mission + 1 extra for the bonus mission. All seems to be in order, splendid!
+You've also used instant submission leaderboards, which is always nice to see. No need for unnecessary clutter.
 
-## ∘───── 🔢 Leaderboard Logic ─────∘  // TODO
-/// Leaderboards with instant Start/Submit implemented?
-2 types of leaderboards have been implemented, 2 for each mission + 1 extra for the bonus mission. All seems to be in order.
+# ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦
 
-# ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦ // TODO
+### 🧭❓ Hubs & Similar Games
+You already listed a few hubs in your Ready for Review Thread, which have since already been added. Are there anymore hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html))
+I would advise skimming through all the available hubs via [RAweb - All Hubs](https://retroachievements.org/hubs). I think some of these may be applicable?
+- Sony Computer Entertainment may be a publisher for EU region?
+- [Theme - Naval Warfare](https://retroachievements.org/hub/20342)
+- [Perspective - First-Person](https://retroachievements.org/hub/3332)
+- [Perspective - Third-Person](https://retroachievements.org/hub/4599)
 
-### 🧭❓ Hubs & Similar Games // TODO
-Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html))
-Any similar games to add? Think of games that may fit the same genre or games of the same series, perhaps.
+And are there anymore similar games to add? Think of games that may fit the same genre or games of the same series, perhaps. Maybe these:
+- Aquanaut's Holiday
+- Critical Depth
 
-### 🗂️❓ Game Page Metadata // TODO
+### 🗂️❓ Game Page Metadata
 Is everything correctly filled out on the **manage page** and **game page**?
+There seems to be some missing metadata, if you try to please fill everything in, so you get a feel how this functions.
 
-# ✦═══════✦📜 Summary & Final Thoughts 📜✦═══════❖ // TODO
-// Overview and high-level review conclusion.  
-// What still needs to be proven or improved?  
-// Was everything from https://docs.retroachievements.org/developer-docs/am-i-ready-for-review.html covered?
+# ✦═══════✦📜 Summary & Final Thoughts 📜✦═══════❖
 
-## ∘───── 📋 TODO Checklist ─────∘ // TODO
-- **Initially Posted on**: `DD Month YYYY` - `Initial Code Review`
+## ∘───── 📋 TODO Checklist ─────∘
+- **Initially Posted on**: `13 May 2025` - `Initial Code Review`
 - **Last Updated on**: `DD Month YYYY` - `Checklist Assessment #0-[ChecklistAssessmentNumber]` // CR_TODO Perform next Checklist Assessment Round
 
-Please update below list as you work through items. I would advise copying/updating it here or in a document online, which I can view/follow.
-I may update this list here as you progress through the items, as well.
+Please use the list below as a working guideline. I recommend copying it or creating your own version, ideally in a format I can also access and follow along with. A good option would be to add a new tab in your existing Set Plan Excel document for this purpose.
+
+I'll be using this list here to track your progress as well. As you work through the items, feel free to update your version, and I’ll mirror any changes here in the thread to keep everything in sync. This way, we can easily monitor what's been completed and what still needs attention.
 
 ### --⇢ 📐 TODO Legend ⇠--
 - 🔲 TODO — Task identified but not yet started
 - 🔄 WIP — Task is in progress
 - ✅ DONE — Task has been completed successfully
-- 🟨 DISMISSED – Task was reviewed and ruled out
-- ❌ CANCELED — Task was dropped or no longer applicable
+- 🟨 DISMISSED – Task was reviewed and ruled out (by CR)
+- ❌ CANCELED — Task was dropped or no longer applicable (by Reviewee)
 
-### ---⇢ 📌 Initial Code Review Tasks ⇠--- // TODO
-### 🔲 🧪❗ ...
-### 🔲 🖼️❓ ...
-### 🔲 🧩❓ ...
-### 🔲 🧩❗ ...
-### 🔲 🔧❓ ...
+### ---⇢ 📌 Initial Code Review Tasks ⇠---
+### 🔲 🛠️❓ Code Notes *"Map State"* `$0x10d848 - $0x10e360`
+### 🔲 🛠️❓ Code Notes *"Oxygen"* & *"Health"*
+### 🔲 🛠️❓ Code Notes Time-Related - Missing Time Unit
+### 🔲 🛠️❓ Code Note `$0x11f618` Additions Possible
+### 🔲 🛠️❓ Flag Documentation
+### 🔲 🛠️❓ Code Notes **"Pre-mission"* `$0x40698`
+### 🔲 🧪❓ Development Questions
+### 🔲 🏆❓ Missables Question
+### 🔲 🖼️💡 Badge Quality Uplift
+### 🔲 ⚖️💡 Point Increase
+### 🔲 🧩❗ Achievement [Ride the Ray](https://retroachievements.org/achievement/497654) - Additional Delta 
+### 🔲 🧩❓ Achievement [It's All Coming Together](https://retroachievements.org/achievement/497647) - Logic Question
+### 🔲 🧩❓ Cheat-Protection - Questions
+### 🔲 🔧❓ Macro Usage - @Score vs @Number
 ### 🔲 🧭❓ Hubs & Similar Games
 ### 🔲 🗂️❓ Game Page Metadata
 
-### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠--- // TODO
-🔲 Testing after logic changes
-🔲 ...
+### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠---
 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
 
 When the full checklist is completed and confirmed, we can proceed with finalizing the review and begin discussing the set’s promotion. Until then, feel free to ping me anytime if you’ve completed the task list or have further questions, I’ll be happy to review things again when ready.
 
-## ∘───── 📚 Final Thoughts ─────∘ // TODO
+## ∘───── 📚 Final Thoughts ─────∘
+This is a very solid achievement set, for a quite unique game, and this being your first set is even more astounding. Most of the things I remarked/noted about above, are rather small nitpicky/minor things/details, which could be improved upon. Most of these are just suggestions or questions as well, so there weren't any major issues. I'm pretty sure you'll be out of the junior program... soon, if you keep up this quality of work. Splendid!
 
 # %%%%%%%%%%%%% POST-INITIAL CODE REVIEW %%%%%%%%%%%%% #
 
@@ -343,8 +351,8 @@ If you don't, I may update this list here via this discord thread.
 - 🔲 TODO — Task identified but not yet started
 - 🔄 WIP — Task is in progress
 - ✅ DONE — Task has been completed successfully
-- 🟨 DISMISSED – Task was reviewed and ruled out
-- ❌ CANCELED — Task was dropped or no longer applicable
+- 🟨 DISMISSED – Task was reviewed and ruled out (by CR)
+- ❌ CANCELED — Task was dropped or no longer applicable (by Reviewee)
 
 ### ---⇢ 📌 Initial Code Review Tasks ⇠--- // TODO
 ### 🔲 🧪❗ ...
@@ -370,3 +378,8 @@ If you don't, I may update this list here via this discord thread.
 #  ✦═══════✦ ✔️ Wrap-Up & Next Steps ✦═══════✦ // TODO
 ## 🎓 ∘───── Reflection & Suggestions ─────∘ 
 /// Reflection on what was learned + Feedforward (suggestions for future Jr. Dev process).
+
+### Feedfoward
+- Correctly identifying, documenting and using BitFlags
+- More usage of the advanced features of the toolkit (trigger,measured,resetIf,pauseIf,prior,resetNextIf,altgroups,bitFlags,orNext...). You already grasped and used some of these features, but I would like to see what else you'd be able to do with these.
+- Generally another quality set without any major issues will probably do the trick, just like this one.
