@@ -109,19 +109,22 @@ RA Game Page
 // Grouped to cover all visible/user-facing parts.
 // Conform to https://docs.retroachievements.org/guidelines/content/achievement-set-requirements.html  
 //         and https://docs.retroachievements.org/developer-docs/achievement-development-overview.html
+// [#poll-me](https://discord.com/channels/310192285306454017/511718348178849792) on RAdiscord
 
 ## ∘───── 🎯 Overall Set Design ─────∘  // TODO
 /// Balance, creativity, progression, and content coverage.  
 /// Achievement types: https://docs.retroachievements.org/guidelines/content/progression-and-win-condition-guidelines.html  
 /// Difficulty balance: https://docs.retroachievements.org/developer-docs/difficulty-scale-and-balance.html
 /// Any unwelcome concepts? https://docs.retroachievements.org/guidelines/content/unwelcome-concepts.html
-/// Leaderboards present, no leaderboard spam?
-/// Rich Presence design, all content covered?
+
+### 👍 Positive Observations
 
 ### ---⇢ 🏆 Achievements ⇠---
+/// Smart usage of `Measured` & `Trigger` flags
 ### ---⇢ 📺 Rich Presence ⇠---
+/// Rich Presence design, all content covered?
 ### ---⇢ 🌐 Leaderboards ⇠---
-
+/// Any leaderboards? No leaderboard spam?
 
 ## ∘───── ✍️ Titles & Descriptions ─────∘  // TODO
 /// Conform to https://docs.retroachievements.org/guidelines/content/writing-policy.html
@@ -130,13 +133,17 @@ RA Game Page
 ## ∘───── 🖼️ Badge Art ─────∘  // TODO
 /// Conform to https://docs.retroachievements.org/guidelines/content/badge-and-icon-guidelines.html  
 ///          and https://docs.retroachievements.org/developer-docs/badge-and-icon-creation.html
+/// [#art-request](https://discord.com/channels/310192285306454017/1048102604963586048) on RAdiscord
 /// Badge Style & Consistency, Visual Badge Quality
 
 ## ∘───── ⚖️ Point Distribution ─────∘  // TODO
-/// Conform to https://docs.retroachievements.org/developer-docs/achievement-scoring.html
+/// Conform to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html)
 
 # ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦ // TODO
 // Grouped for logic quality and RA feature usage.
+// [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/)
+
+### 👍 Positive Observations
 
 ## ∘───── 🧩 Achievement Logic ─────∘  // TODO
 /// Triggers, reset conditions, edge cases. Were flags used correctly? Refer to the Proficiency-Checklist
