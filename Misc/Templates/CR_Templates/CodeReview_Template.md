@@ -89,11 +89,12 @@ Please take some time to review everything I've written below. If you have any q
 ### 📜 Summary & Final Notes _MSG_LINK_
 
 ## ∘───── Related Links ─────∘ // TODO, link these
-Junior Developer => _LINK_TO_USER_
-Set Plan Review/Jr. Dev Request => _LINK_
-Ready for Review Thread => _LINK_
-Play Test Thread => _LINK_
-RA Game Page => _LINK_
+Junior Developer => _LINK_TO-RA_USER_
+Set Plan Review/Jr. Dev Request => _LINK_DISCORD_THREAD_
+Set Plan => _LINK_TO_SET_PLAN_
+Ready for Review Thread => _LINK_DISCORD_THREAD_
+Play Test Thread => _LINK_DISCORD_THREAD_
+RA Game Page => _LINK_RA_GAME_PAGE_
 
 # ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦ // TODO
 /// Grouped to represent all the under-the-hood work.

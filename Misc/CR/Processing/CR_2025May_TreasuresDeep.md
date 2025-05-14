@@ -87,7 +87,9 @@ Please take some time to review everything I've written below. If you have any q
 ### 📜 Summary & Final Notes https://discord.com/channels/310192285306454017/1371969269759213708/1371970029377294487
 
 ## ∘───── Related Links ─────∘
-Set Plan Review/Jr. Dev Request => Not re-located
+Junior Developer => https://retroachievements.org/user/stoneskipper42
+Jr. Dev Request => https://discord.com/channels/310192285306454017/1326595732400115813/1326595732400115813
+Set Plan => https://docs.google.com/spreadsheets/d/18K_nmvO93XUdnPZ3dMp04nIYvjlHrUnvGn2s0OEMhS4/edit?gid=303587950#gid=303587950
 Ready for Review Thread => https://discord.com/channels/310192285306454017/1342358688249151539
 Play Test Thread => https://discord.com/channels/310192285306454017/1344510362674008104
 RA Game Page => https://retroachievements.org/game/19403
