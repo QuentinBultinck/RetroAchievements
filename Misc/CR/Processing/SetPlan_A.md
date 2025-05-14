@@ -41,108 +41,88 @@ Do this instead of that...
 // Review [RAdocs - Junior Developer Program Rules](https://docs.retroachievements.org/developer-docs/jr-dev-rules.html#junior-developer-program-rules)
 // Check [Rules and Restrictions](https://docs.retroachievements.org/developer-docs/jr-dev-rules.html#rules-and-restrictions)
 
-# ------Intro_A------
-// - RA user history (game awards)
-// - devved sets before
-// - part of any other teams
+# ------Intro------
 
-Hello @_USERNAME_
-
-Hey there! Thank you for your interest in joining the RA Developer Cohorts, and welcome! It’s great to see that you’re already an enthusiastic RA achievement hunter. Now that you're looking to create a set of your own, that’s really exciting to see!
-
-Now, please take some time to carefully read through all the notes and suggestions below. They’re here to help guide you through the process and ensure your first set is off to a strong start.
-
-Once you’ve gone through everything and made any needed adjustments, we’ll get you devving in no time!
-
-# ------Intro_B------
-
-Hello @_USERNAME_
+Hello @Psychometric
 
 Hey there! Thank you for your interest in joining the RA Developer Cohorts, and welcome! 
+
+You mentioned you previously did some work on this title a few years back, which is great to see, but since it’s been quite a while, we’ll be restarting and reevaluating everything from the ground up to ensure a fresh and solid foundation.
 
 Please take some time to carefully read through all the notes and suggestions outlined below. They’re here to guide you through the process and help set you up for success with your first achievement set.
 
 Once you’ve reviewed everything and made any necessary updates or adjustments, we’ll be ready to move things forward and get you devving in no time!
 
-# ✦═══════✦ 🔍 Set Plan Review ✦═══════✦ // TODO
+# ✦═══════✦ 🔍 Set Plan Review ✦═══════✦
 
-## 🎯 Overal Set Design (progression/missables) // TODO
-/// Balance, creativity, progression, and content coverage. 
+## 🎯 Overal Set Design (progression/missables)
 
-### 👉 Titles // TODO
-// Conform to [RAdocs - Writing Policy](https://docs.retroachievements.org/guidelines/content/writing-policy.html#achievement-titles)
-// Title Case, Copy pasted level names?
+### 👉 Titles
+I'd like to get a feel for how you approach achievement titling, so if possible, please come up with titles for at least 30% of the achievements in your set. This will help demonstrate your tone, creativity, and how well you're aligning the titles with the gameplay context. Doesn’t have to be final or perfect, just enough to give a clear picture of your style and direction.
 
-### 👉 Descriptions // TODO
-// Conform to [RAdocs - Writing Policy](https://docs.retroachievements.org/guidelines/content/writing-policy.html#achievement-descriptions)
+### 👉 Descriptions
+Descriptions look fine.
 
-### 👉 Achievements Types/Labels (progression/missables) // TODO
-// Achievement types: https://docs.retroachievements.org/guidelines/content/progression-and-win-condition-guidelines.html
-Any `missable` achievements? 
+### 👉 Achievements Types/Labels (progression/missables)
+I think you may have annotated a few `missable` achievements as `(M)`, very good. 
 > *"Think of a player that only wants to play through this game once in order to earn the `Beaten` status, and maybe earn some extra achievements along the way... Again you make this choice, since you know the game best."*
 
+### 👉 Difficulty Balancing
+Does the game come with some sort of difficulty modes? If so they could perhaps be included somehow into the set, althought that's up to you to determine.
 
-### 👉 Difficulty Balancing // TODO
-// Difficulty balance: [RAdocs - Difficulty Guidelines](https://docs.retroachievements.org/developer-docs/difficulty-scale-and-balance.html)  
+### 👉 Unwelcome Concepts
+All looks fine, I don't see any problems here.
 
-### 👉 Unwelcome Concepts // TODO
-// Unwelcome concepts: [RAdocs - Unwelcome Concepts](https://docs.retroachievements.org/guidelines/content/unwelcome-concepts.html)
+### 👉 Point Distribution
+N/A in this set plan, fair enough, this will then get reviewed during the Code Review down the line. Refer to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html), when you get to that point.
 
-### 👉 Point Distribution // TODO
-// Conform to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html)
+### 👉 Challenges & Variety
+I don't see any challenge achievements in your set plan and I believe this game offers a lot of potential for them. Challenge achievements can really enhance player engagement and show off your creativity as a developer.
+Think about all the different gameplay elements you can tap into:
+- Health management
+- Movement mechanics
+- Attack variations
+- Weapon limitations
+- Scoring goals
+- Enemy or boss-specific conditions
+- Time-based challenges
+- And so on...
 
-### 👉 Challenges & Variety // TODO
-// Enough variation in challenges, are features/game mechanics touched upon?
+Try combining some of these to create unique challenge for each stage, for example: `During stage xx, get teleport location for xx, earning a score of at least xxxx` or
+`Defeat Krakos using only xx attack, without taking damage`. Try to inspire yourself by other sets within the same genre and see what they've come up with.
 
+I encourage you to look at other achievement sets in similar genres to draw inspiration and see how challenge achievements are handled elsewhere.
 
+As a baseline, I’d like to see at least 3 distinct types of challenge achievements in the final plan, if feasible. If you feel the game doesn't support this kind of design well, please explain your reasoning to us.
 
+On a positive note, I really appreciate the variety you’ve already built into the collection-based achievement, love to see it!
 
-# ✦═══════✦ ℹ️ Optional Considerations ✦═══════✦ // TODO
+# ✦═══════✦ ℹ️ Optional Considerations ✦═══════✦
 
 > This section is `optional` at this stage, but it may prove useful for your growth as a junior developer later on.
 
-## 🚦 Feature Usage (Trigger / Measured) // TODO
+## 🚦 Feature Usage (Trigger / Measured)
 Consider RA’s [Trigger](https://docs.retroachievements.org/developer-docs/flags/trigger.html#trigger) and [Measured](https://docs.retroachievements.org/developer-docs/flags/measured.html#measured) features where appropriate to provide players with clearer feedback during gameplay for specific achievements. These features not only improve the achievement experience but also help reduce confusion or frustration during more complex challenges. You could potentially mark these feature on the set plan as well. 
 
 > ### Trigger Indicator
 > `"This functionality allows putting indicators on the screen to help players know when a challenge is active, or more importantly, when they fail the challenge."`
->
+> 
 > A prime example would be for `a damageless boss fight`. A trigger indicator is displayed on screen when the boss fight starts, and is removed from the screen when the player takes damage, giving the player feedback that the challenge has failed, and he has to retry.
 
 > ### Measured Indicator
 > `"Measured marks a condition for tracking progress. It adds a progress bar to the achievement overlay to inform the user how close they are to completing an achievement."`
->
+> 
 > An example would be `collect all coins within a stage`. If there are 9 coins, a measured indicator could keep track of how many are left to collect. This could be done as 0/9 or in %.
 > Another example: `Complete stage x, with only 5 allowed ability activations`. This would start at 5/5 and decrement by 1 when an ability is used, giving the player feedback of how many abilities the player is still alowed to use before the achievement fails.
 
 Using these features can significantly enhance the clarity, functionality, and overall user experience of your achievements. These features help players better understand expectations and track their progress or failure of specific achievements in real time.
 
-## 🏁 Leaderboards & Rich Presence // TODO
+## 🏁 Leaderboards & Rich Presence
 - Leaderboards are optional but strongly encouraged.
   Refer to [Leaderboards Guide](https://docs.retroachievements.org/developer-docs/leaderboards.html#leaderboards)
+  There's a highscore mechanic, so I would love to see some leaderboards around this at least.
 - Rich Presence is **required** before requesting the Code Review down the line.
   Reference: [Rich Presence Guide](https://docs.retroachievements.org/developer-docs/rich-presence.html#rich-presence)
-
-## 🕹️ Multiplayer // TODO, check if multiplayer is a thing for the game
-You may want to consider the multiplayer features of this game, within your set.
-If the feature is present then make a choice:
-> - ❌ **Disallow Multiplayer**
-> All achievements must be earned in single-player mode only.
-> - ✅ **Allow Multiplayer**
-> Achievements must be unlocked during multiplayer sessions. (Achievements aren't allowed to be unlocked with only 1 player doing all the work)
-> - ⚠️ **Partially Allow Multiplayer**
-> Some achievements may allow multiplayer unlocks, but this can lead to balancing issues or unintended gameplay advantages (e.g., player 2 assisting player 1). Use with caution and document intent clearly.
-
-You may also consider creating a [Subset - Multi], if for example multiplayer content significantly differs from the single-player experience:
-- In this case all the [BaseSet] achievements only unlock with only 1 player is interacting with the game.
-- The [Subset] achievements only unlock when multiple players are interacting with the game.
-This helps maintain balance and clarity while still supporting full multiplayer content.
-
-If the game includes multiplayer features of any kind, you will also have to apply one of the following [Meta] hubs to your set:
-- [Meta - Set Disallows Multiplayer](https://retroachievements.org/hub/26213)
-- [Meta - Set Allows Multiplayer](https://retroachievements.org/hub/22986)
-- [Meta - Set Partially Allows Multiplayer](https://retroachievements.org/hub/7115)
-These hubs help players understand the intended play context of your set, without having to describe it in each achievement's description.
 
 ## 📚 Writing RAguide
 - Consider preparing a RAguide for the [RAguides/Wiki](https://github.com/RetroAchievements/guides/wiki)
