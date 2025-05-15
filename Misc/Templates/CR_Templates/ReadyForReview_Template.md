@@ -94,15 +94,14 @@ Please do your best to address all of the feedback above. Once you've gone throu
 
 # %%%%%%%%%%%%% POST-READY FOR REVIEW %%%%%%%%%%%%% # // TODO, once added to the backlog
 
-You've been added to the backlog, so now it's just a matter of waiting your turn. Thanks for your patience — we’ll get to your review as soon as we can.
-
+You've been added to the backlog. Now please be patient until the CR-team gets through the list. You'll be our next Code Review in no time. 
 In the meantime, here are a few suggestions to make the most of the wait:
-- (Recommended) Keep testing and polishing your set. The less problems there are discovered during the Code Review, the faster you'll be out of the junior program and earn full dev status.
-- (Recommended) See where you can incorporate Measured or Trigger flags for better player feedback.
-- (Recommended) Add or improve leaderboards, if applicable.
-- (Optional) Revisit any achievements you struggled to implement, fresh ideas may help. 
-- (Optional) Add support for an alternate hash if the game has other versions.
-- (Optional) Consider writing an [RAguide](https://github.com/RetroAchievements/guides/wiki) to help players understand the set.
-- (Optional) Get involved with other parts of the RAcommunity, whether that’s helping other Junior Devs, contributing to the Art Team, Writing Team, Playtesters, RANews or even helping with coding.
+- *(Recommended)* Keep testing and polishing your set. The less problems there are discovered during the Code Review, the faster you'll be out of the junior program and earn full dev status. I highly advise to read any Code Reviews that come up, to see what other juniors often struggle with or have done well.
+- *(Recommended)* See where you can incorporate Measured or Trigger flags for better player feedback.
+- *(Recommended)* Add or improve leaderboards, if applicable.
+- *(Optional)* Revisit any achievements you struggled to implement, fresh ideas may help. 
+- *(Optional)* Add support for an alternate hash if the game has other versions.
+- *(Optional)* Consider writing an [RAguide](https://github.com/RetroAchievements/guides/wiki) to help players understand the set.
+- *(Optional)* Get involved with other parts of the RAcommunity, whether that’s helping other Junior Devs, contributing to the Art Team, Writing Team, Playtesters, RANews or even helping with coding.
 
 Your extra efforts will not only help your own set stand out, they’ll also be a great way to grow as a developer in the community.
