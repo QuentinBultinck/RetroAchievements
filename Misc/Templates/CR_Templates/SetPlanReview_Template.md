@@ -66,36 +66,33 @@ Once you’ve reviewed everything and made any necessary updates or adjustments,
 
 # ✦═══════✦ 🔍 Set Plan Review ✦═══════✦ // TODO
 
-## 🎯 Overal Set Design (progression/missables) // TODO
+## 🎯 Overal Set Design // TODO
 /// Balance, creativity, progression, and content coverage. 
 
 ### 👉 Titles // TODO
-// Conform to [RAdocs - Writing Policy](https://docs.retroachievements.org/guidelines/content/writing-policy.html#achievement-titles)
-// Title Case, Copy pasted level names?
+/// Conform to [RAdocs - Writing Policy](https://docs.retroachievements.org/guidelines/content/writing-policy.html#achievement-titles)
+/// Title Case, Copy pasted level names?
 
 ### 👉 Descriptions // TODO
-// Conform to [RAdocs - Writing Policy](https://docs.retroachievements.org/guidelines/content/writing-policy.html#achievement-descriptions)
+/// Conform to [RAdocs - Writing Policy](https://docs.retroachievements.org/guidelines/content/writing-policy.html#achievement-descriptions)
+/// Consider [#writing-requests on RAdiscord](https://discord.com/channels/310192285306454017/1100757231294750730)
 
 ### 👉 Achievements Types/Labels (progression/missables) // TODO
-// Achievement types: https://docs.retroachievements.org/guidelines/content/progression-and-win-condition-guidelines.html
+/// Achievement types: https://docs.retroachievements.org/guidelines/content/progression-and-win-condition-guidelines.html
 Any `missable` achievements? 
 > *"Think of a player that only wants to play through this game once in order to earn the `Beaten` status, and maybe earn some extra achievements along the way... Again you make this choice, since you know the game best."*
 
-
 ### 👉 Difficulty Balancing // TODO
-// Difficulty balance: [RAdocs - Difficulty Guidelines](https://docs.retroachievements.org/developer-docs/difficulty-scale-and-balance.html)  
+/// Difficulty balance: [RAdocs - Difficulty Guidelines](https://docs.retroachievements.org/developer-docs/difficulty-scale-and-balance.html)  
 
 ### 👉 Unwelcome Concepts // TODO
-// Unwelcome concepts: [RAdocs - Unwelcome Concepts](https://docs.retroachievements.org/guidelines/content/unwelcome-concepts.html)
+/// Unwelcome concepts: [RAdocs - Unwelcome Concepts](https://docs.retroachievements.org/guidelines/content/unwelcome-concepts.html)
 
 ### 👉 Point Distribution // TODO
-// Conform to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html)
+/// Conform to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html)
 
 ### 👉 Challenges & Variety // TODO
-// Enough variation in challenges, are features/game mechanics touched upon?
-
-
-
+/// Enough variation in challenges, are features/game mechanics touched upon?
 
 # ✦═══════✦ ℹ️ Optional Considerations ✦═══════✦ // TODO
 

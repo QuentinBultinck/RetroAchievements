@@ -1,6 +1,7 @@
 # %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
 
 # ------Links Related to Code Review------
+Junior Developer => _LINK_TO-RA_USER_
 Code Review => _DISCORD_LINK_TO_CODE_REVIEW_
 Set Plan Review => _DISCORD_LINK_TO_SET_PLAN_REVIEW_
 Ready for Review Thread => _DISCORD_LINK_TO_READY_FOR_REVIEW_
@@ -131,12 +132,13 @@ RA Game Page => _LINK_RA_GAME_PAGE_
 
 ## ∘───── ✍️ Titles & Descriptions ─────∘  // TODO
 /// Conform to https://docs.retroachievements.org/guidelines/content/writing-policy.html
+/// Consider [#writing-requests on RAdiscord](https://discord.com/channels/310192285306454017/1100757231294750730)
 /// Rich Presence text
 
 ## ∘───── 🖼️ Badge Art ─────∘  // TODO
 /// Conform to https://docs.retroachievements.org/guidelines/content/badge-and-icon-guidelines.html  
 ///          and https://docs.retroachievements.org/developer-docs/badge-and-icon-creation.html
-/// [#art-request](https://discord.com/channels/310192285306454017/1048102604963586048) on RAdiscord
+/// Consider [#art-requests on RAdiscord](https://discord.com/channels/310192285306454017/1048102604963586048)
 /// Badge Style & Consistency, Visual Badge Quality
 
 ## ∘───── ⚖️ Point Distribution ─────∘  // TODO
@@ -199,11 +201,16 @@ I'll be using this list here to track your progress as well. As you work through
 ### 🔲 🔑❓ Hubs & Similar Games
 ### 🔲 🔑❓ Game Page Metadata
 
-### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠--- // TODO
+### ---⇢ 📌 Wrap-Up Tasks (before promotion) ⇠--- // TODO
 🔲 Testing after logic changes
 🔲 ...
 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
+
 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
+
+### ---⇢ 📌 Additional Tasks (post set promotion) ⇠---
+🔲 Write RAnews Set Highlight Fill out [form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
+
 
 When the full checklist is completed and confirmed, we can proceed with finalizing the review and begin discussing the set’s promotion. Until then, feel free to ping me anytime if you’ve completed the task list or have further questions, I’ll be happy to review things again when ready.
 
@@ -245,12 +252,53 @@ I'll be using this list here to track your progress as well. As you work through
 ### 🔲 🧩❗ ...
 ### 🔲 🔧❓ ...
 
-### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠--- // TODO
+### ---⇢ 📌 Wrap-Up Tasks ⇠--- // TODO
 🔲 Testing after logic changes
 🔲 ...
-🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
+🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
+🔲 **[Post-Set Promotion]** RANews Set Highlight
+
+# %%%%%%%%%%%%% CODE REVIEW WRAP-UP %%%%%%%%%%%%% #
 
 #  ✦═══════✦ ✔️ Wrap-Up & Next Steps ✦═══════✦ // TODO
-## 🎓 ∘───── Reflection & Suggestions ─────∘ 
-/// Reflection on what was learned + Feedforward (suggestions for future Jr. Dev process).
+/// Final phase and closing guidance.
+
+## ∘───── 🎓 Reflection & Suggestions ─────∘ // TODO
+
+### ---⇢ ⏪ Retrospective ⇠--- // TODO
+/// Summarize/reflect what went well (positive observations) and what didn’t (key challenges or mistakes). Highlight any significant learning moments or improvements made during development/code review.
+
+### ---⇢ 🤔 Suggestions ⇠--- // TODO
+/// Recommend areas for growth using the [Proficiency Checklist]. This may include tools or skills that weren’t demonstrated during the set development.
+/// Suggestions may include:
+/// - Review other developers’ Code Reviews for common pitfalls and strong practices.
+/// - Use Discord help channels frequently — don’t hesitate to ask for feedback.
+/// - Keep [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/) handy while working; it’s an essential tool.
+
+## ∘───── 🌟 Achievement Unlocked! ─────∘ // TODO, only include this section when promoted to full dev
+/// This section is used for guiding Jr through promotion to full developer (let Jr try to make the Achievement-NewsAnnouncement)
+> *"Promoted to full developer!"*
+...
+
+## ∘───── 🌟 Set Promotion ─────∘ // TODO, only include this section, when not promoted to full dev
+/// Guide junior through set promotion
+/// Use Achievement-NewsAnnouncement_Template.txt + Ask Jr to write some flavour text for this
+
+## ∘───── ✒️ RANews Set Highlight ─────∘ // Post-Set Promotion // TODO
+As a final step, please take a moment to fill out the [RAnews Set Highlight Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview). In it, you’ll be asked to write a short pitch promoting your game/set, aimed at readers of the RetroAchievements digital magazine. Your snippet may be featured—fully or with minor edits—in an upcoming issue under the **"Junior Developer Program"** section.
+
+Use this as a chance to spotlight what makes the game and your achievement set stand out. It’s a great way to highlight your work and get players excited to check it out! Consider briefly mentioning:
+- What the game is about
+- What makes the achievement set fun or unique
+- Any specific design focus or standout challenges
+
+This isn’t a devlog, just a brief, engaging introduction meant to catch a reader’s attention.
+
+Here are a few examples of past highlights for inspiration:
+- [RANews Issue February 2025](https://news.retroachievements.org/issues/2025-02/jr-developer-program.html) (first appearance of this section)
+- [RANews Issue March 2025](https://news.retroachievements.org/issues/2025-03/jr-developer-program.html)
+- [RANews Issue April 2025](https://news.retroachievements.org/issues/2025-04/jr-developer-program.html)
+- ...
+
+Once you've submitted your entry into the form, feel free to ping me, so we can mark this post-set promotion task as done! 
