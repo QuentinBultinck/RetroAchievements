@@ -2,7 +2,7 @@
 
 # ------Links Related to Code Review------
 Junior Developer => _LINK_TO-RA_USER_
-Code Review => _DISCORD_LINK_TO_CODE_REVIEW_
+Code Review Thread => _DISCORD_LINK_TO_CODE_REVIEW_
 Set Plan Review => _DISCORD_LINK_TO_SET_PLAN_REVIEW_
 Ready for Review Thread => _DISCORD_LINK_TO_READY_FOR_REVIEW_
 Play Test Thread => _DISCORD_LINK_TO_PLAY_TEST_
@@ -205,12 +205,10 @@ I'll be using this list here to track your progress as well. As you work through
 🔲 Testing after logic changes
 🔲 ...
 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
-
 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
 
-### ---⇢ 📌 Additional Tasks (post set promotion) ⇠---
-🔲 Write RAnews Set Highlight Fill out [form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
-
+### ---⇢ 📌 Additional Tasks (post-set promotion) ⇠--- // TODO
+🔲 Write/Submit RAnews Set Highlight [Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
 
 When the full checklist is completed and confirmed, we can proceed with finalizing the review and begin discussing the set’s promotion. Until then, feel free to ping me anytime if you’ve completed the task list or have further questions, I’ll be happy to review things again when ready.
 
@@ -252,12 +250,14 @@ I'll be using this list here to track your progress as well. As you work through
 ### 🔲 🧩❗ ...
 ### 🔲 🔧❓ ...
 
-### ---⇢ 📌 Wrap-Up Tasks ⇠--- // TODO
+### ---⇢ 📌 Wrap-Up Tasks (before promotion) ⇠--- // TODO
 🔲 Testing after logic changes
 🔲 ...
-🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
-🔲 **[Post-Set Promotion]** RANews Set Highlight
+🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
+
+### ---⇢ 📌 Additional Tasks (post-set promotion) ⇠--- // TODO
+🔲 Write/Submit RAnews Set Highlight [Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
 
 # %%%%%%%%%%%%% CODE REVIEW WRAP-UP %%%%%%%%%%%%% #
 

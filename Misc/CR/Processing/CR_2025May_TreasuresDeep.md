@@ -1,7 +1,7 @@
 # %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
 
 # ------Links Related to Code Review------
-Code Review => _DISCORD_LINK_TO_CODE_REVIEW_
+Code Review => https://discord.com/channels/310192285306454017/1371969269759213708
 Set Plan Review => _DISCORD_LINK_TO_SET_PLAN_REVIEW_
 Ready for Review Thread => https://discord.com/channels/310192285306454017/1342358688249151539
 RA Game Page => https://retroachievements.org/game/19403
@@ -297,7 +297,7 @@ There seems to be some missing metadata, if you try to please fill everything in
 
 ## ∘───── 📋 TODO Checklist ─────∘
 - **Initially Posted on**: `13 May 2025` - `Initial Code Review`
-- **Last Updated on**: `DD Month YYYY` - `Checklist Assessment #0-[ChecklistAssessmentNumber]` // CR_TODO Perform next Checklist Assessment Round
+- **Last Updated on**: `18 May 2025` - `Checklist Assessment #0-1` // CR_TODO Perform next Checklist Assessment Round
 
 Please use the list below as a working guideline. I recommend copying it or creating your own version, ideally in a format I can also access and follow along with. A good option would be to add a new tab in your existing Set Plan Excel document for this purpose.
 
@@ -311,16 +311,23 @@ I'll be using this list here to track your progress as well. As you work through
 - ❌ CANCELED — Task was dropped or no longer applicable (by Reviewee)
 
 ### ---⇢ 📌 Initial Code Review Tasks ⇠---
-### 🔲 🛠️❓ Code Notes *"Map State"* `$0x10d848 - $0x10e360`
-### 🔲 🛠️❓ Code Notes *"Oxygen"* & *"Health"*
-### 🔲 🛠️❓ Code Notes Time-Related - Missing Time Unit
-### 🔲 🛠️❓ Code Note `$0x11f618` Additions Possible
-### 🔲 🛠️❓ Flag Documentation
-### 🔲 🛠️❓ Code Notes **"Pre-mission"* `$0x40698`
-### 🔲 🧪❓ Development Questions
-### 🔲 🏆❓ Missables Question
-### 🔲 🖼️💡 Badge Quality Uplift
-### 🔲 ⚖️💡 Point Increase
+### ✅ 🛠️❓ Code Notes *"Map State"* `$0x10d848 - $0x10e360`
+### ✅ 🛠️❓ Code Notes *"Oxygen"* & *"Health"*
+### ✅ 🛠️❓ Code Notes Time-Related - Missing Time Unit
+### ✅ 🛠️❓ Code Note `$0x11f618` Additions Possible
+### 🔄 🛠️❓ Flag Documentation
+Jr still has to decide what to do on this.
+### 🔄 🛠️❓ Code Notes **"Pre-mission"* `$0x40698`
+Pre-mission is defined at `$0x03f864`. 
+`$0x0406c0` still has to be re-added/updated, as this is a removed code note from other dev
+### ✅ 🧪❓ Development Questions
+I absolutly loved reading through the Jr's development/testing process. Jr seems to have learned a lot by hitting different obstacles and trying to overcome/fix them, very nice. This is how you learn!
+### ✅ 🏆❓ Missables Question
+Jr explained the usage of marking the achievements missable, very well.
+### ✅ 🖼️💡 Badge Quality Uplift
+This topic is touched upon, art-request may be made. It's not a HARD requirement. Badges can always be updated post-set release.
+### ✅ ⚖️💡 Point Increase
+Jr has increase the score of a few achievements somewhat, good.
 ### 🔲 🧩❗ Achievement [Ride the Ray](https://retroachievements.org/achievement/497654) - Additional Delta 
 ### 🔲 🧩❓ Achievement [It's All Coming Together](https://retroachievements.org/achievement/497647) - Logic Question
 ### 🔲 🧩❓ Cheat-Protection - Questions
@@ -328,9 +335,12 @@ I'll be using this list here to track your progress as well. As you work through
 ### 🔲 🧭❓ Hubs & Similar Games
 ### 🔲 🗂️❓ Game Page Metadata
 
-### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠---
+### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠--- // TODO
 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
+
+### ---⇢ 📌 Additional Tasks (post-set promotion) ⇠--- // TODO
+🔲 Write RAnews Set Highlight Fill out [form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
 
 When the full checklist is completed and confirmed, we can proceed with finalizing the review and begin discussing the set’s promotion. Until then, feel free to ping me anytime if you’ve completed the task list or have further questions, I’ll be happy to review things again when ready.
 
@@ -372,10 +382,11 @@ If you don't, I may update this list here via this discord thread.
 ### 🔲 🔧❓ ...
 
 ### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠--- // TODO
-🔲 Testing after logic changes
-🔲 ...
 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
+
+### ---⇢ 📌 Additional Tasks (post-set promotion) ⇠--- // TODO
+🔲 Write/Submit RAnews Set Highlight [Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
 
 #  ✦═══════✦ ✔️ Wrap-Up & Next Steps ✦═══════✦ // TODO
 ## 🎓 ∘───── Reflection & Suggestions ─────∘ 

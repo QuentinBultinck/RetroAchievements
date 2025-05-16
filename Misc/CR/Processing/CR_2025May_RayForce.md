@@ -1,7 +1,7 @@
 # %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
 
 # ------Links Related to Code Review------
-Code Review => _DISCORD_LINK_TO_CODE_REVIEW_
+Code Review => https://discord.com/channels/310192285306454017/1368699416575475813
 Set Plan Review => _DISCORD_LINK_TO_SET_PLAN_REVIEW_
 Ready for Review Thread => _DISCORD_LINK_TO_READY_FOR_REVIEW_
 RA Game Page => https://retroachievements.org/game/13588?f=5
@@ -583,6 +583,9 @@ Dev is looking into ways to fix this issue
 New Art has been uploaded and credited, refer to https://discord.com/channels/310192285306454017/1369176386538962944
 ### 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
 ### 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
+
+### ---⇢ 📌 Additional Tasks (post-set promotion) ⇠---
+🔲 Write/Submit RAnews Set Highlight [Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
 
 #  ✦═══════✦ ✔️ Wrap-Up & Next Steps ✦═══════✦ // TODO
 ## 🎓 Reflection & Suggestions

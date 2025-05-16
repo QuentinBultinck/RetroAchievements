@@ -451,11 +451,14 @@ AddSource 0x300 * 0x64
 ### 🔲 🧭 Hubs & Similar Games
 ### 🔲 🗂️ Game Page Metadata
 
-### 📌 Additional Tasks
+### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠---
 🔲 Testing after logic changes
 🔲 Revision of most achievement logic
 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
+
+### ---⇢ 📌 Additional Tasks (post-set promotion) ⇠--- // TODO
+🔲 Write/Submit RAnews Set Highlight [Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
 
 When the full checklist is completed and confirmed, we can proceed with finalizing the review and begin discussing the set’s promotion. Until then, feel free to ping me anytime if you’ve completed the task list or have further questions, I’ll be happy to review things again when ready.
 
