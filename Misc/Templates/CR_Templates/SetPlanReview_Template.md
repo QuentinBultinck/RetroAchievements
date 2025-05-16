@@ -147,6 +147,8 @@ These hubs help players understand the intended play context of your set, withou
 # ✦═══════✦ ✅ Wrap-Up ✦═══════✦
 Before we can move you forward into the Junior Developer Program, please take a moment to address the remarks and suggestions outlined above. These are important to ensure your set plan is solid and ready for the next stage.
 
+Just to clarify, this is the design phase. You don't need to worry yet about whether you can code the achievements; the focus of this short review right now is simply on brainstorming and outlining ideas.
+
 > **Note**: You may skip the **Considerations** section for now, those are not strict requirements for entry into the program. You'll naturally encounter and work through those once you begin actively developing your set.
 
 Once everything is in order, just give us or me another ping, and we’ll proceed with the next steps!
