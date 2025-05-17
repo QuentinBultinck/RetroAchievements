@@ -40,11 +40,16 @@ Hello @_JR_DEV_USERNAME_
 
 Your set look pretty polished, but I have a few remarks I'd wish for you to address before we get you into the backlog.
 
+That said, please keep in mind that I'm not deeply familiar with this game beyond the quick glance I took. So any feedback I provide here should always be weighed against your own understanding of the game’s design. You’re the expert here.
+
+
 # ------Intro_OK------
 
 Hello @_JR_DEV_USERNAME_
 
-Your set look very solid, I have no remarks to give, everything looks good from my short review of the set. 
+Your set look very solid, I have no major remarks to offer. Everything appears well put together based on my brief review.
+
+That said, please keep in mind that I'm not deeply familiar with this game beyond the quick glance I took. So any feedback I provide here should always be weighed against your own understanding of the game’s design. You’re the expert here.
 
 # ------Checklist (for CR)------
 
@@ -62,7 +67,9 @@ Your set look very solid, I have no remarks to give, everything looks good from 
 ### 👉 Achievements Types/Labels (progression/missables) // TODO
 /// Achievement types: https://docs.retroachievements.org/guidelines/content/progression-and-win-condition-guidelines.html
 Any `missable` achievements? 
-> *"Think of a player that only wants to play through this game once in order to earn the `Beaten` status, and maybe earn some extra achievements along the way... Again you make this choice, since you know the game best."*
+> *"Think of a player who only wants to play through the game once to earn the Beaten status, perhaps picking up a few achievements along the way..."*
+- If missing an achievement would require replaying a significant portion of the game, it might also warrant the `missable` tag. Of course, if the game includes features like chapter or level select, this concern is largely mitigated.
+You're the expert on this game, so this is up to you.
 
 ### 👉 Difficulty Balancing // TODO
 /// Difficulty balance: [RAdocs - Difficulty Guidelines](https://docs.retroachievements.org/developer-docs/difficulty-scale-and-balance.html)  
@@ -80,6 +87,13 @@ Any `missable` achievements?
 ### 👉 Challenges & Variety // TODO
 /// Enough variation in challenges, are features/game mechanics touched upon?
 
+### 👉 Code Notes // TODO
+/// Notation according to standards? [RAdocs - Code Notes](https://docs.retroachievements.org/guidelines/content/code-notes.html#code-notes)
+/// All RAM values used in logic have code notes?
+
+### 👉 Implementation // TODO
+/// Review 3 random achievements + a few leaderboards
+
 ### 👉 Rich Presence (on site) // TODO
 /// Is there Dynamic RP?
 /// Does this look good from a glance?
@@ -90,7 +104,7 @@ Any `missable` achievements?
 
 # ------Closing Notes------ // TODO
 
-Please do your best to address all of the feedback above. Once you've gone through everything and made the necessary changes, ping me again — I’ll then officially add you to the review backlog.
+Please do your best to address all of the 👉 feedback above. Once you've gone through everything and made the necessary changes, ping `code-reviewer` again, So we can re-evaluate and then officially add you to the review backlog.
 
 # %%%%%%%%%%%%% POST-READY FOR REVIEW %%%%%%%%%%%%% # // TODO, once added to the backlog
 

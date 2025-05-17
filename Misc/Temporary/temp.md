@@ -1,17 +1,9 @@
-# %%%%%%%%%%%%% SET PLAN REVIEW NOTES %%%%%%%%%%%%% #
-# ''''''''''''''''''''''''''''''''''''''''''''''''' #
- 
-# ------CR TODO List------ (for use by CR)
-- Labels `progression` `win condition` `missable` correctly used
-- Text conform to [RAdocs - Writing Policy](https://docs.retroachievements.org/guidelines/content/writing-policy.html)
-- Check challenge variety, based on what features/mechanics the game has (HP, shooting, weapons, abilities, enemies, bosses...)
+# %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
 
-# ------TODO Legend------
-- 🔲 TODO — Task identified but not yet started
-- 🔄 WIP — Task is in progress
-- ✅ DONE — Task has been completed successfully
-- 🟨 DISMISSED – Task was reviewed and ruled out
-- ❌ CANCELED — Task was dropped or no longer applicable
+# ------CR TODO List------ (for use by CR)
+- Discord Code Review Naming Scheme: `Code Review - [GameTitle (Console)] - [DevName]`
+- Check prior work via Proficieny-Checklist
+- Remove all comments ///
 
 # ------Usefull unicode characters------
 ✅ ☑️ ✔️ 🆗
@@ -32,137 +24,122 @@
 🎓 	🎮
 ⏳
 
-### ❓ Achievement [G](https://retroachievements.org/achievement/482465) Single Letter Title
-Only one letter title? Could you elaborate on this choice?
+## ∘───── Related Links ─────∘ // TODO, link these
+Junior Developer => _LINK_TO-RA_USER_
+Set Plan Review/Jr. Dev Request => _LINK_DISCORD_THREAD_
+Set Plan => _LINK_TO_SET_PLAN_
+Ready for Review Thread => _LINK_DISCORD_THREAD_
+Play Test Thread => _LINK_DISCORD_THREAD_
+RA Game Page => _LINK_RA_GAME_PAGE_
 
-### ❗ Achievement [G](https://retroachievements.org/achievement/482465) Broken
-Broken because ...
+# %%%%%%%%%%%%% READY FOR REVIEW %%%%%%%%%%%%% #
 
-### ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) Improvement Suggestion
-Do this instead of that...
+# ------Intro_A------
+
+Hello @_JR_DEV_USERNAME_
+
+Your set look pretty polished, but I have a few remarks I'd wish for you to address before we get you into the backlog.
+
+# ------Intro_OK------
+
+Hello @_JR_DEV_USERNAME_
+
+Your set look very solid, I have no major remarks to offer. Everything appears well put together based on my brief review.
+
+That said, please keep in mind that I'm not deeply familiar with this game beyond the quick glance I took. So any feedback I provide here should always be weighed against your own understanding of the game’s design. You’re the expert here.
+
+# ------Checklist (for CR)------
+
+### ✅ Overal Set Design
+Is all content covered? Seems like it. Even some secret stages and what not.
+
+### ✅ Titles & Descriptions
+All text looks good, no complaints. Love the titles.
+
+### ✅ Achievements Types/Labels (progression/missables)
+Did you consider the `missable` type for achievements? 
+> *"Think of a player that only wants to play through this game once in order to earn the `Beaten` status, and maybe earn some extra achievements along the way... Again you make this choice, since you know the game best."*
+
+### ✅ Badges
+High-quality badges, love to see it
+
+### 👉 Difficulty Balancing & Point Distribution
+You have a large variety of highly scored achievements (25, 50 and 100-pointers). Are they really that hard to achieve. Consider going through other sets of the same genre and see how they scored similar achievements, but again you're the expert here. I also think we went over this during your Jr Dev Request for this game, refer to https://discord.com/channels/310192285306454017/1370239209343815730/1370315667214962718. If you think they're fine, elaborate on this again, to clarify your choices here.
+
+### ✅ Challenges & Variety
+Lots of challenges and variety in them, love to see it.
+
+### 👉 Code Notes
+Highly recommended to add the prefix `0x` to all hexadecimal values within your code notes. Take a look at `$0x727e`:
+``` 	
+[8-bit] Screen ID
+
+00 = Bootup
+02 = Score Ranking
+04 = Title Screen
+05 = Demo/Frame Before 06
+06 = In-Game?
+08 = Recycle It, Don't Trash It!
+0b = Select Your Fighter
+0c = Virtual Audio Q Screen
+0d = In-Between Stage Story/Credits
+0e = Tutorial
+10 = Capcom Logo
+11 = Intro Movie
+12 = Attract Mode
+```
+
+Suggested: 
+``` 	
+[8-bit] Screen ID
+
+0x00 = Bootup
+0x02 = Score Ranking
+0x04 = Title Screen
+0x05 = Demo/Frame Before 06
+0x06 = In-Game?
+0x08 = Recycle It, Don't Trash It!
+0x0B = Select Your Fighter
+0x0C = Virtual Audio Q Screen
+0x0D = In-Between Stage Story/Credits
+0x0E = Tutorial
+0x10 = Capcom Logo
+0x11 = Intro Movie
+0x12 = Attract Mode
+```
+In this case it's more clear you've documented them as hexadecimal and not just decimal values.
+Make this change accross all your code notes please, especially if you're documenting values 9, A-F
+You could also consider `0b` prefix for binary notations.
 
 
+### 👉 Implementation
+### Achievement [It’s Time to Take Down That Medallion](https://retroachievements.org/achievement/520713) Undocumented Value
+Core:Line[9] 
+```
+ResetIf Mem 8-bit 0x00727e = Value 0x000007 (0)
+```
+0x7 isn't a documented value within code note `$0x727e`
 
-# %%%%%%%%%%%%% SET PLAN REVIEW TEMPLATE %%%%%%%%%%%%% #
-# '''''''''''''''''''''''''''''''''''''''''''''''''''' #
-// Review [RAdocs - Junior Developer Program Rules](https://docs.retroachievements.org/developer-docs/jr-dev-rules.html#junior-developer-program-rules)
-// Check [Rules and Restrictions](https://docs.retroachievements.org/developer-docs/jr-dev-rules.html#rules-and-restrictions)
+### ✅ Rich Presence
+Looks great
 
-# ------Intro------
-// - RA user history (game awards)
-// - devved sets before
-// - part of any other teams
+### ✅ Testing
+If you're still unsure about some things, you can always consider [#playtest-requests on RAdiscord](https://discord.com/channels/310192285306454017/1169258130555797524)
 
-Hello @Pearl
+# ------Closing Notes------
 
-Hey there! Thank you for your interest in joining the RA Developer Cohorts, and welcome! It’s great to see that you’re already an enthusiastic RA achievement hunter. Now that you're looking to create a set of your own, that’s really exciting to see!
+Please do your best to address all of the 👉 feedback above. Once you've gone through everything and made the necessary changes, ping `code-reviewer` again, So we can re-evaluate and then officially add you to the review backlog.
 
-Now, please take some time to carefully read through all the notes and suggestions below. They’re here to help guide you through the process and ensure your first set is off to a strong start.
+# %%%%%%%%%%%%% POST-READY FOR REVIEW %%%%%%%%%%%%% # // TODO, once added to the backlog
 
-Once you’ve gone through everything and made any needed adjustments, we’ll get you devving in no time!
+You've been added to the backlog. Now please be patient until the CR-team gets through the list. You'll be our next Code Review in no time. 
+In the meantime, here are a few suggestions to make the most of the wait:
+- *(Recommended)* Keep testing and polishing your set. The less problems there are discovered during the Code Review, the faster you'll be out of the junior program and earn full dev status. I highly advise to read any Code Reviews that come up, to see what other juniors often struggle with or have done well.
+- *(Recommended)* See where you can incorporate Measured or Trigger flags for better player feedback.
+- *(Recommended)* Add or improve leaderboards, if applicable. Implementing leaderboards is another great learning experience.
+- *(Optional)* Revisit any achievements you struggled to implement, fresh ideas may help. 
+- *(Optional)* Add support for an alternate hash if the game has other versions.
+- *(Optional)* Consider writing an [RAguide](https://github.com/RetroAchievements/guides/wiki) to help players understand the set.
+- *(Optional)* Get involved with other parts of the RAcommunity, whether that’s helping other Junior Devs, contributing to the Art Team, Writing Team, Playtesters, RANews or even helping with coding.
 
-# ――――――――――――――――― 🔍 Set Plan Review 🔍 ―――――――――――――――――
-
-### 👉 Titles
-You have a few titles already written down. Just make sure you're making them Title Cased, refer to [RAdocs - Writing Policy](https://docs.retroachievements.org/guidelines/content/writing-policy.html#achievement-titles). Otherwise I like the tone of them, very good and very creative.
-
-### 👉 Descriptions
-Looks pretty good, well written, although I do have a few remarks:
-- Some descriptions end with a period `"."`, other don't. Either don't or do make each achievement description end on some period marker.
-
-### 👉 Achievements Types/Labels (progression/missables)
-Would any achievement be eligible for being the `Win Condition`? If there's no level select, then I would say stage 6 or 7, although stage 7 feels more like a challenge/extra achievement, since it's locked behind an in-game challenge. You make this choice, since you know the game best.
-
-Any more `missable` achievements? Think of a player that only wants to play through this game once in order to earn the `Beaten` status, and maybe earn some basic achievement along the way... Again you make this choice, since you know the game best. If there's none it's fine.
-
-### 👉 Difficulty Modes
-Does the game come with difficulties? Is there some sort of settings menu or Dipswitch settings? If yes, these could perhaps be incorporated into the challenge achievements.
-
-### 👉 Point Distribution, Unwelcome Concepts & Difficulty Balancing
-I’m not familiar with how difficult this game actually is, but I noticed there are quite a few highly scored achievements in your set, and I wanted to raise a few concerns for your consideration. Please refer to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html).
-
-🏆 ***Achieve a score of 75 Trillion points***
-`100-pointer` Is this realistically achievable without an excessive grind? This might be at risk of falling under the [Unwelcome Concepts](https://docs.retroachievements.org/guidelines/content/unwelcome-concepts.html), particularly the “excessive grinding” category. If it’s too far beyond what a typical player can reasonably accomplish, it might need to be scaled back or reconsidered.
-
-🏆 ***Complete the entire game without dying***
-`100-pointer`
-I do think an achievement like this should be in the set. But is it really that hard to score it a 100-pointer?
-
-**General Notes on Difficulty and Scoring**
-It's not inherently wrong to include tough achievements, but keep in mind:
-- Very hard sets can discourage players — especially completionists — from engaging with your work.
-- Achievement points should generally reflect both the difficulty and effort required.
-- If you have challenges that are truly extreme, you might consider placing them in a subset. Junior Developers are allowed to create subsets for games they are the sole author of — just something to keep in mind.
-
-Ultimately, you’re in the best position to judge the difficulty of this game. Just be mindful of balance: a well-scored, fun, and fair set will always be more appealing to players. Overscored sets aren’t a huge deal (they can be rebalanced later based on unlock stats), but it’s always better to aim for solid design from the start.
-
-### 👉 Challenges & Variety
-A lot of challenge achievements, with lots of variety. Love to see some secret/easter eggs as well. Good job. 
-
-# ――――――――――――――――― ℹ️ Optional Considerations ℹ️ ―――――――――――――――――
-
-> This section is `optional` at this stage, but it may prove useful for your growth as a junior developer later on.
-
-## 🚦 Feature Usage (Trigger / Measured)
-Consider RA’s [Trigger](https://docs.retroachievements.org/developer-docs/flags/trigger.html#trigger) and [Measured](https://docs.retroachievements.org/developer-docs/flags/measured.html#measured) features where appropriate to provide players with clearer feedback during gameplay for specific achievements. These features not only improve the achievement experience but also help reduce confusion or frustration during more complex challenges. You could potentially mark these feature on the set plan as well. 
-
-> ### Trigger Indicator
-> `"This functionality allows putting indicators on the screen to help players know when a challenge is active, or more importantly, when they fail the challenge."`
-> A prime example would be for `a damageless boss fight`. A trigger indicator is displayed on screen when the boss fight starts, and is removed from the screen when the player takes damage, giving the player feedback that the challenge has failed, and he has to retry.
-
-> ### Measured Indicator
-> `Measured marks a condition for tracking progress. It adds a progress bar to the achievement overlay to inform the user how close they are to completing an achievement.`
-> An example would be `collect all coins within a stage`. If there are 9 coins, a measured indicator could keep track of how many are left to collect. This could be done as 0/9 or in %.
-> Another example: `Complete stage x, with only 5 allowed ability activations`. This would start at 5/5 and decrement by 1 when an ability is used, giving the player feedback of how many abilities the player is still alowed to use before the achievement fails.
-
-Using these features can significantly enhance the clarity, functionality, and overall user experience of your achievements. These features help players better understand expectations and track their progress or failure of specific achievements in real time.
-
-## 🏁 Leaderboards & Rich Presence
-- Leaderboards are optional but strongly encouraged.
-  Refer to [Leaderboards Guide](https://docs.retroachievements.org/developer-docs/leaderboards.html#leaderboards)
-  I see some potential with medals and highscores?
-- Rich Presence is **required** before requesting set review down the line.
-  Reference: [Rich Presence Guide](https://docs.retroachievements.org/developer-docs/rich-presence.html#rich-presence)
-
-## 🕹️ Multiplayer
-You may want to consider the multiplayer features of this game, within your set.
-If the feature is present then make a choice:
-> - ❌ **Disallow Multiplayer**
-> All achievements must be earned in single-player mode only.
-> - ✅ **Allow Multiplayer**
-> Achievements must be unlocked during multiplayer sessions. (Achievements aren't allowed to be unlocked with only 1 player doing all the work)
-> - ⚠️ **Partially Allow Multiplayer**
-> Some achievements may allow multiplayer unlocks, but this can lead to balancing issues or unintended gameplay advantages (e.g., player 2 assisting player 1). Use with caution and document intent clearly.
-
-You may also consider creating a [Subset - Multi], if for example multiplayer content significantly differs from the single-player experience:
-- In this case all the [BaseSet] achievements only unlock with only 1 player is interacting with the game.
-- The [Subset] achievements only unlock when multiple players are interacting with the game.
-This helps maintain balance and clarity while still supporting full multiplayer content.
-
-If the game includes multiplayer features of any kind, you will also have to apply one of the following [Meta] hubs to your set:
-- [Meta - Set Disallows Multiplayer](https://retroachievements.org/hub/26213)
-- [Meta - Set Allows Multiplayer](https://retroachievements.org/hub/22986)
-- [Meta - Set Partially Allows Multiplayer](https://retroachievements.org/hub/7115)
-These hubs help players understand the intended play context of your set, without having to describe it in each achievement's description.
-
-## 📖 Writing RAguide
-- Consider preparing a RAguide for the [📚 RAguides/Wiki](https://github.com/RetroAchievements/guides/wiki)
-
-# ✅ Wrap-Up
-Before we can move you forward into the Junior Developer Program, please take a moment to address the remarks and suggestions outlined above. These are important to ensure your set plan is solid and ready for the next stage.
-
-> **Note**: You may skip the **Considerations** section for now, those are not strict requirements for entry into the program. You'll naturally encounter and work through those once you begin actively developing your set.
-
-Once everything is in order, just give us or me another ping, and we’ll proceed with the next steps!
-
-# 📍 Initial Set Plan (For Reference)
-_screenshot of Set Plan before review_
-
-# %%%%%%%%%%%%% POST-INITIAL SET PLAN REVIEW %%%%%%%%%%%%% #
-# '''''''''''''''''''''''''''''''''''''''''''''''''''''''' #
-
-# 📍 Altered Set Plan (For Reference)
-_screenshot of Set Plan after alterations_ // If no changes, then remove this section
-
-# 🎉 Final Words // TODO
-_Add your final encouragement or notes here when submitting them to the Junior Dev Program._
+Your extra efforts will not only help your own set stand out, they’ll also be a great way to grow as a developer in the community.

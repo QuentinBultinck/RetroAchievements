@@ -80,7 +80,9 @@ Once you’ve reviewed everything and made any necessary updates or adjustments,
 ### 👉 Achievements Types/Labels (progression/missables) // TODO
 /// Achievement types: https://docs.retroachievements.org/guidelines/content/progression-and-win-condition-guidelines.html
 Any `missable` achievements? 
-> *"Think of a player that only wants to play through this game once in order to earn the `Beaten` status, and maybe earn some extra achievements along the way... Again you make this choice, since you know the game best."*
+> *"Think of a player who only wants to play through the game once to earn the Beaten status, perhaps picking up a few achievements along the way..."*
+- If missing an achievement would require replaying a significant portion of the game, it might also warrant the `missable` tag. Of course, if the game includes features like chapter or level select, this concern is largely mitigated.
+You're the expert on this game, so this is up to you.
 
 ### 👉 Difficulty Balancing // TODO
 /// Difficulty balance: [RAdocs - Difficulty Guidelines](https://docs.retroachievements.org/developer-docs/difficulty-scale-and-balance.html)  

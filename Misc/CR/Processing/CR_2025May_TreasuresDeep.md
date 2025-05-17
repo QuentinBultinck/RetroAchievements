@@ -297,7 +297,7 @@ There seems to be some missing metadata, if you try to please fill everything in
 
 ## ∘───── 📋 TODO Checklist ─────∘
 - **Initially Posted on**: `13 May 2025` - `Initial Code Review`
-- **Last Updated on**: `18 May 2025` - `Checklist Assessment #0-1` // CR_TODO Perform next Checklist Assessment Round
+- **Last Updated on**: `16 May 2025` - `Checklist Assessment #0-1` // CR_TODO Perform next Checklist Assessment Round
 
 Please use the list below as a working guideline. I recommend copying it or creating your own version, ideally in a format I can also access and follow along with. A good option would be to add a new tab in your existing Set Plan Excel document for this purpose.
 
@@ -315,15 +315,15 @@ I'll be using this list here to track your progress as well. As you work through
 ### ✅ 🛠️❓ Code Notes *"Oxygen"* & *"Health"*
 ### ✅ 🛠️❓ Code Notes Time-Related - Missing Time Unit
 ### ✅ 🛠️❓ Code Note `$0x11f618` Additions Possible
-### 🔄 🛠️❓ Flag Documentation
-Jr still has to decide what to do on this.
+### ✅ 🛠️❓ Flag Documentation
+Jr has updated relevant code notes where applicable
 ### 🔄 🛠️❓ Code Notes **"Pre-mission"* `$0x40698`
 Pre-mission is defined at `$0x03f864`. 
 `$0x0406c0` still has to be re-added/updated, as this is a removed code note from other dev
 ### ✅ 🧪❓ Development Questions
 I absolutly loved reading through the Jr's development/testing process. Jr seems to have learned a lot by hitting different obstacles and trying to overcome/fix them, very nice. This is how you learn!
 ### ✅ 🏆❓ Missables Question
-Jr explained the usage of marking the achievements missable, very well.
+Jr explained the usage of marking the achievements missable, very well. Jr has also done some updates to clarify that these missables can only be completed within the first playthrough of a level.
 ### ✅ 🖼️💡 Badge Quality Uplift
 This topic is touched upon, art-request may be made. It's not a HARD requirement. Badges can always be updated post-set release.
 ### ✅ ⚖️💡 Point Increase
