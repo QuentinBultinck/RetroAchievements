@@ -3,6 +3,7 @@
 # ------Links Related to Code Review------
 Code Review => https://discord.com/channels/310192285306454017/1371969269759213708
 Set Plan Review => _DISCORD_LINK_TO_SET_PLAN_REVIEW_
+Set Plan Doc => https://docs.google.com/spreadsheets/d/18K_nmvO93XUdnPZ3dMp04nIYvjlHrUnvGn2s0OEMhS4/edit?gid=303587950#gid=303587950
 Ready for Review Thread => https://discord.com/channels/310192285306454017/1342358688249151539
 RA Game Page => https://retroachievements.org/game/19403
  
@@ -293,7 +294,7 @@ And are there anymore similar games to add? Think of games that may fit the same
 Is everything correctly filled out on the **manage page** and **game page**?
 There seems to be some missing metadata, if you try to please fill everything in, so you get a feel how this functions.
 
-# ✦═══════✦📜 Summary & Final Thoughts 📜✦═══════❖
+# ✦═══════✦📜 Summary & Final Thoughts 📜✦═══════✦
 
 ## ∘───── 📋 TODO Checklist ─────∘
 - **Initially Posted on**: `13 May 2025` - `Initial Code Review`
@@ -317,9 +318,9 @@ I'll be using this list here to track your progress as well. As you work through
 ### ✅ 🛠️❓ Code Note `$0x11f618` Additions Possible
 ### ✅ 🛠️❓ Flag Documentation
 Jr has updated relevant code notes where applicable
-### 🔄 🛠️❓ Code Notes **"Pre-mission"* `$0x40698`
+### ✅ 🛠️❓ Code Notes **"Pre-mission"* `$0x40698`
 Pre-mission is defined at `$0x03f864`. 
-`$0x0406c0` still has to be re-added/updated, as this is a removed code note from other dev
+`$0x0406c0` is also updated as it's relevant to this.
 ### ✅ 🧪❓ Development Questions
 I absolutly loved reading through the Jr's development/testing process. Jr seems to have learned a lot by hitting different obstacles and trying to overcome/fix them, very nice. This is how you learn!
 ### ✅ 🏆❓ Missables Question
@@ -328,9 +329,12 @@ Jr explained the usage of marking the achievements missable, very well. Jr has a
 This topic is touched upon, art-request may be made. It's not a HARD requirement. Badges can always be updated post-set release.
 ### ✅ ⚖️💡 Point Increase
 Jr has increase the score of a few achievements somewhat, good.
-### 🔲 🧩❗ Achievement [Ride the Ray](https://retroachievements.org/achievement/497654) - Additional Delta 
-### 🔲 🧩❓ Achievement [It's All Coming Together](https://retroachievements.org/achievement/497647) - Logic Question
-### 🔲 🧩❓ Cheat-Protection - Questions
+### 🔄 🧩❗ Achievement [Ride the Ray](https://retroachievements.org/achievement/497654) - Additional Delta 
+Jr placed delta only on the pointer, but it needs to be on the pointed to value 
+### ✅ 🧩❓ Achievement [It's All Coming Together](https://retroachievements.org/achievement/497647) - Logic Question
+Code note `$0x040bcc` updated which explains the logic question
+### ✅ 🧩❓ Cheat-Protection - Questions
+Explanation and the choices surrounding the design of cheat protection are clear and well thought out
 ### 🔲 🔧❓ Macro Usage - @Score vs @Number
 ### 🔲 🧭❓ Hubs & Similar Games
 ### 🔲 🗂️❓ Game Page Metadata

@@ -321,7 +321,6 @@ Do you see why this new alternative logic works?
   5: Trigger     Mem   8-bit 0x00002312 =   Value       2          (0)
   6: ResetIf     Mem   8-bit 0x00004b94 <   Delta 8-bit 0x00004b94 (0)
 ```
-- Line[3] may be redundant
 - Suggest adding a check so it only unlocks while [8-bit: Game State] == inGame
 
 ### 🔲 ❓ Achievement [Island Downfall](https://retroachievements.org/achievement/484612) - HitCount
@@ -539,17 +538,16 @@ Achievement is viable + Player Death requirements has been added to description
 Dev feels like leaderboards for stages 4-7 wouldn't be engaging enough, since they're very hard. (very well)
 ### ✅ ❗ Progression & WinCondition Achievements - Titles Using Level Name
 Made [post in Writing-Forum](https://discord.com/channels/310192285306454017/1315144417375424552), so titles are already fine.
-### 🔄 ❓ Badge Art Question - Non-game Art
+### ✅ ❓ Badge Art Question - Non-game Art
 [Post in Art-Forum](https://discord.com/channels/310192285306454017/1369176386538962944) to improve badge art is done.
-Only thing that is left to do is: upload them and give credits
 ### ✅ ❓ Progression & WinCondition Achievements - Points
 Now there's more gradual increase in points through progression achievements.
-### 🔲  ❗ Player 2 Issue (Achievements, Leaderboards, RP)
-- ✅  Achievement logic  
-- 🔄  Leaderboards issue persists 
-- 🔄  RP changed, but may still have problems, refer to `Reassessment Round #1 Tasks[❓ Rich Presence 1P - 2P]`
+### ✅  ❗ Player 2 Issue (Achievements, Leaderboards, RP)
+- ✅  Achievement logic updated
+- 🟨  Leaderboards issue persists. DISMISSED this task has been moved to an additional task
+- ✅  RP updated
 ### ✅ ❓ Achievement [Space Ace Pilot](https://retroachievements.org/achievement/482889) 
-### 🔄 ❓ Achievement [Penetration](https://retroachievements.org/achievement/482464) - Slight Change
+### ✅ ❓ Achievement [Penetration](https://retroachievements.org/achievement/482464) - Slight Change
 Was updated with Player 2 Issue, but redundant line still exists
 ### ✅ ❓ Achievement [Island Downfall](https://retroachievements.org/achievement/484612) - HitCount
 ### ✅ ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) - Possible Problems
@@ -558,24 +556,26 @@ Was updated with Player 2 Issue, but redundant line still exists
 ### ✅ ❗ Leaderboard Spam
 Implemented instant Start/Submit leaderboards
 ### ✅ ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) & [My Shot Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123856) Submit vs Cancel
+Implemented instant Start/Submit fir these leaderboards
 ### ✅ ❗ Frame Counter Issue
 ### ✅ 🧭 Hubs & Similar Games
 May consider Similar Games[Xevious,After Burner]
 ### ✅ 🗂️ Game Page Metadata
 
 ### ---⇢ 📌 Reassessment Round #1 Tasks ⇠---
-### 🔄 ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
-Dev has considered removing this achievement.
+### ✅ ❓ Achievement [Ready for Score Attack](https://retroachievements.org/achievement/484580) NullPointer & Game Settings
+Achievement marked as [VOID].
 ### ✅ ❗ Achievement [Pacifist Pilot](https://retroachievements.org/achievement/482547) Checkpoint HitCount Misuse 
 Logic has been fixed
 ### ✅ ❗ Achievements Descriptions (solo only, without dying)
 Descriptions updated
 ### ✅ ❗ Achievement [Body Guard](https://retroachievements.org/achievement/482594) Description Improvement
 Description updated
-### 🔄 ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
+### ✅ ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
 Dev has revamped logic to only allow entries with a min. score of 100,000 points. Although the description could be updated to reflect this minimum requirement.
-### 🔄 ❓ Rich Presence 1P - 2P
-Dev is looking into ways to fix this issue
+### ✅ ❓ Rich Presence 1P - 2P
+### 🔲 ❗ Leaderboard Descriptions
+### 🔲 ❗ Leaderboard 2P Issue
 
 ### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠---
 ### 🔄 Testing after logic changes
