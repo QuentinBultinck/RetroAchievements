@@ -170,7 +170,8 @@ Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievem
 Any similar games to add? Think of games that may fit the same genre or games of the same series, perhaps.
 
 ### ❓ Game Page Metadata // TODO
-Is everything correctly filled out on the **manage page** and **game page**?
+/// [RAdocs - Screenshot Dimensions](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html#screenshot-dimensions) 
+Is everything correctly filled out on the **manage page** and **game page**? (publishers, genre, game screenshots, box art, release date...)
 
 # ✦═══════✦📜 Summary & Final Thoughts 📜✦═══════❖ // TODO
 /// Overview and high-level review conclusion.  
