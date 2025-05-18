@@ -2778,40 +2778,40 @@ achievements_coreData = {
 			// "id": 513483, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
 		},
 	"c_Challenge": { // Category - info_here
-		"a_ClgWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 513820, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty with no deaths and a minimum combined accuracy of xx%"}, 
-		"a_ClgRideDevil": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 513876, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty with no deaths and the combined HP never goes below xx%"},
-		"a_ClgBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 513877, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty with no deaths, no throwables, using only the Crossbow and Carbine to score at least xx kills total (without restart)"},
-		"a_ClgDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515977, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty with no deaths and no powers, where one player only uses pistols and the other only two-handed weapons (no explosives)"},
-		"a_ClgDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515978, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty with no deaths and the combined HP never being below max HP for xx seconds consecutively"},
-		"a_ClgWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515981, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty with no deaths, within xx time and without any player losing any HP"}, 
-		"a_ClgTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515982, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty with no deaths, with at least xx% melee kills, where one player only uses the Scepter and the other only shoots (powers allowed)"}, 
-		"a_ClgBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515980, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty with no deaths, no throwables, using only the Redeemer and the Rail Rocket to score at least xx kills total (without restart)"}, 
-		"a_ClgRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515985, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty with within xx time and without any player going below xx% HP"},
-		"a_ClgPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515975, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty with no deaths, where each player can only use each power once"},
-		"a_ClgInvasion": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515976, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty with no deaths using only the Dual Pistols or Shotgun (no explosives)"},
-		"a_ClgHangtown": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515987, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty with no deaths using the Range Rifle as the only means of shooting, with a minimum combined accuracy of xx%"},
-		"a_ClgMorningAfter": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515986, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty with no deaths using only tier 2 and 3 powers, with at least xx% headshot or melee kills"},
-		"a_ClgShowdown": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515983, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty with no deaths, with a minimum combined accuracy of xx% and where each player can only use 1 distinct power"},
-		"a_ClgRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515984, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty with no deaths within xx time and without any player going below xx% HP"},
-		"a_ClgDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515988, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty with no deaths, killing only with the Range Rifle and Carbine equipped and with at least xx% headshot kills (throwables allowed)"},
-		"a_ClgCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515979, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty with no deaths, with less than xx power activations"},
+		// "a_ClgWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 513820, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty with no deaths and a minimum combined accuracy of xx%"}, 
+		// "a_ClgRideDevil": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 513876, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty with no deaths and the combined HP never goes below xx%"},
+		// "a_ClgBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 513877, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty with no deaths, no throwables, using only the Crossbow and Carbine to score at least xx kills total (without restart)"},
+		// "a_ClgDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515977, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty with no deaths and no powers, where one player only uses pistols and the other only two-handed weapons (no explosives)"},
+		// "a_ClgDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515978, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty with no deaths and the combined HP never being below max HP for xx seconds consecutively"},
+		// "a_ClgWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515981, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty with no deaths, within xx time and without any player losing any HP"}, 
+		// "a_ClgTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515982, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty with no deaths, with at least xx% melee kills, where one player only uses the Scepter and the other only shoots (powers allowed)"}, 
+		// "a_ClgBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515980, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty with no deaths, no throwables, using only the Redeemer and the Rail Rocket to score at least xx kills total (without restart)"}, 
+		// "a_ClgRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515985, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty with within xx time and without any player going below xx% HP"},
+		// "a_ClgPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515975, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty with no deaths, where each player can only use each power once"},
+		// "a_ClgInvasion": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515976, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty with no deaths using only the Dual Pistols or Shotgun (no explosives)"},
+		// "a_ClgHangtown": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515987, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty with no deaths using the Range Rifle as the only means of shooting, with a minimum combined accuracy of xx%"},
+		// "a_ClgMorningAfter": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515986, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty with no deaths using only tier 2 and 3 powers, with at least xx% headshot or melee kills"},
+		// "a_ClgShowdown": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515983, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty with no deaths, with a minimum combined accuracy of xx% and where each player can only use 1 distinct power"},
+		// "a_ClgRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515984, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty with no deaths within xx time and without any player going below xx% HP"},
+		// "a_ClgDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515988, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty with no deaths, killing only with the Range Rifle and Carbine equipped and with at least xx% headshot kills (throwables allowed)"},
+		// "a_ClgCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515979, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty with no deaths, with less than xx power activations"},
 		},
 	"c_Bonus": { // Category - Bonus achievements
 		// TODO c_Bonus
@@ -2819,10 +2819,10 @@ achievements_coreData = {
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Complete a Chapter, where each player scored at least one multikill"}
 		// "a_SunHi": { // CONCEPT a_SunHi
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Both player use powers in sunlight"}
-		// "a_AllEvil": { // CONCEPT a_AllEvil, check if NewPowerMenu functions identical to SinglePlayer
-			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Unlock all Evil powers"}
-		// "a_AllGood": { // CONCEPT a_AllGood, check if NewPowerMenu functions identical to SinglePlayer
-			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Unlock all Good powers"}
+		"a_AllEvil": { // VERIFIED
+			"id": 521088, "points": achievement_POINTS_0, "devInfo": "Unlock all Evil powers"},
+		"a_AllGood": { // VERIFIED
+			"id": 521089, "points": achievement_POINTS_0, "devInfo": "Unlock all Good powers"},
 		},
 	"c_Versus": { // Category - Versus Mode achievements (purely for showcasing Versus Mode, this is not focus of this Subset)
 		// TODO c_Versus
@@ -6184,14 +6184,95 @@ achievements_triggers = {
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			is_ReleaseRegion(enum_releaseRegion)
 			&& always_false()),
-	"a_AllEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_AllGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
+	"a_AllEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[1])
+		const_NEWPOWERMENU_TEXTLOOKUPKEY_LastEvilPower = TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SoulStealer
+		return		
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
+				PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=2_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+				NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=2_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+				------
+					PauseIf 	!is_ReleaseRegion(enum_releaseRegion)
+					PauseIf 	!is_InMultiplayerCoopMode(enum_releaseRegion)
+
+					AddAddress	[Pointer:UIcontrol(preferred)]
+					Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+					Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+					AddAddress	[Pointer:UIcontrol(preferred)]
+					AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+					Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+
+					
+					// -----------------------ResetNextIf-----------------------
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					ResetNextIf	->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"	
+					// -----------------------ResetIf-----------------------
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
+					
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					ResetIf		->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  (2)	| CheckIf: PRIOR FrameTitle == "New Power"	
+
+
+					// -----------------------once(on_NewPowerMenuRender() && is_NewPowerMenu_Power())-----------------------
+					AndNext		[FlagState_InGame] == false			| is_flagState_InGame_true()
+					AndNext		[GameState] == 0x3					| is_AnyInGameMenu_active()
+
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: Mem FrameTitle == "New Power"	
+					
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					AndNext		->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	| CheckIf: DELTA FrameTitle != "New Power"	
+					
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xC
+					AddAddress	->[Mem 32-bit] 0x4
+								->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 	(1)		| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
+
+
+					// -----------------------Trigger (on NewPowerMenu close)-----------------------
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					Trigger		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
+					
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					Trigger		->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: DELTA FrameTitle == "New Power"				
+					*/
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InMultiplayerCoopMode(enum_releaseRegion))
+			&& once(
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& is_NewPowerMenu_Power(const_NEWPOWERMENU_TEXTLOOKUPKEY_LastEvilPower, enum_releaseRegion)
+				&& dword(0xDEADBEEF) == const_NEWPOWERMENU_TEXTLOOKUPKEY_LastEvilPower
+				)
+			&& trigger_when(on_NewPowerMenu_close(enum_releaseRegion))
+		}),
+	"a_AllGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[1])
+		const_NEWPOWERMENU_TEXTLOOKUPKEY_LastGoodPower = TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator
+		return
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
+				PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=2_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=1995014642.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+				NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=2_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=1995014642.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+				*/	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InMultiplayerCoopMode(enum_releaseRegion))
+			&& once(
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& is_NewPowerMenu_Power(const_NEWPOWERMENU_TEXTLOOKUPKEY_LastGoodPower, enum_releaseRegion)
+				&& dword(0xDEADBEEF) == const_NEWPOWERMENU_TEXTLOOKUPKEY_LastGoodPower
+				)
+			&& trigger_when(on_NewPowerMenu_close(enum_releaseRegion))
+		}),
 	}
 // #endregion ACH - triggers
 
@@ -6244,8 +6325,8 @@ achievements_titles = {
 	// ----------------c_Bonus----------------
 	"a_MultiKillers":	{"en": "xxxxxxxxx"},
 	"a_SunHi":			{"en": "xxxxxxxxx"},
-	"a_AllEvil":		{"en": "xxxxxxxxx"},
-	"a_AllGood":		{"en": "xxxxxxxxx"},
+	"a_AllEvil":		{"en": "Grim Alliance"},
+	"a_AllGood":		{"en": "Righteous Tandem"},
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -6293,8 +6374,8 @@ achievements_descriptions = {
 	// ----------------c_Bonus----------------
 	"a_MultiKillers":	{"en": "xxxxxxxxx"},
 	"a_SunHi":			{"en": "xxxxxxxxx"},
-	"a_AllEvil":		{"en": "xxxxxxxxx"},
-	"a_AllGood":		{"en": "xxxxxxxxx"},
+	"a_AllEvil":		{"en": "You didn't just walk the path of corruption—you became it, together by unlocking all Evil powers"},
+	"a_AllGood":		{"en": "From ash and ruin, two rose in unshakable resolve by unlocking all Good powers"},
 	}
 // #endregion ACH - text
 
