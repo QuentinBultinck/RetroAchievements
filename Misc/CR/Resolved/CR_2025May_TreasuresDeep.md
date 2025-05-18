@@ -395,7 +395,7 @@ If you don't, I may update this list here via this discord thread.
 # %%%%%%%%%%%%% CODE REVIEW WRAP-UP %%%%%%%%%%%%% #
 
 # ------Promotion Steps (useful for CR)------ 
-0. First post [🎓 Reflection & Suggestions] & [🌟 Set Promotion] sections in Code Review
+0. First post [Wrap-Up & Next Steps] section in Code Review Thread
 
 ## ---------When not promoted to full dev---------
 1. Take set/game out of `(In Review)` on RA game page, if necessary. By pressing `Complete Claim Review` in `Dev` drop down menu
@@ -434,7 +434,8 @@ Please review the **"Achievement News Announcement"** template below, which shal
 - Do you have any flavour text you'd like to include with the announcement? Try to write something that will make players excited to try out your set. You could briefly highlight what makes the game fun or unique, or what kind of experience the achievement set offers.
 
 Reply/ping me once you’ve looked it over and are ready to promote it!
-> ℹ️ NOTE — Both of us need to be online at the same time in order to promote the set. Please let me know when you're available so we can coordinate this.
+> ℹ️ **NOTE** — Both of us need to be online at the same time to promote the set. Let me know when you're available so we can coordinate.
+> Here’s how it’ll go: I will be promoting all achievements to Official. Afterwards you'll need to click the `Complete Claim` button from the `Dev` drop-down menu on the game page, ideally within a reasonable timeframe after the promotion of the set. That’s all there is to it!
 
 ### ---⇢ 💎 Achievement News Announcement ⇠---
 ```ansi
@@ -444,15 +445,16 @@ Developer:   [0;32m Black Ops Entertainment [0m
 Genre:       [0;35m Action, Simulation [0m
 Released:    [0;33m September 24, 1997 [0m
 ```
-A new set was published by @stoneskipper42 on <t:1747585406:D>
+A new set was published by @stoneskipper42 on <t:1747594704:D>
 
-_FLAVOR_TEXT_HERE_
+Too many aliens in Subnautica? Not enough shooting in Endless Ocean? Try Treasures of the Deep, an action submarine simulator that pits you against the evil Seismic Corp as you interact with over 50 species of marine life and search for treasure across 14 missions. Can you uncover the secrets of the treasures of the deep?
 
-[Longplay](https://www.youtube.com/watch?v=6jDtggvOnHQ&list=PL21nKMUhIdU3rjAsS2us8iRSuemSvpz6k)
+[Gameplay](https://www.youtube.com/watch?v=6jDtggvOnHQ&list=PL21nKMUhIdU3rjAsS2us8iRSuemSvpz6k)
 [RetroAchievements Game Page](https://retroachievements.org/game/19403)
 
+#  ✦═══════✦ :kirbyjam: Post-Set Promotion ✦═══════✦
 
-## ∘───── ✒️ RANews Set Highlight ─────∘ // Post-Set Promotion // TODO
+## ∘───── ✒️ RANews Set Highlight ─────∘
 As a final step, please take a moment to fill out the [RAnews Set Highlight Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview). In it, you’ll be asked to write a short pitch promoting your game/set, aimed at readers of the RetroAchievements digital magazine. Your snippet may be featured—fully or with minor edits—in an upcoming issue under the **"Junior Developer Program"** section.
 
 Use this as a chance to spotlight what makes the game and your achievement set stand out. It’s a great way to highlight your work and get players excited to check it out! Consider briefly mentioning:
