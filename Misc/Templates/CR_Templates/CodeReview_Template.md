@@ -324,7 +324,6 @@ Use this as a chance to spotlight what makes the game and your achievement set s
 - What the game is about
 - What makes the achievement set fun or unique
 - Any specific design focus or standout challenges
-
 This isn’t a devlog, just a brief, engaging introduction meant to catch a reader’s attention.
 
 Here are a few examples of past highlights for inspiration:
