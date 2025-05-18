@@ -2777,6 +2777,7 @@ achievements_coreData = {
 			// "id": 506807, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
+		// TODO c_Gunslinger consider Shootist difficulty instead of Deadeye
 		// "a_GunWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 508863, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunRideDevil": { // QA  // DISABLED - MANUAL_CONSTRUCTION
@@ -2825,9 +2826,9 @@ achievements_coreData = {
 			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 		// "a_FanHammer": { // CONCEPT a_FanHammer, can't find a reliable method to check when in "Fan The Hammer" mode
 			// "id": 000000, "points": 0000000, "devInfo": "With Redeemer: Land xx shots in single Fan The Hammer volley"},
-		// "a_SunPower": { // VERIFIED
-			// "id": 510106, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
-		// "a_Multikill": { // VERIFIED
+		"a_SunPower": { // VERIFIED
+			"id": 510106, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
+		// "a_Multikill": { // VERIFIED // TODO 4 kill multikill viable?
 			// "id": 510105, "points": 0000000, "devInfo": "Kill xx enemies in one frame (use explosives or powers)"},
 		// "a_AllPowersGood": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 510104, "points": 0000000, "devInfo": "Unlock all Good powers"},
@@ -5775,25 +5776,28 @@ achievements_triggers = {
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion))
+			&& never(
+				is_flagState_InGame_false(enum_releaseRegion)
+				|| is_anyFMV_active(enum_releaseRegion)
+				|| is_AnyCinematic_active(enum_releaseRegion)
+				|| is_AnyInGameMenu_active(enum_releaseRegion))
 			&& never(tally_of(CONST_CONTROLLER_CONFIG_DATA, 200, (enum_controllerConfig) { // --ResetIf--> VampireVision HitCounts need to be reset when not activating it repeatedly 
 				let_input_VampireVision = CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig)
 				return repeated(200,
 					never(
 						is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
 						&& is_InSunlight(enum_releaseRegion)
+						&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
 						&& on_PlayerInput_press(PLAYER_1, let_input_VampireVision, enum_releaseRegion))
 					&& is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
 					&& is_flagState_IsInputPressed_false(PLAYER_1, let_input_VampireVision, enum_releaseRegion))				
 				}))
-			&& is_flagState_InGame_true(enum_releaseRegion)
-			&& !is_anyFMV_active(enum_releaseRegion)
-			&& !is_AnyCinematic_active(enum_releaseRegion)
-			&& !is_AnyInGameMenu_active(enum_releaseRegion)
 			&& tally_of(CONST_CONTROLLER_CONFIG_DATA, 3, (enum_controllerConfig) { // --Tally--OrNext--> Check if Power is activated whilst in sunlight, check this for each ControllerConfig
 				let_input_VampireVision = CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig)
 				return repeated(3,
 					is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
 					&& is_InSunlight(enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
 					&& on_PlayerInput_press(PLAYER_1, let_input_VampireVision, enum_releaseRegion))				
 				})
 		),
