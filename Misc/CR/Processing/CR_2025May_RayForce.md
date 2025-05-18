@@ -575,7 +575,10 @@ Description updated
 Dev has revamped logic to only allow entries with a min. score of 100,000 points. Although the description could be updated to reflect this minimum requirement.
 ### ✅ ❓ Rich Presence 1P - 2P
 ### 🔲 ❗ Leaderboard Descriptions
-### 🔲 ❗ Leaderboard 2P Issue
+Writing-request ongoing regarding this.
+### 🔄 ❗ Leaderboard 2P Issue
+Jr is going to add an additional leaderboard focussing on High Score whilst in multiplayer mode.
+Other leaderboards will be limited to the 1P slot only.
 
 ### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠---
 ### 🔄 Testing after logic changes

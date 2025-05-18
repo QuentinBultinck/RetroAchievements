@@ -329,15 +329,16 @@ Jr explained the usage of marking the achievements missable, very well. Jr has a
 This topic is touched upon, art-request may be made. It's not a HARD requirement. Badges can always be updated post-set release.
 ### ✅ ⚖️💡 Point Increase
 Jr has increase the score of a few achievements somewhat, good.
-### 🔄 🧩❗ Achievement [Ride the Ray](https://retroachievements.org/achievement/497654) - Additional Delta 
+### ✅ 🧩❗ Achievement [Ride the Ray](https://retroachievements.org/achievement/497654) - Additional Delta 
 Jr placed delta only on the pointer, but it needs to be on the pointed to value 
 ### ✅ 🧩❓ Achievement [It's All Coming Together](https://retroachievements.org/achievement/497647) - Logic Question
 Code note `$0x040bcc` updated which explains the logic question
 ### ✅ 🧩❓ Cheat-Protection - Questions
 Explanation and the choices surrounding the design of cheat protection are clear and well thought out
-### 🔲 🔧❓ Macro Usage - @Score vs @Number
-### 🔲 🧭❓ Hubs & Similar Games
-### 🔲 🗂️❓ Game Page Metadata
+### ✅ 🔧❓ Macro Usage - @Score vs @Number
+### 🔄 🧭❓ Hubs & Similar Games
+Jr has to check manage page to see if he himself can add them.
+### ✅ 🗂️❓ Game Page Metadata
 
 ### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠--- // TODO
 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
