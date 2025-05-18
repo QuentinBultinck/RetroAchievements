@@ -5892,7 +5892,7 @@ achievements_triggers = {
 			&& once(
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& is_NewPowerMenu_Power(const_NEWPOWERMENU_TEXTLOOKUPKEY_LastGoodPower, enum_releaseRegion)
-				&& dword(0xDEADBEEF) == TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator
+				&& dword(0xDEADBEEF) == const_NEWPOWERMENU_TEXTLOOKUPKEY_LastGoodPower
 				)
 			&& trigger_when(on_NewPowerMenu_close(enum_releaseRegion))
 		}),
@@ -5973,8 +5973,8 @@ achievements_titles = {
 	"a_GatlingPrism":			{"en": "Circle of Suppression"},
 	"a_SunPower":				{"en": "Sun-Kissed Suicide"},
 	"a_Multikill":				{"en": "Hell's Choir"},
-	"a_AllPowersEvil":			{"en": "Righteous Revenant"},
-	"a_AllPowersGood":			{"en": "Grim Phantom"},
+	"a_AllPowersEvil":			{"en": "Grim Phantom"},
+	"a_AllPowersGood":			{"en": "Righteous Revenant"},
 	}
 // -------------------------------------
 achievements_descriptions = {
