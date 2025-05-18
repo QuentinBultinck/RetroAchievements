@@ -1803,6 +1803,9 @@ function is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion) {
 	let_substring_LevelID = LEVEL_DATA_getLevelID_substring(enum_chapter) // NOTE: Substring --> Only check FIRST [4-byte] of ASCII
 	return is_Level(let_substring_LevelID, enum_releaseRegion)}
 
+function on_LevelSubstring_StoryChapter_change(enum_releaseRegion) => 
+	dword(ASCII_MEM_ADDR_LevelID(enum_releaseRegion)) != prev(dword(ASCII_MEM_ADDR_LevelID(enum_releaseRegion)))
+
 function is_LevelSubstring_Multiplayer(enum_MPlevel, enum_releaseRegion) {
 	let_substring_LevelID =  MP_LEVEL_DATA_get32BitSubstringLevelID_asString(enum_MPlevel)
 	let_int_offsetTo_SubstringLevelID = MP_LEVEL_DATA_getOffsetToSubstringLevelID(enum_MPlevel)
@@ -1912,24 +1915,24 @@ CONTROLLER_CONFIG_Hoss = "Hoss" // FullString: "Hoss"
 
 CONST_CONTROLLER_CONFIG_DATA = { // Configs changes in-game controls
 	CONTROLLER_CONFIG_Default: {
-		"Button_SightMode": "BitFlag:IsInputPressed_R3",
-		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
-		"Button_Shoot": "BitFlag:IsInputPressed_R1",
+		"Button_SightMode": "R3",
+		"Button_ActivatePower": "R2",
+		"Button_Shoot": "R1",
 		},
 	CONTROLLER_CONFIG_Lefty: {
-		"Button_SightMode": "BitFlag:IsInputPressed_L3",
-		"Button_ActivatePower": "BitFlag:IsInputPressed_L2",
-		"Button_Shoot": "BitFlag:IsInputPressed_L1",
+		"Button_SightMode": "L3",
+		"Button_ActivatePower": "L2",
+		"Button_Shoot": "L1",
 		},
 	CONTROLLER_CONFIG_Hopalong: {
-		"Button_SightMode": "BitFlag:IsInputPressed_R3",
-		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
-		"Button_Shoot": "BitFlag:IsInputPressed_R1",
+		"Button_SightMode": "R3",
+		"Button_ActivatePower": "R2",
+		"Button_Shoot": "R1",
 		},
 	CONTROLLER_CONFIG_Hoss: {
-		"Button_SightMode": "BitFlag:IsInputPressed_R3",
-		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
-		"Button_Shoot": "BitFlag:IsInputPressed_R1",
+		"Button_SightMode": "R3",
+		"Button_ActivatePower": "R2",
+		"Button_Shoot": "R1",
 		},
 	}
 
@@ -2528,9 +2531,9 @@ function ASCII_MEM_ADDR_PowerIconTopLeft(enum_player, enum_releaseRegion) {
 function is_PowerIconTopLeft(enum_player, enum_power, enum_releaseRegion) =>
 	dword(ASCII_MEM_ADDR_PowerIconTopLeft(enum_player, enum_releaseRegion)) == memUtil_asciiStringToHexLE(enum_power)
 
-function is_InSunlight(enum_releaseRegion) {
+function is_InSunlight(enum_player, enum_releaseRegion) {
 	const_ASCII_FLAG_PowerIconTopLeft_SunlightState = "SunlightState"
-	return is_ASCII_EqualTo(ASCII_MEM_ADDR_PowerIconTopLeft(enum_releaseRegion), const_ASCII_FLAG_PowerIconTopLeft_SunlightState)}	
+	return is_ASCII_EqualTo(ASCII_MEM_ADDR_PowerIconTopLeft(enum_player, enum_releaseRegion), const_ASCII_FLAG_PowerIconTopLeft_SunlightState)}	
 
 
 // #endregion HUD Control Health
@@ -2814,15 +2817,14 @@ achievements_coreData = {
 			// "id": 515979, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty with no deaths, with less than xx power activations"},
 		},
 	"c_Bonus": { // Category - Bonus achievements
-		// TODO c_Bonus
-		// "a_MultiKillers": { // CONCEPT a_MultiKillers
-			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Complete a Chapter, where each player scored at least one multikill"}
-		// "a_SunHi": { // CONCEPT a_SunHi
-			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Both player use powers in sunlight"}
-		"a_AllEvil": { // VERIFIED
-			"id": 521088, "points": achievement_POINTS_0, "devInfo": "Unlock all Evil powers"},
-		"a_AllGood": { // VERIFIED
-			"id": 521089, "points": achievement_POINTS_0, "devInfo": "Unlock all Good powers"},
+		// "a_MultiKillers": { // VERIFIED
+			// "id": 521090, "points": achievement_POINTS_0, "devInfo": "In a Chapter, have each player score at least one multikill"},
+		// "a_SunHi": { // QA
+			// "id": 521091, "points": achievement_POINTS_0, "devInfo": "Both player use powers in sunlight"},
+		// "a_AllEvil": { // VERIFIED
+			// "id": 521088, "points": achievement_POINTS_0, "devInfo": "Unlock all Evil powers"},
+		// "a_AllGood": { // VERIFIED
+			// "id": 521089, "points": achievement_POINTS_0, "devInfo": "Unlock all Good powers"},
 		},
 	"c_Versus": { // Category - Versus Mode achievements (purely for showcasing Versus Mode, this is not focus of this Subset)
 		// TODO c_Versus
@@ -6176,14 +6178,119 @@ achievements_triggers = {
 			|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 		}),
 	// ----------------c_Bonus----------------
-	"a_MultiKillers": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+	"a_MultiKillers": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroups[4])
+		const_MIN_MULTI_KILL_COUNT = 2
+		return
+		// [1/5] ==== Alt Logic + Measured Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying a measured indicator tracking how many unique players have scored a multikill			
 			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_SunHi": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
+			&& is_InMultiplayerCoopMode(enum_releaseRegion)
+			&& measured(tally(2, [
+				once(
+					is_flagState_1P_InGame_true(enum_releaseRegion)
+					&& on_Kills_Temp_minIncrementBy(const_MIN_MULTI_KILL_COUNT, PLAYER_1, enum_releaseRegion)), // --CheckIf--> PLAYER_1 kills increment by xx amount or higher in 1 delta frame
+				once(
+					is_flagState_2P_InGame_true(enum_releaseRegion)
+					&& on_Kills_Temp_minIncrementBy(const_MIN_MULTI_KILL_COUNT, PLAYER_2, enum_releaseRegion)) // --CheckIf--> PLAYER_2 kills increment by xx amount or higher in 1 delta frame
+			]))
+		// [2/6] ==== Alt Reset Group ====		-> Reset when at MainMenu 
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_atMainMenu(enum_releaseRegion))
+		// [3/7] ==== Alt Reset Group ====		-> Reset on level change
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_LevelSubstring_StoryChapter_change(enum_releaseRegion))
+		// [4/8] ==== Alt Reset Group ====		-> Reset when pressing PauseMenu->Restart
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[FD1-FD2]
+		}),
+	"a_SunHi": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InMultiplayerCoopMode(enum_releaseRegion))
+			&& never( 
+				is_flagState_1P_InGame_false(enum_releaseRegion)
+				|| is_flagState_2P_InGame_false(enum_releaseRegion)
+				|| is_anyFMV_active(enum_releaseRegion)
+				|| is_AnyCinematic_active(enum_releaseRegion)
+				|| is_AnyInGameMenu_active(enum_releaseRegion))
+			&& never(tally_of(CONST_CONTROLLER_CONFIG_DATA, 200, (enum_controllerConfig) { // --ResetIf--> PLAYER_1 has not activated VampireVision for xx frames
+				let_input_VampireVision = CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig)
+				return repeated(200,
+					never(
+						is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
+						&& is_InSunlight(PLAYER_1, enum_releaseRegion)
+						&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
+						&& on_PlayerInput_press(PLAYER_1, let_input_VampireVision, enum_releaseRegion))
+					&& is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
+					&& is_flagState_IsInputPressed_false(PLAYER_1, let_input_VampireVision, enum_releaseRegion))				
+				}))
+			&& never(tally_of(CONST_CONTROLLER_CONFIG_DATA, 200, (enum_controllerConfig) { // --ResetIf--> PLAYER_2 has not activated VampireVision for xx frames
+				let_input_VampireVision = CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig)
+				return repeated(200,
+					never(
+						is_ControllerConfig(PLAYER_2, enum_controllerConfig, enum_releaseRegion)
+						&& is_InSunlight(PLAYER_2, enum_releaseRegion)
+						&& !is_EquippedWeapon(PLAYER_2, WEAPON_RangeRifle, enum_releaseRegion)
+						&& on_PlayerInput_press(PLAYER_2, let_input_VampireVision, enum_releaseRegion))
+					&& is_ControllerConfig(PLAYER_2, enum_controllerConfig, enum_releaseRegion)
+					&& is_flagState_IsInputPressed_false(PLAYER_2, let_input_VampireVision, enum_releaseRegion))				
+				}))
+			&& measured(tally(2, [
+				/* NOTEs: 
+					- ControllerConfigs can't be changed during gameplay, they are only chosen at MainMenu
+					- CONTROLLER_CONFIG_DATA_getButtonSightMode() corresponds with VampireVision activation button
+					*/
+
+				// ----------PLAYER_1---------- (check input for each ControllerConfig)
+				// --(4x)Once--CheckIf--> PLAYER_1's VampireVision is activated whilst in sunlight, check this for each ControllerConfig
+				once(
+					is_ControllerConfig(PLAYER_1, CONTROLLER_CONFIG_Default, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_1, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_1, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Default), enum_releaseRegion)),
+				once(
+					is_ControllerConfig(PLAYER_1, CONTROLLER_CONFIG_Lefty, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_1, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_1, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Lefty), enum_releaseRegion)),
+				once(
+					is_ControllerConfig(PLAYER_1, CONTROLLER_CONFIG_Hopalong, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_1, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_1, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Hopalong), enum_releaseRegion)),
+				once(
+					is_ControllerConfig(PLAYER_1, CONTROLLER_CONFIG_Hoss, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_1, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_1, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Hoss), enum_releaseRegion)),
+
+				// ----------PLAYER_2---------- (check input for each ControllerConfig)
+				// --(4x)Once--CheckIf--> PLAYER_2's VampireVision is activated whilst in sunlight, check this for each ControllerConfig
+				once(
+					is_ControllerConfig(PLAYER_2, CONTROLLER_CONFIG_Default, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_2, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_2, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_2, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Default), enum_releaseRegion)),
+				once(
+					is_ControllerConfig(PLAYER_2, CONTROLLER_CONFIG_Lefty, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_2, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_2, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_2, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Lefty), enum_releaseRegion)),
+				once(
+					is_ControllerConfig(PLAYER_2, CONTROLLER_CONFIG_Hopalong, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_2, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_2, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_2, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Hopalong), enum_releaseRegion)),
+				once(
+					is_ControllerConfig(PLAYER_2, CONTROLLER_CONFIG_Hoss, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_2, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_2, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_2, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Hoss), enum_releaseRegion)),
+			]))
+		),
 	"a_AllEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[1])
 		const_NEWPOWERMENU_TEXTLOOKUPKEY_LastEvilPower = TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SoulStealer
 		return		
@@ -6323,8 +6430,8 @@ achievements_titles = {
 	"a_ClgDeadfall":		{"en": "Sizzling Precision"},
 	"a_ClgCurseWest":		{"en": "Saviors or Sinners"},
 	// ----------------c_Bonus----------------
-	"a_MultiKillers":	{"en": "xxxxxxxxx"},
-	"a_SunHi":			{"en": "xxxxxxxxx"},
+	"a_MultiKillers":	{"en": "Symphony of Slaughter"},
+	"a_SunHi":			{"en": "Searing Defiance"},
 	"a_AllEvil":		{"en": "Grim Alliance"},
 	"a_AllGood":		{"en": "Righteous Tandem"},
 	}
@@ -6372,8 +6479,8 @@ achievements_descriptions = {
 	"a_ClgDeadfall":		{"en": "Fire and ruin can't stop a deadeye's aim. Complete Chapter 16, \"Deadfall\", from start to finish in one session on Deadeye difficulty, with no deaths, killing only with the Range Rifle or Carbine, and with at least 30% headshot kills"},
 	"a_ClgCurseWest":		{"en": "Two against the dying light. Complete Chapter 17, \"Curse of the West\", from start to finish in one session on Deadeye difficulty, with no deaths, and with only 7 allowed power activations"},
 	// ----------------c_Bonus----------------
-	"a_MultiKillers":	{"en": "xxxxxxxxx"},
-	"a_SunHi":			{"en": "xxxxxxxxx"},
+	"a_MultiKillers":	{"en": "It takes two to clean house. In a single Chapter, score one multikill per player, without restarting"},
+	"a_SunHi":			{"en": "You looked straight into the sun and didn't blink. Activate Vampire Vision on both players in broad daylight and survive the burn, together"},
 	"a_AllEvil":		{"en": "You didn't just walk the path of corruption—you became it, together by unlocking all Evil powers"},
 	"a_AllGood":		{"en": "From ash and ruin, two rose in unshakable resolve by unlocking all Good powers"},
 	}
@@ -6426,9 +6533,7 @@ function achievements_initialize() {
 	function achievements_getType(string_achievementCategory) {
 		let_type = achievements_typeByCategory[string_achievementCategory]
 		if(let_type == sNULL) return "" // <-- will result in type: "standard"
-		return let_type}	
-	
-	
+		return let_type}
 
 	for let_categoryName in achievements_coreData { // This loop generates the achievements
 		for let_cheevmentName in achievements_coreData[let_categoryName] {
