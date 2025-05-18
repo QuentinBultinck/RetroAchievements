@@ -166,6 +166,7 @@ RA Game Page => _LINK_RA_GAME_PAGE_
 # ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦ // TODO
 
 ### ❓ Hubs & Similar Games // TODO
+/// Hubs need to be added by CR, Juniors don't have permissions.
 Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html) and [RAweb - All Hubs](https://retroachievements.org/hubs))
 Any similar games to add? Think of games that may fit the same genre or games of the same series, perhaps.
 
@@ -262,12 +263,27 @@ I'll be using this list here to track your progress as well. As you work through
 
 # %%%%%%%%%%%%% CODE REVIEW WRAP-UP %%%%%%%%%%%%% #
 
-#  ✦═══════✦ ✔️ Wrap-Up & Next Steps ✦═══════✦ // TODO
+# ------Promotion Steps (useful for CR)------ 
+0. First post [🎓 Reflection & Suggestions] & [🌟 Set Promotion] sections in Code Review
+
+## ---------When not promoted to full dev---------
+1. Take set/game out of `(In Review)` on RA game page, if necessary. By pressing `Complete Claim Review` in `Dev` drop down menu
+2. Promote all achievements to official, disregard achievements marked `[VOID]`
+3. Tell Junior to complete claim via `Dev` drop down menu
+4. Post `Achievement News Announcement`, reviewed by Junior
+5. Post [✒️ RANews Set Highlight] in Code Review to fill out the form 
+
+## ---------When promoted to full dev--------
+1. Take set/game out of `(In Review)` on RA game page, if necessary. By pressing `Complete Claim Review` in `Dev` drop down menu
+2. Tell Junior/new dev to promote all achievements to official, disregarding achievements marked `[VOID]`
+3. Tell Junior to complete claim via `Dev` drop down menu
+4. Let Junior post `Achievement News Announcement`
+5. Post [✒️ RANews Set Highlight] in Code Review to fill out the form 
+
+#  ✦═══════✦ :check: Wrap-Up & Next Steps ✦═══════✦ // TODO
 /// Final phase and closing guidance.
 
-## ∘───── 🎓 Reflection & Suggestions ─────∘ // TODO
-
-### ---⇢ ⏪ Retrospective ⇠--- // TODO
+### ---⇢ 🎓 Retrospective ⇠--- // TODO
 /// Summarize/reflect what went well (positive observations) and what didn’t (key challenges or mistakes). Highlight any significant learning moments or improvements made during development/code review.
 
 ### ---⇢ 🤔 Suggestions ⇠--- // TODO
@@ -283,8 +299,18 @@ I'll be using this list here to track your progress as well. As you work through
 ...
 
 ## ∘───── 🌟 Set Promotion ─────∘ // TODO, only include this section, when not promoted to full dev
-/// Guide junior through set promotion
-/// Use Achievement-NewsAnnouncement_Template.txt + Ask Jr to write some flavour text for this
+/// Guide junior through set promotion + ask to review "Achievement News Announcement" template
+Alright, we'll be promoting the set, once you're ready. Any achievements marked `[VOID]` will remain in Unofficial.
+
+Please review the **"Achievement News Announcement"** template below, which shall be posted in [#achievement-news in RAdiscord](https://discord.com/channels/310192285306454017/310207383542562816)
+- Let me know if the video I’ve provided is okay, else share a link to a more suitable one if you prefer.
+- Do you have any flavour text you'd like to include with the announcement? Try to write something that will make players excited to try out your set. You could briefly highlight what makes the game fun or unique, or what kind of experience the achievement set offers.
+
+Reply/ping me once you’ve looked it over and are ready to promote it!
+> ℹ️ **NOTE** — Both of us need to be online at the same time in order to promote the set. Please let me know when you're available so we can coordinate this.
+
+### ---⇢ 💎 Achievement News Announcement ⇠---
+/// Post Achievement-NewsAnnouncement_Template.txt here
 
 ## ∘───── ✒️ RANews Set Highlight ─────∘ // Post-Set Promotion // TODO
 As a final step, please take a moment to fill out the [RAnews Set Highlight Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview). In it, you’ll be asked to write a short pitch promoting your game/set, aimed at readers of the RetroAchievements digital magazine. Your snippet may be featured—fully or with minor edits—in an upcoming issue under the **"Junior Developer Program"** section.

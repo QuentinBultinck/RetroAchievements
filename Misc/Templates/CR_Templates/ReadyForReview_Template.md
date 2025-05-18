@@ -103,6 +103,7 @@ You're the expert on this game, so this is up to you.
 /// Consider [#playtest-requests on RAdiscord](https://discord.com/channels/310192285306454017/1169258130555797524)
 
 ### 👉 Metadata & Hubs // TODO
+/// Hubs need to be added by CR, Juniors don't have permissions.
 - Is everything correctly filled out on the **manage page** and **game page**? (publishers, genre, game screenshots, box art, release date...)
 - Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html) and [RAweb - All Hubs](https://retroachievements.org/hubs))
 - Any similar games to add? Think of games that may fit the same genre or games of the same series, perhaps.

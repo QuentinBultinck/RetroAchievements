@@ -34,7 +34,7 @@ RA Game Page => https://retroachievements.org/game/19403
 
 # ------Usefull unicode characters------
 ✅ ☑️ ✔️ 🆗
-ℹ️   🛈
+ℹ️   🛈 
 ❌  ✖️
 ❗  ‼️  ⚠️ 🟨
 ❓ ⁉️  🚩
@@ -336,8 +336,7 @@ Code note `$0x040bcc` updated which explains the logic question
 ### ✅ 🧩❓ Cheat-Protection - Questions
 Explanation and the choices surrounding the design of cheat protection are clear and well thought out
 ### ✅ 🔧❓ Macro Usage - @Score vs @Number
-### 🔄 🧭❓ Hubs & Similar Games
-Jr has to check manage page to see if he himself can add them.
+### ✅ 🧭❓ Hubs & Similar Games
 ### ✅ 🗂️❓ Game Page Metadata
 
 ### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠--- // TODO
@@ -393,11 +392,80 @@ If you don't, I may update this list here via this discord thread.
 ### ---⇢ 📌 Additional Tasks (post-set promotion) ⇠--- // TODO
 🔲 Write/Submit RAnews Set Highlight [Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
 
-#  ✦═══════✦ ✔️ Wrap-Up & Next Steps ✦═══════✦ // TODO
-## 🎓 ∘───── Reflection & Suggestions ─────∘ 
-/// Reflection on what was learned + Feedforward (suggestions for future Jr. Dev process).
+# %%%%%%%%%%%%% CODE REVIEW WRAP-UP %%%%%%%%%%%%% #
 
-### Feedfoward
-- Correctly identifying, documenting and using BitFlags
-- More usage of the advanced features of the toolkit (trigger,measured,resetIf,pauseIf,prior,resetNextIf,altgroups,bitFlags,orNext...). You already grasped and used some of these features, but I would like to see what else you'd be able to do with these.
-- Generally another quality set without any major issues will probably do the trick, just like this one.
+# ------Promotion Steps (useful for CR)------ 
+0. First post [🎓 Reflection & Suggestions] & [🌟 Set Promotion] sections in Code Review
+
+## ---------When not promoted to full dev---------
+1. Take set/game out of `(In Review)` on RA game page, if necessary. By pressing `Complete Claim Review` in `Dev` drop down menu
+2. Promote all achievements to official, disregard achievements marked `[VOID]`
+3. Tell Junior to complete claim via `Dev` drop down menu
+4. Post `Achievement News Announcement`, reviewed by Junior
+5. Post [✒️ RANews Set Highlight] in Code Review to fill out the form 
+
+## ---------When promoted to full dev--------
+1. Take set/game out of `(In Review)` on RA game page, if necessary. By pressing `Complete Claim Review` in `Dev` drop down menu
+2. Tell Junior/new dev to promote all achievements to official, disregarding achievements marked `[VOID]`
+3. Tell Junior to complete claim via `Dev` drop down menu
+4. Let Junior post `Achievement News Announcement`
+5. Post [✒️ RANews Set Highlight] in Code Review to fill out the form 
+
+#  ✦═══════✦ :check: Wrap-Up & Next Steps ✦═══════✦
+
+### ---⇢ 🎓 Retrospective ⇠---
+The achievement set was very solid overall. No major issues were found, only one minor issue involving a misplaced `delta` in a single achievement's logic. For a first set, you’ve clearly demonstrated a strong understanding of the toolkit and good design sense.
+
+### ---⇢ 🤔 Suggestions ⇠---
+You already seem to have a great grasp of RA’s toolkit, which is impressive. Going forward, I’d recommend trying  to select a game of this complexity again, something that lends itself to creative or intricate achievements.
+
+You've shown familiarity with advanced features such as checkpoint hitcounts and ResetIf, which is great. However, I encourage you to gain some more hands-on experience with:
+- PauseIf & PauseLocks (although you used ResetIf + CheckPoint HitCounts instead, which makes it kinda equal to this)
+- AddAddress, AddSource, and SubSource (show us more varied usage of this)
+- Bitflags and memory flag handling + documentation practices surrounding these
+
+If your next set maintains this level of quality and avoids major issues, I’m confident you'll be ready for full dev status in no time. Show us you can 
+
+## ∘───── 🌟 Set Promotion ─────∘
+Alright, we'll be promoting the set, once you're ready. Any achievements marked `[VOID]` will remain in Unofficial.
+
+Please review the **"Achievement News Announcement"** template below, which shall be posted in **#achievement-news** in RAdiscord
+- Let me know if the video I’ve provided is okay, else share a link to a more suitable one if you prefer.
+- Do you have any flavour text you'd like to include with the announcement? Try to write something that will make players excited to try out your set. You could briefly highlight what makes the game fun or unique, or what kind of experience the achievement set offers.
+
+Reply/ping me once you’ve looked it over and are ready to promote it!
+> ℹ️ NOTE — Both of us need to be online at the same time in order to promote the set. Please let me know when you're available so we can coordinate this.
+
+### ---⇢ 💎 Achievement News Announcement ⇠---
+```ansi
+Title:       [1;31m Treasures of the Deep [0m
+Console:     [0;34m PlayStation [0m
+Developer:   [0;32m Black Ops Entertainment [0m
+Genre:       [0;35m Action, Simulation [0m
+Released:    [0;33m September 24, 1997 [0m
+```
+A new set was published by @stoneskipper42 on <t:1747585406:D>
+
+_FLAVOR_TEXT_HERE_
+
+[Longplay](https://www.youtube.com/watch?v=6jDtggvOnHQ&list=PL21nKMUhIdU3rjAsS2us8iRSuemSvpz6k)
+[RetroAchievements Game Page](https://retroachievements.org/game/19403)
+
+
+## ∘───── ✒️ RANews Set Highlight ─────∘ // Post-Set Promotion // TODO
+As a final step, please take a moment to fill out the [RAnews Set Highlight Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview). In it, you’ll be asked to write a short pitch promoting your game/set, aimed at readers of the RetroAchievements digital magazine. Your snippet may be featured—fully or with minor edits—in an upcoming issue under the **"Junior Developer Program"** section.
+
+Use this as a chance to spotlight what makes the game and your achievement set stand out. It’s a great way to highlight your work and get players excited to check it out! Consider briefly mentioning:
+- What the game is about
+- What makes the achievement set fun or unique
+- Any specific design focus or standout challenges
+
+This isn’t a devlog, just a brief, engaging introduction meant to catch a reader’s attention.
+
+Here are a few examples of past highlights for inspiration:
+- [RANews Issue February 2025](https://news.retroachievements.org/issues/2025-02/jr-developer-program.html) (first appearance of this section)
+- [RANews Issue March 2025](https://news.retroachievements.org/issues/2025-03/jr-developer-program.html)
+- [RANews Issue April 2025](https://news.retroachievements.org/issues/2025-04/jr-developer-program.html)
+- ...
+
+Once you've submitted your entry into the form, feel free to ping me, so we can mark this post-set promotion task as done! 
