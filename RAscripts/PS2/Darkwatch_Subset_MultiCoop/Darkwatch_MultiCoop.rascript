@@ -3646,7 +3646,7 @@ achievements_triggers = {
 		const_CHAPTER = CHAPTER_3_Boneyard
 		const_WEAPON_A = WEAPON_Crossbow
 		const_WEAPON_B = WEAPON_Carbine
-		const_REQUIRED_KILLS = 100
+		const_REQUIRED_KILLS = 80
 
 		achClgBoneyard_Tally_weaponKills = tally(const_REQUIRED_KILLS, [
 			// -------- PLAYER_1 --------
@@ -5131,6 +5131,8 @@ achievements_triggers = {
 		const_CHAPTER = CHAPTER_12_Hangtown
 		const_CHAPTER_ENDING_FMV = FMV_PromNight
 		const_MIN_REQUIRED_COMBINED_ACCURACY = 0.75
+		const_ALLOWED_WEAPON_A = WEAPON_RangeRifle
+		const_ALLOWED_WEAPON_B = WEAPON_Redeemer
 
 		PARTICIPATION_TRACKING_MinRequiredInputs = PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(const_CHAPTER)
 		PARTICIPATION_TRACKING_MinRequiredShotsHit = PARTICIPATION_TRACKING_DATA_getMinRequiredShotsHit(const_CHAPTER)
@@ -5299,17 +5301,19 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
 				format = "percent")
 			&& memUtil_alwaysFalse(enum_releaseRegion)	
-		// [4/15] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player shoots without WEAPON_RangeRifle equipped, by Resetting HitCount on [StartCondition]
-			|| never( // --Lockout--> when PLAYER_1 shoots a gun without WEAPON_RangeRifle equipped
+		// [4/15] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player shoots a non-allowed gun, by Resetting HitCount on [StartCondition]
+			|| never( // --Lockout--> when PLAYER_1 shoots a non-allowed gun
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
-				&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_ALLOWED_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_ALLOWED_WEAPON_B, enum_releaseRegion)
 				&& !on_HUDcontrolGear_weaponSwap(PLAYER_1, enum_releaseRegion)
 				&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_1, enum_releaseRegion))
-			&& never( // --Lockout--> when PLAYER_2 shoots a gun without WEAPON_RangeRifle equipped
+			&& never( // --Lockout--> when PLAYER_2 shoots a non-allowed gun
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
-				&& !is_EquippedWeapon(PLAYER_2, WEAPON_RangeRifle, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_2, const_ALLOWED_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_2, const_ALLOWED_WEAPON_B, enum_releaseRegion)
 				&& !on_HUDcontrolGear_weaponSwap(PLAYER_2, enum_releaseRegion)
 				&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_2, enum_releaseRegion))
 			&& always_false()
@@ -6463,7 +6467,7 @@ achievements_descriptions = {
 	// ----------------c_Challenge----------------
 	"a_ClgWrongTrain":		{"en": "What started as a score turned into a sentence. Only grit and lead will get you both out. Complete Chapter 1, \"The Wrong Train\", from start to finish in one session on Deadeye difficulty, with no deaths, and a minimum combined accuracy of 70%"},
 	"a_ClgRideDevil":		{"en": "Death rides your tail and mercy ain't waiting. Complete Chapter 2, \"Ride Like the Devil\", from start to finish in one session on Deadeye difficulty, with no deaths, and without the player's combined HP dropping below 50%"},
-	"a_ClgBoneyard":		{"en": "Iron and grit against the dead. Complete Chapter 3, \"Boneyard\", from start to finish in one session on Deadeye difficulty, with no deaths, achieving at least 100 kills using the Carbine or Crossbow, and without using any throwable explosives"},
+	"a_ClgBoneyard":		{"en": "Iron and grit against the dead. Complete Chapter 3, \"Boneyard\", from start to finish in one session on Deadeye difficulty, with no deaths, achieving at least 80 kills using the Carbine or Crossbow, and without using any throwable explosives"},
 	"a_ClgDevilMine":		{"en": "Fire and grit in the dark. Complete Chapter 4, \"Devil's Belly Mine\", from start to finish in one session on Deadeye difficulty, with no deaths, no powers, no throwable explosives, and with one player only using pistols and the other only 2-handed weapons"},
 	"a_ClgDWOutpost":		{"en": "Not even death cracks true steel. Complete Chapter 5, \"Darkwatch Outpost\", from start to finish in one session on Deadeye difficulty, with no deaths, and where the player's combined HP is never below max HP for more than 30 seconds consecutively"},
 	"a_ClgWarTrain":		{"en": "Two phantoms ride, no blood left behind. Complete Chapter 6, \"War Train\", from start to finish in one session on Deadeye difficulty, within 5 minutes, no deaths, and without either player taking any HP loss"},
@@ -6472,7 +6476,7 @@ achievements_descriptions = {
 	"a_ClgRescue":			{"en": "No one gets left behind. Complete Chapter 9, \"Rescue\", from start to finish in one session on Deadeye difficulty, within 10 minutes, no deaths, and without either player dropping below 25% HP"},
 	"a_ClgPrism":			{"en": "Power corrupts, but teamwork endures. Complete Chapter 10, \"The Deadlight Prism\", from start to finish in one session on Deadeye difficulty, with no deaths, where each player can only use each power once"},
 	"a_ClgInvasion":		{"en": "Two barrels, close and personal. Complete Chapter 11, \"Invasion\", from start to finish in one session on Deadeye difficulty, with no deaths, killing only with the Dual Pistols or Shotgun, and without using any throwable explosives"},
-	"a_ClgHangtown":		{"en": "It's a tightrope walk in a noose. Complete Chapter 12, \"Hangtown\", from start to finish in one session on Deadeye difficulty, with no deaths, shooting only with the Range Rifle to acquire a minimum combined accuracy of 75%"},
+	"a_ClgHangtown":		{"en": "It's a tightrope walk in a noose. Complete Chapter 12, \"Hangtown\", from start to finish in one session on Deadeye difficulty, with no deaths, shooting only with the Range Rifle or Redeemer to acquire a minimum combined accuracy of 75%"},
 	"a_ClgMorningAfter":	{"en": "Darkness rises, but two sparks remain. Complete Chapter 13, \"The Morning After\", from start to finish in one session on Deadeye difficulty, with no deaths, using only tier 2 or 3 powers, and with at least 40% headshot or melee kills"},
 	"a_ClgShowdown":		{"en": "No mercy left to give. Complete Chapter 14, \"Showdown\", from start to finish in one session on Deadeye difficulty, with no deaths, where each player can only use one distinct power, and reaching a minimum combined accuracy of 65%"},
 	"a_ClgRightTrain":		{"en": "No slowing, no bleeding. Complete Chapter 15, \"The Right Train\", from start to finish in one session on Deadeye difficulty, within 7 minutes, no deaths, and without any player dropping below 70% HP"},
