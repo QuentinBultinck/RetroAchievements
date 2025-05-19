@@ -2777,7 +2777,6 @@ achievements_coreData = {
 			// "id": 506807, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
-		// TODO c_Gunslinger consider Shootist difficulty instead of Deadeye
 		// "a_GunWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 508863, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunRideDevil": { // QA  // DISABLED - MANUAL_CONSTRUCTION
@@ -2828,7 +2827,7 @@ achievements_coreData = {
 			// "id": 000000, "points": 0000000, "devInfo": "With Redeemer: Land xx shots in single Fan The Hammer volley"},
 		// "a_SunPower": { // VERIFIED
 			// "id": 510106, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
-		// "a_Multikill": { // VERIFIED // TODO 4 kill multikill viable?
+		// "a_Multikill": { // VERIFIED
 			// "id": 510105, "points": 0000000, "devInfo": "Kill xx enemies in one frame (use explosives or powers)"},
 		// "a_AllPowersGood": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 510104, "points": 0000000, "devInfo": "Unlock all Good powers"},
@@ -4495,7 +4494,7 @@ achievements_triggers = {
 		const_WEAPON_A = WEAPON_Scepter
 		const_WEAPON_B = WEAPON_Shotgun
 		return	
-		// [1/11] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as with power usage requirements
+		// [1/11] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as hasn't killed an enemy with a disallowed weapon
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When LastChapterSection from the Gunslinger Level/Chapter has ended + Required MeleeKills ratio % NOT achieved (to hide Trigger Indicator)
 				never(is_flagState_InGame_true(enum_releaseRegion))
@@ -4615,7 +4614,7 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
 				format = "percent")
 			&& memUtil_alwaysFalse(enum_releaseRegion)
-		// [4/14] ==== Alt Triggered Group ====					-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
+		// [4/14] ==== Alt Triggered Group ====					-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped // TODO a_GunTortureMaze - this altGroup can probably be removed safely, as AltGroup[1] already has an equal Trigger Indicator
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -4698,7 +4697,7 @@ achievements_triggers = {
 		const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW = 4
 
 		return	
-		// [1/11] ==== Alt Logic Group ==== 		-> Group is responsible for unlocking the achievement
+		// [1/11] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as challenge is OK
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			/* DEV_NOTE: Example of PauseLock into ResetNextIf	(this is not preferred for this achievement as there's multiple challenges attached, which could "lock" the achievement)
 				------------
@@ -4718,19 +4717,20 @@ achievements_triggers = {
 			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
 				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
 				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
-				on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
-			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+			&& trigger_when( // TODO a_GunBaptismFire update - Trigger added to AltGroup[1] AND AltGroup[2] could be removed as it would be redundant
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
 		// [2/12] ==== Alt Triggered Group ====		-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
@@ -4777,7 +4777,7 @@ achievements_triggers = {
 					&& current_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
 						+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) 
 						- prev_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
-						- prev_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) > 0)						
+						- prev_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) > 0)
 				&& is_flagState_InGame_true(enum_releaseRegion)
 				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
 			&& always_false()
@@ -4838,11 +4838,11 @@ achievements_triggers = {
 		}),
 	"a_GunPrism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (4x) MANUAL_CONSTRUCTION (AltGroup[2+3+6+10])
 		const_CHAPTER = CHAPTER_10_Prism
-		const_TIME_LIMIT = 900000 // 900.000 ms = 15 min
+		const_TIME_LIMIT = 900000 // 900.000 ms = 15 min // TODO a_GunPrism - Test time limit to be more challenging
 		const_WEAPON_A = WEAPON_DualPistols
 		const_WEAPON_B = WEAPON_Shotgun
 		return
-		// [1/11] ==== Alt Logic + Triggered Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as HP hasn't dropped below xx% 
+		// [1/11] ==== Alt Logic + Triggered Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as challenge is OK
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
 				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
