@@ -7491,6 +7491,7 @@ function lbGenerate_FullStartTrigger_HardStoryCompletion(enum_difficulty, enum_r
 	// NOTE: When starting from a previously completed Chapter in Single Player Mode, all ChapterStats in [Array:SavedStats_Story] from succeeding Chapters and the selected Chapter will be zeroed out
 	const_IN_PROGRESS_STORYCHAPTER_ID_WrongTrain = 1 // CHAPTER_1_WrongTrain
 	const_MAINMENU_HIGHLIGHTED_BUTTON_SinglePlayer = 0
+	const_INPUT_FOR_TIMER_OVERLAY = INPUT_Select
 	const_ALL_STORY_CHAPTERS = array_filter(CONST_LEVEL_DATA, (enum_chapter) { // All Chapters (CHAPTER_Citadel excluded)
 		if (enum_chapter == CHAPTER_Citadel) return false
 		else return true
@@ -7506,7 +7507,7 @@ function lbGenerate_FullStartTrigger_HardStoryCompletion(enum_difficulty, enum_r
 			&& on_PlayerInput_press(PLAYER_1, INPUT_Cross, enum_releaseRegion))
 		&& all_of(CONST_LEVEL_DATA, enum_chapter => // --CheckIf--> [Array:SavedStats_Story] is clean
 			current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) == 0)
-		&& is_flagState_IsInputPressed_true(CONTROLLER_1, INPUT_Select, enum_releaseRegion)
+		&& is_flagState_IsInputPressed_true(CONTROLLER_1, const_INPUT_FOR_TIMER_OVERLAY, enum_releaseRegion)
 		&& current_InProgressStoryChapterID(enum_releaseRegion) == const_IN_PROGRESS_STORYCHAPTER_ID_WrongTrain // --> [8-bit:InProgress_StoryChapterID] is set when confirming the Chapter in MAINMENU_SUBMENU_ChapterSelectMenu
 		&& current_MainMenu_DifficultySelectMenu_SelectedDifficulty(enum_releaseRegion) == enum_difficulty
 		&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion)
