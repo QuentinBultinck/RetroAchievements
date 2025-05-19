@@ -3845,7 +3845,7 @@ achievements_triggers = {
 	"a_GunWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (4x) MANUAL_CONSTRUCTION (AltGroup[2+3+5+9])
 		const_CHAPTER = CHAPTER_1_WrongTrain
 		const_TIME_LIMIT = 240000 // 240.000 ms = 4 min
-		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.5 // % of max HP
+		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.4 // % of max HP
 		return 
 		// [1/10] ==== Alt Logic + Triggered Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as HP hasn't dropped below xx% 
 			unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -3993,8 +3993,8 @@ achievements_triggers = {
 		}),
 	"a_GunRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) MANUAL_CONSTRUCTION (AltGroup[1+2+3+5+9])
 		const_CHAPTER = CHAPTER_2_RideDevil
-		const_MIN_REQUIRED_ACCURACY = 0.75
-		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.5 // % of max HP
+		const_MIN_REQUIRED_ACCURACY = 0.70
+		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.4 // % of max HP
 		return 
 		// [1/10] ==== Alt Logic + Triggered Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying Trigger Indicator as long as HP hasn't dropped below xx% 
 			unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -4002,8 +4002,8 @@ achievements_triggers = {
 				never(is_flagState_InGame_true(enum_releaseRegion))
 				
 				/* MANUAL_CONSTRUCTION[2ACC-1ACC]:CheckAccuracyNotAchieved (below 3 lines) - R/R usage 
-					PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}<f0.75
-					NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}<f0.75
+					PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}<f0.70
+					NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}<f0.70
 					-----------
 						Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
 						Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
@@ -4028,8 +4028,8 @@ achievements_triggers = {
 					never(is_flagState_InGame_true(enum_releaseRegion))
 					
 					/* MANUAL_CONSTRUCTION[2ACC-3ACC]:CheckAccuracyAchieved (below 3 lines) - R/R usage 
-						PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.75
-						NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.75
+						PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.70
+						NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.70
 						-----------
 							Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
 							Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
@@ -4117,11 +4117,11 @@ achievements_triggers = {
 		}),
 	"a_GunBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[4+8])
 		/* NOTE: 
-			- This Chapter should have 100+ enemies, and even more when the player doesn't instakill the Marks of Evil, which keep spawning enemies
+			- This Chapter should have 80+ enemies, and even more when the player doesn't instakill the Marks of Evil, which keep spawning enemies
 			- For this achievement only: ResetOn_PauseMenu_Restart must reset not only for ChapterSection_1 but during all ChapterSections (for this Achievement; because of MeasuredKillCount)
 			*/
 		const_CHAPTER = CHAPTER_3_Boneyard
-		const_REQUIRED_KILLS = 100
+		const_REQUIRED_KILLS = 80
 		return	
 		// [1/9] ==== Alt Logic + Measured + Triggered Group ==== 	-> Group is responsible for unlocking the achievement + Displaying a Measured Indicator kills with required guns + Triggered Indicator when all kills are achieved
 			unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -4491,7 +4491,7 @@ achievements_triggers = {
 		}),
 	"a_GunTortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) MANUAL_CONSTRUCTION (AltGroup[1+2+3+6+10])
 		const_CHAPTER = CHAPTER_7_TortureMaze
-		const_MIN_REQUIRED_MELEE_KILLS = 0.8 // Percentage
+		const_MIN_REQUIRED_MELEE_KILLS = 0.6 // Percentage
 		const_WEAPON_A = WEAPON_Scepter
 		const_WEAPON_B = WEAPON_Shotgun
 		return	
@@ -4501,8 +4501,8 @@ achievements_triggers = {
 				never(is_flagState_InGame_true(enum_releaseRegion))
 				
 				/* MANUAL_CONSTRUCTION[BC10-BC17]:CheckMeleeKillsRatioNotAchieved (below 3 lines) - R/R usage 
-					PAL:	K:0xX00965c50/f1.0_K:0xX00965c60/{recall}_N:{recall}<f0.8
-					NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c80/{recall}_N:{recall}<f0.8
+					PAL:	K:0xX00965c50/f1.0_K:0xX00965c60/{recall}_N:{recall}<f0.6
+					NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c80/{recall}_N:{recall}<f0.6
 					-----------
 						Remember	[32-bit:Kills_ChapterTotal] / 1.0		--> Force 32-bit to Float
 						Remember	[32-bit:MeleeKills_ChapterTotal] / Recall		--> Divide by Float, returns a Float
@@ -4530,8 +4530,8 @@ achievements_triggers = {
 					never(is_flagState_InGame_true(enum_releaseRegion))
 				
 					/* MANUAL_CONSTRUCTION[BC10-BC17]:CheckMeleeKillsRatioAchieved (below 3 lines) - R/R usage 
-						PAL:	K:0xX00965c50/f1.0_K:0xX00965c60/{recall}_N:{recall}>=f0.8
-						NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c80/{recall}_N:{recall}>=f0.8
+						PAL:	K:0xX00965c50/f1.0_K:0xX00965c60/{recall}_N:{recall}>=f0.6
+						NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c80/{recall}_N:{recall}>=f0.6
 						-----------
 							Remember	[32-bit:Kills_ChapterTotal] / 1.0		--> Force 32-bit to Float
 							Remember	[32-bit:MeleeKills_ChapterTotal] / Recall		--> Divide by Float, returns a Float
@@ -5019,12 +5019,9 @@ achievements_triggers = {
 		}),
 	"a_GunHangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) MANUAL_CONSTRUCTION (AltGroup[1+2+3+6+10])
 		const_CHAPTER = CHAPTER_12_Hangtown
-		const_MIN_REQUIRED_ACCURACY = 0.85
-		const_REQUIRED_SHOOTING_WEAPON = WEAPON_RangeRifle
-		const_NON_ALLOWED_SHOOTING_WEAPONS = array_filter(const_WEAPON_DATA, (enum_weapon) {
-			if (enum_weapon == const_REQUIRED_SHOOTING_WEAPON) return false
-			return true
-		})
+		const_MIN_REQUIRED_ACCURACY = 0.75
+		const_REQUIRED_SHOOTING_WEAPON_A = WEAPON_RangeRifle
+		const_REQUIRED_SHOOTING_WEAPON_B = WEAPON_Redeemer
 		return
 		// [1/11] ==== Alt Logic + Triggered Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying Trigger Indicator as long as player hasn't used any non-allowed powers
 			unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -5032,8 +5029,8 @@ achievements_triggers = {
 				never(is_flagState_InGame_true(enum_releaseRegion))
 				
 				/* MANUAL_CONSTRUCTION[2ACC-1ACC]:CheckAccuracyNotAchieved (below 3 lines) - R/R usage 
-					PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}<f0.85
-					NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}<f0.85
+					PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}<f0.75
+					NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}<f0.75
 					-----------
 						Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
 						Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
@@ -5054,8 +5051,8 @@ achievements_triggers = {
 					never(is_flagState_InGame_true(enum_releaseRegion))
 					
 					/* MANUAL_CONSTRUCTION[2ACC-3ACC]:CheckAccuracyAchieved (below 3 lines) - R/R usage 
-						PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.85
-						NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.85
+						PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.75
+						NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.75
 						-----------
 							Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
 							Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
@@ -5109,9 +5106,10 @@ achievements_triggers = {
 			&& trigger_when(always_false())
 		// [4/14] ==== Alt Lockout Group ===				-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& never(once( // --Lockout--> When the player fires a shot from with a non-allowed weapon
+			&& never(once( // --Lockout--> When the player fires a shot with a non-allowed weapon
 				is_flagState_InGame_true(enum_releaseRegion)
-				&& !is_EquippedWeapon(PLAYER_1, const_REQUIRED_SHOOTING_WEAPON, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_REQUIRED_SHOOTING_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_REQUIRED_SHOOTING_WEAPON_B, enum_releaseRegion)
 				&& !on_HUDcontrolGear_weaponSwap(enum_releaseRegion)
 				&& on_HUDcontrolGear_LoadedBullets_decrement(enum_releaseRegion)))
 			&& always_false()
@@ -6021,18 +6019,18 @@ achievements_descriptions = {
 	"a_Moon":					{"en": "The moon's rising, and you've got minutes to make it count. Run fast, shoot faster, or be swallowed by the night. Unlock the \"Highmoon Trailer\" concept art by completing Chapter 9, \"Rescue\", in 15 minutes or less in Gunslinger Mode"},
 	"a_Archive":				{"en": "A gunslinger's tale ain't written in ink—it's carved in blood and lead. Survive the worst, and your legend might outlast you. Unlock the \"Darkwatch Archives\" concept art by completing all Chapters on Deadeye difficulty in Gunslinger Mode"},
 	// --------c_Gunslinger-------- 
-	"a_GunWrongTrain": 			{"en": "No time for second chances—burn through the rails like hell's on your heels. Complete Chapter 1, \"The Wrong Train\", in Gunslinger Mode on Deadeye difficulty, within 4 minutes, no deaths, and without dropping below 50% HP"},
-	"a_GunRideDevil": 			{"en": "You ain't just riding—you're making every bullet sing. Complete Chapter 2, \"Ride Like the Devil\", in Gunslinger Mode on Deadeye difficulty, with no deaths, at least 75% accuracy, and without falling below 50% HP"},
-	"a_GunBoneyard": 			{"en": "The ground's already full, but you kept digging. Complete Chapter 3, \"Boneyard\", in Gunslinger Mode on Deadeye difficulty, with no deaths, achieving at least 100 kills using the Carbine or Crossbow, and without throwing any explosives"},
+	"a_GunWrongTrain": 			{"en": "No time for second chances—burn through the rails like hell's on your heels. Complete Chapter 1, \"The Wrong Train\", in Gunslinger Mode on Deadeye difficulty, within 4 minutes, no deaths, and without dropping below 40% HP"},
+	"a_GunRideDevil": 			{"en": "You ain't just riding—you're making every bullet sing. Complete Chapter 2, \"Ride Like the Devil\", in Gunslinger Mode on Deadeye difficulty, with no deaths, at least 70% accuracy, and without falling below 40% HP"},
+	"a_GunBoneyard": 			{"en": "The ground's already full, but you kept digging. Complete Chapter 3, \"Boneyard\", in Gunslinger Mode on Deadeye difficulty, with no deaths, achieving at least 80 kills using the Carbine or Crossbow, and without throwing any explosives"},
 	"a_GunDevilMine": 			{"en": "Ain't no darkness hiding what you came to do. Complete Chapter 4, \"Devil's Belly Mine\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only the Redeemer or Dual Pistols, and without using any powers"},
 	"a_GunDWOutpost": 			{"en": "The station is drowning in blood—and none of it is yours. Complete Chapter 5, \"Darkwatch Outpost\", in Gunslinger Mode on Deadeye difficulty, with no deaths, and without being below max HP for more than 20 consecutive seconds"},
 	"a_GunWarTrain": 			{"en": "The train kept running. You didn't bleed. Complete Chapter 6, \"War Train\", in Gunslinger Mode on Deadeye difficulty, within 5 minutes, no deaths, and without losing any HP"},
-	"a_GunTortureMaze": 		{"en": "This ain't no gunfight—it's a sermon of steel. Complete Chapter 7, \"Torture Maze\", in Gunslinger Mode on Deadeye difficulty, with no deaths, only killing with the Scepter or Shotgun, and with at least 80% melee kills"},
+	"a_GunTortureMaze": 		{"en": "This ain't no gunfight—it's a sermon of steel. Complete Chapter 7, \"Torture Maze\", in Gunslinger Mode on Deadeye difficulty, with no deaths, only killing with the Scepter or Shotgun, and with at least 60% melee kills"},
 	"a_GunBaptismFire": 		{"en": "This baptism ain't in water. Complete Chapter 8, \"Baptism of Fire\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only the Redeemer or Rail Rocket, and without scoring 5 body-shot kills in a row—mix it up with headshot or melee kills"},
 	"a_GunRescue": 				{"en": "Bullets flew, the dead swarmed—and you walked out clean. Complete Chapter 9, \"Rescue\", in Gunslinger Mode on Deadeye difficulty, with no deaths, and without losing any HP"},
-	"a_GunPrism": 				{"en": "The canyon lit up like Judgment Day—and you brought the thunder. Complete Chapter 10, \"The Deadlight Prism\", in Gunslinger Mode on Deadeye difficulty within 15 minutes, no deaths, and killing only with the Dual Pistols or Shotgun"},
+	"a_GunPrism": 				{"en": "The canyon lit up like Judgment Day—and you brought the thunder. Complete Chapter 10, \"The Deadlight Prism\", in Gunslinger Mode on Deadeye difficulty within 15 minutes, no deaths, and killing only with the Dual Pistols or Shotgun equipped"},
 	"a_GunInvasion": 			{"en": "One power. Five flickers of fury. The rest? Pure skill. Complete Chapter 11, \"Invasion\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only one distinct power, and with only 5 allowed power activations"},
-	"a_GunHangtown": 			{"en": "One shot, one soul. No room for waste when the town's already dead. Complete Chapter 12, \"Hangtown\", in Gunslinger Mode on Deadeye difficulty, with no deaths, and achieving at least 85% accuracy, only shooting with the Range Rifle"},
+	"a_GunHangtown": 			{"en": "One shot, one soul. No room for waste when the town's already dead. Complete Chapter 12, \"Hangtown\", in Gunslinger Mode on Deadeye difficulty, with no deaths, and achieving at least 75% accuracy, only shooting with the Range Rifle or Redeemer"},
 	"a_GunMorningAfter": 		{"en": "The citadel burns, but your powers cut clean and your hands cut cleaner. Complete Chapter 13, \"The Morning After\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only tier 2 or 3 powers, and with at least 45% melee kills"},
 	"a_GunShowdown": 			{"en": "No tricks, no frills—just clean shots and first-tier fury. Complete Chapter 14, \"Showdown\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only tier 1 powers, and with at least 65% accuracy"},
 	"a_GunRightTrain": 			{"en": "That train didn't slow down and neither did you. Complete Chapter 15, \"The Right Train\", in Gunslinger Mode on Deadeye difficulty within 7 minutes, no deaths, and without dropping below 70% HP"},
@@ -7278,14 +7276,14 @@ leaderboards_coreData = {
 	// "lb_WatchersCurseWest": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127420, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_17_CurseWest, from start to finish (single session)"},
 	// ------lb_StoryTime------
-	"lb_StoryTimeSoftGreenhorn": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START)
-		"id": 128269, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Greenhorn difficulty"},
-	"lb_StoryTimeSoftCowboy": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START)
-		"id": 128267, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Cowboy difficulty"},
-	"lb_StoryTimeSoftShootist": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START)
-		"id": 128270, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Shootist difficulty"},
-	"lb_StoryTimeSoftDeadeye": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START)
-		"id": 128268, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Deadeye difficulty"},
+	// "lb_StoryTimeSoftGreenhorn": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START)
+		// "id": 128269, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Greenhorn difficulty"},
+	// "lb_StoryTimeSoftCowboy": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START)
+		// "id": 128267, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Cowboy difficulty"},
+	// "lb_StoryTimeSoftShootist": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START)
+		// "id": 128270, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Shootist difficulty"},
+	// "lb_StoryTimeSoftDeadeye": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START)
+		// "id": 128268, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Deadeye difficulty"},
 	// "lb_StoryTimeHardGreenhorn": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
 		// "id": 128265, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Any% speedrun (single session) Greenhorn difficulty (optional timer overlay)"},
 	// "lb_StoryTimeHardCowboy": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
