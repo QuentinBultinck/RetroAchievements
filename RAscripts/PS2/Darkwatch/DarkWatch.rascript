@@ -2826,8 +2826,8 @@ achievements_coreData = {
 			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 		// "a_FanHammer": { // CONCEPT a_FanHammer, can't find a reliable method to check when in "Fan The Hammer" mode
 			// "id": 000000, "points": 0000000, "devInfo": "With Redeemer: Land xx shots in single Fan The Hammer volley"},
-		"a_SunPower": { // VERIFIED
-			"id": 510106, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
+		// "a_SunPower": { // VERIFIED
+			// "id": 510106, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
 		// "a_Multikill": { // VERIFIED // TODO 4 kill multikill viable?
 			// "id": 510105, "points": 0000000, "devInfo": "Kill xx enemies in one frame (use explosives or powers)"},
 		// "a_AllPowersGood": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
@@ -7278,21 +7278,21 @@ leaderboards_coreData = {
 	// "lb_WatchersCurseWest": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127420, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_17_CurseWest, from start to finish (single session)"},
 	// ------lb_StoryTime------
-	// "lb_StoryTimeSoftGreenhorn": { // QA // DISABLED - MANUAL_CONSTRUCTION (START)
-		// "id": 128269, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Greenhorn difficulty"},
-	// "lb_StoryTimeSoftCowboy": { // QA // DISABLED - MANUAL_CONSTRUCTION (START)
-		// "id": 128267, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Cowboy difficulty"},
-	// "lb_StoryTimeSoftShootist": { // QA // DISABLED - MANUAL_CONSTRUCTION (START)
-		// "id": 128270, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Shootist difficulty"},
-	// "lb_StoryTimeSoftDeadeye": { // QA // DISABLED - MANUAL_CONSTRUCTION (START)
-		// "id": 128268, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Deadeye difficulty"},
-	// "lb_StoryTimeHardGreenhorn": { // QA // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
+	"lb_StoryTimeSoftGreenhorn": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START)
+		"id": 128269, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Greenhorn difficulty"},
+	"lb_StoryTimeSoftCowboy": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START)
+		"id": 128267, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Cowboy difficulty"},
+	"lb_StoryTimeSoftShootist": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START)
+		"id": 128270, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Shootist difficulty"},
+	"lb_StoryTimeSoftDeadeye": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START)
+		"id": 128268, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Deadeye difficulty"},
+	// "lb_StoryTimeHardGreenhorn": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
 		// "id": 128265, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Any% speedrun (single session) Greenhorn difficulty (optional timer overlay)"},
-	// "lb_StoryTimeHardCowboy": { // QA // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
+	// "lb_StoryTimeHardCowboy": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
 		// "id": 128263, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Any% speedrun (single session) Cowboy difficulty (optional timer overlay)"},
-	// "lb_StoryTimeHardShootist": { // QA // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
+	// "lb_StoryTimeHardShootist": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
 		// "id": 128266, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Any% speedrun (single session) Shootist difficulty (optional timer overlay)"},
-	// "lb_StoryTimeHardDeadeye": { // QA // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
+	// "lb_StoryTimeHardDeadeye": { // VERIFIED_kinda // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
 		// "id": 128264, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Any% speedrun (single session) Deadeye difficulty (optional timer overlay)"},
 	}
 // #endregion LB - core data
@@ -7459,7 +7459,7 @@ function lbGenerate_FullStartTrigger_SoftStoryCompletion(enum_difficulty, enum_r
 		&& all_of(CONST_LEVEL_DATA, (enum_chapter) { // --CheckIf--> All Chapters have been completed on enum_difficulty or higher (CHAPTER_Citadel excluded)
 			if (enum_chapter == CHAPTER_Citadel) return always_true() // --> Exclude CHAPTER_Citadel from this Check
 			return 
-				current_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion) >= LB_STORYTIME_Min_Missiontime_PerChapter
+				current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) >= LB_STORYTIME_Min_Missiontime_PerChapter
 				&& current_SavedStatStory_Difficulty(enum_chapter, enum_releaseRegion) >= enum_difficulty
 				&& current_SavedStatStory_Difficulty(enum_chapter, enum_releaseRegion) <= const_HIGHEST_DIFFICULTY
 			})
