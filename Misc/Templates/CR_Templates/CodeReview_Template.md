@@ -290,6 +290,7 @@ I'll be using this list here to track your progress as well. As you work through
 
 ### ---⇢ 🤔 Suggestions ⇠--- // TODO
 /// Recommend areas for growth using the [Proficiency Checklist]. This may include tools or skills that weren’t demonstrated during the set development.
+/// What is evaluated? Refer to [RAdocs - Jr Dev Graduation Consideration](https://docs.retroachievements.org/developer-docs/jr-dev-rules.html)
 /// Suggestions may include:
 /// - Review other developers’ Code Reviews for common pitfalls and strong practices.
 /// - Use Discord help channels frequently — don’t hesitate to ask for feedback.

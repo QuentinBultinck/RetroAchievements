@@ -52,6 +52,7 @@ Your set look very solid, I have no major remarks to offer. Everything appears w
 That said, please keep in mind that I'm not deeply familiar with this game beyond the quick glance I took. So any feedback I provide here should always be weighed against your own understanding of the game’s design. You’re the expert here.
 
 # ------Checklist (for CR)------
+/// All requirements for entering backlong refer to [RAdocs - Code Review Request](https://docs.retroachievements.org/developer-docs/jr-dev-rules.html#code-review-requests)
 
 ### 👉 Overal Set Design
 /// All content covered and creativity
