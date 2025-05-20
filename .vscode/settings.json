@@ -20,6 +20,7 @@
 
         "TODO",
         "PENDING",
+        "CR_TODO"
         
         "TODO_OPTIONAL",
         
@@ -51,9 +52,10 @@
         "NOTE",
         "NOTE_BUGFIX",
 
-        "DEV_NOTE"
+        "DEV_NOTE",
+        "CR_NOTE",
 
-        "PENDING_SUPPORT"
+        "PENDING_SUPPORT",
     ],
     "todo-tree.general.tagGroups": {        
         "#region": [
@@ -69,6 +71,7 @@
         "TODO": [
             "TODO",
             "PENDING",
+            "CR_TODO",
         ],
         "BUG": [
             "ERROR",
@@ -100,6 +103,10 @@
         "NOTE": [
             "NOTE",
             "NOTE_BUGFIX",
+        ],
+        "DEV_NOTE": [
+            "DEV_NOTE",
+            "CR_NOTE"
         ],
     },
     "todo-tree.highlights.defaultHighlight": {

@@ -1,5 +1,11 @@
 # %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
- 
+
+# ------Links Related to Code Review------
+Code Review Thread - https://discord.com/channels/310192285306454017/1369304895106322594
+Set Plan Review Thread => https://discord.com/channels/310192285306454017/1339961840947560498
+Ready for Review Thread => https://discord.com/channels/310192285306454017/1342175550017503362
+RA Game Page => https://retroachievements.org/game/8506
+
 # ------CR TODO List------
 - Edit intro
 - Review: Memory Work & Internal Notes
@@ -22,8 +28,9 @@
 ✅ ☑️ ✔️ 🆗
 ℹ️   🛈
 ❌  ✖️
-❗  ‼️  ⚠️
+❗  ‼️  ⚠️ 🟨
 ❓ ⁉️  🚩
+💡
 👆  👉  👌  👍
 ➡   ➡️
 ↩   ↩️   🔄
@@ -34,13 +41,15 @@
 ⛏️  🔨  🔧  🗝️  🔑  🔒  ⚒️ ⚒ ⛏ ⚖️
 🖋️  🖌️  🖍️  🔎
 🎓 	🎮
+⏳
 
 
 # ------TODO Legend------
-🔲 TODO — Not started
-🔄 WIP — Work in progress
-✅ DONE — Completed
-❌ CANCELED — No longer planned
+- 🔲 TODO — Task identified but not yet started
+- 🔄 WIP — Task is in progress
+- ✅ DONE — Task has been completed successfully
+- 🟨 DISMISSED – Concern was reviewed and ruled out
+- ❌ CANCELED — Task was dropped or no longer applicable
 
 ### 🔲 ❓ Achievement [G](https://retroachievements.org/achievement/482465) Single Letter Title
 Only one letter title? Could you elaborate on this choice?
@@ -51,13 +60,7 @@ Broken because ...
 ### ✅ ❗ Leaderboards [My Laser Button was Broken](https://retroachievements.org/leaderboardinfo.php?i=123855) Improvement Suggestion
 Do this instead of that...
 
-
-
-
-
-
-
-# %%%%%%%%%%%%% CODE REVIEW TEMPLATE %%%%%%%%%%%%% #
+# %%%%%%%%%%%%% CODE REVIEW: Huge Insect %%%%%%%%%%%%% #
 
 # ------Intro------
 
@@ -70,12 +73,12 @@ Please take some time to review everything I've written below. If you have any q
 ### 🧠 Memory Work & Internal Notes _MSG_LINK_ 
 *(3 TODOs)*
 - 🛠️ RAM Digging & Code Notes
-- 🧾 Additional Developer Notes
+- 🧷 Additional Developer Notes
 - 🧪 Testing & Debugging Results
 ### 🎮 Achievement Set Design _MSG_LINK_ 
 *(4 TODOs)*
 - 🎯 Overall Set Design
-- 📝 Titles & Descriptions
+- ✍️ Titles & Descriptions
 - 🖼️ Badges
 - 🎖️ Point Values
 ### ⚙️ Technical Implementation _MSG_LINK_ 
@@ -102,7 +105,7 @@ This address is used in the logic for the achievement *Bughou*, specifically:
 ```
 Upon testing, line [4] never allows the hit count to increment, meaning the achievement is not triggering as expected. This suggests it wasn’t tested thoroughly. You’ve already done the RAM digging needed to make this work, you just need to re-evaluate how the logic pieces fit together to make it work.
 
-## 🧾 Additional Developer Notes
+## 🧷 Additional Developer Notes
 
 ### 🔲 ❓ Set Plan Feedback
 In your [Set Plan Review](https://discord.com/channels/310192285306454017/1339961840947560498), dev `suspect15` suggested adding a few more challenge achievements, which doesn’t appear to have been followed through. Additionally, it looks like one achievement from your original plan. **R-Bug** `Have all of the power-ups at the same time` was left out of the final set.
@@ -123,7 +126,7 @@ Could you clarify what led to these omissions?
 - `progression` and `win condition` labels are used correctly.
 - Rich Presence could use some small improvements; see CodeReviewSection[📺 Rich Presence Logic].
 
-### 🔲 ❓ More Challenge Ideas
+### 🔲 ❓ More Challenge Idea's
 I think adding 1–5 more challenge achievements could really elevate the set, in order give it just a bit more creativity and replay value. Below are some ideas you might consider. Of course, you know this game best, so feel free to disregard what doesn’t make sense or suit the experience you’re aiming to deliver. Just try to maintain variety and avoid making the set feel bloated, it's a short and simple game, so even a few more well crafted challenges can go a long way.
 
 **♦ Timed Challenges**
@@ -175,7 +178,7 @@ Bonus: You could consider a **custom scoring formula**, incorporating not just t
 This would be more complex but could serve as an excellent learning project if you're up for the challenge.
 
 
-## 📝 Titles & Descriptions
+## ✍️ Titles & Descriptions
 Titles are very creative—love to see it.
 
 ### 🔲 ❗ Description Issues
@@ -289,7 +292,7 @@ Do you understand why above code is preferred to the current logic and why a Res
 ### 🔲 ❓ Achievement [Bughou](https://retroachievements.org/achievement/500187) Improvement Suggestions
 ♦ **Issues**
 - Improper use of `Delta`, as previously described in other achievements.
-- Use of RAM address `0xB` to detect life loss is unreliable and should be avoided.
+- ~~Use of RAM address `0xB` to detect life loss is unreliable and should be avoided.~~ // CR_NOTE: this does work, my bad
 
 ♦ **Enhancements**
 - An optional **measured indicator** could be added to provide better feedback to the player. For example, display a countdown from `5/5` to `0/5`, indicating how many lives are left before the challenge fails. This would give the player clear, live progress and serve as a good development exercise.
@@ -396,39 +399,66 @@ Could you try to make one final list of any more hubs/similar games to add? Thin
 
 # ✦───────✦ 📜 Summary & Final Thoughts ✦───────✦ 
 
-## 📋 Set Promotion TODO Checklist
-
+## 📋 TODO Checklist 
+- **Initially Posted on**: `6 May 2025`
+- **Last Updated on**: `8 May 2025` - `Checklist Assessment #1` // CR_TODO Checklist Assessment #2
 Please update below list as you work through items. I would advise copying/updating it here or in a document online, which I can view/follow.
 I may update this list here as you progress through the items, as well.
 
-### 📐 Legend - TODO
-🔲 TODO — Not started
-🔄 WIP — Work in progress
-✅ DONE — Completed
-❌ CANCELED — No longer planned
+### ---⇢ 🗃️ TODO Legend ⇠---
+- 🔲 TODO — Task identified but not yet started
+- 🔄 WIP — Task is in progress
+- ✅ DONE — Task has been completed successfully
+- 🟨 DISMISSED – Concern was reviewed and ruled out
+- ❌ CANCELED — Task was dropped or no longer applicable
 
-### 📌 Active Tasks
-🔲 ❗ Code Note `0x000B` Inconsistent + Achievement [Bughou](https://retroachievements.org/achievement/500187) Broken
-🔲 ❓ Set Plan Feedback
-🔲 ❓ Development Questions
-🔲 ❓ More Challenges Idea's
-🔲 ❓ Leaderboard Design
-🔲 ❗ Description Issues
-🔲 ❓ Possible Point Increase
-🔲 ❗ Achievement [Bug Flying Squadron](https://retroachievements.org/achievement/500189) Improperly Coded
-🔲 ❗ Achievement [StarBug](https://retroachievements.org/achievement/500182) Improvements Needed
-🔲 ❗ Improper Use of Delta & ResetIf
-🔲 ❓ Achievement [Bughou](https://retroachievements.org/achievement/500187) Improvement Suggestions
-🔲 ❓ Score Macro & Code Note 
-🔲 ❗ Conditional RP Strings Additions
-🔲 🧭 Hubs & Similar Games
-🔲 🗂️ Game Page Metadata
+### ---⇢ 📌 Initial Code Review Tasks ⇠---
+### 🔲 🛠️❗ Code Note `0x000B` Inconsistent + Achievement [Bughou](https://retroachievements.org/achievement/500187) Broken
+Bugged when in *Stage 1-1*, lives lost aren't counted while in Stage 1-1. Try to fix this.
+### 🔲 🧷❓ Set Plan Feedback
+I have personally done some RAM digging to make the achievement `Collect all four power-ups simultaneously and finish the stage with them` possible, now it's up to you to code it. Refer to new code notes documented by me `0x1b9a` & `0x1b9c`. Turning these on/off during gameplay activates the respective power-ups.
+### 🔲 🧪❓ Development Questions
+### 🔲 🎯❓ More Challenge Idea's
+### 🔲 🎯❓ Leaderboard Design
+Dev is trying to implement some leaderboards 
+### 🔲 ✍️❗ Description Issues
+### 🔲 🎖️❓ Possible Point Increase
+Qoute from dev: 
+> *"the point values of the progression achievements are low because you can just start from where you lost all of your lives. This is essentially just coin feeding in NES form"*
 
-### 📌 Additional Tasks
+I don't agree with this thought, infinite continues or not, the player still has to get through all the worlds. Although in the end, you should take the final choice on this suggestion.
+
+### ✅ 🧩❗ Achievement [Bug Flying Squadron](https://retroachievements.org/achievement/500189) Improperly Coded
+Logic changed to my suggested logic.
+### 🔲 🧩❗ Achievement [StarBug](https://retroachievements.org/achievement/500182) Improvements Needed
+I wish to see a `measured` indicator/flag used for this achievement, tracking bug kills up to 200
+### ✅ 🧩❗ Improper Use of Delta & ResetIf
+Most achievements updated according to feedback
+### 🔲 🧩❓ Achievement [Bughou](https://retroachievements.org/achievement/500187) Improvement Suggestions
+Logic is still the same, I still wish to see if the dev is able make a measured indicator/flag work for this, tracking lives left to lose till challenge failure, thus start at 5/5 --> failure on 0/5.
+### 🔲 📺❓ Score Macro & Code Note
+The dev made it worse, by changing the score macro. The dev was accessing the score correctly as 3 seperate 8-bit values inside the macro, but changed it to a 24-bit memory accessor, which doesn't display the score correctly.
+
+**Correct score macro:** (using suggested code notes)
+```
+A:0xH0300_A:0xH0301*100_0xH0302*10000
+------------
+AddSource 0x300
+AddSource 0x300 * 0x64
+          0x302 * 0x2710
+```
+### 🔲 📺❗ Conditional RP Strings Additions
+### 🔲 🧭 Hubs & Similar Games
+### 🔲 🗂️ Game Page Metadata
+
+### ---⇢ 📌 Wrap-Up Tasks (before set promotion) ⇠---
 🔲 Testing after logic changes
 🔲 Revision of most achievement logic
 🔲 **[CR Task]** Reflection (on what was learned) & Feedforward (suggestions toward future Jr. Dev process).
 🔲 **[CR Task]** Wrap-Up & Next Steps (Set Promotion)
+
+### ---⇢ 📌 Additional Tasks (post-set promotion) ⇠--- // TODO
+🔲 Write/Submit RAnews Set Highlight [Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
 
 When the full checklist is completed and confirmed, we can proceed with finalizing the review and begin discussing the set’s promotion. Until then, feel free to ping me anytime if you’ve completed the task list or have further questions, I’ll be happy to review things again when ready.
 
