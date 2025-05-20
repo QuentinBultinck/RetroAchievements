@@ -14,16 +14,16 @@ This guide provides comprehensive details on how to unlock each achievement with
 
 - 💎 **[Achievement Guide](#AchievementGuide)** 
 
-    <sub> General Info </sub>
+    <sub> - General Info - </sub>
     - 📜 [GeneralInfoSubHeader](#-some_general_info_header)
     - 📜 [Walkthroughs & Resources](WalkthroughsResources)
 
-    <sub> Achievements </sub>
+    <sub> - Achievements - </sub>
     - 🏆 *[Story Progression](#c_SPstory)*
     - 🏆 *[Story Ending](#c_SPend)*
-    - 🏆 *[Singleplayer/Gunslinger Challenges](#c_Gunslinger)*
+    - 🏆 *[Challenges](#c_Gunslinger)*
     - 🏆 *[Gunslinger Concept Art Unlocks](#c_Unlocks)*
-    - 🏆 *[Secrets/Easter Eggs](#c_Bonus)*
+    - 🏆 *[Bonus](#c_Bonus)*
 - 🥇 **[Leaderboard Guide](#LeaderboardGuide)**
 - 📜 **[Credits](#Credits)**
 - ✏️ **[Footnotes](#Footnotes)**
@@ -108,7 +108,7 @@ These achievements are tied to the completion of the Single Player Story Chapter
 
 🔗 [Back to Table of Contents](#ToC)
 
-🔗 [Back to Top of Achievement Category](#Progression)
+🔗 [Back to Top of Achievement Category](#c_SPstory)
 
 ---
 
@@ -120,7 +120,8 @@ These achievements are tied to the completion of the Single Player Story Chapter
 
 These achievements are tied to the two different endings in Single Player Story Mode. They are restricted to Single Player Mode because using Gunslinger Mode to replay the final Chapter would bypass a few key story moments.
 
-If you’ve already completed the story once, the best way to unlock the other ending is to restart from Chapter 14, **"Showdown"**, and make the opposite moral choice at the end. This decision, made after the boss fight in **"Showdown"**, determines which ending you’ll receive at the conclusion of the game.
+#### Tip
+If you’ve already completed the story once, the best/fastest way to unlock the other ending is to restart from Chapter 14, **"Showdown"**, and make the opposite moral choice at the end. This decision, made after the boss fight in **"Showdown"**, determines which ending you’ll receive at the conclusion of the game.
 
 > [!WARNING]
 > These two Single Player achievements can **NOT** be unlocked in Gunslinger Mode, unlike the [Story Progression achievements](#c_SPstory), which can also be earned in Gunslinger Mode. The reason for this is mentioned above.
@@ -134,7 +135,7 @@ If you’ve already completed the story once, the best way to unlock the other e
 
 🔗 [Back to Table of Contents](#ToC)
 
-🔗 [Back to Top of Achievement Category](#Progression)
+🔗 [Back to Top of Achievement Category](#c_SPend)
 
 ---
 
@@ -187,7 +188,7 @@ All of these achievements require the player to play through a specific Chapter 
 
 🔗 [Back to Table of Contents](#ToC)
 
-🔗 [Back to Top of Achievement Category](#Challenges)
+🔗 [Back to Top of Achievement Category](#c_Gunslinger)
 
 ---
 
@@ -259,7 +260,7 @@ If an achievement/unlock requires a minimum accuracy target, the RetroAchievemen
 
 🔗 [Back to Table of Contents](#ToC)
 
-🔗 [Back to Top of Achievement Category](#Unlocks)
+🔗 [Back to Top of Achievement Category](#c_Unlocks)
 
 ---
 
@@ -287,7 +288,7 @@ This is a collection of smaller achievements for various aspects of the game.
 
 🔗 [Back to Table of Contents](#ToC)
 
-🔗 [Back to Top of Achievement Category](#Misc_AchievementCategory)
+🔗 [Back to Top of Achievement Category](#c_Bonus)
 
 ---
 
@@ -315,7 +316,7 @@ With this guide, the player will not only understand the mechanics behind each l
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=lb_Watchers...>**Elite Regulators Watchlist**</h3><br><sub>*lb_Watchers...*</sub> <br><br> | A set of leaderboards covering **all Chapters** except the final one. Compete against other players and aim for the highest score possible in each Chapter. <br> These leaderboards are available in both **Single Player** and **Gunslinger Mode**. To qualify, a Chapter must be completed from start to finish in a single session, without quitting to the *MainMenu*. <br><br> <h4>Start Requirements</h4> - The leaderboard starts when the specified Chapter starts from the beginning. <br> - In Single Player Mode, the leaderboard will not start if the player continues from a checkpoint midway through the Chapter. <br> - In Gunslinger Mode, the Chapter always starts from the beginning. <br><br> <h4>Cancel Conditions</h4> - The leaderboard is canceled when quiting to *MainMenu* <br> - The leaderboard is canceled when the mission time exceeds **seven** hours. This should be plenty of time to complete each chapter. <sup> (This limitation is implemented because the mission time is used as a basis for the score system, more info below.) </sup> <br><br> <h4>Submit Conditions</h4> - In Single Player Mode, the leaderboard submits when the Chapter is completed AND the loading screen starts. <br> - In Gunslinger Mode, the leaderboard submits when the Chapter is completed AND the player presses *continue* at the *StatisticsMenu*. <br><br> <h4>Measured Value</h4> - This group of leaderboards use a custom scoring system. <h5> Score System Details </h5> *BaseScore* = (1 - (*TimeSpentInMission*(in milliseconds) / 7_hours)) * 25.000 <br> *BaseScore* + (*Kills* * 70) <br> *BaseScore* + (*HeadshotKills* * 30) <sup> (scoring a *HeadshotKill* also increments *Kills* by 1) </sup> <br> *BaseScore* + (MeleeKills * 10) <sup> (scoring a *MeleeKill* also increments *Kills* by 1) </sup> <br> *BaseScore* + (*ShotsHit* * 12) <br> *BaseScore* - (*ShotsFired* * 5) <br> *BaseScore* - (*PlayerDeaths* * 5.000) <br> *BaseScore* * *DifficultyModifier* <sup> (Greenhorn: 1 - Cowboy: 2 - Shootist: 3 - Deadeye: 4) </sup> <br><br> <sub>**Developer note ⁃** *If I had access to multiple R/R instances (devTools), I could better balance the scoring system based on the most relevant stats. However, this is the best I could create with the available tools.* </sub> |
-| <h3 id=lb_WatchersCurseWest>**The Undying List**</h3><br><sub>*lb_WatchersCurseWest*</sub> <br><br> | A leaderboard for the final Chapter, **"Curse of the West"**, available in both **Single Player** and **Gunslinger Mode**. Compete against other players to see who can defeat the final boss with the greatest precision and speed. <br> This leaderboard is essentially a modified version of *"Elite Regulators Watchlist"*, with adjusted scoring values to account for the fact that this Chapter features only one enemy. <br><br> <h4>Start Requirements</h4> - The leaderboard starts when the specified Chapter starts from the beginning. <br> - In Single Player Mode, the leaderboard will not start if the player continues from a checkpoint midway through the Chapter. <br> - In Gunslinger Mode, the Chapter always starts from the beginning. <br><br> <h4>Cancel Conditions</h4> - The leaderboard is canceled when quiting to *MainMenu* <br> - The leaderboard is canceled when the mission time exceeds **two** hours. This should be plenty of time to complete each chapter. <sup> (This limitation is implemented because the mission time is used as a basis for the score system, more info below.) </sup> <br><br> <h4>Submit Conditions</h4> - In Single Player Mode, the leaderboard submits when the Chapter is completed AND the loading screen starts. <br> - In Gunslinger Mode, the leaderboard submits when the Chapter is completed AND the player presses *continue* at the *StatisticsMenu*. <br><br> <h4>Measured Value</h4> - This group of leaderboards use a custom scoring system. <h5> Score System Details </h5> *BaseScore* = (1 - (*TimeSpentInMission*(in milliseconds) / 2_hours)) * 25.000 <br> *BaseScore* + (*Kills* * 10.000) <br> *BaseScore* + (*HeadshotKills* * 1.500) <sup> (scoring a *HeadshotKill* also increments *Kills* by 1) </sup> <br> *BaseScore* + (MeleeKills * 1.000) <sup> (scoring a *MeleeKill* also increments *Kills* by 1) </sup> <br> *BaseScore* + (*ShotsHit* * 17) <br> *BaseScore* - (*ShotsFired* * 12) <br> *BaseScore* - (*PlayerDeaths* * 5.000) <br> *BaseScore* * *DifficultyModifier* <sup> (Greenhorn: 1 - Cowboy: 2 - Shootist: 3 - Deadeye: 4) </sup> <br><br> <sub>**Developer note ⁃** *If I had access to multiple R/R instances (devTools), I could better balance the scoring system based on the most relevant stats. However, this is the best I could create with the available tools.* </sub> |
+| <h3 id=lb_WatchersCurseWest>**The Undying List**</h3><br><sub>*lb_WatchersCurseWest*</sub> <br><br> | A leaderboard for the final Chapter, **"Curse of the West"**, available in both **Single Player** and **Gunslinger Mode**. Compete against other players to see who can defeat the final boss with the greatest precision and speed. <br> This leaderboard is essentially a modified version of *"Elite Regulators Watchlist"*, with adjusted scoring values to account for the fact that this Chapter features only one enemy. <br><br> <h4>Start Requirements</h4> - The leaderboard starts when the specified Chapter starts from the beginning. <br> - In Single Player Mode, the leaderboard will not start if the player continues from a checkpoint midway through the Chapter. <br> - In Gunslinger Mode, the Chapter always starts from the beginning. <br><br> <h4>Cancel Conditions</h4> - The leaderboard is canceled when quiting to *MainMenu* <br> - The leaderboard is canceled when the mission time exceeds **two** hours. This should be plenty of time to complete the final Chapter. <sup> (This limitation is implemented because the mission time is used as a basis for the score system, more info below.) </sup> <br><br> <h4>Submit Conditions</h4> - In Single Player Mode, the leaderboard submits when the Chapter is completed AND the loading screen starts. <br> - In Gunslinger Mode, the leaderboard submits when the Chapter is completed AND the player presses *continue* at the *StatisticsMenu*. <br><br> <h4>Measured Value</h4> - This group of leaderboards use a custom scoring system. <h5> Score System Details </h5> *BaseScore* = (1 - (*TimeSpentInMission*(in milliseconds) / 2_hours)) * 25.000 <br> *BaseScore* + (*Kills* * 10.000) <br> *BaseScore* + (*HeadshotKills* * 1.500) <sup> (scoring a *HeadshotKill* also increments *Kills* by 1) </sup> <br> *BaseScore* + (MeleeKills * 1.000) <sup> (scoring a *MeleeKill* also increments *Kills* by 1) </sup> <br> *BaseScore* + (*ShotsHit* * 17) <br> *BaseScore* - (*ShotsFired* * 12) <br> *BaseScore* - (*PlayerDeaths* * 5.000) <br> *BaseScore* * *DifficultyModifier* <sup> (Greenhorn: 1 - Cowboy: 2 - Shootist: 3 - Deadeye: 4) </sup> <br><br> <sub>**Developer note ⁃** *If I had access to multiple R/R instances (devTools), I could better balance the scoring system based on the most relevant stats. However, this is the best I could create with the available tools.* </sub> |
 | <h3 id=lb_StoryTimeSoft>**Darkwatch Dispatches — [Difficulty] Logs**</h3><br><sub>*lb_StoryTimeSoft...*</sub> <br><br> | Four leaderboards, one for each difficulty, which submits the player's total story playtime at the end of the last Chapter. <br><br> Since Chapters can be completed on varying difficulties, the leaderboard with the lowest difficulty is submitted when Chapters were completed with varying difficulty. Eg. If one Chapter was completed on the easiest difficulty and all others on hardest, the leaderboard for the easiest difficulty will be submitted. <br><br> <h4>Start Requirements</h4> - Must be playing in Single Player Mode. <br> - All Chapters need to have been completed (as this is an instant submission leaderboard). <br> - The last Chapter was started from the beginning. <br> - The leaderboard starts/submits when the credits video ends/is skipped. <br> - Total story playtime must be within a min and max range. The maximum allowed submitted time is 50 hours. (This prevents false/cluttering entries) <br><br> <h4>~~Cancel Conditions~~</h4> <br> <h4>Submit Conditions</h4> - This is an instant submission leaderboard, submits when it starts. <br><br> <h4>Measured Value</h4> - Total story playtime, this is acquired by summing up all mission/Chapter completion times. <br><br> <sub>**Developer note ⁃** *This is the "softcore" version of the total story playtime leaderboard, meaning that it doesn't need to be completed within one session, for softcore speedrunngers. Not to be confused with RA's definition of Hardcore/Softcore.* </sub> |
 | <h3 id=lb_StoryTimeHard>**Hardcore Vanguards — [Difficulty] Records**</h3><br><sub>*lb_StoryTimeHard...*</sub> <br><br> | Four leaderboards, one for each difficulty, which submits the player's total story completion time. <br><br> This leaderboard can be activated with an optional RA timer overlay, tracking the in-game total story playtime. This can be activated by simply holding down the SELECT button whilst selecting/confirming the difficulty. The difficulty selection menu is the last menu which is displayed prior to starting the Chapter. <br><br> That said, the player can also decide to run this same leaderboard without the RA timer overlay, and it should function exactly the same, just without the overlay. <br><br> <h4>Start Requirements</h4> - Player must start Single Player Mode from a fresh Player Profile OR restart Single Player Mode from Chapter 1. <br> - Must be playing in Single Player Mode. <br> - The last Chapter was started from the beginning. <br> - Total story playtime must be within a min and max range. The maximum allowed submitted time is 10 hours. (This prevents false/cluttering entries) <br><br> <h4>Cancel Conditions</h4> - Leaderboard cancels when total story playtime exceeds 10 hours. <br> - Also cancels when quiting to *MainMenu*. <br><br> <h4>Submit Conditions</h4> - Leaderboard checks if all Chapters have been completed. <br> - Leaderboard submits one of the ending videos starts playing (good or evil endings). <br><br> <h4>Measured Value</h4> - Total story playtime, this is acquired by summing up all mission/Chapter completion times. <br><br> <sub>**Developer note ⁃** *This is the "hardcore" version of the total story playtime leaderboard, meaning that it needs to be completed within one session, for the true speedrunners. Not to be confused with RA's definition of Hardcore/Softcore.* </sub> |
 
