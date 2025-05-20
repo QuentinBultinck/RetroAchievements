@@ -2791,8 +2791,8 @@ achievements_coreData = {
 			// "id": 511009, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty, within xx time and without losing any HP (vampire shield excluded)"},
 		// "a_GunTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511010, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty, only killing with the Scepter and Shotgun equipped, with at least 80% melee kills"},
-		// "a_GunBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 511021, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, only killing with the Redeemer and Rail Rocket equipped, and without scoring 5 body-shot kills in a row—mix it up with headshots or melee kills to break the chain"},
+		"a_GunBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			"id": 511021, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, only killing with the Redeemer and Rail Rocket equipped, and without scoring 5 body-shot kills in a row—mix it up with headshots or melee kills to break the chain"},
 		// "a_GunRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511013, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty, without losing any HP (vampire shield excluded)"},
 		// "a_GunPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION
@@ -4488,13 +4488,13 @@ achievements_triggers = {
 		// [7+..+10/17+..+20] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
-	"a_GunTortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) MANUAL_CONSTRUCTION (AltGroup[1+2+3+6+10])
+	"a_GunTortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) MANUAL_CONSTRUCTION (AltGroup[1+2+3+5+9])
 		const_CHAPTER = CHAPTER_7_TortureMaze
 		const_MIN_REQUIRED_MELEE_KILLS = 0.6 // Percentage
 		const_WEAPON_A = WEAPON_Scepter
 		const_WEAPON_B = WEAPON_Shotgun
 		return	
-		// [1/11] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as hasn't killed an enemy with a disallowed weapon
+		// [1/10] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as hasn't killed an enemy with a disallowed weapon
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When LastChapterSection from the Gunslinger Level/Chapter has ended + Required MeleeKills ratio % NOT achieved (to hide Trigger Indicator)
 				never(is_flagState_InGame_true(enum_releaseRegion))
@@ -4550,7 +4550,7 @@ achievements_triggers = {
 					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 					&& is_flagState_InGame_false(enum_releaseRegion))
 				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
-		// [2/12] ==== Alt Measured Group (In-Game) ====		-> Group is only responsible for displaying a Measured Indicator for kills to melee kills ratio % - When in-game
+		// [2/11] ==== Alt Measured Group (In-Game) ====		-> Group is only responsible for displaying a Measured Indicator for kills to melee kills ratio % - When in-game
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -4586,7 +4586,7 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
 				format = "percent")
 			&& memUtil_alwaysFalse(enum_releaseRegion)
-		// [3/13] ==== Alt Measured Group (Not In-Game) ==== 	-> Group is only responsible for displaying a Measured Indicator for kills to melee kills ratio % - When not in-game
+		// [3/12] ==== Alt Measured Group (Not In-Game) ==== 	-> Group is only responsible for displaying a Measured Indicator for kills to melee kills ratio % - When not in-game
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -4614,27 +4614,9 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
 				format = "percent")
 			&& memUtil_alwaysFalse(enum_releaseRegion)
-		// [4/14] ==== Alt Triggered Group ====					-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped // TODO a_GunTortureMaze - this altGroup can probably be removed safely, as AltGroup[1] already has an equal Trigger Indicator
-			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
-				is_flagState_InGame_true(enum_releaseRegion)
-				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
-				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
-				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
-			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
-				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-			&& tally(1, [ // --Tally--OrNext--> CheckIf any of the required weapons are equipped
-				once(is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
-					&& never(!is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion))),
-				once(is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
-					&& never(!is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion))),
-				])
-			&& is_flagState_InGame_true(enum_releaseRegion)
-			&& trigger_when(always_false())
-		// [5/15] ==== Alt Lockout Group ==== 	-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
+		// [4/13] ==== Alt Lockout Group ==== 	-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion)
-		// [6/16] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
@@ -4643,10 +4625,10 @@ achievements_triggers = {
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
 				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
-		// [7+..+10/17+..+20] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+		// [6+..+9/15+..+18] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
-	"a_GunBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[6+10])
+	"a_GunBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[5+9])
 		// NOTE: Multi-kills are regarded as 1 standard kill for this challenge
 		/* DEV_NOTE: PauseLocks into AltResetGroups OR PauseLocks into ResetNextIfs
 			Consider following achievement: "Finish Chapter from start to finish, without being below max HP for 10 seconds consecutively" 
@@ -4697,7 +4679,7 @@ achievements_triggers = {
 		const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW = 4
 
 		return	
-		// [1/11] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as challenge is OK
+		// [1/10] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as challenge is OK
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			/* DEV_NOTE: Example of PauseLock into ResetNextIf	(this is not preferred for this achievement as there's multiple challenges attached, which could "lock" the achievement)
 				------------
@@ -4717,7 +4699,7 @@ achievements_triggers = {
 			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
 				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
 				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-			&& trigger_when( // TODO a_GunBaptismFire update - Trigger added to AltGroup[1] AND AltGroup[2] could be removed as it would be redundant
+			&& trigger_when(
 				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
 					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
 				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
@@ -4731,20 +4713,7 @@ achievements_triggers = {
 					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 					&& is_flagState_InGame_false(enum_releaseRegion))
 				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
-		// [2/12] ==== Alt Triggered Group ====		-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
-			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
-				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-			&& tally(1, [ // --Tally--OrNext--> CheckIf any of the required weapons are equipped
-				once(is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion)
-					&& never(!is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion))),
-				once(is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& never(!is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion))),
-				])
-			&& is_flagState_InGame_true(enum_releaseRegion)
-			&& trigger_when(always_false())
-		// [3/13] ==== Alt Measured Group ====		-> Group is only responsible for displaying a Measured Indicator counting consecutive standard kills
+		// [2/11] ==== Alt Measured Group ====		-> Group is only responsible for displaying a Measured Indicator counting consecutive standard kills
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& measured(repeated(const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW +1, // --Measured--> Count consecutive standard kills up to const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW +1
 				never( // --ResetNextIf--[ConsecutiveResetCondition]--> When player scores a melee or headshot kill
@@ -4760,7 +4729,7 @@ achievements_triggers = {
 						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
 			&& memUtil_alwaysFalse(enum_releaseRegion)
-		// [4/14] ==== Alt Lockout Group ===	-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
+		// [3/12] ==== Alt Lockout Group ===	-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& never(once( // --Lockout--> When using a throwable explosive 
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -4781,9 +4750,9 @@ achievements_triggers = {
 				&& is_flagState_InGame_true(enum_releaseRegion)
 				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
 			&& always_false()
-		// [5/15] ==== Alt Lockout Group ==== 	-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
+		// [4/13] ==== Alt Lockout Group ==== 	-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion)
-		// [6/16] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
@@ -4792,7 +4761,7 @@ achievements_triggers = {
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
 				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
-		// [7+..+10/17+..+20] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+		// [6+..+9/15+..+18] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
 	"a_GunRescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[3+7])
@@ -4838,7 +4807,7 @@ achievements_triggers = {
 		}),
 	"a_GunPrism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (4x) MANUAL_CONSTRUCTION (AltGroup[2+3+6+10])
 		const_CHAPTER = CHAPTER_10_Prism
-		const_TIME_LIMIT = 900000 // 900.000 ms = 15 min // TODO a_GunPrism - Test time limit to be more challenging
+		const_TIME_LIMIT = 900000 // 900.000 ms = 15 min
 		const_WEAPON_A = WEAPON_DualPistols
 		const_WEAPON_B = WEAPON_Shotgun
 		return
@@ -5023,7 +4992,7 @@ achievements_triggers = {
 		const_REQUIRED_SHOOTING_WEAPON_A = WEAPON_RangeRifle
 		const_REQUIRED_SHOOTING_WEAPON_B = WEAPON_Redeemer
 		return
-		// [1/11] ==== Alt Logic + Triggered Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying Trigger Indicator as long as player hasn't used any non-allowed powers
+		// [1/11] ==== Alt Logic + Triggered Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying Trigger Indicator as long as player didn't shoot with a disallowed weapon
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy NOT achieved (to hide Trigger Indicator)
 				never(is_flagState_InGame_true(enum_releaseRegion))
@@ -5494,7 +5463,7 @@ achievements_triggers = {
 		const_WEAPON_B = WEAPON_Carbine
 
 		return	
-		// [1/12] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as with power usage requirements
+		// [1/11] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as challenge is OK
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When LastChapterSection from the Gunslinger Level/Chapter has ended + Required HeadshotKills ratio % NOT achieved (to hide Trigger Indicator)
 				never(is_flagState_InGame_true(enum_releaseRegion))
@@ -5545,7 +5514,7 @@ achievements_triggers = {
 					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 					&& is_flagState_InGame_false(enum_releaseRegion))
 				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
-		// [2/13] ==== Alt Measured Group (In-Game) ====			-> Group is only responsible for displaying a Measured Indicator for kills to Headshot Kills ratio % - When in-game
+		// [2/12] ==== Alt Measured Group (In-Game) ====			-> Group is only responsible for displaying a Measured Indicator for kills to Headshot Kills ratio % - When in-game
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -5581,7 +5550,7 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
 				format = "percent")
 			&& memUtil_alwaysFalse(enum_releaseRegion)
-		// [3/14] ==== Alt Measured Group (Not In-Game) ==== 		-> Group is only responsible for displaying a Measured Indicator for kills to Headshot Kills ratio % - When not in-game
+		// [3/13] ==== Alt Measured Group (Not In-Game) ==== 		-> Group is only responsible for displaying a Measured Indicator for kills to Headshot Kills ratio % - When not in-game
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			/* MANUAL_CONSTRUCTION[BC11-BC13]:MeasuredHeadshotKillsRatioWhileNotInGame (below Measured) - R/R usage
 				PAL:	K:0xX00965c50/f1.0_K:0xX00965c5c/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
@@ -5604,20 +5573,7 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
 				format = "percent")
 			&& memUtil_alwaysFalse(enum_releaseRegion)
-		// [4/15] ==== Alt Triggered Group ====					-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
-			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& once( // --CheckIf--> [StartCondition] Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
-				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-			&& tally(1, [ // --Tally--OrNext--> CheckIf any of the required weapons are equipped
-				once(is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
-					&& never(!is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion))),
-				once(is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
-					&& never(!is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion))),
-				])
-			&& is_flagState_InGame_true(enum_releaseRegion)
-			&& trigger_when(always_false())
-		// [5/16] ==== Alt Lockout Group ===		-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
+		// [4/14] ==== Alt Lockout Group ===		-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
 		 	|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& never(once( // --Lockout--> When earning a kill without any of the required weapons equipped
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -5625,9 +5581,9 @@ achievements_triggers = {
 				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
 				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
 			&& always_false()
-		// [6/17] ==== Alt Lockout Group ==== 		-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
+		// [5/15] ==== Alt Lockout Group ==== 		-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion)
-		// [7/18] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+		// [6/16] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
@@ -5636,7 +5592,7 @@ achievements_triggers = {
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
 				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
-		// [8+..+11/19+..+22] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+		// [7+..+10/17+..+20] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
 	"a_GunCurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[4+8])
