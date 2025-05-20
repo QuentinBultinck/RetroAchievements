@@ -3546,7 +3546,7 @@ achievements_triggers = {
 		}),
 	"a_ClgRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION (AltGroups[1+8+9])
 		const_CHAPTER = CHAPTER_2_RideDevil
-		const_COMBINED_HP_THRESHOLD = (CONST_PLAYER_MAX_HP *2) *0.55 // 55%
+		const_COMBINED_HP_THRESHOLD = (CONST_PLAYER_MAX_HP *2) *0.40 // 40%
 
 		PARTICIPATION_TRACKING_MinRequiredInputs = PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(const_CHAPTER)
 		PARTICIPATION_TRACKING_MinRequiredShotsHit = PARTICIPATION_TRACKING_DATA_getMinRequiredShotsHit(const_CHAPTER)
@@ -4079,7 +4079,7 @@ achievements_triggers = {
 				*/	
 			|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 		}),
-	"a_ClgDWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION (AltGroups[1+8+9])
+	"a_ClgDWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION (AltGroups[1+9+10])
 		const_CHAPTER = CHAPTER_5_Outpost
 		const_ALLOWED_SECS_BELOW_MAX_HP = 30 // seconds consecutively below max combined HP
 
@@ -4088,7 +4088,7 @@ achievements_triggers = {
 		PARTICIPATION_TRACKING_MinRequiredAccuracyPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredAccuracyPercent(const_CHAPTER)
 		PARTICIPATION_TRACKING_MinRequiredKillsPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredKillsPercent(const_CHAPTER)
 		return
-		// [1/10] ==== Alt Logic + Trigger Group ==== 		-> Group is responsible for unlocking the achievement + Display Trigger Indicator whilst Participation Tracking is OK && Challenge OK
+		// [1/11] ==== Alt Logic + Trigger Group ==== 		-> Group is responsible for unlocking the achievement + Display Trigger Indicator whilst Participation Tracking is OK && Challenge OK
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 
 			// -------- Core Logic --------
@@ -4158,7 +4158,21 @@ achievements_triggers = {
 				// -------- (Last) Requirements for Unlock --------
 				&& on_Loading_start(enum_releaseRegion)
 				)
-		// [2/11] ==== Alt Lockout Group ===		-> Lockout achievement when combined HP is below max for xx in-game seconds consecutively, by Resetting HitCount on [StartCondition]
+		// [2/12] ==== Alt Measured Group ====		-> Group is only responsible for displaying a Measured Indicator tracking consecutive seconds left below max combined HP before challenge fails
+			|| measured(
+				repeated(const_ALLOWED_SECS_BELOW_MAX_HP, // --[ConsecutiveChallengeCondition]--> When below max combined HP for xx in-game seconds consecutively
+					never( // --ResetNextIf--[ConsecutiveResetCondition]--> When back at max combined HP
+						is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+						&& current_Player_HP(PLAYER_1, enum_releaseRegion) + current_Player_HP(PLAYER_2, enum_releaseRegion) == CONST_PLAYER_MAX_HP *2)
+					&& is_ReleaseRegion(enum_releaseRegion)
+					&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& current_Player_HP(PLAYER_1, enum_releaseRegion) + current_Player_HP(PLAYER_2, enum_releaseRegion) < CONST_PLAYER_MAX_HP *2
+					&& !is_AnyCinematic_active(enum_releaseRegion)
+					&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)),
+				when = once( // --CheckIf--[StartCondition]--> Chapter has started from the beginning (StoryChapterSection_1) + Difficulty Deadeye
+					is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
+		// [3/13] ==== Alt Lockout Group ====		-> Lockout achievement when combined HP is below max for xx in-game seconds consecutively, by Resetting HitCount on [StartCondition]
 			|| never(repeated(const_ALLOWED_SECS_BELOW_MAX_HP, // --Lockout--[ConsecutiveChallengeCondition]--> When below max combined HP for xx in-game seconds consecutively
 				never( // --ResetNextIf--[ConsecutiveResetCondition]--> When back at max combined HP
 					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
@@ -4169,11 +4183,11 @@ achievements_triggers = {
 				&& !is_AnyCinematic_active(enum_releaseRegion)
 				&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)))
 			&& always_false()
-		// [3/12] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player dies, by Resetting HitCount on [StartCondition]
+		// [4/14] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player dies, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion)
-		// [4/13] ==== Alt Lockout Group ==== 		-> Lockout achievement when one player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
+		// [5/15] ==== Alt Lockout Group ==== 		-> Lockout achievement when one player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_ParticipationTrackingInactivity(const_CHAPTER, enum_releaseRegion)
-		// [5+..+8+9/14+..+17+18] ==== 5x Alt Reset Groups ==== 	-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Restart when at ChapterSection_1 || on PauseMenu->Quit
+		// [6+..+9+10/16+..+19+20] ==== 5x Alt Reset Groups ==== 	-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Restart when at ChapterSection_1 || on PauseMenu->Quit
 			|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 		}),
 	"a_ClgWarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) MANUAL_CONSTRUCTION (AltGroups[1+2+3+10+11])
@@ -4543,7 +4557,7 @@ achievements_triggers = {
 	"a_ClgBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION (AltGroups[1+9+10])
 		// NOTE: For this achievement only: ResetOn_PauseMenu_Restart must reset not only for ChapterSection_1 but during all ChapterSections (for this Achievement; because of MeasuredKillCount)
 
-		const_CHAPTER = CHAPTER_3_Boneyard
+		const_CHAPTER = CHAPTER_8_BaptismFire
 		const_WEAPON_A = WEAPON_RailRocket
 		const_WEAPON_B = WEAPON_Redeemer
 		const_REQUIRED_KILLS = 80
@@ -5726,7 +5740,7 @@ achievements_triggers = {
 	"a_ClgRightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) MANUAL_CONSTRUCTION (AltGroups[1+2+3+10+11])
 		const_CHAPTER = CHAPTER_15_RightTrain
 		const_TIME_LIMIT = 420000 // 420.000 ms = 7 min
-		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.7 // % of max HP
+		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.5 // % of max HP
 
 		PARTICIPATION_TRACKING_MinRequiredInputs = PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(const_CHAPTER)
 		PARTICIPATION_TRACKING_MinRequiredShotsHit = PARTICIPATION_TRACKING_DATA_getMinRequiredShotsHit(const_CHAPTER)
@@ -6466,10 +6480,10 @@ achievements_descriptions = {
 	"a_CurseWestEvil":		{"en": "No gods. No rules. Just two devils left standing. Complete Chapter 17, \"Curse of the West\", from start to finish in one session and achieve the evil ending"},
 	// ----------------c_Challenge----------------
 	"a_ClgWrongTrain":		{"en": "What started as a score turned into a sentence. Only grit and lead will get you both out. Complete Chapter 1, \"The Wrong Train\", from start to finish in one session on Deadeye difficulty, with no deaths, and a minimum combined accuracy of 70%"},
-	"a_ClgRideDevil":		{"en": "Death rides your tail and mercy ain't waiting. Complete Chapter 2, \"Ride Like the Devil\", from start to finish in one session on Deadeye difficulty, with no deaths, and without the player's combined HP dropping below 50%"},
+	"a_ClgRideDevil":		{"en": "Death rides your tail and mercy ain't waiting. Complete Chapter 2, \"Ride Like the Devil\", from start to finish in one session on Deadeye difficulty, with no deaths, and without the players' combined HP dropping below 50%"},
 	"a_ClgBoneyard":		{"en": "Iron and grit against the dead. Complete Chapter 3, \"Boneyard\", from start to finish in one session on Deadeye difficulty, with no deaths, achieving at least 80 kills using the Carbine or Crossbow, and without using any throwable explosives"},
 	"a_ClgDevilMine":		{"en": "Fire and grit in the dark. Complete Chapter 4, \"Devil's Belly Mine\", from start to finish in one session on Deadeye difficulty, with no deaths, no powers, no throwable explosives, and with one player only using pistols and the other only 2-handed weapons"},
-	"a_ClgDWOutpost":		{"en": "Not even death cracks true steel. Complete Chapter 5, \"Darkwatch Outpost\", from start to finish in one session on Deadeye difficulty, with no deaths, and where the player's combined HP is never below max HP for more than 30 seconds consecutively"},
+	"a_ClgDWOutpost":		{"en": "Not even death cracks true steel. Complete Chapter 5, \"Darkwatch Outpost\", from start to finish in one session on Deadeye difficulty, with no deaths, and where the players' combined HP is never below max HP for more than 30 seconds consecutively"},
 	"a_ClgWarTrain":		{"en": "Two phantoms ride, no blood left behind. Complete Chapter 6, \"War Train\", from start to finish in one session on Deadeye difficulty, within 5 minutes, no deaths, and without either player taking any HP loss"},
 	"a_ClgTortureMaze":		{"en": "One strikes, one shoots, both survive. Complete Chapter 7, \"Torture Maze\", from start to finish in one session on Deadeye difficulty, with no deaths, at least 60% melee kills, and with one player only using melee and the other only shooting"},
 	"a_ClgBaptismFire":		{"en": "No cowards in the fire. Complete Chapter 8, \"Baptism of Fire\", from start to finish in one session on Deadeye difficulty, with no deaths, achieving at least 80 kills using the Redeemer or Rail Rocket, without using any throwable explosives"},
@@ -6483,7 +6497,7 @@ achievements_descriptions = {
 	"a_ClgDeadfall":		{"en": "Fire and ruin can't stop a deadeye's aim. Complete Chapter 16, \"Deadfall\", from start to finish in one session on Deadeye difficulty, with no deaths, killing only with the Range Rifle or Carbine, and with at least 30% headshot kills"},
 	"a_ClgCurseWest":		{"en": "Two against the dying light. Complete Chapter 17, \"Curse of the West\", from start to finish in one session on Deadeye difficulty, with no deaths, and with only 7 allowed power activations"},
 	// ----------------c_Bonus----------------
-	"a_MultiKillers":	{"en": "It takes two to clean house. In a single Chapter, score one multikill per player, without restarting"},
+	"a_MultiKillers":	{"en": "It takes two to clean house. In a Chapter, score one multikill per player, without restarting"},
 	"a_SunHi":			{"en": "You looked straight into the sun and didn't blink. Activate Vampire Vision on both players in broad daylight and survive the burn, together"},
 	"a_AllEvil":		{"en": "You didn't just walk the path of corruption—you became it, together by unlocking all Evil powers"},
 	"a_AllGood":		{"en": "From ash and ruin, two rose in unshakable resolve by unlocking all Good powers"},
