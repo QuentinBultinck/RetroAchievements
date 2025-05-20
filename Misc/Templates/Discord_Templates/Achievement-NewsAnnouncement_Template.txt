@@ -10,42 +10,67 @@ Achievement News Annoucement temlate for usage in discord channel.
 
 The "Achievement News Annoucement" always uses ansi color codes (refer to https://gist.github.com/kkrypt0nn/a02506f3712ff2d1c8ca7c9e0aed7c06)
 
+Discord Timestamp code converter --> https://sesh.fyi/timestamp/
+ANSI color codes (codes are placed between `;` and 'm') --> https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#8-16-colors
+
 
 ..............
-|| Template || 
+|| Template ||
 ''''''''''''''
 
 ```ansi
-Title:       [1;31m GALDR [0m
-Console:     [0;34m WASM-4 [0m
-Developer:   [0;32m jonathand [0m
-Genre:       [0;35m Roguelike [0m
-Released:    [0;33m August 22, 2022 [0m
+Title:       [1;31m _TITLE_HERE_ [0m
+Console:     [0;34m _CONSOLE_HERE_ [0m
+Developer:   [0;32m _DEVELOPERS_HERE_ [0m
+Genre:       [0;35m _GENRES_HERE_ [0m
+Released:    [0;33m MMMM DD, YYYY [0m
 ```
 
-A new set was published by @ASolidSnack on YYYY-MM-DD
+A new set was published by @ASolidSnack on _TIMESTAMP_HERE_
 
 _FLAVOR_TEXT_HERE_
 
-[Longplay](_LINK_HERE_)
+[Gameplay](_LINK_HERE_)
 [RetroAchievements Game Page](_LINK_HERE_)
 
 
+.................
+|| Template_CR ||
+'''''''''''''''''
+
+```ansi
+Title:       [1;31m _TITLE_HERE_ [0m
+Console:     [0;34m _CONSOLE_HERE_ [0m
+Developer:   [0;32m _DEVELOPERS_HERE_ [0m
+Genre:       [0;35m _GENRES_HERE_ [0m
+Released:    [0;33m MMMM DD, YYYY [0m
+```
+
+A new set was published by @_USERNAME_HERE on _TIMESTAMP_HERE_
+
+_FLAVOR_TEXT_HERE_
+
+[Gameplay](_LINK_HERE_)
+[RetroAchievements Game Page](_LINK_HERE_)
+
+
+
+
 ..........
-|| Temp || 
+|| Temp ||
 ''''''''''
 
 ```ansi
-Title:       [1;31m ~Prototype~ Red Dead Revolver [0m
-Console:     [0;31m PlayStation 2 [0m
-Developer:   [0;31m Angel Studios [0m
-Genre:       [0;31m Action-Adventure, Third-Person Shooter [0m
-Released:    [0;31m January 15, 2002 [0m
+Title:       [1;31m Treasures of the Deep [0m
+Console:     [0;34m PlayStation [0m
+Developer:   [0;32m Black Ops Entertainment [0m
+Genre:       [0;35m Action, Simulation [0m
+Released:    [0;33m September 24, 1997 [0m
 ```
 
-A new set was published by @ASolidSnack on 2025-3-7
+A new set was published by @stoneskipper42 on <t:1747585406:D>
 
-Ever wondered what Red looked like before he got polished? Step into a Wild West where Rockstar hadn’t taken over yet—Capcom’s Red Dead is like finding an old treasure map… but the 'X' leads to arcade-style chaos.
+_FLAVOR_TEXT_HERE_
 
-[Longplay](https://www.youtube.com/watch?v=KfikutwvRGo)
-[RetroAchievements Game Page](https://retroachievements.org/game/32806)
+[Gameplay](https://www.youtube.com/watch?v=6jDtggvOnHQ&list=PL21nKMUhIdU3rjAsS2us8iRSuemSvpz6k)
+[RetroAchievements Game Page](https://retroachievements.org/game/19403)
