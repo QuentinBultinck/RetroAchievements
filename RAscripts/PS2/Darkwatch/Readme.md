@@ -15,7 +15,6 @@ This guide provides comprehensive details on how to unlock each achievement with
 - 💎 **[Achievement Guide](#AchievementGuide)** 
 
     <sub> - General Info - </sub>
-    - 📜 [GeneralInfoSubHeader](#-some_general_info_header)
     - 📜 [Walkthroughs & Resources](WalkthroughsResources)
 
     <sub> - Achievements - </sub>
@@ -32,7 +31,7 @@ This guide provides comprehensive details on how to unlock each achievement with
     💎 Achievement Guide
 </h1>
 
-<img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/061650.png" alt="Darkwatch - RetroAchievements Mastery Icon">
+<img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/110883.png" alt="Darkwatch - RetroAchievements Mastery Icon">
 
 ```
 Set consists of xxxx achievements worth xxx points
