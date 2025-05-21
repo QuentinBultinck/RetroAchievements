@@ -96,7 +96,7 @@ Ready for Review Thread => https://discord.com/channels/310192285306454017/13425
 Play Test Thread => https://discord.com/channels/310192285306454017/1339642437164863498
 RA Game Page => https://retroachievements.org/game/12324
 
-# ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦ // TODO
+# ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦
 /// Grouped to represent all the under-the-hood work.
 
 ## ∘───── 🛠️ RAM Digging & Code Notes ─────∘
@@ -147,8 +147,13 @@ Or maybe even simpler would be:
 - Your playtest-request came through, and you fixed some bugs it seems, regarding a mistrigger on [Speedy Showman](https://retroachievements.org/achievement/499145) and the progression achievements not triggering.
 - In your [Ready for Review Thread](https://discord.com/channels/310192285306454017/1342590608006582325), there seemed to be some problems with missing deltas, bracketed text inside descriptions.
 
-## ∘───── 🧪 Testing & Debugging Results ─────∘  // TODO
-/// Mentioned bugs, testing methods, hardcore/softcore checks, peer testing, issues encountered during development, and any achievement concepts that could not be implemented.
+## ∘───── 🧪 Testing & Debugging Results ─────∘
+
+### ❓ Testing Questions
+- Can you recall how exactly you fixed the problems found in the [#playtest-request](https://discord.com/channels/310192285306454017/1339642437164863498)?
+- Were there any other problems you encountered during development? How did you fix them?
+- Were there any achievements you were unable to design?
+- How did your own testing process look like?
 
 # ✦═══════✦ 🕹️ Achievement Set Design ✦═══════✦ // TODO
 /// Grouped to cover all visible/user-facing parts.
@@ -163,27 +168,67 @@ Or maybe even simpler would be:
 /// Any unwelcome concepts? https://docs.retroachievements.org/guidelines/content/unwelcome-concepts.html
 
 ### 👍 Positive Observations
+- Progression achievements marked correctly
 
 ### ---⇢ 🏆 Achievements ⇠---
 /// Smart usage of `Measured` & `Trigger` flags
+
+### ❓ Achievement [We Live in a Society](https://retroachievements.org/achievement/499156) Enemy Combo?
+What exactly is a combo? Killing xx enemies with one projectile? Is this clear enough for players to understand what is required here? Is the term "combo" used within the game itself? After playing this game for around 30 min. I'm rather confused at what is required by me here.
+
+### ❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Item Combo?
+What exactly is an item combo? Is this clear enough for players to understand what is required here? Is the term "combo" used within the game itself? After playing this game for around 30 min. I'm rather confused at what is required by me here.
+
 ### ---⇢ 📺 Rich Presence ⇠---
-/// Rich Presence design, all content covered?
+
+### ❗ Multiplayer RP Missing
+Your set allows multiplayer, but RP only checks for the data of P1 (player 1).
+Make sure you have corresponding RP for the following situations:
+- when only P1 is active.
+- when only P2 (player 2) is active.
+- when both P1 and P2 is active.
+
+### 💡 RP Expansions 
+RP looks solid overall, though I personally think it could be expanded a bit. I’d love to see the following additions:
+- **High Score**: Showing the player's current high score in RP would be a great fit for a game like this. It’s a core part of arcade-style replayability and would give more context to a player’s current session.
+- **Coins**: Since lives are already displayed, it feels natural to include the player's current coin count as well. It adds more depth to the session snapshot and aligns with traditional game stat displays.
+- **Difficulty**: If difficulty affects gameplay mechanics in any meaningful way, I think it would be valuable to show that in RP too. It helps contextualize the player's progress or performance.
+That said, if you feel any of these wouldn’t be a good fit for Rich Presence, I’d appreciate your insight on how the current RP setup already meets the game’s needs. You know this title better than anyone, after all.
+
 ### ---⇢ 🌐 Leaderboards ⇠---
-/// Any leaderboards? No leaderboard spam?
+
+### ❗ High Score Instant Submission
+You have one leaderboard hooking on to the high score as the submitted value. Because of this, since the high score is already shown on-screen, it would be best designed as an instant submission leaderboard, please refer to [RAdocs - Leaderboard Design Tips](https://docs.retroachievements.org/developer-docs/leaderboards.html#design-tips). 
+
+### 💡 Multiplayer Leaderboards
+Your set allows multiplayer, I think there should be at least an equivalent of the High Score leaderboard, but for multiplayer in mind.
+This leaderboard would then function as an instant submission leaderboard, submitting when both player's were active and one of them lost all their lives. Thus when the total combined high scores drops, the leaderboard submits. Take a look for yourself, how you could make such a leaderboard function correctly, it definitely doable with the RAM values you've already documented. 
 
 ## ∘───── ✍️ Titles & Descriptions ─────∘  // TODO
 /// Conform to https://docs.retroachievements.org/guidelines/content/writing-policy.html
 /// Consider [#writing-requests on RAdiscord](https://discord.com/channels/310192285306454017/1100757231294750730)
 /// Rich Presence text
 
-## ∘───── 🖼️ Badge Art ─────∘  // TODO
-/// Conform to https://docs.retroachievements.org/guidelines/content/badge-and-icon-guidelines.html  
-///          and https://docs.retroachievements.org/developer-docs/badge-and-icon-creation.html
-/// Consider [#art-requests on RAdiscord](https://discord.com/channels/310192285306454017/1048102604963586048)
-/// Badge Style & Consistency, Visual Badge Quality
+### ❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) "WIP" in Title + Description 1P
+**Title**
+When you submit your set for review (Ready for Review), make sure everything is final. Think of it as if you're releaseing your set to the public, be professional in this regard. Either release a full developed set or wait until it's fully done, so having (WIP) in the title is not advised. Although this leaderboard still has some other problems as well, more details futher below.
 
-## ∘───── ⚖️ Point Distribution ─────∘  // TODO
-/// Conform to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html)
+**Description**
+This leaderboard only accounts for 1P slot right? Is this clear enough from the description? I'd rather phrase it as:
+`Achieve the highest score on difficulty 4 or higher, with starting lives at 3 or less, using 1-player's slot`
+Take a look at how other achievement sets have phrased such requirements, perhaps ask the writing-team.
+
+## ∘───── 🖼️ Badge Art ─────∘
+Badges look very good, love to see it.
+
+## ∘───── ⚖️ Point Distribution ─────∘
+Some achievements are way overscored, please refer to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html) and see if you can aim for an average points score of about ~7. This can easily be check via [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/), under "Set Overview", this also recommends to aim for ~7. If you could at least aim for something below 10 for this stat.
+Here are some suggestions:
+- [Co(s)mic Clown](https://retroachievements.org/achievement/499139) 50 -> 10; Could be 25, but I think 10 is just fine.
+- [Speedy Showman](https://retroachievements.org/achievement/499145) 25 -> 10; Is it really that hard to achieve? After thinking it through a little bit, this achievements may look fair on 25 points perhaps. Since the player first has to acquire all EXTRA letters and then try to complete the extra stage without dying and also within 30 seconds. Retrying this extra stage is not that evident.
+- [Scapino Flees from Fight](https://retroachievements.org/achievement/499146) 10 -> 5 (maybe even lower); Isn't this like really easy to achieve by just gathering all items, and just kiting enemies, since you run faster than most of them? Especially in the early stages?
+- [Clown's Pocket](https://retroachievements.org/achievement/499141); Seems overly easy, reasoning is same as above achievement.
+Consider some of my suggestions and see to it that you can lower the overal score somewhat.
 
 # ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦ // TODO
 /// Grouped for logic quality and RA feature usage.
@@ -201,8 +246,39 @@ Or maybe even simpler would be:
 /// Macros and lookupTables used appropriately?  
 /// Refer to https://docs.retroachievements.org/developer-docs/rich-presence.html#rich-presence
 
-## ∘───── 🔢 Leaderboard Logic ─────∘  // TODO
-/// Leaderboards with instant Start/Submit implemented?
+## ∘───── 🔢 Leaderboard Logic ─────∘
+
+### ❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) Logic Issues
+This leaderboard would be better designed as an instant submission leaderboard. But I will critique it as it is currently. It does seems to function as an instant submission leaderboard, I think from my testing. It never tracks right? It just submits when you lose all lives? or when you enter the "Continue" state? Although an instant submission leaderboard would have an always_false CANCEL condition and an always_true SUBMIT condition. 
+
+**START**
+- In order to start the leaderboard I must first lose all my lives, the leaderboard starts when the 'continue' state is reached for `$0x0fdb7`? Why not just start the leaderboard when the game starts? Or when the player comes from the "continue" state back into the "playing" state instead?
+
+**CANCEL**
+```
+Mem 8-bit 0x00000028 !=  Mem 8-bit 0x00000028 (0)
+```
+How is this supposed to cancel the leaderboard exactly? This looks like an always_false condition, so never cancel? If that is what you need, we'd rather see something like:
+```
+val 0  ==  val 1
+```
+0 can never be equal to 1, this is much easier the ascertain as an always_false condition then what you use.
+
+**SUBMIT**### Core
+```
+OrNext      Mem   8-bit  0x0000fdb7 =   Value   2   (1)
+            Mem   8-bit  0x0000460a =   Value   7   (1)
+ResetIf     Mem   16-bit 0x00004654 =   Value   0   (0)
+```
+HitCounts & ResetIf seems unnecessary. Again just use an instant submission leaderboard instead of this leaderboard logic, it would make it that more easy. 
+
+Make this work for 2P's slot as well.
+Since high score is seperate between 1P and 2P, I think it would be feasible to have this leaderboard submit for both players.
+
+
+
+
+
 
 # ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦ // TODO
 
