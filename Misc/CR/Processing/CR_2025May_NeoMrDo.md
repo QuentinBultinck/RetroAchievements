@@ -1,12 +1,12 @@
 # %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
 
 # ------Links Related to Code Review------
-Junior Developer => _LINK_TO_RA_USER_
 Code Review Thread => _DISCORD_LINK_TO_CODE_REVIEW_
-Set Plan Review => _DISCORD_LINK_TO_SET_PLAN_REVIEW_
-Ready for Review Thread => _DISCORD_LINK_TO_READY_FOR_REVIEW_
-Play Test Thread => _DISCORD_LINK_TO_PLAY_TEST_
-RA Game Page => _LINK_TO_RA_GAME_PAGE_
+Junior Developer => https://retroachievements.org/user/Krylan
+Set Plan => N/A
+Ready for Review Thread => https://discord.com/channels/310192285306454017/1342590608006582325
+Play Test Thread => https://discord.com/channels/310192285306454017/1339642437164863498
+RA Game Page => https://retroachievements.org/game/12324
  
 # ------CR TODO List------ (for use by CR)
 - Discord Code Review Naming Scheme: `Code Review - [GameTitle (Console)] - [DevName]`
@@ -63,13 +63,13 @@ Broken because ...
 Do this instead of that...
 
 
-# %%%%%%%%%%%%% CODE REVIEW: _GAME_TITLE_ %%%%%%%%%%%%% #
+# %%%%%%%%%%%%% CODE REVIEW: Neo Mr. Do (Arcade) %%%%%%%%%%%%% #
 
 # ------Intro------
 
-Hello @_JR_DEV_USERNAME_
+Hello @Krylan
 
-Your Code Review for [_GAME_TITLE_ (_CONSOLE_)](_UNOFFICIAL_ACHIEVEMENT_LIST_LINK_) has finally arrived!
+Your Code Review for [Neo Mr. Do! (Arcade)](https://retroachievements.org/game/12324?f=5) has finally arrived!
 Please take some time to review everything I've written below. If you have any questions, feel free to reach out.
 
 ## ∘───── 📑 Table of Contents ─────∘ // TODO, link these
@@ -89,22 +89,63 @@ Please take some time to review everything I've written below. If you have any q
 ### 🔑 Misc Prerequisites _MSG_LINK_
 ### 📜 Summary & Final Notes _MSG_LINK_
 
-## ∘───── Related Links ─────∘ // TODO, link these
-Junior Developer => _LINK_TO_RA_USER_
-Set Plan Review/Jr. Dev Request => _LINK_DISCORD_THREAD_
-Set Plan => _LINK_TO_SET_PLAN_
-Ready for Review Thread => _LINK_DISCORD_THREAD_
-Play Test Thread => _LINK_DISCORD_THREAD_
-RA Game Page => _LINK_RA_GAME_PAGE_
+## ∘───── Related Links ─────∘
+Junior Developer => https://retroachievements.org/user/Krylan
+Set Plan => N/A
+Ready for Review Thread => https://discord.com/channels/310192285306454017/1342590608006582325
+Play Test Thread => https://discord.com/channels/310192285306454017/1339642437164863498
+RA Game Page => https://retroachievements.org/game/12324
 
 # ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦ // TODO
 /// Grouped to represent all the under-the-hood work.
 
-## ∘───── 🛠️ RAM Digging & Code Notes ─────∘  // TODO
-/// Conform to https://docs.retroachievements.org/guidelines/content/code-notes.html
+## ∘───── 🛠️ RAM Digging & Code Notes ─────∘
+Everything looks good here. Although, I have some minor details I would love you to take a look at.
 
-## ∘───── 🧷 Additional Developer Notes ─────∘  // TODO
-/// [Optional] Comments left in logic, RAScript, planning documents, other threads on discord.
+### ❓ `$0x09e4` Breaken?
+```
+[8-bit] Cutscene status
+0x01 Cutscene can be breaken
+0x00 Cutscene can't be breaken or has been breaken
+```
+- What do you mean by "breaken"? Did you mean that these cutscenes can or cannot be skipped? 
+
+### ❓ `$0x0e48` & `$0x0e64` Suggestion?
+I would document these addresses like this:
+``` 	
+[8-bit] P1 State
+0x00 => Looking Up
+0x01 => Looking Down
+0x02 => Looking Left
+0x03 => Looking Right
+LookingDirectionValue +0x4 => Shooting (in that direction)
+0x09 => Dying
+0x12 => Spawning
+0x14 => Continue / Insert Coin
+0x0e => Losing Gender Power Up
+```
+Or maybe even simpler would be:
+``` 	
+[8-bit] P1 State
+0x00 => Looking Up
+0x01 => Looking Down
+0x02 => Looking Left
+0x03 => Looking Right
+0x04 => Shooting Up
+0x05 => Shooting Down
+0x06 => Shooting Left
+0x07 => Shooting Right
+0x09 => Dying
+0x12 => Spawning
+0x14 => Continue / Insert Coin
+0x0e => Losing Gender Power Up
+```
+- Especially `0x0X+4 Button A (Shoot)` is easier to understand from this. As initially I didn't understand what was going on there.
+
+## ∘───── 🧷 Additional Developer Notes ─────∘
+- You posted updates on the [Forum Topic](https://retroachievements.org/forums/topic/28464), great!
+- Your playtest-request came through, and you fixed some bugs it seems, regarding a mistrigger on [Speedy Showman](https://retroachievements.org/achievement/499145) and the progression achievements not triggering.
+- In your [Ready for Review Thread](https://discord.com/channels/310192285306454017/1342590608006582325), there seemed to be some problems with missing deltas, bracketed text inside descriptions.
 
 ## ∘───── 🧪 Testing & Debugging Results ─────∘  // TODO
 /// Mentioned bugs, testing methods, hardcore/softcore checks, peer testing, issues encountered during development, and any achievement concepts that could not be implemented.
