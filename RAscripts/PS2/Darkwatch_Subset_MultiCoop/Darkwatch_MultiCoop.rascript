@@ -115,6 +115,11 @@ function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 	memory_regionOffsets[string_structKey][string_offsetKey]
 // -------------------------------------
 memory_StructDefs = {
+	"Pointer:PlayerSavedStats": {
+		"offsetToMember": {
+			"Pointer:SavedStats_Story": 0x4,
+			"Pointer:SavedStats_Gunslinger": 0xC},
+		}, 
 	"Pointer:PlayerInput": {
 		"offsetToMember": {
 			"Struct(ControllerInput):Controller-1": 0x4,
@@ -191,6 +196,24 @@ memory_StructDefs = {
 				"offsetToPointedToMember": 0x2},
 			},
 		}, 
+	"Struct:ChapterStats": {
+		"sizeInBytes": 56,
+		"offsetToMember": {
+			"32-bit:MissionTime": 0x8,
+			"32-bit:PlayerDeaths": 0xC,
+			"Lower4:Difficulty": 0x14,
+			"32-bit:Kills": 0x1C,
+			"32-bit:ShotsFired": 0x20,
+			"32-bit:ShotsHit": 0x24,
+			"32-bit:HeadshotKills": 0x28,
+			"32-bit:MeleeKills": 0x2C, 
+			"Pointer:WeaponEquipTimes": 0x34},
+		"pointerChainToMember": {
+			"ASCII:LevelID": {
+				"pointerChainOffsets": [0x0],
+				"offsetToPointedToMember": 0x2},
+			},
+		},
 	"Struct:MainUIdata": {
 		"pointerChainToMember": {
 			"32-bit:LoadingState": {
@@ -226,11 +249,11 @@ memory_StructDefs = {
 	"Struct:PlayerEntityData": {
 		"pointerChainToMember": {
 			"Float:PlayerHealth(functional)": {
-				"pointerChainOffsets": [0x58, 0x7C, 0x98]},
+				"pointerChainOffsets": [0x58, 0x74, 0x98]},
 			"Float:VampireShield(functional)": {
-				"pointerChainOffsets": [0x58, 0x7C, 0xA0]},
+				"pointerChainOffsets": [0x58, 0x74, 0xA0]},
 			"Float:BloodPowerGauge(functional)": {
-				"pointerChainOffsets": [0x58, 0x7C, 0xFC]},
+				"pointerChainOffsets": [0x58, 0x74, 0xFC]},
 			},
 		},
 	}
@@ -877,6 +900,12 @@ function current_pointerState_PlayerActorData_ByPlayer(enum_player, enum_release
 	let_memAddr_Pointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
 	return dword(let_memAddr_Pointer)}
 
+function prior_pointerState_PlayerActorData_ByPlayer(enum_player, enum_releaseRegion) =>
+	prior(current_pointerState_PlayerActorData_ByPlayer(enum_player, enum_releaseRegion))
+
+function prev_pointerState_PlayerActorData_ByPlayer(enum_player, enum_releaseRegion) =>
+	prev(current_pointerState_PlayerActorData_ByPlayer(enum_player, enum_releaseRegion))
+
 function current_pointerState_PlayerActorData(enum_releaseRegion) =>
 	current_pointerState_PlayerActorData_ByPlayer(PLAYER_1, enum_releaseRegion)
 
@@ -902,6 +931,40 @@ function on_flagState_InGame_toggleTrue(enum_releaseRegion) =>
 function on_flagState_InGame_toggleFalse(enum_releaseRegion) =>
 	current_pointerState_PlayerActorData(enum_releaseRegion) == 0x0
 	&& prev_pointerState_PlayerActorData(enum_releaseRegion) != 0x0
+
+function is_flagState_1P_InGame_true(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData_ByPlayer(PLAYER_1, enum_releaseRegion) != 0
+
+function is_flagState_1P_InGame_false(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData_ByPlayer(PLAYER_1, enum_releaseRegion) == 0
+
+function wasPrior_flagState_1P_InGame_true(enum_releaseRegion) =>
+	prior_pointerState_PlayerActorData_ByPlayer(PLAYER_1, enum_releaseRegion) != 0
+
+function on_flagState_1P_InGame_toggleTrue(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData_ByPlayer(PLAYER_1, enum_releaseRegion) != 0
+	&& prev_pointerState_PlayerActorData_ByPlayer(PLAYER_1, enum_releaseRegion) == 0
+
+function on_flagState_1P_InGame_toggleFalse(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData_ByPlayer(PLAYER_1, enum_releaseRegion) == 0
+	&& prev_pointerState_PlayerActorData_ByPlayer(PLAYER_1, enum_releaseRegion) != 0
+
+function is_flagState_2P_InGame_true(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData_ByPlayer(PLAYER_2, enum_releaseRegion) != 0
+
+function is_flagState_2P_InGame_false(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData_ByPlayer(PLAYER_2, enum_releaseRegion) == 0
+
+function wasPrior_flagState_2P_InGame_true(enum_releaseRegion) =>
+	prior_pointerState_PlayerActorData_ByPlayer(PLAYER_2, enum_releaseRegion) != 0
+
+function on_flagState_2P_InGame_toggleTrue(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData_ByPlayer(PLAYER_2, enum_releaseRegion) != 0
+	&& prev_pointerState_PlayerActorData_ByPlayer(PLAYER_2, enum_releaseRegion) == 0
+
+function on_flagState_2P_InGame_toggleFalse(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData_ByPlayer(PLAYER_2, enum_releaseRegion) == 0
+	&& prev_pointerState_PlayerActorData_ByPlayer(PLAYER_2, enum_releaseRegion) != 0
 
 function is_flagStates_BothPlayers_InGame_false(enum_releaseRegion) =>
 	current_pointerState_PlayerActorData_ByPlayer(PLAYER_1, enum_releaseRegion) 
@@ -965,8 +1028,8 @@ function is_PauseMenu_active(enum_releaseRegion) =>
 
 function on_PauseMenu_Restart(enum_releaseRegion) =>
 	/* MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart - R/R usage
-		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
-		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
+		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
 		-----------
 			AddAddress	[Pointer:UIcontrol(preferred)]
 			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
@@ -976,6 +1039,8 @@ function on_PauseMenu_Restart(enum_releaseRegion) =>
 			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
 			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
 
+
+			=============CONTROLLER_1 Quits=============
 			---------ResetNextIf_A--------- (-> ResetNextIf when ConfirmationMenu not displayed)
 			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0xB8
@@ -993,11 +1058,30 @@ function on_PauseMenu_Restart(enum_releaseRegion) =>
 			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 
 			AddAddress	[Pointer:PlayerInput(preferred)]
-			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
 
+
+			=============CONTROLLER_2 Quits=============
+			---------ResetNextIf_A--------- (-> ResetNextIf when ConfirmationMenu not displayed)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			ResetNextIf	->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 			| ResetNextIf: FrameTitle != "Restart"
+			---------AddHit_A--------- (-> when any player presses X while at RestartConfirmationMenu, whilst YES highlighted)
+			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 			| CheckIf: FrameTitle == "Restart"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 			AddAddress	[Pointer:PlayerInput(preferred)]
-			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
 
+
+			==========================
 			---------ResetNextIf_B---------
 			ResetNextIf	[Pointer(EntityData_B):PlayerActorData-Player1] != 0x0 			| ResetNextIf: is_flagState_InGame_true(PLAYER_1)
 			---------AddHit_B--------
@@ -1025,8 +1109,8 @@ function on_PauseMenu_Restart(enum_releaseRegion) =>
 
 function on_PauseMenu_Quit(enum_releaseRegion) =>
 	/* MANUAL_CONSTRUCTION[FD1-FD3]:ResetOn_PauseMenu_Quit - R/R usage
-		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._R:0=1.2._0=1
-		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._R:0=1.2._0=1
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._R:0=1.2._0=1
+		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._R:0=1.2._0=1
 		-----------
 			AddAddress	[Pointer:UIcontrol(preferred)]
 			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
@@ -1036,6 +1120,8 @@ function on_PauseMenu_Quit(enum_releaseRegion) =>
 			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
 			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
 
+
+			=============CONTROLLER_1 Quits=============
 			---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
 			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0xB8
@@ -1061,18 +1147,46 @@ function on_PauseMenu_Quit(enum_releaseRegion) =>
 			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 
 			AddAddress	[Pointer:PlayerInput(preferred)]
-			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+
+
+			=============CONTROLLER_2 Quits=============
+			---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| ResetNextIf: MEM FrameTitle == "Quit"
+			---------ResetNextIf_A2--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| CheckIf: MEM FrameTitle != "Quit"
+
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			ResetNextIf	->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 		(2)	| ResetNextIf: PRIOR FrameTitle == "Quit"
+			---------AddHit_A--------- (-> when any player presses X while at QuitConfirmationMenu, whilst YES highlighted)
+			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 
 			AddAddress	[Pointer:PlayerInput(preferred)]
 			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
 
+
+			=============Effectively Quit (check)=============
 			---------ResetNextIf_B--------- (-> when pressing Quit, [Lower4:ActiveMenuPointerIndex] becomes 0, the next frame)
 			ResetNextIf	Mem [Lower4:ActiveMenuPointerIndex] != 0x0 			| ResetNextIf: [Lower4:ActiveMenuPointerIndex] != 0
 			---------AddHit_B--------
 			AndNext		Mem [Lower4:ActiveMenuPointerIndex] == 0x0		
 			AddHits		Delta [Lower4:ActiveMenuPointerIndex] != 0x0	(1)		| CheckIf: [Lower4:ActiveMenuPointerIndex] turns 0
 
-			ResetIf		Val 0x0 == Val 0x1		(2)
+			ResetIf		Val 0x0 == Val 0x1		(2)		| CheckIf: (CONTROLLER_1 Quits OR CONTROLLER_2 Quits) AND CheckIf: Effectively Quit
 			
 						Val 0x0 == Val 0x1				| always_false() */
 	memUtil_ManualConstruction_PlaceHolderRequirement(0xFD1)
@@ -1086,106 +1200,6 @@ function on_PauseMenu_Quit(enum_releaseRegion) =>
 		memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion),
 		memAccessorFunction_toPointedToMember = low4) == 0
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0xFD3)
-
-function on_PauseMenu_QuitOrRestart(enum_releaseRegion) =>
-	/* MANUAL_CONSTRUCTION[FD1-FD4]ResetOn_PauseMenu_QuitOrRestart - R/R usage
-		--> MANUAL_CONSTRUCTION[FD1-FD3]:ResetOn_PauseMenu_Quit + MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart
-		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._R:0=1.2._I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
-		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._R:0=1.2._I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
-		-------			
-			AddAddress	[Pointer:UIcontrol(preferred)]
-			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
-			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
-
-			AddAddress	[Pointer:UIcontrol(preferred)]
-			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
-			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
-
-
-			==========ResetOn_PauseMenu_Quit==========
-			---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
-			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0xB8
-			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| ResetNextIf: MEM FrameTitle == "Quit"
-			---------ResetNextIf_A2--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
-			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0xB8
-			AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| CheckIf: MEM FrameTitle != "Quit"
-
-			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0xB8
-			ResetNextIf	->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 		(2)	| ResetNextIf: PRIOR FrameTitle == "Quit"
-			---------AddHit_A--------- (-> when any player presses X while at QuitConfirmationMenu, whilst YES highlighted)
-			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
-			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
-			
-			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0xB8
-			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
-			
-			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0x7C
-			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
-
-			AddAddress	[Pointer:PlayerInput(preferred)]
-			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
-
-			AddAddress	[Pointer:PlayerInput(preferred)]
-			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
-
-			---------ResetNextIf_B--------- (-> when pressing Quit, [Lower4:ActiveMenuPointerIndex] becomes 0, the next frame)
-			ResetNextIf	Mem [Lower4:ActiveMenuPointerIndex] != 0x0 			| ResetNextIf: [Lower4:ActiveMenuPointerIndex] != 0
-			---------AddHit_B--------
-			AndNext		Mem [Lower4:ActiveMenuPointerIndex] == 0x0		
-			AddHits		Delta [Lower4:ActiveMenuPointerIndex] != 0x0	(1)		| CheckIf: [Lower4:ActiveMenuPointerIndex] turns 0
-
-			ResetIf		Val 0x0 == Val 0x1		(2)
-
-
-			==========ResetOn_PauseMenu_Restart==========
-			---------ResetNextIf_A--------- (-> ResetNextIf when ConfirmationMenu not displayed)
-			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0xB8
-			ResetNextIf	->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 			| ResetNextIf: FrameTitle != "Restart"
-			---------AddHit_A--------- (-> when any player presses X while at RestartConfirmationMenu, whilst YES highlighted)
-			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
-			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
-			
-			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0xB8
-			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 			| CheckIf: FrameTitle == "Restart"
-			
-			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0x7C
-			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
-
-			AddAddress	[Pointer:PlayerInput(preferred)]
-			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
-
-			AddAddress	[Pointer:PlayerInput(preferred)]
-			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
-
-			---------ResetNextIf_B---------
-			ResetNextIf	[Pointer(EntityData_B):PlayerActorData-Player1] != 0x0 			| ResetNextIf: is_flagState_InGame_true(PLAYER_1)
-			---------AddHit_B--------
-			AndNext		Mem [Pointer(EntityData_B):PlayerActorData-Player1] == 0x0		
-			AddHits		Delta [Pointer(EntityData_B):PlayerActorData-Player1] != 0x0	(1)		| CheckIf: on_flagState_InGame_toggleFalse(PLAYER_1)
-
-			---------ResetNextIf_C---------
-			ResetNextIf	[Pointer(EntityData_B):PlayerActorData-Player2] != 0x0 			| ResetNextIf: is_flagState_InGame_true(PLAYER_2)
-			---------AddHit_C--------
-			AndNext		Mem [Pointer(EntityData_B):PlayerActorData-Player2] == 0x0		
-			AddHits		Delta [Pointer(EntityData_B):PlayerActorData-Player2] != 0x0	(1)		| CheckIf: on_flagState_InGame_toggleFalse(PLAYER_2)
-
-			ResetIf		Val 0x0 == Val 0x1		(3)
-			
-						Val 0x0 == Val 0x1				| always_false() 
-			*/
-	memUtil_ManualConstruction_PlaceHolderRequirement(0xFD1)
-	&& is_ReleaseRegion(enum_releaseRegion)
-	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit
-	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion) + 0x1) == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart
-	&& memUtil_ManualConstruction_PlaceHolderRequirement(0xFD4)
 
 function on_NewPowerMenu_render(enum_releaseRegion) =>
 	/* MANUAL_CONSTRUCTION[1CCD-2CCD]:on_NewPowerMenu_render - R/R usage
@@ -1789,6 +1803,9 @@ function is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion) {
 	let_substring_LevelID = LEVEL_DATA_getLevelID_substring(enum_chapter) // NOTE: Substring --> Only check FIRST [4-byte] of ASCII
 	return is_Level(let_substring_LevelID, enum_releaseRegion)}
 
+function on_LevelSubstring_StoryChapter_change(enum_releaseRegion) => 
+	dword(ASCII_MEM_ADDR_LevelID(enum_releaseRegion)) != prev(dword(ASCII_MEM_ADDR_LevelID(enum_releaseRegion)))
+
 function is_LevelSubstring_Multiplayer(enum_MPlevel, enum_releaseRegion) {
 	let_substring_LevelID =  MP_LEVEL_DATA_get32BitSubstringLevelID_asString(enum_MPlevel)
 	let_int_offsetTo_SubstringLevelID = MP_LEVEL_DATA_getOffsetToSubstringLevelID(enum_MPlevel)
@@ -1898,24 +1915,24 @@ CONTROLLER_CONFIG_Hoss = "Hoss" // FullString: "Hoss"
 
 CONST_CONTROLLER_CONFIG_DATA = { // Configs changes in-game controls
 	CONTROLLER_CONFIG_Default: {
-		"Button_SightMode": "BitFlag:IsInputPressed_R3",
-		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
-		"Button_Shoot": "BitFlag:IsInputPressed_R1",
+		"Button_SightMode": "R3",
+		"Button_ActivatePower": "R2",
+		"Button_Shoot": "R1",
 		},
 	CONTROLLER_CONFIG_Lefty: {
-		"Button_SightMode": "BitFlag:IsInputPressed_L3",
-		"Button_ActivatePower": "BitFlag:IsInputPressed_L2",
-		"Button_Shoot": "BitFlag:IsInputPressed_L1",
+		"Button_SightMode": "L3",
+		"Button_ActivatePower": "L2",
+		"Button_Shoot": "L1",
 		},
 	CONTROLLER_CONFIG_Hopalong: {
-		"Button_SightMode": "BitFlag:IsInputPressed_R3",
-		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
-		"Button_Shoot": "BitFlag:IsInputPressed_R1",
+		"Button_SightMode": "R3",
+		"Button_ActivatePower": "R2",
+		"Button_Shoot": "R1",
 		},
 	CONTROLLER_CONFIG_Hoss: {
-		"Button_SightMode": "BitFlag:IsInputPressed_R3",
-		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
-		"Button_Shoot": "BitFlag:IsInputPressed_R1",
+		"Button_SightMode": "R3",
+		"Button_ActivatePower": "R2",
+		"Button_Shoot": "R1",
 		},
 	}
 
@@ -2514,9 +2531,9 @@ function ASCII_MEM_ADDR_PowerIconTopLeft(enum_player, enum_releaseRegion) {
 function is_PowerIconTopLeft(enum_player, enum_power, enum_releaseRegion) =>
 	dword(ASCII_MEM_ADDR_PowerIconTopLeft(enum_player, enum_releaseRegion)) == memUtil_asciiStringToHexLE(enum_power)
 
-function is_InSunlight(enum_releaseRegion) {
+function is_InSunlight(enum_player, enum_releaseRegion) {
 	const_ASCII_FLAG_PowerIconTopLeft_SunlightState = "SunlightState"
-	return is_ASCII_EqualTo(ASCII_MEM_ADDR_PowerIconTopLeft(enum_releaseRegion), const_ASCII_FLAG_PowerIconTopLeft_SunlightState)}	
+	return is_ASCII_EqualTo(ASCII_MEM_ADDR_PowerIconTopLeft(enum_player, enum_releaseRegion), const_ASCII_FLAG_PowerIconTopLeft_SunlightState)}	
 
 
 // #endregion HUD Control Health
@@ -2729,87 +2746,88 @@ achievements_coreData = {
 		// "a_RideDevil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 512749, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"},
 		// "a_Boneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512769, "points": 0000000, "devInfo": "CHAPTER_3_Boneyard Completion"},
+			// "id": 513469, "points": 0000000, "devInfo": "CHAPTER_3_Boneyard Completion"},
 		// "a_DevilMine": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512770, "points": 0000000, "devInfo": "CHAPTER_4_DevilMine Completion"},
+			// "id": 513470, "points": 0000000, "devInfo": "CHAPTER_4_DevilMine Completion"},
 		// "a_DWOutpost": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512771, "points": 0000000, "devInfo": "CHAPTER_5_Outpost Completion"},
+			// "id": 513471, "points": 0000000, "devInfo": "CHAPTER_5_Outpost Completion"},
 		// "a_WarTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512772, "points": 0000000, "devInfo": "CHAPTER_6_WarTrain Completion"}, 
+			// "id": 513472, "points": 0000000, "devInfo": "CHAPTER_6_WarTrain Completion"}, 
 		// "a_TortureMaze": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512773, "points": 0000000, "devInfo": "CHAPTER_7_TortureMaze Completion"}, 
+			// "id": 513473, "points": 0000000, "devInfo": "CHAPTER_7_TortureMaze Completion"}, 
 		// "a_BaptismFire": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512774, "points": 0000000, "devInfo": "CHAPTER_8_BaptismFire Completion"}, 
+			// "id": 513474, "points": 0000000, "devInfo": "CHAPTER_8_BaptismFire Completion"}, 
 		// "a_Rescue": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512775, "points": 0000000, "devInfo": "CHAPTER_9_Rescue Completion"},
+			// "id": 513475, "points": 0000000, "devInfo": "CHAPTER_9_Rescue Completion"},
 		// "a_Prism": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512776, "points": 0000000, "devInfo": "CHAPTER_10_Prism Completion"},
+			// "id": 513476, "points": 0000000, "devInfo": "CHAPTER_10_Prism Completion"},
 		// "a_Invasion": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512777, "points": 0000000, "devInfo": "CHAPTER_11_Invasion Completion"},
+			// "id": 513477, "points": 0000000, "devInfo": "CHAPTER_11_Invasion Completion"},
 		// "a_Hangtown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512778, "points": 0000000, "devInfo": "CHAPTER_12_Hangtown Completion"},
+			// "id": 513478, "points": 0000000, "devInfo": "CHAPTER_12_Hangtown Completion"},
 		// "a_MorningAfter": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512779, "points": 0000000, "devInfo": "CHAPTER_13_MorningAfter Completion"},
+			// "id": 513479, "points": 0000000, "devInfo": "CHAPTER_13_MorningAfter Completion"},
 		// "a_Showdown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512780, "points": 0000000, "devInfo": "CHAPTER_14_Showdown Completion"},
+			// "id": 513480, "points": 0000000, "devInfo": "CHAPTER_14_Showdown Completion"},
 		// "a_RightTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512781, "points": 0000000, "devInfo": "CHAPTER_15_RightTrain Completion"},
+			// "id": 513481, "points": 0000000, "devInfo": "CHAPTER_15_RightTrain Completion"},
 		// "a_Deadfall": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512782, "points": 0000000, "devInfo": "CHAPTER_16_Deadfall Completion"},
+			// "id": 513482, "points": 0000000, "devInfo": "CHAPTER_16_Deadfall Completion"},
 		},
 	"c_StoryEnd": { // Category - Story Win Condition Achievements
 		// "a_CurseWestGood": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512784, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
+			// "id": 513484, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
 		// "a_CurseWestEvil": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 512783, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
+			// "id": 513483, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
 		},
 	"c_Challenge": { // Category - info_here
-		"a_ClgWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 513820, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty with no deaths and a minimum combined accuracy of xx%"}, 
-		"a_ClgRideDevil": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 513876, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty with no deaths and the combined HP never goes below xx%"},
-		"a_ClgBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 513877, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty with no deaths, no throwables, using only the Crossbow and Carbine to score at least xx kills total (without restart)"},
-		"a_ClgDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty with no deaths and no powers, where one player only uses pistols and the other only two-handed weapons (no explosives)"},
-		"a_ClgDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty with no deaths and the combined HP never being below max HP for xx seconds consecutively"},
-		"a_ClgWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty with no deaths, within xx time and without any player losing any HP"}, 
-		"a_ClgTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty with no deaths, with at least xx% melee kills, where one player only uses the Scepter and the other only shoots (powers allowed)"}, 
-		"a_ClgBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty with no deaths, no throwables, using only the Redeemer and the Rail Rocket to score at least xx kills total (without restart)"}, 
-		"a_ClgRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty with within xx time and without any player going below xx% HP"},
-		"a_ClgPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty with no deaths, where each player can only use each power once"},
-		"a_ClgInvasion": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty with no deaths using only the Dual Pistols or Shotgun (no explosives)"},
-		"a_ClgHangtown": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty with no deaths using the Range Rifle as the only means of shooting, with a minimum combined accuracy of xx%"},
-		"a_ClgMorningAfter": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty with no deaths using only tier 2 and 3 powers, with at least xx% headshot or melee kills"},
-		"a_ClgShowdown": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty with no deaths, with a minimum combined accuracy of xx% and where each player can only use 1 distinct power"},
-		"a_ClgRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty with no deaths within xx time and without any player going below xx% HP"},
-		"a_ClgDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty with no deaths, killing only with the Range Rifle and Carbine equipped and with at least xx% headshot kills (throwables allowed)"},
-		"a_ClgCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 515979, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty with no deaths, with less than xx power activations"},
+		// "a_ClgWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 513820, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty with no deaths and a minimum combined accuracy of xx%"}, 
+		// "a_ClgRideDevil": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 513876, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty with no deaths and the combined HP never goes below xx%"},
+		// "a_ClgBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 513877, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty with no deaths, no throwables, using only the Crossbow and Carbine to score at least xx kills total (without restart)"},
+		// "a_ClgDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515977, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty with no deaths and no powers, where one player only uses pistols and the other only two-handed weapons (no explosives)"},
+		// "a_ClgDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515978, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty with no deaths and the combined HP never being below max HP for xx seconds consecutively"},
+		// "a_ClgWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515981, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty with no deaths, within xx time and without any player losing any HP"}, 
+		// "a_ClgTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515982, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty with no deaths, with at least xx% melee kills, where one player only uses the Scepter and the other only shoots (powers allowed)"}, 
+		// "a_ClgBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515980, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty with no deaths, no throwables, using only the Redeemer and the Rail Rocket to score at least xx kills total (without restart)"}, 
+		// "a_ClgRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515985, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty with within xx time and without any player going below xx% HP"},
+		// "a_ClgPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515975, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty with no deaths, where each player can only use each power once"},
+		// "a_ClgInvasion": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515976, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty with no deaths using only the Dual Pistols or Shotgun (no explosives)"},
+		// "a_ClgHangtown": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515987, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty with no deaths using the Range Rifle as the only means of shooting, with a minimum combined accuracy of xx%"},
+		// "a_ClgMorningAfter": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515986, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty with no deaths using only tier 2 and 3 powers, with at least xx% headshot or melee kills"},
+		// "a_ClgShowdown": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515983, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty with no deaths, with a minimum combined accuracy of xx% and where each player can only use 1 distinct power"},
+		// "a_ClgRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515984, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty with no deaths within xx time and without any player going below xx% HP"},
+		// "a_ClgDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515988, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty with no deaths, killing only with the Range Rifle and Carbine equipped and with at least xx% headshot kills (throwables allowed)"},
+		// "a_ClgCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 515979, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty with no deaths, with less than xx power activations"},
 		},
 	"c_Bonus": { // Category - Bonus achievements
-		// "a_MultiKillers": { // CONCEPT a_MultiKillers
-			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Complete a Chapter, where each player scored at least one multikill"}
-		// "a_SunHi": { // CONCEPT a_SunHi
-			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Both player use powers in sunlight"}
-		// "a_AllEvil": { // CONCEPT a_AllEvil, check if NewPowerMenu functions identical to SinglePlayer
-			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Unlock all Evil powers"}
-		// "a_AllGood": { // CONCEPT a_AllGood, check if NewPowerMenu functions identical to SinglePlayer
-			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Unlock all Good powers"}
+		// "a_MultiKillers": { // VERIFIED
+			// "id": 521090, "points": achievement_POINTS_0, "devInfo": "In a Chapter, have each player score at least one multikill"},
+		// "a_SunHi": { // QA
+			// "id": 521091, "points": achievement_POINTS_0, "devInfo": "Both player use powers in sunlight"},
+		// "a_AllEvil": { // VERIFIED
+			// "id": 521088, "points": achievement_POINTS_0, "devInfo": "Unlock all Evil powers"},
+		// "a_AllGood": { // VERIFIED
+			// "id": 521089, "points": achievement_POINTS_0, "devInfo": "Unlock all Good powers"},
 		},
 	"c_Versus": { // Category - Versus Mode achievements (purely for showcasing Versus Mode, this is not focus of this Subset)
+		// TODO c_Versus
 		// "a_VSdeathmatch": { // CONCEPT a_VSdeathmatch
 			// "id": 000000, "points": 0000000, "devInfo": "Complete a Versus match in Deathmatch Mode"},
 		// "a_VSsoulhunter": { // CONCEPT a_VSsoulhunter
@@ -2914,6 +2932,7 @@ function achGenerate_LockoutGroup_ParticipationTrackingInactivity(enum_chapter, 
 				&& on_PlayerInput_anyInputUse(PLAYER_1, enum_releaseRegion)) 
 			// && !is_AnyInGameMenu_active(enum_releaseRegion) // DISABLED - Unnecessary as [MissionTime_Temp] only increments while the PauseMenu is inactive
 			&& !is_AnyCinematic_active(enum_releaseRegion)
+			&& current_Player_HP(PLAYER_1, enum_releaseRegion) > 0.0  // --CheckIf--> Not in respawn screen (otherwise keeps counting when dead) 
 			&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)))
 		&& never(repeated(PARTICIPATION_TRACKING_MaxInactiveSeconds, // --LockoutIf--> PLAYER_2 is inactive for xx seconds conesutively
 			never( // --ResetNextIf--> when PLAYER_2 uses any input while in-game || when loading another ChapterSection || when PauseMenu->Restart
@@ -2924,6 +2943,7 @@ function achGenerate_LockoutGroup_ParticipationTrackingInactivity(enum_chapter, 
 				&& on_PlayerInput_anyInputUse(PLAYER_2, enum_releaseRegion)) 
 			// && !is_AnyInGameMenu_active(enum_releaseRegion) // DISABLED - Unnecessary as [MissionTime_Temp] only increments while the PauseMenu is inactive
 			&& !is_AnyCinematic_active(enum_releaseRegion)
+			&& current_Player_HP(PLAYER_2, enum_releaseRegion) > 0.0 // --CheckIf--> Not in respawn screen (otherwise keeps counting when dead) 
 			&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)))
 		&& always_false()
 	}
@@ -2955,22 +2975,98 @@ function achGenerate_5x_AltResetGroups_ChapterProgression(enum_chapter, enum_rel
 			&& is_atMainMenu(enum_releaseRegion))
 	// [4] ==== Alt Reset Group ==== 			-> Reset on PauseMenu->Restart when at ChapterSection_1
 		/* MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart (PlaceHolder[FD1-FD2]])
-			PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3.
-			NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3.
+			PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
+			NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
 			*/	
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& is_ChapterSection(enum_chapter, CHAPTER_SECTION_1, enum_releaseRegion)
 			&& on_PauseMenu_Restart(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[FD1-FD2]
 	// [5] ==== Alt Reset Group ==== 			-> Reset on PauseMenu->Quit 
-		/* MANUAL_CONSTRUCTION[FD1-FD3]:ResetOn_PauseMenu_Quit (AltGroup[5])
-			PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._R:0=1.2._0=1
-			NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._R:0=1.2._0=1
-			*/
+		/* MANUAL_CONSTRUCTION[FD1-FD3]:ResetOn_PauseMenu_Quit (AltGroup[5]) - R/R usage
+			PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._R:0=1.2._0=1
+			NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._R:0=1.2._0=1
+			-----------
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+				Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+				Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+
+
+				=============CONTROLLER_2 Quits=============
+				---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
+				AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| ResetNextIf: MEM FrameTitle == "Quit"
+				---------ResetNextIf_A2--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
+				AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| CheckIf: MEM FrameTitle != "Quit"
+
+				AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				ResetNextIf	->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 		(2)	| ResetNextIf: PRIOR FrameTitle == "Quit"
+				---------AddHit_A--------- (-> when any player presses X while at QuitConfirmationMenu, whilst YES highlighted)
+				AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+				AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+				
+				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0x7C
+				AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+				AddAddress	[Pointer:PlayerInput(preferred)]
+				AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+
+
+				=============CONTROLLER_2 Quits=============
+				---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
+				AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| ResetNextIf: MEM FrameTitle == "Quit"
+				---------ResetNextIf_A2--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
+				AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| CheckIf: MEM FrameTitle != "Quit"
+
+				AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				ResetNextIf	->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 		(2)	| ResetNextIf: PRIOR FrameTitle == "Quit"
+				---------AddHit_A--------- (-> when any player presses X while at QuitConfirmationMenu, whilst YES highlighted)
+				AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+				AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+				
+				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0x7C
+				AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+				AddAddress	[Pointer:PlayerInput(preferred)]
+				AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
+
+
+				=============Effectively Quit (check)=============
+				---------ResetNextIf_B--------- (-> when pressing Quit, [Lower4:ActiveMenuPointerIndex] becomes 0, the next frame)
+				ResetNextIf	Mem [Lower4:ActiveMenuPointerIndex] != 0x0 			| ResetNextIf: [Lower4:ActiveMenuPointerIndex] != 0
+				---------AddHit_B--------
+				AndNext		Mem [Lower4:ActiveMenuPointerIndex] == 0x0		
+				AddHits		Delta [Lower4:ActiveMenuPointerIndex] != 0x0	(1)		| CheckIf: [Lower4:ActiveMenuPointerIndex] turns 0
+
+				ResetIf		Val 0x0 == Val 0x1		(2)		| CheckIf: (CONTROLLER_1 Quits OR CONTROLLER_2 Quits) AND CheckIf: Effectively Quit
+				
+							Val 0x0 == Val 0x1				| always_false() */
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
-			&& on_PauseMenu_QuitOrRestart(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[FD1-FD3]
-
+			&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[FD1-FD3]
 
 function achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(enum_chapter, enum_endingFMV, enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION (AltGroups[1+6+7])
 	PARTICIPATION_TRACKING_MinRequiredInputs = PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(enum_chapter)
@@ -3372,23 +3468,23 @@ achievements_triggers = {
 				)
 		// [2/12] ==== Alt Measured Group (in-game) ==== 			-> Group is only responsible for displaying a Measured Indicator for combined accuacy % when in-game
 			/* MANUAL_CONSTRUCTION[CAA1-CAA0]:MeasuredCombinedAccuracy_WhileInGame
-					PAL:	A:0xX00965c20+0xX00965c88_A:0xX00965c54_A:0xX00965d4c+0xX00965db4_K:0xX00965d80_K:{recall}/f1.0_A:0xX00965c24/{recall}_A:0xX00965c8c/{recall}_A:0xX00965c58/{recall}_A:0xX00965d50/{recall}_A:0xX00965db8/{recall}_K:0xX00965d84/{recall}_K:{recall}*f100.0_M:{recall}=f100.0
-					NTSCU:	A:0xX00953c40+0xX00953ca8_A:0xX00953c74_A:0xX00953d6c+0xX00953dd4_K:0xX00953da0_K:{recall}/f1.0_A:0xX00953c44/{recall}_A:0xX00953cac/{recall}_A:0xX00953c78/{recall}_A:0xX00953d70/{recall}_A:0xX00953dd8/{recall}_K:0xX00953da4/{recall}_K:{recall}*f100.0_M:{recall}=f100.0
-					----------
-						AddSource	[ShotsFired_Temp(PLAYER_1)] + [ShotsFired_ChapterSection(PLAYER_1)]
-						AddSource	[ShotsFired_ChapterTotal(PLAYER_1)] 
-						AddSource	[ShotsFired_Temp(PLAYER_2)] + [ShotsFired_ChapterSection(PLAYER_2)]
-						Remember	[ShotsFired_ChapterTotal(PLAYER_2)] 
-						Remember	Recall / 1.0						--> Force 32-bit to Float
-						AddSource	[ShotsHit_Temp(PLAYER_1)] / Recall
-						AddSource	[ShotsHit_ChapterSection(PLAYER_1)] / Recall
-						AddSource	[ShotsHit_ChapterTotal(PLAYER_1)] / Recall
-						AddSource	[ShotsHit_Temp(PLAYER_2)] / Recall
-						AddSource	[ShotsHit_ChapterSection(PLAYER_2)] / Recall
-						Remember	[ShotsHit_ChapterTotal(PLAYER_2)] / Recall
-						Remember	Recall * 100.0
-						Measured	Recall == 100.0
-						*/
+				PAL:	A:0xX00965c20+0xX00965c88_A:0xX00965c54_A:0xX00965d4c+0xX00965db4_K:0xX00965d80_K:{recall}/f1.0_A:0xX00965c24/{recall}_A:0xX00965c8c/{recall}_A:0xX00965c58/{recall}_A:0xX00965d50/{recall}_A:0xX00965db8/{recall}_K:0xX00965d84/{recall}_K:{recall}*f100.0_M:{recall}=f100.0
+				NTSCU:	A:0xX00953c40+0xX00953ca8_A:0xX00953c74_A:0xX00953d6c+0xX00953dd4_K:0xX00953da0_K:{recall}/f1.0_A:0xX00953c44/{recall}_A:0xX00953cac/{recall}_A:0xX00953c78/{recall}_A:0xX00953d70/{recall}_A:0xX00953dd8/{recall}_K:0xX00953da4/{recall}_K:{recall}*f100.0_M:{recall}=f100.0
+				----------
+					AddSource	[ShotsFired_Temp(PLAYER_1)] + [ShotsFired_ChapterSection(PLAYER_1)]
+					AddSource	[ShotsFired_ChapterTotal(PLAYER_1)] 
+					AddSource	[ShotsFired_Temp(PLAYER_2)] + [ShotsFired_ChapterSection(PLAYER_2)]
+					Remember	[ShotsFired_ChapterTotal(PLAYER_2)] 
+					Remember	Recall / 1.0						--> Force 32-bit to Float
+					AddSource	[ShotsHit_Temp(PLAYER_1)] / Recall
+					AddSource	[ShotsHit_ChapterSection(PLAYER_1)] / Recall
+					AddSource	[ShotsHit_ChapterTotal(PLAYER_1)] / Recall
+					AddSource	[ShotsHit_Temp(PLAYER_2)] / Recall
+					AddSource	[ShotsHit_ChapterSection(PLAYER_2)] / Recall
+					Remember	[ShotsHit_ChapterTotal(PLAYER_2)] / Recall
+					Remember	Recall * 100.0
+					Measured	Recall == 100.0
+					*/
 			|| memUtil_ManualConstruction_PlaceHolderRequirement(0xCAA1)
 			&& measured(				
 				current_ShotsFired_Temp(PLAYER_1, enum_releaseRegion)
@@ -3415,16 +3511,16 @@ achievements_triggers = {
 			&& memUtil_alwaysFalse(enum_releaseRegion)		
 		// [3/13] ==== Alt Measured Group (NOT in-game) ==== 		-> Group is only responsible for displaying a Measured Indicator for combined accuacy % when not in-game (during loading)
 			/* MANUAL_CONSTRUCTION[CAA1-CAA0]:MeasuredCombinedAccuracy_WhileNotInGame
-					PAL:	K:0xX00965c54+0xX00965d80_K:{recall}/f1.0_A:0xX00965c58/{recall}_K:0xX00965d84/{recall}_K:{recall}*f100.0_M:{recall}=f100.0
-					NTSCU:	K:0xX00953c74+0xX00953da0_K:{recall}/f1.0_A:0xX00953c78/{recall}_K:0xX00953da4/{recall}_K:{recall}*f100.0_M:{recall}=f100.0
-					----------
-						Remember	[ShotsFired_ChapterTotal(PLAYER_1)] + [ShotsFired_ChapterTotal(PLAYER_2)]
-						Remember	Recall / 1.0		--> Force 32-bit to Float
-						AddSource	[ShotsHit_ChapterTotal(PLAYER_1)] / Recall
-						Remember	[ShotsHit_ChapterTotal(PLAYER_2)] / Recall
-						Remember	Recall * 100.0
-						Measured	Recall == 100.0
-						*/
+				PAL:	K:0xX00965c54+0xX00965d80_K:{recall}/f1.0_A:0xX00965c58/{recall}_K:0xX00965d84/{recall}_K:{recall}*f100.0_M:{recall}=f100.0
+				NTSCU:	K:0xX00953c74+0xX00953da0_K:{recall}/f1.0_A:0xX00953c78/{recall}_K:0xX00953da4/{recall}_K:{recall}*f100.0_M:{recall}=f100.0
+				----------
+					Remember	[ShotsFired_ChapterTotal(PLAYER_1)] + [ShotsFired_ChapterTotal(PLAYER_2)]
+					Remember	Recall / 1.0		--> Force 32-bit to Float
+					AddSource	[ShotsHit_ChapterTotal(PLAYER_1)] / Recall
+					Remember	[ShotsHit_ChapterTotal(PLAYER_2)] / Recall
+					Remember	Recall * 100.0
+					Measured	Recall == 100.0
+					*/
 			|| memUtil_ManualConstruction_PlaceHolderRequirement(0xCAA1)
 			&& measured(				
 				current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion)
@@ -3450,7 +3546,7 @@ achievements_triggers = {
 		}),
 	"a_ClgRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION (AltGroups[1+8+9])
 		const_CHAPTER = CHAPTER_2_RideDevil
-		const_COMBINED_HP_THRESHOLD = (CONST_PLAYER_MAX_HP *2) *0.55 // 55%
+		const_COMBINED_HP_THRESHOLD = (CONST_PLAYER_MAX_HP *2) *0.40 // 40%
 
 		PARTICIPATION_TRACKING_MinRequiredInputs = PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(const_CHAPTER)
 		PARTICIPATION_TRACKING_MinRequiredShotsHit = PARTICIPATION_TRACKING_DATA_getMinRequiredShotsHit(const_CHAPTER)
@@ -3550,7 +3646,7 @@ achievements_triggers = {
 		const_CHAPTER = CHAPTER_3_Boneyard
 		const_WEAPON_A = WEAPON_Crossbow
 		const_WEAPON_B = WEAPON_Carbine
-		const_REQUIRED_KILLS = 100
+		const_REQUIRED_KILLS = 80
 
 		achClgBoneyard_Tally_weaponKills = tally(const_REQUIRED_KILLS, [
 			// -------- PLAYER_1 --------
@@ -3754,8 +3850,8 @@ achievements_triggers = {
 			/* MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart (AltGroup[9/19])
 				- NOTE: MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart must reset not only for ChapterSection_1 but during all ChapterSections (for this Achievement; because of MeasuredKillCount)
 				
-				PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
-				NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
+				PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
+				NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
 				*/	
 			|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 		}),
@@ -3978,12 +4074,12 @@ achievements_triggers = {
 			/* MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart (AltGroup[9/19])
 				- NOTE: MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart must reset not only for ChapterSection_1 but during all ChapterSections (for this Achievement; because of MeasuredKillCount)
 				
-				PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
-				NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
+				PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
+				NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
 				*/	
 			|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 		}),
-	"a_ClgDWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION (AltGroups[1+8+9])
+	"a_ClgDWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION (AltGroups[1+9+10])
 		const_CHAPTER = CHAPTER_5_Outpost
 		const_ALLOWED_SECS_BELOW_MAX_HP = 30 // seconds consecutively below max combined HP
 
@@ -3992,7 +4088,7 @@ achievements_triggers = {
 		PARTICIPATION_TRACKING_MinRequiredAccuracyPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredAccuracyPercent(const_CHAPTER)
 		PARTICIPATION_TRACKING_MinRequiredKillsPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredKillsPercent(const_CHAPTER)
 		return
-		// [1/10] ==== Alt Logic + Trigger Group ==== 		-> Group is responsible for unlocking the achievement + Display Trigger Indicator whilst Participation Tracking is OK && Challenge OK
+		// [1/11] ==== Alt Logic + Trigger Group ==== 		-> Group is responsible for unlocking the achievement + Display Trigger Indicator whilst Participation Tracking is OK && Challenge OK
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 
 			// -------- Core Logic --------
@@ -4062,7 +4158,21 @@ achievements_triggers = {
 				// -------- (Last) Requirements for Unlock --------
 				&& on_Loading_start(enum_releaseRegion)
 				)
-		// [2/11] ==== Alt Lockout Group ===		-> Lockout achievement when combined HP is below max for xx in-game seconds consecutively, by Resetting HitCount on [StartCondition]
+		// [2/12] ==== Alt Measured Group ====		-> Group is only responsible for displaying a Measured Indicator tracking consecutive seconds left below max combined HP before challenge fails
+			|| measured(
+				repeated(const_ALLOWED_SECS_BELOW_MAX_HP, // --[ConsecutiveChallengeCondition]--> When below max combined HP for xx in-game seconds consecutively
+					never( // --ResetNextIf--[ConsecutiveResetCondition]--> When back at max combined HP
+						is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+						&& current_Player_HP(PLAYER_1, enum_releaseRegion) + current_Player_HP(PLAYER_2, enum_releaseRegion) == CONST_PLAYER_MAX_HP *2)
+					&& is_ReleaseRegion(enum_releaseRegion)
+					&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& current_Player_HP(PLAYER_1, enum_releaseRegion) + current_Player_HP(PLAYER_2, enum_releaseRegion) < CONST_PLAYER_MAX_HP *2
+					&& !is_AnyCinematic_active(enum_releaseRegion)
+					&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)),
+				when = once( // --CheckIf--[StartCondition]--> Chapter has started from the beginning (StoryChapterSection_1) + Difficulty Deadeye
+					is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
+		// [3/13] ==== Alt Lockout Group ====		-> Lockout achievement when combined HP is below max for xx in-game seconds consecutively, by Resetting HitCount on [StartCondition]
 			|| never(repeated(const_ALLOWED_SECS_BELOW_MAX_HP, // --Lockout--[ConsecutiveChallengeCondition]--> When below max combined HP for xx in-game seconds consecutively
 				never( // --ResetNextIf--[ConsecutiveResetCondition]--> When back at max combined HP
 					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
@@ -4073,11 +4183,11 @@ achievements_triggers = {
 				&& !is_AnyCinematic_active(enum_releaseRegion)
 				&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)))
 			&& always_false()
-		// [3/12] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player dies, by Resetting HitCount on [StartCondition]
+		// [4/14] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player dies, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion)
-		// [4/13] ==== Alt Lockout Group ==== 		-> Lockout achievement when one player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
+		// [5/15] ==== Alt Lockout Group ==== 		-> Lockout achievement when one player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_ParticipationTrackingInactivity(const_CHAPTER, enum_releaseRegion)
-		// [5+..+8+9/14+..+17+18] ==== 5x Alt Reset Groups ==== 	-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Restart when at ChapterSection_1 || on PauseMenu->Quit
+		// [6+..+9+10/16+..+19+20] ==== 5x Alt Reset Groups ==== 	-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Restart when at ChapterSection_1 || on PauseMenu->Quit
 			|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 		}),
 	"a_ClgWarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) MANUAL_CONSTRUCTION (AltGroups[1+2+3+10+11])
@@ -4447,7 +4557,7 @@ achievements_triggers = {
 	"a_ClgBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION (AltGroups[1+9+10])
 		// NOTE: For this achievement only: ResetOn_PauseMenu_Restart must reset not only for ChapterSection_1 but during all ChapterSections (for this Achievement; because of MeasuredKillCount)
 
-		const_CHAPTER = CHAPTER_3_Boneyard
+		const_CHAPTER = CHAPTER_8_BaptismFire
 		const_WEAPON_A = WEAPON_RailRocket
 		const_WEAPON_B = WEAPON_Redeemer
 		const_REQUIRED_KILLS = 80
@@ -4654,8 +4764,8 @@ achievements_triggers = {
 			/* MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart (AltGroup[9/19])
 				- NOTE: MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart must reset not only for ChapterSection_1 but during all ChapterSections (for this Achievement; because of MeasuredKillCount)
 				
-				PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
-				NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
+				PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
+				NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
 				*/	
 			|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 		}),
@@ -5026,8 +5136,8 @@ achievements_triggers = {
 			/* MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart (AltGroup[9/19])
 				- NOTE: MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart must reset not only for ChapterSection_1 but during all ChapterSections (for this Achievement; because of MeasuredKillCount)
 				
-				PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
-				NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
+				PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
+				NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
 				*/	
 			|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 		}),
@@ -5035,6 +5145,8 @@ achievements_triggers = {
 		const_CHAPTER = CHAPTER_12_Hangtown
 		const_CHAPTER_ENDING_FMV = FMV_PromNight
 		const_MIN_REQUIRED_COMBINED_ACCURACY = 0.75
+		const_ALLOWED_WEAPON_A = WEAPON_RangeRifle
+		const_ALLOWED_WEAPON_B = WEAPON_Redeemer
 
 		PARTICIPATION_TRACKING_MinRequiredInputs = PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(const_CHAPTER)
 		PARTICIPATION_TRACKING_MinRequiredShotsHit = PARTICIPATION_TRACKING_DATA_getMinRequiredShotsHit(const_CHAPTER)
@@ -5203,17 +5315,19 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
 				format = "percent")
 			&& memUtil_alwaysFalse(enum_releaseRegion)	
-		// [4/15] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player shoots without WEAPON_RangeRifle equipped, by Resetting HitCount on [StartCondition]
-			|| never( // --Lockout--> when PLAYER_1 shoots a gun without WEAPON_RangeRifle equipped
+		// [4/15] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player shoots a non-allowed gun, by Resetting HitCount on [StartCondition]
+			|| never( // --Lockout--> when PLAYER_1 shoots a non-allowed gun
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
-				&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_ALLOWED_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_ALLOWED_WEAPON_B, enum_releaseRegion)
 				&& !on_HUDcontrolGear_weaponSwap(PLAYER_1, enum_releaseRegion)
 				&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_1, enum_releaseRegion))
-			&& never( // --Lockout--> when PLAYER_2 shoots a gun without WEAPON_RangeRifle equipped
+			&& never( // --Lockout--> when PLAYER_2 shoots a non-allowed gun
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
-				&& !is_EquippedWeapon(PLAYER_2, WEAPON_RangeRifle, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_2, const_ALLOWED_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_2, const_ALLOWED_WEAPON_B, enum_releaseRegion)
 				&& !on_HUDcontrolGear_weaponSwap(PLAYER_2, enum_releaseRegion)
 				&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_2, enum_releaseRegion))
 			&& always_false()
@@ -5626,7 +5740,7 @@ achievements_triggers = {
 	"a_ClgRightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) MANUAL_CONSTRUCTION (AltGroups[1+2+3+10+11])
 		const_CHAPTER = CHAPTER_15_RightTrain
 		const_TIME_LIMIT = 420000 // 420.000 ms = 7 min
-		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.7 // % of max HP
+		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.5 // % of max HP
 
 		PARTICIPATION_TRACKING_MinRequiredInputs = PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(const_CHAPTER)
 		PARTICIPATION_TRACKING_MinRequiredShotsHit = PARTICIPATION_TRACKING_DATA_getMinRequiredShotsHit(const_CHAPTER)
@@ -5971,8 +6085,8 @@ achievements_triggers = {
 			/* MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart (AltGroup[9/19])
 				- NOTE: MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart must reset not only for ChapterSection_1 but during all ChapterSections (for this Achievement; because of MeasuredKillCount)
 				
-				PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
-				NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
+				PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
+				NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
 				*/	
 			|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 		}),
@@ -6082,22 +6196,208 @@ achievements_triggers = {
 			|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 		}),
 	// ----------------c_Bonus----------------
-	"a_MultiKillers": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+	"a_MultiKillers": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroups[4])
+		const_MIN_MULTI_KILL_COUNT = 2
+		return
+		// [1/5] ==== Alt Logic + Measured Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying a measured indicator tracking how many unique players have scored a multikill			
 			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_SunHi": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_AllEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_AllGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
+			&& is_InMultiplayerCoopMode(enum_releaseRegion)
+			&& measured(tally(2, [
+				once(
+					is_flagState_1P_InGame_true(enum_releaseRegion)
+					&& on_Kills_Temp_minIncrementBy(const_MIN_MULTI_KILL_COUNT, PLAYER_1, enum_releaseRegion)), // --CheckIf--> PLAYER_1 kills increment by xx amount or higher in 1 delta frame
+				once(
+					is_flagState_2P_InGame_true(enum_releaseRegion)
+					&& on_Kills_Temp_minIncrementBy(const_MIN_MULTI_KILL_COUNT, PLAYER_2, enum_releaseRegion)) // --CheckIf--> PLAYER_2 kills increment by xx amount or higher in 1 delta frame
+			]))
+		// [2/6] ==== Alt Reset Group ====		-> Reset when at MainMenu 
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_atMainMenu(enum_releaseRegion))
+		// [3/7] ==== Alt Reset Group ====		-> Reset on level change
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_LevelSubstring_StoryChapter_change(enum_releaseRegion))
+		// [4/8] ==== Alt Reset Group ====		-> Reset when pressing PauseMenu->Restart
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[FD1-FD2]
+		}),
+	"a_SunHi": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InMultiplayerCoopMode(enum_releaseRegion))
+			&& never( 
+				is_flagState_1P_InGame_false(enum_releaseRegion)
+				|| is_flagState_2P_InGame_false(enum_releaseRegion)
+				|| is_anyFMV_active(enum_releaseRegion)
+				|| is_AnyCinematic_active(enum_releaseRegion)
+				|| is_AnyInGameMenu_active(enum_releaseRegion))
+			&& never(tally_of(CONST_CONTROLLER_CONFIG_DATA, 200, (enum_controllerConfig) { // --ResetIf--> PLAYER_1 has not activated VampireVision for xx frames
+				let_input_VampireVision = CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig)
+				return repeated(200,
+					never(
+						is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
+						&& is_InSunlight(PLAYER_1, enum_releaseRegion)
+						&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
+						&& on_PlayerInput_press(PLAYER_1, let_input_VampireVision, enum_releaseRegion))
+					&& is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
+					&& is_flagState_IsInputPressed_false(PLAYER_1, let_input_VampireVision, enum_releaseRegion))				
+				}))
+			&& never(tally_of(CONST_CONTROLLER_CONFIG_DATA, 200, (enum_controllerConfig) { // --ResetIf--> PLAYER_2 has not activated VampireVision for xx frames
+				let_input_VampireVision = CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig)
+				return repeated(200,
+					never(
+						is_ControllerConfig(PLAYER_2, enum_controllerConfig, enum_releaseRegion)
+						&& is_InSunlight(PLAYER_2, enum_releaseRegion)
+						&& !is_EquippedWeapon(PLAYER_2, WEAPON_RangeRifle, enum_releaseRegion)
+						&& on_PlayerInput_press(PLAYER_2, let_input_VampireVision, enum_releaseRegion))
+					&& is_ControllerConfig(PLAYER_2, enum_controllerConfig, enum_releaseRegion)
+					&& is_flagState_IsInputPressed_false(PLAYER_2, let_input_VampireVision, enum_releaseRegion))				
+				}))
+			&& measured(tally(2, [
+				/* NOTEs: 
+					- ControllerConfigs can't be changed during gameplay, they are only chosen at MainMenu
+					- CONTROLLER_CONFIG_DATA_getButtonSightMode() corresponds with VampireVision activation button
+					*/
+
+				// ----------PLAYER_1---------- (check input for each ControllerConfig)
+				// --(4x)Once--CheckIf--> PLAYER_1's VampireVision is activated whilst in sunlight, check this for each ControllerConfig
+				once(
+					is_ControllerConfig(PLAYER_1, CONTROLLER_CONFIG_Default, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_1, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_1, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Default), enum_releaseRegion)),
+				once(
+					is_ControllerConfig(PLAYER_1, CONTROLLER_CONFIG_Lefty, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_1, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_1, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Lefty), enum_releaseRegion)),
+				once(
+					is_ControllerConfig(PLAYER_1, CONTROLLER_CONFIG_Hopalong, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_1, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_1, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Hopalong), enum_releaseRegion)),
+				once(
+					is_ControllerConfig(PLAYER_1, CONTROLLER_CONFIG_Hoss, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_1, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_1, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_1, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Hoss), enum_releaseRegion)),
+
+				// ----------PLAYER_2---------- (check input for each ControllerConfig)
+				// --(4x)Once--CheckIf--> PLAYER_2's VampireVision is activated whilst in sunlight, check this for each ControllerConfig
+				once(
+					is_ControllerConfig(PLAYER_2, CONTROLLER_CONFIG_Default, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_2, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_2, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_2, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Default), enum_releaseRegion)),
+				once(
+					is_ControllerConfig(PLAYER_2, CONTROLLER_CONFIG_Lefty, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_2, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_2, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_2, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Lefty), enum_releaseRegion)),
+				once(
+					is_ControllerConfig(PLAYER_2, CONTROLLER_CONFIG_Hopalong, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_2, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_2, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_2, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Hopalong), enum_releaseRegion)),
+				once(
+					is_ControllerConfig(PLAYER_2, CONTROLLER_CONFIG_Hoss, enum_releaseRegion)
+					&& is_InSunlight(PLAYER_2, enum_releaseRegion)
+					&& !is_EquippedWeapon(PLAYER_2, WEAPON_RangeRifle, enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_2, CONTROLLER_CONFIG_DATA_getButtonSightMode(CONTROLLER_CONFIG_Hoss), enum_releaseRegion)),
+			]))
+		),
+	"a_AllEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[1])
+		const_NEWPOWERMENU_TEXTLOOKUPKEY_LastEvilPower = TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SoulStealer
+		return		
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
+				PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=2_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+				NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=2_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+				------
+					PauseIf 	!is_ReleaseRegion(enum_releaseRegion)
+					PauseIf 	!is_InMultiplayerCoopMode(enum_releaseRegion)
+
+					AddAddress	[Pointer:UIcontrol(preferred)]
+					Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+					Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+					AddAddress	[Pointer:UIcontrol(preferred)]
+					AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+					Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+
+					
+					// -----------------------ResetNextIf-----------------------
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					ResetNextIf	->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"	
+					// -----------------------ResetIf-----------------------
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
+					
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					ResetIf		->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  (2)	| CheckIf: PRIOR FrameTitle == "New Power"	
+
+
+					// -----------------------once(on_NewPowerMenuRender() && is_NewPowerMenu_Power())-----------------------
+					AndNext		[FlagState_InGame] == false			| is_flagState_InGame_true()
+					AndNext		[GameState] == 0x3					| is_AnyInGameMenu_active()
+
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: Mem FrameTitle == "New Power"	
+					
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					AndNext		->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	| CheckIf: DELTA FrameTitle != "New Power"	
+					
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xC
+					AddAddress	->[Mem 32-bit] 0x4
+								->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 	(1)		| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
+
+
+					// -----------------------Trigger (on NewPowerMenu close)-----------------------
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					Trigger		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
+					
+					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+					AddAddress	->[Mem 32-bit] 0xB8
+					Trigger		->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: DELTA FrameTitle == "New Power"				
+					*/
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InMultiplayerCoopMode(enum_releaseRegion))
+			&& once(
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& is_NewPowerMenu_Power(const_NEWPOWERMENU_TEXTLOOKUPKEY_LastEvilPower, enum_releaseRegion)
+				&& dword(0xDEADBEEF) == const_NEWPOWERMENU_TEXTLOOKUPKEY_LastEvilPower
+				)
+			&& trigger_when(on_NewPowerMenu_close(enum_releaseRegion))
+		}),
+	"a_AllGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[1])
+		const_NEWPOWERMENU_TEXTLOOKUPKEY_LastGoodPower = TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator
+		return
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
+				PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=2_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=1995014642.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+				NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=2_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=1995014642.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+				*/	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InMultiplayerCoopMode(enum_releaseRegion))
+			&& once(
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& is_NewPowerMenu_Power(const_NEWPOWERMENU_TEXTLOOKUPKEY_LastGoodPower, enum_releaseRegion)
+				&& dword(0xDEADBEEF) == const_NEWPOWERMENU_TEXTLOOKUPKEY_LastGoodPower
+				)
+			&& trigger_when(on_NewPowerMenu_close(enum_releaseRegion))
+		}),
 	}
 // #endregion ACH - triggers
 
@@ -6148,10 +6448,10 @@ achievements_titles = {
 	"a_ClgDeadfall":		{"en": "Sizzling Precision"},
 	"a_ClgCurseWest":		{"en": "Saviors or Sinners"},
 	// ----------------c_Bonus----------------
-	"a_MultiKillers":	{"en": "xxxxxxxxx"},
-	"a_SunHi":			{"en": "xxxxxxxxx"},
-	"a_AllEvil":		{"en": "xxxxxxxxx"},
-	"a_AllGood":		{"en": "xxxxxxxxx"},
+	"a_MultiKillers":	{"en": "Symphony of Slaughter"},
+	"a_SunHi":			{"en": "Searing Defiance"},
+	"a_AllEvil":		{"en": "Grim Alliance"},
+	"a_AllGood":		{"en": "Righteous Tandem"},
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -6180,27 +6480,27 @@ achievements_descriptions = {
 	"a_CurseWestEvil":		{"en": "No gods. No rules. Just two devils left standing. Complete Chapter 17, \"Curse of the West\", from start to finish in one session and achieve the evil ending"},
 	// ----------------c_Challenge----------------
 	"a_ClgWrongTrain":		{"en": "What started as a score turned into a sentence. Only grit and lead will get you both out. Complete Chapter 1, \"The Wrong Train\", from start to finish in one session on Deadeye difficulty, with no deaths, and a minimum combined accuracy of 70%"},
-	"a_ClgRideDevil":		{"en": "Death rides your tail and mercy ain't waiting. Complete Chapter 2, \"Ride Like the Devil\", from start to finish in one session on Deadeye difficulty, with no deaths, and without the player's combined HP dropping below 50%"},
-	"a_ClgBoneyard":		{"en": "Iron and grit against the dead. Complete Chapter 3, \"Boneyard\", from start to finish in one session on Deadeye difficulty, with no deaths, achieving at least 100 kills using the Carbine or Crossbow, and without using any throwable explosives"},
+	"a_ClgRideDevil":		{"en": "Death rides your tail and mercy ain't waiting. Complete Chapter 2, \"Ride Like the Devil\", from start to finish in one session on Deadeye difficulty, with no deaths, and without the players' combined HP dropping below 50%"},
+	"a_ClgBoneyard":		{"en": "Iron and grit against the dead. Complete Chapter 3, \"Boneyard\", from start to finish in one session on Deadeye difficulty, with no deaths, achieving at least 80 kills using the Carbine or Crossbow, and without using any throwable explosives"},
 	"a_ClgDevilMine":		{"en": "Fire and grit in the dark. Complete Chapter 4, \"Devil's Belly Mine\", from start to finish in one session on Deadeye difficulty, with no deaths, no powers, no throwable explosives, and with one player only using pistols and the other only 2-handed weapons"},
-	"a_ClgDWOutpost":		{"en": "Not even death cracks true steel. Complete Chapter 5, \"Darkwatch Outpost\", from start to finish in one session on Deadeye difficulty, with no deaths, and where the player's combined HP is never below max HP for more than 30 seconds consecutively"},
+	"a_ClgDWOutpost":		{"en": "Not even death cracks true steel. Complete Chapter 5, \"Darkwatch Outpost\", from start to finish in one session on Deadeye difficulty, with no deaths, and where the players' combined HP is never below max HP for more than 30 seconds consecutively"},
 	"a_ClgWarTrain":		{"en": "Two phantoms ride, no blood left behind. Complete Chapter 6, \"War Train\", from start to finish in one session on Deadeye difficulty, within 5 minutes, no deaths, and without either player taking any HP loss"},
 	"a_ClgTortureMaze":		{"en": "One strikes, one shoots, both survive. Complete Chapter 7, \"Torture Maze\", from start to finish in one session on Deadeye difficulty, with no deaths, at least 60% melee kills, and with one player only using melee and the other only shooting"},
 	"a_ClgBaptismFire":		{"en": "No cowards in the fire. Complete Chapter 8, \"Baptism of Fire\", from start to finish in one session on Deadeye difficulty, with no deaths, achieving at least 80 kills using the Redeemer or Rail Rocket, without using any throwable explosives"},
 	"a_ClgRescue":			{"en": "No one gets left behind. Complete Chapter 9, \"Rescue\", from start to finish in one session on Deadeye difficulty, within 10 minutes, no deaths, and without either player dropping below 25% HP"},
 	"a_ClgPrism":			{"en": "Power corrupts, but teamwork endures. Complete Chapter 10, \"The Deadlight Prism\", from start to finish in one session on Deadeye difficulty, with no deaths, where each player can only use each power once"},
 	"a_ClgInvasion":		{"en": "Two barrels, close and personal. Complete Chapter 11, \"Invasion\", from start to finish in one session on Deadeye difficulty, with no deaths, killing only with the Dual Pistols or Shotgun, and without using any throwable explosives"},
-	"a_ClgHangtown":		{"en": "It's a tightrope walk in a noose. Complete Chapter 12, \"Hangtown\", from start to finish in one session on Deadeye difficulty, with no deaths, shooting only with the Range Rifle to acquire a minimum combined accuracy of 75%"},
+	"a_ClgHangtown":		{"en": "It's a tightrope walk in a noose. Complete Chapter 12, \"Hangtown\", from start to finish in one session on Deadeye difficulty, with no deaths, shooting only with the Range Rifle or Redeemer to acquire a minimum combined accuracy of 75%"},
 	"a_ClgMorningAfter":	{"en": "Darkness rises, but two sparks remain. Complete Chapter 13, \"The Morning After\", from start to finish in one session on Deadeye difficulty, with no deaths, using only tier 2 or 3 powers, and with at least 40% headshot or melee kills"},
 	"a_ClgShowdown":		{"en": "No mercy left to give. Complete Chapter 14, \"Showdown\", from start to finish in one session on Deadeye difficulty, with no deaths, where each player can only use one distinct power, and reaching a minimum combined accuracy of 65%"},
 	"a_ClgRightTrain":		{"en": "No slowing, no bleeding. Complete Chapter 15, \"The Right Train\", from start to finish in one session on Deadeye difficulty, within 7 minutes, no deaths, and without any player dropping below 70% HP"},
 	"a_ClgDeadfall":		{"en": "Fire and ruin can't stop a deadeye's aim. Complete Chapter 16, \"Deadfall\", from start to finish in one session on Deadeye difficulty, with no deaths, killing only with the Range Rifle or Carbine, and with at least 30% headshot kills"},
 	"a_ClgCurseWest":		{"en": "Two against the dying light. Complete Chapter 17, \"Curse of the West\", from start to finish in one session on Deadeye difficulty, with no deaths, and with only 7 allowed power activations"},
 	// ----------------c_Bonus----------------
-	"a_MultiKillers":	{"en": "xxxxxxxxx"},
-	"a_SunHi":			{"en": "xxxxxxxxx"},
-	"a_AllEvil":		{"en": "xxxxxxxxx"},
-	"a_AllGood":		{"en": "xxxxxxxxx"},
+	"a_MultiKillers":	{"en": "It takes two to clean house. In a Chapter, score one multikill per player, without restarting"},
+	"a_SunHi":			{"en": "You looked straight into the sun and didn't blink. Activate Vampire Vision on both players in broad daylight and survive the burn, together"},
+	"a_AllEvil":		{"en": "You didn't just walk the path of corruption—you became it, together by unlocking all Evil powers"},
+	"a_AllGood":		{"en": "From ash and ruin, two rose in unshakable resolve by unlocking all Good powers"},
 	}
 // #endregion ACH - text
 
@@ -6251,9 +6551,7 @@ function achievements_initialize() {
 	function achievements_getType(string_achievementCategory) {
 		let_type = achievements_typeByCategory[string_achievementCategory]
 		if(let_type == sNULL) return "" // <-- will result in type: "standard"
-		return let_type}	
-	
-	
+		return let_type}
 
 	for let_categoryName in achievements_coreData { // This loop generates the achievements
 		for let_cheevmentName in achievements_coreData[let_categoryName] {
@@ -6279,7 +6577,7 @@ function achievements_initialize() {
 //   ██╔══██╗██║██║     ██╔══██║    ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║██╔══╝  ██║╚██╗██║██║     ██╔══╝     \\
 //   ██║  ██║██║╚██████╗██║  ██║    ██║     ██║  ██║███████╗███████║███████╗██║ ╚████║╚██████╗███████╗   \\
 //   ╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝╚══════╝   \\
-//								(copy rich presence script from BaseSet)								 \\
+//								(copy of rich presence script from BaseSet)								 \\
 // ***************************************************************************************************** \\
 // #region RICH PRESENCE
 // #endregion RICH PRESENCE
@@ -6295,7 +6593,6 @@ function achievements_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
-// TODO lb_Watchers logic coded - MANUAL_CONSTRUCTION for VALUEMEASURE's left todo
 
 // =========================
 // • LEADERBOARD core data •
@@ -6341,39 +6638,39 @@ leaderboards_coreData = {
 		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
 	// ------lb_Watchers------
 	// "lb_WatchersWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127404, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_1_WrongTrain, from start to finish (single session)"},
+		// "id": 130378, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_1_WrongTrain, from start to finish (single session)"},
 	// "lb_WatchersRideDevil": { // QA  // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127405, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_2_RideDevil, from start to finish (single session)"},
+		// "id": 130373, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_2_RideDevil, from start to finish (single session)"},
 	// "lb_WatchersBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127406, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_3_Boneyard, from start to finish (single session)"},
+		// "id": 130364, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_3_Boneyard, from start to finish (single session)"},
 	// "lb_WatchersDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127407, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_4_DevilMine, from start to finish (single session)"},
+		// "id": 130367, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_4_DevilMine, from start to finish (single session)"},
 	// "lb_WatchersDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127408, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_5_Outpost, from start to finish (single session)"},
+		// "id": 130365, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_5_Outpost, from start to finish (single session)"},
 	// "lb_WatchersWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127409, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_6_WarTrain, from start to finish (single session)"},
+		// "id": 130377, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_6_WarTrain, from start to finish (single session)"},
 	// "lb_WatchersTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127410, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_7_TortureMaze, from start to finish (single session)"},
+		// "id": 130376, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_7_TortureMaze, from start to finish (single session)"},
 	// "lb_WatchersBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127411, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_8_BaptismFire, from start to finish (single session)"},
+		// "id": 130138, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_8_BaptismFire, from start to finish (single session)"},
 	// "lb_WatchersRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127412, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_9_Rescue, from start to finish (single session)"},
+		// "id": 130372, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_9_Rescue, from start to finish (single session)"},
 	// "lb_WatchersPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127413, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_10_Prism, from start to finish (single session)"},
+		// "id": 130371, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_10_Prism, from start to finish (single session)"},
 	// "lb_WatchersInvasion": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127414, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_11_Invasion, from start to finish (single session)"},
+		// "id": 130369, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_11_Invasion, from start to finish (single session)"},
 	// "lb_WatchersHangtown": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127417, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_12_Hangtown, from start to finish (single session)"},
+		// "id": 130368, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_12_Hangtown, from start to finish (single session)"},
 	// "lb_WatchersMorningAfter": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127416, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_13_MorningAfter, from start to finish (single session)"},
+		// "id": 130370, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_13_MorningAfter, from start to finish (single session)"},
 	// "lb_WatchersShowdown": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127419, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_14_Showdown, from start to finish (single session)"},
+		// "id": 130375, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_14_Showdown, from start to finish (single session)"},
 	// "lb_WatchersRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127418, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_15_RightTrain, from start to finish (single session)"},
+		// "id": 130374, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_15_RightTrain, from start to finish (single session)"},
 	// "lb_WatchersDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127415, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_16_Deadfall, from start to finish (single session)"},	
+		// "id": 130366, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_16_Deadfall, from start to finish (single session)"},	
 	// "lb_WatchersCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		// "id": 127420, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_17_CurseWest, from start to finish (single session)"},
+		// "id": 130363, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_17_CurseWest, from start to finish (single session)"},
 	
 	}
 // #endregion LB - core data
@@ -6390,7 +6687,9 @@ function lbGenerate_FullStartTrigger_ChapterCompletion(enum_chapter, enum_releas
 		&& is_flagState_InGame_true(enum_releaseRegion)
 		&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion)
 
-function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[4])
+function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[6])
+	PARTICIPATION_TRACKING_MaxInactiveSeconds = PARTICIPATION_TRACKING_DATA_getMaxInactiveSeconds(enum_chapter)
+	return 	
 	// [1] ==== Alt Cancel Group ====		-> Cancel when LevelID is incorrect
 		is_ReleaseRegion(enum_releaseRegion)
 		&& !is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
@@ -6401,13 +6700,47 @@ function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_relea
 		|| is_ReleaseRegion(enum_releaseRegion)
 		&& current_MissionTime_ChapterTotal(enum_releaseRegion) > LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime
 		&& prev_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime
-	// [4] ==== Alt Cancel Group ====		-> Cancel on PauseMenu->Quit
-		/* MANUAL_CONSTRUCTION[FD1-FD3]:CancelOn_PauseMenu_Quit (AltGroup[4]) - R/R usage
-		PAL: 	P:0xX007215cc!=1397050451_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._0=1.2.
-		NTSCU: 	P:0xX0071fccc!=1398099027_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._0=1.2.
+	// [4] ==== Alt Cancel Group ==== 		-> Cancel when PLAYER_1 is inactive for xx seconds conesutively
+		|| unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& never(  // --ResetIf--> when Chapter begins from ChapterSection 1 (identical to START)
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_InMultiplayerCoopMode(enum_releaseRegion)
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+		&& repeated(PARTICIPATION_TRACKING_MaxInactiveSeconds, // --CheckIf--> PLAYER_1 is inactive for xx seconds conesutively
+			never( // --ResetNextIf--> when PLAYER_1 uses any input while in-game || when loading another ChapterSection || when PauseMenu->Restart
+				is_flagStates_BothPlayers_InGame_false(enum_releaseRegion) // --2 Lines--> When loading another ChapterSection || when PauseMenu->Restart
+				|| is_flagState_InGame_true(enum_releaseRegion) // --4 Lines--> when PLAYER_1 uses any input while in-game
+				&& !is_AnyCinematic_active(enum_releaseRegion)
+				&& !is_AnyInGameMenu_active(enum_releaseRegion)
+				&& on_PlayerInput_anyInputUse(PLAYER_1, enum_releaseRegion)) 
+			// && !is_AnyInGameMenu_active(enum_releaseRegion) // DISABLED - Unnecessary as [MissionTime_Temp] only increments while the PauseMenu is inactive
+			&& !is_AnyCinematic_active(enum_releaseRegion)
+			&& current_Player_HP(PLAYER_1, enum_releaseRegion) > 0.0  // --CheckIf--> Not in respawn screen (otherwise keeps counting when dead) 
+			&& on_MissionTime_Temp_secondPassed(enum_releaseRegion))			
+	// [5] ==== Alt Cancel Group ==== 		-> Cancel when PLAYER_2 is inactive for xx seconds conesutively
+		|| unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& never(  // --ResetIf--> when Chapter begins from ChapterSection 1 (identical to START)
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_InMultiplayerCoopMode(enum_releaseRegion)
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+		&& repeated(PARTICIPATION_TRACKING_MaxInactiveSeconds, // --CheckIf--> PLAYER_2 is inactive for xx seconds conesutively
+			never( // --ResetNextIf--> when PLAYER_2 uses any input while in-game || when loading another ChapterSection || when PauseMenu->Restart
+				is_flagStates_BothPlayers_InGame_false(enum_releaseRegion) // --2 Lines--> When loading another ChapterSection || when PauseMenu->Restart
+				|| is_flagState_InGame_true(enum_releaseRegion) // --4 Lines--> when PLAYER_2 uses any input while in-game
+				&& !is_AnyCinematic_active(enum_releaseRegion)
+				&& !is_AnyInGameMenu_active(enum_releaseRegion)
+				&& on_PlayerInput_anyInputUse(PLAYER_2, enum_releaseRegion)) 
+			// && !is_AnyInGameMenu_active(enum_releaseRegion) // DISABLED - Unnecessary as [MissionTime_Temp] only increments while the PauseMenu is inactive
+			&& !is_AnyCinematic_active(enum_releaseRegion)
+			&& current_Player_HP(PLAYER_2, enum_releaseRegion) > 0.0 // --CheckIf--> Not in respawn screen (otherwise keeps counting when dead) 
+			&& on_MissionTime_Temp_secondPassed(enum_releaseRegion))
+	// [6/13] ==== Alt Cancel Group ====		-> Cancel on PauseMenu->Quit
+		/* MANUAL_CONSTRUCTION[FD1-FD3]:CancelOn_PauseMenu_Quit (AltGroup[6]) - R/R usage
+		PAL: 	P:0xX007215cc!=1397050451_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._0=1.2.
+		NTSCU: 	P:0xX0071fccc!=1398099027_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._0=1.2.
 		-----------
-			PauseIf		!is_ReleaseRegion(enum_releaseRegion)
-
 			AddAddress	[Pointer:UIcontrol(preferred)]
 			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
 			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
@@ -6416,6 +6749,8 @@ function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_relea
 			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
 			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
 
+
+			=============CONTROLLER_1 Quits=============
 			---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
 			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0xB8
@@ -6441,66 +6776,154 @@ function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_relea
 			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 
 			AddAddress	[Pointer:PlayerInput(preferred)]
-			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+
+
+			=============CONTROLLER_2 Quits=============
+			---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| ResetNextIf: MEM FrameTitle == "Quit"
+			---------ResetNextIf_A2--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| CheckIf: MEM FrameTitle != "Quit"
+
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			ResetNextIf	->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 		(2)	| ResetNextIf: PRIOR FrameTitle == "Quit"
+			---------AddHit_A--------- (-> when any player presses X while at QuitConfirmationMenu, whilst YES highlighted)
+			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 
 			AddAddress	[Pointer:PlayerInput(preferred)]
 			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
 
+
+			=============Effectively Quit (check)=============
 			---------ResetNextIf_B--------- (-> when pressing Quit, [Lower4:ActiveMenuPointerIndex] becomes 0, the next frame)
 			ResetNextIf	Mem [Lower4:ActiveMenuPointerIndex] != 0x0 			| ResetNextIf: [Lower4:ActiveMenuPointerIndex] != 0
 			---------AddHit_B--------
 			AndNext		Mem [Lower4:ActiveMenuPointerIndex] == 0x0		
 			AddHits		Delta [Lower4:ActiveMenuPointerIndex] != 0x0	(1)		| CheckIf: [Lower4:ActiveMenuPointerIndex] turns 0
 
-						Val 0x0 == Val 0x1		(2)		| always_false() 			*/
+					Val 0x0 == Val 0x1		(2)		| CheckIf: (CONTROLLER_1 Quits OR CONTROLLER_2 Quits) AND CheckIf: Effectively Quit
+					
+					*/
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
-		&& on_PauseMenu_Quit(enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION[FD1-FD3]
-	// [5] ==== Alt Reset Group ====		-> Reset when entering MainMenu (to reset HitCount in AltGroup[4], after PauseMenu->Quit)
+		&& once(on_PauseMenu_Quit(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[FD1-FD3]
+	// [7] ==== Alt Reset Group ====		-> Reset when entering MainMenu (to reset HitCount in AltGroup[4], after PauseMenu->Quit)
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& on_MainMenu_enter(enum_releaseRegion))
+	}
 		
-function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION (AltGroup[4])
-	// NOTE: In Single Player OR MultiplayerCoop, the ChapterStats saved during gameplay are zeroed out when game saves them to [Array:SavedStats_Story]
+function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[1+5])
+	/* NOTE: 
+		- In Single Player OR MultiplayerCoop, the ChapterStats saved during gameplay are zeroed out when game saves them to [Array:SavedStats_Story]
+		- HitCounts seperated into PLAYER_1 & PLAYER_2, because [Pointer(EntityData_B):PlayerActorData] don't change at same frame. to detect flagState_InGame
+		*/
+	PARTICIPATION_TRACKING_MinRequiredInputs = PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(enum_chapter)
+	PARTICIPATION_TRACKING_MinRequiredShotsHit = PARTICIPATION_TRACKING_DATA_getMinRequiredShotsHit(enum_chapter)
+	PARTICIPATION_TRACKING_MinRequiredAccuracyPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredAccuracyPercent(enum_chapter)
+	PARTICIPATION_TRACKING_MinRequiredKillsPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredKillsPercent(enum_chapter)
+
+	return
 	// [1] ==== Alt Submit Group ====	-> Submit when Chapter was started from beginning AND finished, then submits on_Loading_start()
 		unless(
 			!is_ReleaseRegion(enum_releaseRegion)
 			|| !is_InMultiplayerCoopMode(enum_releaseRegion))
-		&& once( // --CheckIf--> Chapter is started from beginning
+		&& once( // --CheckIf--[StartCondition]--> Chapter is started from beginning
 			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 		&& once( // --CheckIf--> LastChapterSection from the Chapter is started from beginning 
 			on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
+			
+		// -----PLAYER_1 + TimeRequirement-----
 		&& once( // --CheckIf--> LastChapterSection from the Chapter has ended + MissionTime does not exceed 7 hours
-			never(is_flagState_InGame_true(enum_releaseRegion))
+			never(is_flagState_1P_InGame_true(enum_releaseRegion))
 			&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
-			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& on_flagState_1P_InGame_toggleFalse(enum_releaseRegion))
 		&& repeated(2, // --CheckIf--> LastChapterSection from the Chapter has ended for xx frames
-			never(is_flagState_InGame_true(enum_releaseRegion))
+			never(is_flagState_1P_InGame_true(enum_releaseRegion))
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
-			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-			&& is_flagState_InGame_false(enum_releaseRegion))
-		// && once( // --CheckIf--> ChapterStats have been saved to [Array:SavedStats_Story] 
-		// 	current_MissionTime_Temp(enum_releaseRegion)
-		// 		+ current_MissionTime_ChapterSection(enum_releaseRegion)
-		// 		+ current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
-		// 	&& prev_MissionTime_Temp(enum_releaseRegion)
-		// 		+ prev_MissionTime_ChapterSection(enum_releaseRegion)
-		// 		+ prev_MissionTime_ChapterTotal(enum_releaseRegion) > 0)
-		// && !is_anyFMV_active(enum_releaseRegion)
+			&& wasPrior_flagState_1P_InGame_true(enum_releaseRegion)
+			&& is_flagState_1P_InGame_false(enum_releaseRegion))
+
+		// -----PLAYER_2-----
+		&& once( // --CheckIf--> LastChapterSection from the Chapter has ended
+			never(is_flagState_2P_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_flagState_2P_InGame_toggleFalse(enum_releaseRegion))
+		&& repeated(2, // --CheckIf--> LastChapterSection from the Chapter has ended for xx frames
+			never(is_flagState_2P_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& wasPrior_flagState_2P_InGame_true(enum_releaseRegion)
+			&& is_flagState_2P_InGame_false(enum_releaseRegion))
+
+		// -----Participation Tracking (Accuracy+Shots+Kills)-----
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended + Participation Tracking (Accuracy+Shots+Kills)
+			never(is_flagState_InGame_true(enum_releaseRegion))
+
+			&& current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredShotsHit
+			&& current_ShotsHit_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredShotsHit
+
+			/* MANUAL_CONSTRUCTION[AC1-AC2]:ParticipationTrackingAccuracyAndKills
+				// WARNING: Edit in PARTICIPATION_TRACKING values
+				PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.05_K:0xX00965d80/f1.0_K:0xX00965d84/{recall}_N:{recall}>=f0.05_K:0xX00965c50+0xX00965d7c_K:{recall}/f1.0_A:0xX00965c50/{recall}_N:f0.0>=f0.05_A:0xX00965d7c/{recall}_N:f0.0>=f0.05
+				NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.05_K:0xX00953da0/f1.0_K:0xX00953da4/{recall}_N:{recall}>=f0.05_K:0xX00953c70+0xX00953d9c_K:{recall}/f1.0_A:0xX00953c70/{recall}_N:f0.0>=f0.05_A:0xX00953d9c/{recall}_N:f0.0>=f0.05
+				----------
+					---------Participation Tracking (Accuracy)---------
+					Remember	[ShotsFired_ChapterTotal(PLAYER_1)] / 1.0	--> Force 32-bit to Float
+					Remember	[ShotsHit_ChapterTotal(PLAYER_1)] / Recall
+					AndNext		Recall >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent
+
+					Remember	[ShotsFired_ChapterTotal(PLAYER_2)] / 1.0	--> Force 32-bit to Float
+					Remember	[ShotsHit_ChapterTotal(PLAYER_2)] / Recall
+					AndNext		Recall >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent
+
+					---------Participation Tracking (Kills)---------
+					Remember	[Kills_ChapterTotal(PLAYER_1)] + [Kills_ChapterTotal(PLAYER_2)]
+					Remember	Recall / 1.0								--> Force 32-bit to Float
+					AddSource	[Kills_ChapterTotal(PLAYER_1)] / Recall
+					AndNext		0.0 >= PARTICIPATION_TRACKING_MinRequiredKillsPercent
+					AddSource	[Kills_ChapterTotal(PLAYER_2)] / Recall
+					AndNext		0.0 >= PARTICIPATION_TRACKING_MinRequiredKillsPercent
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAC1)
+			&& current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) / current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent * 100
+			&& current_ShotsHit_ChapterTotal(PLAYER_2, enum_releaseRegion) / current_ShotsFired_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent * 100
+			&& current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredKillsPercent * 100
+			&& current_Kills_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredKillsPercent * 100
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAC2)		
+
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+
+		// -----Last Requirement-----
 		&& on_Loading_start(enum_releaseRegion)
-	// [2] ==== Alt Reset Group ====		-> Reset when LevelID is incorrect
+	// [2] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
+		|| achGenerate_LockoutGroup_ParticipationTrackingInactivity(enum_chapter, enum_releaseRegion)
+	// [3] ==== Alt Reset Group ====		-> Reset when LevelID is incorrect
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& !is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
-	// [3] ==== Alt Reset Group ==== 		-> Reset when not in Multiplayer Coop Mode
+	// [4] ==== Alt Reset Group ==== 		-> Reset when not in Multiplayer Coop Mode
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& !is_InMultiplayerCoopMode(enum_releaseRegion))
-	// [4] ==== Alt Reset Group ==== 		-> Reset on PauseMenu->Quit
-		/* MANUAL_CONSTRUCTION[FD1-FD3]:ResetOn_PauseMenu_Quit (AltGroup[4]) - R/R usage
-		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._R:0=1.2._0=1
-		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._R:0=1.2._0=1
+	// [5] ==== Alt Reset Group ==== 		-> Reset on PauseMenu->Quit
+		/* MANUAL_CONSTRUCTION[FD1-FD3]:ResetOn_PauseMenu_Quit (AltGroup[5]) - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._R:0=1.2._0=1
+		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._R:0=1.2._0=1
 		-----------
 			AddAddress	[Pointer:UIcontrol(preferred)]
 			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
@@ -6510,6 +6933,8 @@ function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_relea
 			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
 			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
 
+
+			=============CONTROLLER_2 Quits=============
 			---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
 			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0xB8
@@ -6535,23 +6960,224 @@ function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_relea
 			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 
 			AddAddress	[Pointer:PlayerInput(preferred)]
-			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+
+
+			=============CONTROLLER_2 Quits=============
+			---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| ResetNextIf: MEM FrameTitle == "Quit"
+			---------ResetNextIf_A2--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| CheckIf: MEM FrameTitle != "Quit"
+
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			ResetNextIf	->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 		(2)	| ResetNextIf: PRIOR FrameTitle == "Quit"
+			---------AddHit_A--------- (-> when any player presses X while at QuitConfirmationMenu, whilst YES highlighted)
+			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 
 			AddAddress	[Pointer:PlayerInput(preferred)]
 			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
 
+
+			=============Effectively Quit (check)=============
 			---------ResetNextIf_B--------- (-> when pressing Quit, [Lower4:ActiveMenuPointerIndex] becomes 0, the next frame)
 			ResetNextIf	Mem [Lower4:ActiveMenuPointerIndex] != 0x0 			| ResetNextIf: [Lower4:ActiveMenuPointerIndex] != 0
 			---------AddHit_B--------
 			AndNext		Mem [Lower4:ActiveMenuPointerIndex] == 0x0		
 			AddHits		Delta [Lower4:ActiveMenuPointerIndex] != 0x0	(1)		| CheckIf: [Lower4:ActiveMenuPointerIndex] turns 0
 
-			ResetIf		Val 0x0 == Val 0x1		(2)
+			ResetIf		Val 0x0 == Val 0x1		(2)		| CheckIf: (CONTROLLER_1 Quits OR CONTROLLER_2 Quits) AND CheckIf: Effectively Quit
 			
 						Val 0x0 == Val 0x1				| always_false() */
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& on_PauseMenu_Quit(enum_releaseRegion))
+		}
+
+function lbGenerate_FullSubmitTrigger_LastChapterCompletion(enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[1+4])
+	/* NOTE: 
+		- In Single Player OR MultiplayerCoop, the ChapterStats saved during gameplay are zeroed out when game saves them to [Array:SavedStats_Story]
+		- HitCounts seperated into PLAYER_1 & PLAYER_2, because [Pointer(EntityData_B):PlayerActorData] don't change at same frame. to detect flagState_InGame
+		*/
+	const_CHAPTER = CHAPTER_17_CurseWest
+
+	PARTICIPATION_TRACKING_MinRequiredInputs = PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(const_CHAPTER)
+	PARTICIPATION_TRACKING_MinRequiredShotsHit = PARTICIPATION_TRACKING_DATA_getMinRequiredShotsHit(const_CHAPTER)
+	PARTICIPATION_TRACKING_MinRequiredAccuracyPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredAccuracyPercent(const_CHAPTER)
+
+	return
+	// [1] ==== Alt Submit Group ====	-> Submit when Chapter was started from beginning AND finished, then submits on_Loading_start()
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_InMultiplayerCoopMode(enum_releaseRegion))
+		&& once( // --CheckIf--> Chapter is started from beginning
+			on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+		&& once( // --CheckIf--> LastChapterSection from the Chapter is started from beginning 
+			on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			
+		// -----PLAYER_1 + TimeRequirement-----
+		&& once( // --CheckIf--> LastChapterSection from the Chapter has ended + MissionTime does not exceed 7 hours
+			never(is_flagState_1P_InGame_true(enum_releaseRegion))
+			&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime
+			&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+			&& on_flagState_1P_InGame_toggleFalse(enum_releaseRegion))
+		&& repeated(2, // --CheckIf--> LastChapterSection from the Chapter has ended for xx frames
+			never(is_flagState_1P_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+			&& wasPrior_flagState_1P_InGame_true(enum_releaseRegion)
+			&& is_flagState_1P_InGame_false(enum_releaseRegion))
+
+		// -----PLAYER_2-----
+		&& once( // --CheckIf--> LastChapterSection from the Chapter has ended
+			never(is_flagState_2P_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+			&& on_flagState_2P_InGame_toggleFalse(enum_releaseRegion))
+		&& repeated(2, // --CheckIf--> LastChapterSection from the Chapter has ended for xx frames
+			never(is_flagState_2P_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+			&& wasPrior_flagState_2P_InGame_true(enum_releaseRegion)
+			&& is_flagState_2P_InGame_false(enum_releaseRegion))
+
+		// -----Participation Tracking (Accuracy+Shots+Kills)-----
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended + Participation Tracking (Accuracy+Shots+Kills)
+			never(is_flagState_InGame_true(enum_releaseRegion))
+
+			&& current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredShotsHit
+			&& current_ShotsHit_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredShotsHit
+
+			/* MANUAL_CONSTRUCTION[AC1-AC2]:ParticipationTrackingAccuracyAndKills
+				// WARNING: Edit in PARTICIPATION_TRACKING values
+				PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.06_K:0xX00965d80/f1.0_K:0xX00965d84/{recall}_N:{recall}>=f0.06
+				NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.06_K:0xX00953da0/f1.0_K:0xX00953da4/{recall}_N:{recall}>=f0.06
+				----------
+					---------Participation Tracking (Accuracy)---------
+					Remember	[ShotsFired_ChapterTotal(PLAYER_1)] / 1.0	--> Force 32-bit to Float
+					Remember	[ShotsHit_ChapterTotal(PLAYER_1)] / Recall
+					AndNext		Recall >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent
+
+					Remember	[ShotsFired_ChapterTotal(PLAYER_2)] / 1.0	--> Force 32-bit to Float
+					Remember	[ShotsHit_ChapterTotal(PLAYER_2)] / Recall
+					AndNext		Recall >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAC1)
+			&& current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) / current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent * 100
+			&& current_ShotsHit_ChapterTotal(PLAYER_2, enum_releaseRegion) / current_ShotsFired_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent * 100
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAC2)
+
+			&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+
+		// -----Last Requirement-----
+		&& on_Loading_start(enum_releaseRegion)
+	// [2] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
+		|| achGenerate_LockoutGroup_ParticipationTrackingInactivity(const_CHAPTER, enum_releaseRegion)
+	// [3] ==== Alt Reset Group ====		-> Reset when LevelID is incorrect
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_LevelSubstring_StoryChapter(const_CHAPTER, enum_releaseRegion))
+	// [4] ==== Alt Reset Group ==== 		-> Reset when not in Multiplayer Coop Mode
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_InMultiplayerCoopMode(enum_releaseRegion))
+	// [5] ==== Alt Reset Group ==== 		-> Reset on PauseMenu->Quit
+		/* MANUAL_CONSTRUCTION[FD1-FD3]:ResetOn_PauseMenu_Quit (AltGroup[5]) - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._R:0=1.2._0=1
+		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._R:0=1.2._0=1
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+
+
+			=============CONTROLLER_2 Quits=============
+			---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| ResetNextIf: MEM FrameTitle == "Quit"
+			---------ResetNextIf_A2--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| CheckIf: MEM FrameTitle != "Quit"
+
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			ResetNextIf	->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 		(2)	| ResetNextIf: PRIOR FrameTitle == "Quit"
+			---------AddHit_A--------- (-> when any player presses X while at QuitConfirmationMenu, whilst YES highlighted)
+			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+			AddAddress	[Pointer:PlayerInput(preferred)]
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+
+
+			=============CONTROLLER_2 Quits=============
+			---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| ResetNextIf: MEM FrameTitle == "Quit"
+			---------ResetNextIf_A2--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| CheckIf: MEM FrameTitle != "Quit"
+
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			ResetNextIf	->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 		(2)	| ResetNextIf: PRIOR FrameTitle == "Quit"
+			---------AddHit_A--------- (-> when any player presses X while at QuitConfirmationMenu, whilst YES highlighted)
+			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+			AddAddress	[Pointer:PlayerInput(preferred)]
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
+
+
+			=============Effectively Quit (check)=============
+			---------ResetNextIf_B--------- (-> when pressing Quit, [Lower4:ActiveMenuPointerIndex] becomes 0, the next frame)
+			ResetNextIf	Mem [Lower4:ActiveMenuPointerIndex] != 0x0 			| ResetNextIf: [Lower4:ActiveMenuPointerIndex] != 0
+			---------AddHit_B--------
+			AndNext		Mem [Lower4:ActiveMenuPointerIndex] == 0x0		
+			AddHits		Delta [Lower4:ActiveMenuPointerIndex] != 0x0	(1)		| CheckIf: [Lower4:ActiveMenuPointerIndex] turns 0
+
+			ResetIf		Val 0x0 == Val 0x1		(2)		| CheckIf: (CONTROLLER_1 Quits OR CONTROLLER_2 Quits) AND CheckIf: Effectively Quit
+			
+						Val 0x0 == Val 0x1				| always_false() */
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_PauseMenu_Quit(enum_releaseRegion))
+		}
 
 // #endregion LB - trigger generators
 
@@ -6698,7 +7324,7 @@ leaderboards_submitTriggers = {
 	"lb_WatchersDeadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_16_Deadfall, enum_releaseRegion)),
 	"lb_WatchersCurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_17_CurseWest, enum_releaseRegion)),
+		lbGenerate_FullSubmitTrigger_LastChapterCompletion(enum_releaseRegion)),
 	}
 //-----------------ValueMeasures-------------------
 function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
@@ -6716,11 +7342,12 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (3x) MANUAL_
 	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) => // ValueMeasure[Value,3,6,9/12,15,18,21] --> ValueMeasure during during gameplay; This ValueMeasure is never submitted
 		/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured, without MeasuredIf) - R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
-			PAL:	A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}
-			NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*4_M:{recall}
+			PAL:	A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_A:0xX00965d50*f12.0_B:0xX00965d4c*f5.0_A:0xX00965d48*f70.0_A:0xX00965d54*f30.0_A:0xX00965d58*f10.0_A:0xX00965db8*f12.0_B:0xX00965db4*f5.0_B:0xX00965da0*f5000.0_A:0xX00965db0*f70.0_A:0xX00965dbc*f30.0_A:0xX00965dc0*f10.0_A:0xX00965d84*f12.0_B:0xX00965d80*f5.0_B:0xX00965d6c*f5000.0_A:0xX00965d7c*f70.0_A:0xX00965d88*f30.0_A:0xX00965d8c*f10.0_K:{recall}_K:{recall}*1_M:{recall}
+			NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_A:0xX00953d70*f12.0_B:0xX00953d6c*f5.0_A:0xX00953d68*f70.0_A:0xX00953d74*f30.0_A:0xX00953d78*f10.0_A:0xX00953dd8*f12.0_B:0xX00953dd4*f5.0_B:0xX00953dc0*f5000.0_A:0xX00953dd0*f70.0_A:0xX00953ddc*f30.0_A:0xX00953de0*f10.0_A:0xX00953da4*f12.0_B:0xX00953da0*f5.0_B:0xX00953d8c*f5000.0_A:0xX00953d9c*f70.0_A:0xX00953da8*f30.0_A:0xX00953dac*f10.0_K:{recall}_K:{recall}*1_M:{recall}
 			--------
 				(1 - ([MissionTime_Temp + MissionTime_ChapterSection + MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BaseScore_MissionTime
-
+				
+				// --------PLAYER_1 + PLAYER_2--------
 				+ [ShotsHit_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
 				- [ShotFired_Temp] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
 				+ [Kills_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
@@ -6741,6 +7368,7 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (3x) MANUAL_
 				+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
 				+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
 
+				// ----------------
 				* [Difficulty] [1-4] 		| in alt groups			*/
 		measured(
 			current_MissionTime_Temp(enum_releaseRegion)
@@ -6802,17 +7430,20 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (3x) MANUAL_
 	function valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion) => // ValueMeasure[1,4,7,10/13,16,19,22]--> ValueMeasure during loading screens or FMVs; This ValueMeasure may be submitted
 		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterIntermission - (below Measured) - R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
-			PAL:	K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}
-			NTSCU:	K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*4_M:{recall}
+			PAL:	K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_A:0xX00965d84*f12.0_B:0xX00965d80*f5.0_B:0xX00965d6c*f5000.0_A:0xX00965d7c*f70.0_A:0xX00965d88*f30.0_A:0xX00965d8c*f10.0_K:{recall}_K:{recall}*1_M:{recall}
+			NTSCU:	K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_A:0xX00953da4*f12.0_B:0xX00953da0*f5.0_B:0xX00953d8c*f5000.0_A:0xX00953d9c*f70.0_A:0xX00953da8*f30.0_A:0xX00953dac*f10.0_K:{recall}_K:{recall}*1_M:{recall}
 			--------
 				(1 - ([MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BaseScore_MissionTime
 
+				// --------PLAYER_1 + PLAYER_2--------
 				+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
 				- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
 				- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
 				+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
 				+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
 				+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+
+				// -----------
 
 				* [Difficulty] [1-4] 		| in alt groups				*/
 		measured(
@@ -6849,17 +7480,20 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (3x) MANUAL_
 		//NOTE: In SinglePlayer or MultiplayerCoop, ChapterStats during gameplay are copied/saved to [Array:SavedStats], afterwards ChapterStats during gameplay is zeroed out when the Chapter finishes, thus this ValueMeasure uses [Array:SavedStats]
 		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterCompleted_SinglePlayer - (below Measured) R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
-			PAL:	I:0xX00965cd8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00965cd8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00965cd8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000002c*f20.0_K:{recall}_K:{recall}*4_M:{recall}
-			NTSCU:	I:0xX00953cf8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00953cf8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00953cf8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00953cf8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00953cf8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00953cf8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00953cf8_I:0xX00000004_A:0xX0000002c*f40.0_K:{recall}_K:{recall}*4_M:{recall}
+			PAL:	I:0xX00965cd8_I:0xX00000004_K:0xX00000190/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00965cd8_I:0xX00000004_A:0xX000001ac*f12.0_I:0xX00965cd8_I:0xX00000004_B:0xX000001a8*f5.0_I:0xX00965cd8_I:0xX00000004_B:0xX00000194*f5000.0_I:0xX00965cd8_I:0xX00000004_A:0xX000001a4*f70.0_I:0xX00965cd8_I:0xX00000004_A:0xX000001b0*f30.0_I:0xX00965cd8_I:0xX00000004_A:0xX000001b4*f10.0_I:0xX00965e04_I:0xX00000004_A:0xX000001ac*f12.0_I:0xX00965e04_I:0xX00000004_B:0xX000001a8*f5.0_I:0xX00965e04_I:0xX00000004_B:0xX00000194*f5000.0_I:0xX00965e04_I:0xX00000004_A:0xX000001a4*f70.0_I:0xX00965e04_I:0xX00000004_A:0xX000001b0*f30.0_I:0xX00965e04_I:0xX00000004_A:0xX000001b4*f10.0_K:{recall}_K:{recall}*1_M:{recall}
+			NTSCU:	I:0xX00953cf8_I:0xX00000004_K:0xX00000190/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00953cf8_I:0xX00000004_A:0xX000001ac*f12.0_I:0xX00953cf8_I:0xX00000004_B:0xX000001a8*f5.0_I:0xX00953cf8_I:0xX00000004_B:0xX00000194*f5000.0_I:0xX00953cf8_I:0xX00000004_A:0xX000001a4*f70.0_I:0xX00953cf8_I:0xX00000004_A:0xX000001b0*f30.0_I:0xX00953cf8_I:0xX00000004_A:0xX000001b4*f10.0_I:0xX00953e24_I:0xX00000004_A:0xX000001ac*f12.0_I:0xX00953e24_I:0xX00000004_B:0xX000001a8*f5.0_I:0xX00953e24_I:0xX00000004_B:0xX00000194*f5000.0_I:0xX00953e24_I:0xX00000004_A:0xX000001a4*f70.0_I:0xX00953e24_I:0xX00000004_A:0xX000001b0*f30.0_I:0xX00953e24_I:0xX00000004_A:0xX000001b4*f10.0_K:{recall}_K:{recall}*1_M:{recall}
 			--------
 				(1 - ([SavedStats_Story_MissionTime] / LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BaseScore_MissionTime
 
+				// --------PLAYER_1 + PLAYER_2-------- (this part/offsets are different based on Chapter)
 				+ [SavedStats_Story_ShotsHit] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
 				- [SavedStats_Story_ShotFired] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
 				- [SavedStats_Story_PlayerDeaths] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
 				+ [SavedStats_Story_Kills] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
 				+ [SavedStats_Story_HeadshotKills] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
 				+ [SavedStats_Story_MeleeKills] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+
+				// ------------------
 
 				* [Difficulty] [1-4] 		| in alt groups				*/
 		measured(
@@ -6899,7 +7533,7 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (3x) MANUAL_
 		for enum_difficulty in [DIFFICULTY_Greenhorn, DIFFICULTY_Cowboy, DIFFICULTY_Shootist, DIFFICULTY_Deadeye] {
 			array_push(let_array_valueMeasures, valueMeasure_InGame(enum_difficulty, enum_releaseRegion)) // ValueMeasure[Value,3,6,9/12,15,18,21]
 			array_push(let_array_valueMeasures, valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion)) // ValueMeasure[1,4,7,10/13,16,19,22]
-			array_push(let_array_valueMeasures, valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion)) // ValueMeasure[2,5,8,11/14,17,20,23]
+			array_push(let_array_valueMeasures, valueMeasure_ChapterCompleted(enum_chapter, enum_difficulty, enum_releaseRegion)) // ValueMeasure[2,5,8,11/14,17,20,23]
 			}
 		}
 	return max_of(let_array_valueMeasures)}
@@ -6908,11 +7542,13 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3
 	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) => // ValueMeasure[Value,3,6,9/12,15,18,21] --> ValueMeasure during during gameplay; This ValueMeasure is never submitted
 		/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured, without MeasuredIf) - R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
-			PAL:	A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}
-			NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*4_M:{recall}
+			PAL:	A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f17.0_B:0xX00965c20*f10.0_A:0xX00965c1c*f10000.0_A:0xX00965c28*f1500.0_A:0xX00965c2c*f1000.0_A:0xX00965c8c*f17.0_B:0xX00965c88*f10.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f10000.0_A:0xX00965c90*f1500.0_A:0xX00965c94*f1000.0_A:0xX00965c58*f17.0_B:0xX00965c54*f10.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f10000.0_A:0xX00965c5c*f1500.0_A:0xX00965c60*f1000.0_A:0xX00965d50*f17.0_B:0xX00965d4c*f10.0_A:0xX00965d48*f10000.0_A:0xX00965d54*f1500.0_A:0xX00965d58*f1000.0_A:0xX00965db8*f17.0_B:0xX00965db4*f10.0_B:0xX00965da0*f5000.0_A:0xX00965db0*f10000.0_A:0xX00965dbc*f1500.0_A:0xX00965dc0*f1000.0_A:0xX00965d84*f17.0_B:0xX00965d80*f10.0_B:0xX00965d6c*f5000.0_A:0xX00965d7c*f10000.0_A:0xX00965d88*f1500.0_A:0xX00965d8c*f1000.0_K:{recall}_K:{recall}*1_M:{recall}
+			NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f17.0_B:0xX00953c40*f10.0_A:0xX00953c3c*f10000.0_A:0xX00953c48*f1500.0_A:0xX00953c4c*f1000.0_A:0xX00953cac*f17.0_B:0xX00953ca8*f10.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f10000.0_A:0xX00953cb0*f1500.0_A:0xX00953cb4*f1000.0_A:0xX00953c78*f17.0_B:0xX00953c74*f10.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f10000.0_A:0xX00953c7c*f1500.0_A:0xX00953c80*f1000.0_A:0xX00953d70*f17.0_B:0xX00953d6c*f10.0_A:0xX00953d68*f10000.0_A:0xX00953d74*f1500.0_A:0xX00953d78*f1000.0_A:0xX00953dd8*f17.0_B:0xX00953dd4*f10.0_B:0xX00953dc0*f5000.0_A:0xX00953dd0*f10000.0_A:0xX00953ddc*f1500.0_A:0xX00953de0*f1000.0_A:0xX00953da4*f17.0_B:0xX00953da0*f10.0_B:0xX00953d8c*f5000.0_A:0xX00953d9c*f10000.0_A:0xX00953da8*f1500.0_A:0xX00953dac*f1000.0_K:{recall}_K:{recall}*1_M:{recall}
 			--------
 				(1 - ([MissionTime_Temp + MissionTime_ChapterSection + MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
 
+
+				// --------PLAYER_1 + PLAYER_2--------
 				+ [ShotsHit_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
 				- [ShotFired_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
 				+ [Kills_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
@@ -6932,6 +7568,8 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3
 				+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
 				+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
 				+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+
+				// ----------------
 
 				* [Difficulty] [1-4] 		| in alt groups			*/
 		measured(
@@ -6996,11 +7634,12 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3
 	function valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion) => // ValueMeasure[1,4,7,10/13,16,19,22]--> ValueMeasure during loading screens or FMVs; This ValueMeasure may be submitted
 		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterIntermission - (below Measured) - R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
-			PAL:	K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}
-			NTSCU:	K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*4_M:{recall}
+			PAL:	K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f17.0_B:0xX00965c54*f10.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f10000.0_A:0xX00965c5c*f1500.0_A:0xX00965c60*f1000.0_A:0xX00965d84*f17.0_B:0xX00965d80*f10.0_B:0xX00965d6c*f5000.0_A:0xX00965d7c*f10000.0_A:0xX00965d88*f1500.0_A:0xX00965d8c*f1000.0_K:{recall}_K:{recall}*1_M:{recall}
+			NTSCU:	K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f17.0_B:0xX00953c74*f10.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f10000.0_A:0xX00953c7c*f1500.0_A:0xX00953c80*f1000.0_A:0xX00953da4*f17.0_B:0xX00953da0*f10.0_B:0xX00953d8c*f5000.0_A:0xX00953d9c*f10000.0_A:0xX00953da8*f1500.0_A:0xX00953dac*f1000.0_K:{recall}_K:{recall}*1_M:{recall}
 			--------
 				(1 - ([MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
 
+				// --------PLAYER_1 + PLAYER_2--------
 				+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
 				- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
 				- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
@@ -7008,6 +7647,7 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3
 				+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
 				+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
 
+				// ----------------
 				* [Difficulty] [1-4] 		| in alt groups				*/
 		measured(
 			current_MissionTime_ChapterTotal(enum_releaseRegion)
@@ -7042,11 +7682,12 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3
 		//NOTE: In SinglePlayer or MultiplayerCoop, ChapterStats during gameplay are copied/saved to [Array:SavedStats], afterwards ChapterStats during gameplay is zeroed out when the Chapter finishes, thus this ValueMeasure uses [Array:SavedStats]
 		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterCompleted_SinglePlayer - (below Measured) R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
-			PAL:	I:0xX00965cd8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00965cd8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00965cd8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000002c*f20.0_K:{recall}_K:{recall}*4_M:{recall}
-			NTSCU:	I:0xX00953cf8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00953cf8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00953cf8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00953cf8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00953cf8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00953cf8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00953cf8_I:0xX00000004_A:0xX0000002c*f40.0_K:{recall}_K:{recall}*4_M:{recall}
+			PAL:	I:0xX00965cd8_I:0xX00000004_K:0xX000003c0/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00965cd8_I:0xX00000004_A:0xX000003dc*f17.0_I:0xX00965cd8_I:0xX00000004_B:0xX000003d8*f10.0_I:0xX00965cd8_I:0xX00000004_B:0xX000003c4*f5000.0_I:0xX00965cd8_I:0xX00000004_A:0xX000003d4*f10000.0_I:0xX00965cd8_I:0xX00000004_A:0xX000003e0*f1500.0_I:0xX00965cd8_I:0xX00000004_A:0xX000003e4*f1000.0_I:0xX00965e04_I:0xX00000004_A:0xX000003dc*f17.0_I:0xX00965e04_I:0xX00000004_B:0xX000003d8*f10.0_I:0xX00965e04_I:0xX00000004_B:0xX000003c4*f5000.0_I:0xX00965e04_I:0xX00000004_A:0xX000003d4*f10000.0_I:0xX00965e04_I:0xX00000004_A:0xX000003e0*f1500.0_I:0xX00965e04_I:0xX00000004_A:0xX000003e4*f1000.0_K:{recall}_K:{recall}*1_M:{recall}
+			NTSCU:	I:0xX00953cf8_I:0xX00000004_K:0xX000003c0/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00953cf8_I:0xX00000004_A:0xX000003dc*f17.0_I:0xX00953cf8_I:0xX00000004_B:0xX000003d8*f10.0_I:0xX00953cf8_I:0xX00000004_B:0xX000003c4*f5000.0_I:0xX00953cf8_I:0xX00000004_A:0xX000003d4*f10000.0_I:0xX00953cf8_I:0xX00000004_A:0xX000003e0*f1500.0_I:0xX00953cf8_I:0xX00000004_A:0xX000003e4*f1000.0_I:0xX00953e24_I:0xX00000004_A:0xX000003dc*f17.0_I:0xX00953e24_I:0xX00000004_B:0xX000003d8*f10.0_I:0xX00953e24_I:0xX00000004_B:0xX000003c4*f5000.0_I:0xX00953e24_I:0xX00000004_A:0xX000003d4*f10000.0_I:0xX00953e24_I:0xX00000004_A:0xX000003e0*f1500.0_I:0xX00953e24_I:0xX00000004_A:0xX000003e4*f1000.0_K:{recall}_K:{recall}*1_M:{recall}
 			--------
 				(1 - ([SavedStats_Story_MissionTime] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
 
+				// --------PLAYER_1 + PLAYER_2--------
 				+ [SavedStats_Story_ShotsHit] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
 				- [SavedStats_Story_ShotFired] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
 				- [SavedStats_Story_PlayerDeaths] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
@@ -7054,6 +7695,7 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3
 				+ [SavedStats_Story_HeadshotKills] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
 				+ [SavedStats_Story_MeleeKills] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
 
+				// ----------------
 				* [Difficulty] [1-4] 		| in alt groups				*/
 		measured(
 			current_SavedStatStory_MissionTime(PLAYER_1, enum_chapter, enum_releaseRegion)
@@ -7148,23 +7790,23 @@ leaderboards_titles = {
 leaderboards_descriptions = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
 	// ------lb_Watchers------
-	"lb_WatchersWrongTrain": 			{"en": "Two souls, one cursed ride. Outgun death itself and leave your mark. Finish Chapter 1, \"The Wrong Train\", with precision and speed, side by side"},
-	"lb_WatchersRideDevil": 			{"en": "The devil's got the reins, but you've got each other. Beat the odds and seize your spot. Conquer Chapter 2, \"Ride Like the Devil\", with speed and deadly teamwork"},
-	"lb_WatchersBoneyard": 				{"en": "The dead rose to drag you under—and failed. Survive Chapter 3, \"Boneyard\", with ruthless precision and teamwork to etch your names among legends"},
-	"lb_WatchersDevilMine": 			{"en": "The mine swallows cowards whole. Only a sharp pair survives. Fight through Chapter 4, \"Devil's Belly Mine\", with grit and deadeye shooting to make the list"},
-	"lb_WatchersDWOutpost": 			{"en": "No backup. No retreat. Only you two against the dark. Defend the outpost in Chapter 5, \"Darkwatch Outpost\", with speed and precision to earn your place"},
-	"lb_WatchersWarTrain": 				{"en": "Hell's riding the rails—and so are you. Survive the onslaught and take control. Rule Chapter 6, \"War Train\", with flawless teamwork and deadly aim"},
-	"lb_WatchersTortureMaze": 			{"en": "Steel your nerves and back each other through the blood-soaked halls. Endure and dominate Chapter 7, \"Torture Maze\", if you want your names remembered"},
-	"lb_WatchersBaptismFire": 			{"en": "Together you stepped into fire—and came out legends. Carve your legacy in Chapter 8, \"Baptism of Fire\", through pure grit, teamwork, and destruction"},		
-	"lb_WatchersRescue": 				{"en": "They left no one behind. You fought, bled, and carved a path through the dead. Stand together and prove you're the toughest in Chapter 9, \"Rescue\""},
-	"lb_WatchersPrism": 				{"en": "Power twisted the world, but not you two. Through fire and madness, you seized victory. Crush the chaos and earn your place in Chapter 10, \"The Deadlight Prism\""},
-	"lb_WatchersInvasion": 				{"en": "The land held fast because you stood together. Only the deadliest teams with the sharpest shots earn a name on this list. Defend Chapter 11, \"Invasion\""},
-	"lb_WatchersHangtown": 				{"en": "The gallows swung empty by your hands. Steady aim and deadlier teamwork brought you this far. Earn your mark in Chapter 12, \"Hangtown\""},
-	"lb_WatchersMorningAfter": 			{"en": "When the Order fell, you two stayed standing. Through steady hands and unshakable trust, you fought side by side. Survive the ashes of Chapter 13, \"The Morning After\", to earn a place among legends"},
-	"lb_WatchersShowdown": 				{"en": "When the end came, you stood as one. Two guns, one will, perfect aim. It takes more than courage—it takes greatness. Claim it in Chapter 14, \"Showdown\""},
-	"lb_WatchersRightTrain": 			{"en": "This train rides straight into hell, but you held the line. Tear through the horrors with steady aim and an even tighter bond to earn your place among legends in Chapter 15, \"The Right Train\""},
-	"lb_WatchersDeadfall": 				{"en": "The city burned, but you didn't fall. Shoulder to shoulder, without wavering, you carved a path through hellfire. Fight for your name in Chapter 16, \"Deadfall\""},
-	"lb_WatchersCurseWest": 			{"en": "Together you rewrote fate. Precision, grit, and loyalty carved your mark. Only the greatest duos are remembered. Shape your fate in Chapter 17, \"Curse of the West\""},
+	"lb_WatchersWrongTrain": 			{"en": "Two souls, one cursed ride. Outgun death itself and leave your mark. Finish Chapter 1, \"The Wrong Train\", from start to finish in one session, with precision and speed, side by side"},
+	"lb_WatchersRideDevil": 			{"en": "The devil's got the reins, but you've got each other. Beat the odds and seize your spot. Conquer Chapter 2, \"Ride Like the Devil\", from start to finish in one session, with speed and deadly teamwork"},
+	"lb_WatchersBoneyard": 				{"en": "The dead rose to drag you under—and failed. Survive Chapter 3, \"Boneyard\", from start to finish in one session, with ruthless precision and teamwork to etch your names among legends"},
+	"lb_WatchersDevilMine": 			{"en": "The mine swallows cowards whole. Only a sharp pair survives. Fight through Chapter 4, \"Devil's Belly Mine\", from start to finish in one session, with grit and deadeye shooting to make the list"},
+	"lb_WatchersDWOutpost": 			{"en": "No backup. No retreat. Only you two against the dark. Defend the outpost in Chapter 5, \"Darkwatch Outpost\", from start to finish in one session, with speed and precision to earn your place"},
+	"lb_WatchersWarTrain": 				{"en": "Hell's riding the rails—and so are you. Survive the onslaught and take control. Rule Chapter 6, \"War Train\", from start to finish in one session, with flawless teamwork and deadly aim"},
+	"lb_WatchersTortureMaze": 			{"en": "Steel your nerves and back each other through the blood-soaked halls. Endure and dominate Chapter 7, \"Torture Maze\", from start to finish in one session, if you want your names remembered"},
+	"lb_WatchersBaptismFire": 			{"en": "Together you stepped into fire—and came out legends. Carve your legacy in Chapter 8, \"Baptism of Fire\", from start to finish in one session, through pure grit, teamwork, and destruction"},		
+	"lb_WatchersRescue": 				{"en": "They left no one behind. You fought, bled, and carved a path through the dead. Stand together and prove you're the toughest by completing Chapter 9, \"Rescue\", from start to finish in one session"},
+	"lb_WatchersPrism": 				{"en": "Power twisted the world, but not you two. Through fire and madness, you seized victory. Crush the chaos and earn your place by completing Chapter 10, \"The Deadlight Prism\", from start to finish in one session"},
+	"lb_WatchersInvasion": 				{"en": "The land held fast because you stood together. Only the deadliest teams with the sharpest shots earn a name on this list through completion of Chapter 11, \"Invasion\", from start to finish in one session"},
+	"lb_WatchersHangtown": 				{"en": "The gallows swung empty by your hands. Steady aim and deadlier teamwork brought you this far. Earn your mark by completing Chapter 12, \"Hangtown\", from start to finish in one session"},
+	"lb_WatchersMorningAfter": 			{"en": "When the Order fell, you two stayed standing. Through steady hands and unshakable trust, you fought side by side. Survive the ashes of Chapter 13, \"The Morning After\", from start to finish in one session, to earn a place among legends"},
+	"lb_WatchersShowdown": 				{"en": "When the end came, you stood as one. Two guns, one will, perfect aim. It takes more than courage—it takes greatness. Claim it by completing Chapter 14, \"Showdown\", from start to finish in one session"},
+	"lb_WatchersRightTrain": 			{"en": "This train rides straight into hell, but you held the line. Tear through the horrors with steady aim and an even tighter bond to earn your place among legends by completing Chapter 15, \"The Right Train\", from start to finish in one session"},
+	"lb_WatchersDeadfall": 				{"en": "The city burned, but you didn't fall. Shoulder to shoulder, without wavering, you carved a path through hellfire. Fight for your name by completing Chapter 16, \"Deadfall\", from start to finish in one session"},
+	"lb_WatchersCurseWest": 			{"en": "Together you rewrote fate. Precision, grit, and loyalty carved your mark. Only the greatest duos are remembered. Shape your fate by completing Chapter 17, \"Curse of the West\", from start to finish in one session"},
 	}
 // #endregion LB - text
 

@@ -14,11 +14,11 @@ This guide provides comprehensive details on how to unlock each achievement with
 
 - 💎 **[Achievement Guide](#AchievementGuide)**
 
-    <sub> General Info </sub>
+    <sub> - General Info - </sub>
     - 📜 [GeneralInfoSubHeader](#-some_general_info_header)
     - 📜 [Walkthroughs & Resources](WalkthroughsResources)
 
-    <sub> Achievements </sub>
+    <sub> - Achievements - </sub>
     - 🏆 *[Progression](#Progression)*
     - 🏆 *[Challenges](#Challenges)*
     - 🏆 *[Unlocks](#Unlocks)*
