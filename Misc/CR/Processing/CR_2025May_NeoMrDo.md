@@ -96,11 +96,37 @@ Ready for Review Thread => https://discord.com/channels/310192285306454017/13425
 Play Test Thread => https://discord.com/channels/310192285306454017/1339642437164863498
 RA Game Page => https://retroachievements.org/game/12324
 
-# ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦
-/// Grouped to represent all the under-the-hood work.
+# ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦ // DONE
 
 ## ∘───── 🛠️ RAM Digging & Code Notes ─────∘
 Everything looks good here. Although, I have some minor details I would love you to take a look at.
+
+### ❓ Documentation of Flags
+Some code notes you documented as `8-bit` can be accessed via bit-level accessors.
+Take for example:
+- `$0xfd8b`
+```
+[8-bit][Dip Switch] Continue
+0x00 = OK
+0x01 = NO
+```
+This is actually just a boolean value (false/true), an alternative code notation, which recognizes this value as a boolean:
+```
+[8-bit Flag][Dip Switch] Continue
+bit0 = 0x0 => Continue disabled
+bit0 = 0x1 => Continue enabled
+```
+
+Or how I would personally code note this:
+```
+[bit0 BitFlag:DipSwitchSetting_IsContinueEnabled |8-bit] 
+```
+- Lowest-level accessor = bit0
+- It's a Flag "IsContinueEnabled" (boolean, 0 = false; 1 = true)
+- Highest-level accessor = byte (8-bit)
+
+Anything that has only two values can be marked as a boolean to make things super easy to understand. Consider these code notes too:
+- `$0x2126` to `$0x213e`: Each of these 8-bit values is actually just an 8-bit boolean
 
 ### ❓ `$0x09e4` Breaken?
 ```
@@ -155,23 +181,22 @@ Or maybe even simpler would be:
 - Were there any achievements you were unable to design?
 - How did your own testing process look like?
 
-# ✦═══════✦ 🕹️ Achievement Set Design ✦═══════✦ // TODO
-/// Grouped to cover all visible/user-facing parts.
-/// Conform to https://docs.retroachievements.org/guidelines/content/achievement-set-requirements.html  
-///         and https://docs.retroachievements.org/developer-docs/achievement-development-overview.html
-/// [#poll-me](https://discord.com/channels/310192285306454017/511718348178849792) on RAdiscord
+# ✦═══════✦ 🕹️ Achievement Set Design ✦═══════✦ // DONE
 
-## ∘───── 🎯 Overall Set Design ─────∘  // TODO
-/// Balance, creativity, progression, and content coverage.  
-/// Achievement types: https://docs.retroachievements.org/guidelines/content/progression-and-win-condition-guidelines.html  
-/// Difficulty balance: https://docs.retroachievements.org/developer-docs/difficulty-scale-and-balance.html
-/// Any unwelcome concepts? https://docs.retroachievements.org/guidelines/content/unwelcome-concepts.html
+## ∘───── 🎯 Overall Set Design ─────∘
 
 ### 👍 Positive Observations
 - Progression achievements marked correctly
+- Works on both 1P and 2P
+- All content seems to be covered, almost all game mechanics seem to be touched upon, love to see it. Although I do think that some of the challenge achievements requiring the player to do xx thing within only one round may seem a bit too easy imo. Perhaps expanding the scope somewhat could be an interseting twist to introduce some more variety in the challenges, like:
+- `Complete a stage from start to finish, by killing all enemies, and without losing any lives.` (player would need to kill all enemies within each round)
+- `Complete a stage from start to finish, without killing any enemies, and withouth losing any lives` (player would need to collect all items instead, for each round)
 
 ### ---⇢ 🏆 Achievements ⇠---
 /// Smart usage of `Measured` & `Trigger` flags
+
+### ❓ Difficulty Balancing Questions
+What exactly does the difficulty level modify, what game mechanics are different? Why chose difficulty 4 in that case?
 
 ### ❓ Achievement [We Live in a Society](https://retroachievements.org/achievement/499156) Enemy Combo?
 What exactly is a combo? Killing xx enemies with one projectile? Is this clear enough for players to understand what is required here? Is the term "combo" used within the game itself? After playing this game for around 30 min. I'm rather confused at what is required by me here.
@@ -196,6 +221,7 @@ RP looks solid overall, though I personally think it could be expanded a bit. I�
 - **High Score**: Showing the player's current high score in RP would be a great fit for a game like this. It’s a core part of arcade-style replayability and would give more context to a player’s current session.
 - **Coins**: Since lives are already displayed, it feels natural to include the player's current coin count as well. It adds more depth to the session snapshot and aligns with traditional game stat displays.
 - **Difficulty**: If difficulty affects gameplay mechanics in any meaningful way, I think it would be valuable to show that in RP too. It helps contextualize the player's progress or performance.
+- **Extra Stage, time left**: I think displaying time left for the extra stage could be interesting.
 That said, if you feel any of these wouldn’t be a good fit for Rich Presence, I’d appreciate your insight on how the current RP setup already meets the game’s needs. You know this title better than anyone, after all.
 
 ### ---⇢ 🌐 Leaderboards ⇠---
@@ -207,10 +233,8 @@ You have one leaderboard hooking on to the high score as the submitted value. Be
 Your set allows multiplayer, I think there should be at least an equivalent of the High Score leaderboard, but for multiplayer in mind.
 This leaderboard would then function as an instant submission leaderboard, submitting when both player's were active and one of them lost all their lives. Thus when the total combined high scores drops, the leaderboard submits. Take a look for yourself, how you could make such a leaderboard function correctly, it definitely doable with the RAM values you've already documented. 
 
-## ∘───── ✍️ Titles & Descriptions ─────∘  // TODO
-/// Conform to https://docs.retroachievements.org/guidelines/content/writing-policy.html
-/// Consider [#writing-requests on RAdiscord](https://discord.com/channels/310192285306454017/1100757231294750730)
-/// Rich Presence text
+## ∘───── ✍️ Titles & Descriptions ─────∘
+Everything looks conform to the RAdocs requirements. Although I do have a few remarks.
 
 ### ❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) "WIP" in Title + Description 1P
 **Title**
@@ -237,19 +261,39 @@ Here are some suggestions:
 
 Consider some of my suggestions and see to it that you can lower the overal score somewhat.
 
-# ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦ // TODO
-/// Grouped for logic quality and RA feature usage.
-/// [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/)
+# ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦ // DONE
 
 ### 👍 Positive Observations
 - Proper use of deltas
 - Good work making use of OrNext and AltGroups in order to make achievements trigger on either 1P or 2P (Since you marked the set as "Multiplayer Allowed")
 - ResetIfs + Checkpoint HitCounts to make challenge achievements work properly 
 
-## ∘───── 🧩 Achievement Logic ─────∘  // TODO
-/// Triggers, reset conditions, edge cases. Were flags used correctly? Refer to the Proficiency-Checklist
-/// Multi-hash support?
-/// Protections: Demo/Cheat/Save/Bios/DipSwitch?  
+## ∘───── 🧩 Achievement Logic ─────∘
+
+### ❗ `AndNext` Misuse
+`AndNext` should only be used for checkpoint HitCounts or HitCounts in general or in combination with other flags such as (ResetIf/PauseIf)
+Following achievements use `AndNext`, but they may not be necessary, can probably be left out safely:
+- [Scaramouche Is Here](https://retroachievements.org/achievement/499142)
+- [An Explosive Spectacle](https://retroachievements.org/achievement/499149)
+- [Isn't Bowling Part of the Show?](https://retroachievements.org/achievement/499148)
+- [A Fake Clown](https://retroachievements.org/achievement/499150)
+
+Achievement [Scapino Flees from Fight](https://retroachievements.org/achievement/499146) does use them correctly, attached to a ResetIf.
+
+### ❓ Missing Demoe Mode Protection?
+Do the following achievements need any demo protection?
+- [Time to Change Oversized Shoes](https://retroachievements.org/achievement/499153)
+- [Nobody Likes a Clown at Midnight](https://retroachievements.org/achievement/499154)
+
+Most other achievements you have the following logic, which presumably checks against demo mode?
+```
+Mem	8-bit	0x00000028  =	Value		7
+```
+
+Personally based on your code notes, I would've added demo protection by having the following logic within each achievement:
+```
+Mem	8-bit	0x00000028  !=	Value		3
+```
 
 ### ❓ Achievement [You Are Not a Clown, You Are the Entire Circus](https://retroachievements.org/achievement/499140) Issues?
 ```
@@ -291,14 +335,14 @@ You're using SubSource here, but I'm not sure what exactly is happening there, f
 ### ❓ Achievement [Comedy Genius](https://retroachievements.org/achievement/499160) Challenge?
 Is this achievement actually a challenge? Doesn't this logic allow for continues? If this logic doesn't account for that, I would make this achievement a proper challenge. Let's say `Get a score of 500k on difficulty 4 or higher, without losing more than 3 lives or using a continue`. This would also best be implemented for all three of these high-scored based achievements.
 
-## ∘───── 🔧 Rich Presence Logic ─────∘  // TODO
-/// Is a dynamic RP present? Not overly bloated or using unsupported Unicode.  
-/// Macros and lookupTables used appropriately?  
-/// Refer to https://docs.retroachievements.org/developer-docs/rich-presence.html#rich-presence
+
+
+## ∘───── 🔧 Rich Presence Logic ─────∘ 
+Everything appears to be in order, albeit as a relatively simple RP script.
 
 ## ∘───── 🔢 Leaderboard Logic ─────∘
 
-### ❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) Logic Issues
+### ❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) Logic Issues + Questions
 This leaderboard would be better designed as an instant submission leaderboard. But I will critique it as it is currently. It does seems to function as an instant submission leaderboard, I think from my testing. It never tracks right? It just submits when you lose all lives? or when you enter the "Continue" state? Although an instant submission leaderboard would have an always_false CANCEL condition and an always_true SUBMIT condition. 
 
 **START**
@@ -325,9 +369,8 @@ HitCounts & ResetIf seems unnecessary. Again just use an instant submission lead
 Make this work for 2P's slot as well.
 Since high score is seperate between 1P and 2P, I think it would be feasible to have this leaderboard submit for both players.
 
-
-
-
+**VALUE**
+How exactly does `$0x4652` 1P Score multiply work? What does the math calculate exactly, it wasn't clear to me by just reading the code notes?
 
 
 # ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦ // TODO
