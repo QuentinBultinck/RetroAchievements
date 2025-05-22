@@ -179,14 +179,17 @@ What exactly is a combo? Killing xx enemies with one projectile? Is this clear e
 ### ❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Item Combo?
 What exactly is an item combo? Is this clear enough for players to understand what is required here? Is the term "combo" used within the game itself? After playing this game for around 30 min. I'm rather confused at what is required by me here.
 
+### ❓ Achievement [Pie in the Face](https://retroachievements.org/achievement/499155) Challenge clarity?
+What exactly is the challenge here? Does the player have to start the game from the beginning and then find/wait for a "big enemy" to spawn and then kill it without losing a life? If this is the case, the description doesn't explain this properly in my opinion. Otherwise elaborate on this.
+
 ### ---⇢ 📺 Rich Presence ⇠---
 
-### ❗ Multiplayer RP Missing
-Your set allows multiplayer, but RP only checks for the data of P1 (player 1).
+### ❗ 2P RP Missing
+Your set allows multiplayer, but RP only checks for the data of 1P(player 1), their lives.
 Make sure you have corresponding RP for the following situations:
-- when only P1 is active.
-- when only P2 (player 2) is active.
-- when both P1 and P2 is active.
+- when only 1P is active.
+- when only 2P (player 2) is active.
+- when both 1P and 2P is active.
 
 ### 💡 RP Expansions 
 RP looks solid overall, though I personally think it could be expanded a bit. I’d love to see the following additions:
@@ -222,12 +225,16 @@ Take a look at how other achievement sets have phrased such requirements, perhap
 Badges look very good, love to see it.
 
 ## ∘───── ⚖️ Point Distribution ─────∘
-Some achievements are way overscored, please refer to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html) and see if you can aim for an average points score of about ~7. This can easily be check via [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/), under "Set Overview", this also recommends to aim for ~7. If you could at least aim for something below 10 for this stat.
+
+### ❗ Overscored
+Some achievements are way overscored, please refer to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html) and see if you can aim for an average points score of about ~7. This can easily be checked via [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/), under "Set Overview", this also recommends to aim for ~7. If you could at least aim for something below 10 for this stat.
+
 Here are some suggestions:
 - [Co(s)mic Clown](https://retroachievements.org/achievement/499139) 50 -> 10; Could be 25, but I think 10 is just fine.
 - [Speedy Showman](https://retroachievements.org/achievement/499145) 25 -> 10; Is it really that hard to achieve? After thinking it through a little bit, this achievements may look fair on 25 points perhaps. Since the player first has to acquire all EXTRA letters and then try to complete the extra stage without dying and also within 30 seconds. Retrying this extra stage is not that evident.
-- [Scapino Flees from Fight](https://retroachievements.org/achievement/499146) 10 -> 5 (maybe even lower); Isn't this like really easy to achieve by just gathering all items, and just kiting enemies, since you run faster than most of them? Especially in the early stages?
+- [Scapino Flees from Fight](https://retroachievements.org/achievement/499146) 10 -> 5 (maybe even lower); Isn't this like really easy to achieve by just gathering all items, and just kiting enemies, since you run faster than most of them? Especially in the early stages? And it's also just for doing it within one round. This would be fine at 10 points if the player would be required to complete a whole Stage whilst doing this challenge.
 - [Clown's Pocket](https://retroachievements.org/achievement/499141); Seems overly easy, reasoning is same as above achievement.
+
 Consider some of my suggestions and see to it that you can lower the overal score somewhat.
 
 # ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦ // TODO
@@ -235,11 +242,54 @@ Consider some of my suggestions and see to it that you can lower the overal scor
 /// [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/)
 
 ### 👍 Positive Observations
+- Proper use of deltas
+- Good work making use of OrNext and AltGroups in order to make achievements trigger on either 1P or 2P (Since you marked the set as "Multiplayer Allowed")
+- ResetIfs + Checkpoint HitCounts to make challenge achievements work properly 
 
 ## ∘───── 🧩 Achievement Logic ─────∘  // TODO
 /// Triggers, reset conditions, edge cases. Were flags used correctly? Refer to the Proficiency-Checklist
 /// Multi-hash support?
 /// Protections: Demo/Cheat/Save/Bios/DipSwitch?  
+
+### ❓ Achievement [You Are Not a Clown, You Are the Entire Circus](https://retroachievements.org/achievement/499140) Issues?
+```
+  1:         Mem   8-bit 0x0000fd8a >=  Value 3     (0)
+  2:         Mem   8-bit 0x0000fd89 <=  Value 3     (0)
+  3:         Mem   8-bit 0x00000028 =   Value 6     (1)
+  4: ResetIf Mem   8-bit 0x00000028 =   Value 10    (0)
+  5: ResetIf Mem   8-bit 0x0000fdb7 >   Value 1     (0)
+  6: ResetIf Mem   8-bit 0x0000fdba >   Value 1     (0)
+  7:         Delta 8-bit 0x0000460a =   Value 6     (0)
+  8: Trigger Mem   8-bit 0x0000460a =   Value 7     (0)
+```
+**Checkpoint HitCount**
+Core:Line[3] does this checkpoint HitCount check if the game was started from the beginning, from Stage 1, round 1? If that is the case all is well here.
+
+**Trigger Flag**
+Core:Line[8] has a trigger flag, but this trigger indicator will only be displayed when in stage 6 due to Core:Line[7]. When exactly do you want this indicator to be displayed?
+
+**2P Issue**
+There's a possible issue with this achievement, what if at one point join in with 2P mid-way through the game? Does this not make the achievement somewhat easier then? Elaborate on how this would or would not affect balancing... Alas, you're the expert here.
+
+### ❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Math?
+```
+CORE
+1:   Mem   8-bit 0x0000fd8a >=  Value  3  (0)
+2:   Delta 8-bit 0x00000028 =   Value  7  (0)
+3:   Mem   8-bit 0x00000028 =   Value  8  (0)
+
+ALT_1
+1: SubSource   Mem   8-bit 0x00000d30 /   Value 8 
+2:             Mem   8-bit 0x000064a0 =   Value 0 (0)
+
+Alt_2
+1: SubSource   Mem   8-bit 0x00000d30 /   Value 8  
+2:             Mem   8-bit 0x000064a2 =   Value 0 (0)
+```
+You're using SubSource here, but I'm not sure what exactly is happening there, from a glance. Perhaps you could extend the correlating code notes somewhat to explain what is happening or what is calculated by doing this math.
+
+### ❓ Achievement [Comedy Genius](https://retroachievements.org/achievement/499160) Challenge?
+Is this achievement actually a challenge? Doesn't this logic allow for continues? If this logic doesn't account for that, I would make this achievement a proper challenge. Let's say `Get a score of 500k on difficulty 4 or higher, without losing more than 3 lives or using a continue`. This would also best be implemented for all three of these high-scored based achievements.
 
 ## ∘───── 🔧 Rich Presence Logic ─────∘  // TODO
 /// Is a dynamic RP present? Not overly bloated or using unsupported Unicode.  
