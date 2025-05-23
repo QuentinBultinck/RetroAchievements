@@ -66,6 +66,9 @@ Once you’ve reviewed everything and made any necessary updates or adjustments,
 
 # ✦═══════✦ 🔍 Set Plan Review ✦═══════✦ // TODO
 
+## 🎓 Development Intentions // TODO, only include this for Jr Dev Requests
+/// Ask what their intentions are for joining the program. We are searching for individuals who wan't to become full devs rather than devs that only stay for a little while.
+
 ## 🎯 Overal Set Design // TODO
 /// Balance, creativity, progression, and content coverage. 
 

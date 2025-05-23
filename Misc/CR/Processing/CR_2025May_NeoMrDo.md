@@ -72,31 +72,31 @@ Hello @Krylan
 Your Code Review for [Neo Mr. Do! (Arcade)](https://retroachievements.org/game/12324?f=5) has finally arrived!
 Please take some time to review everything I've written below. If you have any questions, feel free to reach out.
 
-## ∘───── 📑 Table of Contents ─────∘ // TODO, link these
-### 🧠 Memory Work & Internal Notes _MSG_LINK_ 
+## ∘───── 📑 Table of Contents ─────∘
+### 🧠 Memory Work & Internal Notes https://discord.com/channels/310192285306454017/1375387862664478811/1375388004738273322 
 - 🛠️ RAM Digging & Code Notes
 - 🧷 Additional Developer Notes
 - 🧪 Testing & Debugging Results
-### 🕹️ Achievement Set Design _MSG_LINK_
+### 🕹️ Achievement Set Design https://discord.com/channels/310192285306454017/1375387862664478811/1375388216617730088
 - 🎯 Overall Set Design
 - ✍️ Titles & Descriptions
 - 🖼️ Badge Art
 - ⚖️ Point Distribution
-### ⚙️ Technical Implementation _MSG_LINK_
+### ⚙️ Technical Implementation https://discord.com/channels/310192285306454017/1375387862664478811/1375388491466412113
 - 🧩 Achievement Logic
 - 🔧 Rich Presence Logic
 - 🔢 Leaderboard Logic
-### 🔑 Misc Prerequisites _MSG_LINK_
-### 📜 Summary & Final Notes _MSG_LINK_
+### 🔑 Misc Prerequisites https://discord.com/channels/310192285306454017/1375387862664478811/1375388698396327977
+### 📜 Summary & Final Notes https://discord.com/channels/310192285306454017/1375387862664478811/1375388756424527966
 
 ## ∘───── Related Links ─────∘
 Junior Developer => https://retroachievements.org/user/Krylan
-Set Plan => N/A
+Set Plan => Not Found
 Ready for Review Thread => https://discord.com/channels/310192285306454017/1342590608006582325
 Play Test Thread => https://discord.com/channels/310192285306454017/1339642437164863498
 RA Game Page => https://retroachievements.org/game/12324
 
-# ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦ // DONE
+# ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦
 
 ## ∘───── 🛠️ RAM Digging & Code Notes ─────∘
 Everything looks good here. Although, I have some minor details I would love you to take a look at.
@@ -181,7 +181,7 @@ Or maybe even simpler would be:
 - Were there any achievements you were unable to design?
 - How did your own testing process look like?
 
-# ✦═══════✦ 🕹️ Achievement Set Design ✦═══════✦ // DONE
+# ✦═══════✦ 🕹️ Achievement Set Design ✦═══════✦
 
 ## ∘───── 🎯 Overall Set Design ─────∘
 
@@ -193,7 +193,6 @@ Or maybe even simpler would be:
 - `Complete a stage from start to finish, without killing any enemies, and withouth losing any lives` (player would need to collect all items instead, for each round)
 
 ### ---⇢ 🏆 Achievements ⇠---
-/// Smart usage of `Measured` & `Trigger` flags
 
 ### ❓ Difficulty Balancing Questions
 What exactly does the difficulty level modify, what game mechanics are different? Why chose difficulty 4 in that case?
@@ -261,7 +260,7 @@ Here are some suggestions:
 
 Consider some of my suggestions and see to it that you can lower the overal score somewhat.
 
-# ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦ // DONE
+# ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦
 
 ### 👍 Positive Observations
 - Proper use of deltas
@@ -358,7 +357,7 @@ val 0  ==  val 1
 ```
 0 can never be equal to 1, this is much easier the ascertain as an always_false condition then what you use.
 
-**SUBMIT**### Core
+**SUBMIT**
 ```
 OrNext      Mem   8-bit  0x0000fdb7 =   Value   2   (1)
             Mem   8-bit  0x0000460a =   Value   7   (1)
@@ -373,24 +372,20 @@ Since high score is seperate between 1P and 2P, I think it would be feasible to 
 How exactly does `$0x4652` 1P Score multiply work? What does the math calculate exactly, it wasn't clear to me by just reading the code notes?
 
 
-# ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦ // TODO
+# ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦
 
-### ❓ Hubs & Similar Games // TODO
-/// Hubs need to be added by CR, Juniors don't have permissions.
-Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html) and [RAweb - All Hubs](https://retroachievements.org/hubs))
-Any similar games to add? Think of games that may fit the same genre or games of the same series, perhaps.
+### ❓ Hubs & Similar Games
+You already listed a few hubs to be added within your Ready For Review Post, but could you give these another look. I'd advise you to sift through all hubs via [RAweb - All Hubs](https://retroachievements.org/hubs). After you've gone through them give me a final list so I can add them. (More useful info [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html)). Does the publisher/developer Visco have a corresponding hub? If so, they should also be added as their hub.
 
-### ❓ Game Page Metadata // TODO
-/// [RAdocs - Screenshot Dimensions](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html#screenshot-dimensions) 
+Any similar games to add? Think of games that may fit the same genre or games of the same series, perhaps. Give me a full list, if there are any.
+
+### ❓ Game Page Metadata
 Is everything correctly filled out on the **manage page** and **game page**? (publishers, genre, game screenshots, box art, release date...)
 
-# ✦═══════✦📜 Summary & Final Thoughts 📜✦═══════❖ // TODO
-/// Overview and high-level review conclusion.  
-/// What still needs to be proven or improved?  
-/// Was everything from https://docs.retroachievements.org/developer-docs/am-i-ready-for-review.html covered?
+# ✦═══════✦📜 Summary & Final Thoughts 📜✦═══════❖
 
-## ∘───── 📋 TODO Checklist ─────∘ // TODO
-- **Initially Posted on**: `DD Month YYYY` - `Initial Code Review`
+## ∘───── 📋 TODO Checklist ─────∘
+- **Initially Posted on**: `23 May 2025` - `Initial Code Review`
 - **Last Updated on**: `DD Month YYYY` - `Checklist Assessment #0-[ChecklistAssessmentNumber]` // CR_TODO Perform next Checklist Assessment Round
 
 Please use the list below as a working guideline. I recommend copying it or creating your own version, ideally in a format I can also access and follow along with. A good option would be to add a new tab in your existing Set Plan Excel document for this purpose.
@@ -404,12 +399,27 @@ I'll be using this list here to track your progress as well. As you work through
 - 🟨 DISMISSED – Task was reviewed and ruled out (by CR)
 - ❌ CANCELED — Task was dropped or no longer applicable (by Reviewee)
 
-### ---⇢ 📌 Initial Code Review Tasks ⇠--- // TODO
-### 🔲 🧪❗ ...
-### 🔲 🖼️❓ ...
-### 🔲 🧩❓ ...
-### 🔲 🧩❗ ...
-### 🔲 🔧❓ ...
+### ---⇢ 📌 Initial Code Review Tasks ⇠---
+### 🔲 🛠️❓ Documentation of Flags
+### 🔲 🛠️❓ `$0x09e4` Breaken?
+### 🔲 🛠️❓ `$0x0e48` & `$0x0e64` Suggestion?
+### 🔲 🧪❓ Testing Questions
+### 🔲 🏆❓ Difficulty Balancing Questions
+### 🔲 🏆❓ Achievement [We Live in a Society](https://retroachievements.org/achievement/499156) Enemy Combo?
+### 🔲 🏆❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Item Combo?
+### 🔲 🏆❓ Achievement [Pie in the Face](https://retroachievements.org/achievement/499155) Challenge clarity?
+### 🔲 📺❗ 2P RP Missing
+### 🔲 📺💡 RP Expansions
+### 🔲 🌐❗ High Score Instant Submission
+### 🔲 🌐💡 Multiplayer Leaderboards
+### 🔲 ✍️❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) "WIP" in Title + Description 1P
+### 🔲 ⚖️❗ Overscored
+### 🔲 🧩❗ `AndNext` Misuse
+### 🔲 🧩❓ Missing Demoe Mode Protection?
+### 🔲 🧩❓ Achievement [You Are Not a Clown, You Are the Entire Circus](https://retroachievements.org/achievement/499140) Issues?
+### 🔲 🧩❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Math?
+### 🔲 🧩❓ Achievement [Comedy Genius](https://retroachievements.org/achievement/499160) Challenge?
+### 🔲 🔢❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) Logic Issues + Questions
 ### 🔲 🔑❓ Hubs & Similar Games
 ### 🔲 🔑❓ Game Page Metadata
 
@@ -424,7 +434,9 @@ I'll be using this list here to track your progress as well. As you work through
 
 When the full checklist is completed and confirmed, we can proceed with finalizing the review and begin discussing the set’s promotion. Until then, feel free to ping me anytime if you’ve completed the task list or have further questions, I’ll be happy to review things again when ready.
 
-## ∘───── 📚 Final Thoughts ─────∘ // TODO
+## ∘───── 📚 Final Thoughts ─────∘
+
+Overall, your set is shaping up nicely, the core structure is solid, and much of the logic appears well thought out, but there are a few ❗ issues I've discovered that could be touched upon somewhat before we release the set. Tackling these points now will help ensure a smoother launch and a more polished experience for players. 
 
 # %%%%%%%%%%%%% POST-INITIAL CODE REVIEW %%%%%%%%%%%%% #
 
