@@ -1,7 +1,7 @@
 # %%%%%%%%%%%%% CODE REVIEWER NOTES %%%%%%%%%%%%% #
 
 # ------Links Related to Code Review------
-Code Review Thread => _DISCORD_LINK_TO_CODE_REVIEW_
+Code Review Thread => https://discord.com/channels/310192285306454017/1375387862664478811
 Junior Developer => https://retroachievements.org/user/Krylan
 Set Plan => N/A
 Ready for Review Thread => https://discord.com/channels/310192285306454017/1342590608006582325
@@ -279,7 +279,7 @@ Following achievements use `AndNext`, but they may not be necessary, can probabl
 
 Achievement [Scapino Flees from Fight](https://retroachievements.org/achievement/499146) does use them correctly, attached to a ResetIf.
 
-### ❓ Missing Demoe Mode Protection?
+### ❓ Missing Demo Mode Protection?
 Do the following achievements need any demo protection?
 - [Time to Change Oversized Shoes](https://retroachievements.org/achievement/499153)
 - [Nobody Likes a Clown at Midnight](https://retroachievements.org/achievement/499154)
@@ -333,8 +333,6 @@ You're using SubSource here, but I'm not sure what exactly is happening there, f
 
 ### ❓ Achievement [Comedy Genius](https://retroachievements.org/achievement/499160) Challenge?
 Is this achievement actually a challenge? Doesn't this logic allow for continues? If this logic doesn't account for that, I would make this achievement a proper challenge. Let's say `Get a score of 500k on difficulty 4 or higher, without losing more than 3 lives or using a continue`. This would also best be implemented for all three of these high-scored based achievements.
-
-
 
 ## ∘───── 🔧 Rich Presence Logic ─────∘ 
 Everything appears to be in order, albeit as a relatively simple RP script.
@@ -404,24 +402,56 @@ I'll be using this list here to track your progress as well. As you work through
 ### 🔲 🛠️❓ `$0x09e4` Breaken?
 ### 🔲 🛠️❓ `$0x0e48` & `$0x0e64` Suggestion?
 ### 🔲 🧪❓ Testing Questions
-### 🔲 🏆❓ Difficulty Balancing Questions
-### 🔲 🏆❓ Achievement [We Live in a Society](https://retroachievements.org/achievement/499156) Enemy Combo?
-### 🔲 🏆❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Item Combo?
-### 🔲 🏆❓ Achievement [Pie in the Face](https://retroachievements.org/achievement/499155) Challenge clarity?
+### ✅ 🏆❓ Difficulty Balancing Questions
+### 🔄 🏆❓ Achievement [We Live in a Society](https://retroachievements.org/achievement/499156) Enemy Combo?
+Current Description: `Get 5 combo on defeated enemies on difficulty 4 or higher`
+Suggested Description: `Kill 5 enemies with one projectile on difficulty 4 or higher`
+Since "combo" isn't a term used in the game itself, it might be clearer to directly state what the player needs to do. Otherwise, you risk confusing or frustrating players due to vague wording, especially since this isn't an adventure or puzzle game where ambiguity is expected. The only thing they will still have to figure out is, is that this can only be achieved with the "straight ball" projectile...
+### 🔄 🏆❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Item Combo?
+Just like [❓ Achievement [We Live in a Society](https://retroachievements.org/achievement/499156) Enemy Combo?] where the enemy combo requirement was unclear, I would suggest updating this description to make it more straightforward. When I first read it, I wasn’t sure what I was supposed to do, and clearer wording would definitely help avoid confusion.
+### 🔄 🏆❓ Achievement [Pie in the Face](https://retroachievements.org/achievement/499155) Challenge clarity?
+Based on the current Description: `Beat the big enemy on any stage and not lose a life on difficulty 4 or higher`, it's not clear to me at what point the challenge of "not losing a life" starts? 
+
+You could make it a general achievement, which may be unlockable on any Stage, like so:
+Suggested Description: `Beat a stage from start to finish, whilst killing the big enemy, which spawns during the last round of any stage, on difficulty 4 or higher, and without losing any lives`
+You would probably need to add some extra logic to make this suggested description/design work. But I'd say this is much more clear to the player what is required.
+Suggested Description (alt): `Beat a stage from start to finish, whilst killing a big enemy, on difficulty 4 or higher, and without losing any lives`
 ### 🔲 📺❗ 2P RP Missing
 ### 🔲 📺💡 RP Expansions
 ### 🔲 🌐❗ High Score Instant Submission
 ### 🔲 🌐💡 Multiplayer Leaderboards
 ### 🔲 ✍️❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) "WIP" in Title + Description 1P
-### 🔲 ⚖️❗ Overscored
+### ✅ ⚖️❗ Overscored
 ### 🔲 🧩❗ `AndNext` Misuse
-### 🔲 🧩❓ Missing Demoe Mode Protection?
+### 🔄 🧩❓ Missing Demo Mode Protection?
+- [Time to Change Oversized Shoes](https://retroachievements.org/achievement/499153)
+- [Nobody Likes a Clown at Midnight](https://retroachievements.org/achievement/499154)
+Edited achievements have some other issues now.
+
+**Delta on demo protection**
+The newly added demo protection is the following:
+```
+Delta 	8-bit 	0x000028 	= 	Value 		0x000007 	(0)
+```
+It should probably be:
+```
+Mem 	8-bit 	0x000028 	= 	Value 		0x000007 	(0)
+```
+Both work variations may work, but let's try to keep in consistent. `Delta` should only be used to check for a value change, not used solely, preferably.
+
+**Achievement [Nobody Likes a Clown at Midnight](https://retroachievements.org/achievement/499154) Redundant Check**
+Core:Line[3] may be redundant:
+```
+Mem 	8-bit 	0x002144 	= 	Mem 	8-bit 	0x002144 	(0)
+```
+- This is always true, so there's no reason to keep this. If you ever need to use an always_true condition consider just doing `val 0x1 == val 0x1`.
 ### 🔲 🧩❓ Achievement [You Are Not a Clown, You Are the Entire Circus](https://retroachievements.org/achievement/499140) Issues?
 ### 🔲 🧩❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Math?
-### 🔲 🧩❓ Achievement [Comedy Genius](https://retroachievements.org/achievement/499160) Challenge?
+### ✅ 🧩❓ Achievement [Comedy Genius](https://retroachievements.org/achievement/499160) Challenge?
+CR may have misread description, this is an actual challenge.
 ### 🔲 🔢❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) Logic Issues + Questions
-### 🔲 🔑❓ Hubs & Similar Games
-### 🔲 🔑❓ Game Page Metadata
+### ✅ 🔑❓ Hubs & Similar Games
+### ✅ 🔑❓ Game Page Metadata
 
 ### ---⇢ 📌 Wrap-Up Tasks (before promotion) ⇠--- // TODO
 🔲 Testing after logic changes
