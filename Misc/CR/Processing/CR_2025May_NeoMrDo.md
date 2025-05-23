@@ -413,9 +413,9 @@ Just like [❓ Achievement [We Live in a Society](https://retroachievements.org/
 Based on the current Description: `Beat the big enemy on any stage and not lose a life on difficulty 4 or higher`, it's not clear to me at what point the challenge of "not losing a life" starts? 
 
 You could make it a general achievement, which may be unlockable on any Stage, like so:
-Suggested Description: `Beat a stage from start to finish, whilst killing the big enemy, which spawns during the last round of any stage, on difficulty 4 or higher, and without losing any lives`
+Suggested Description: `Beat a stage from start to finish, defeating the big enemy that spawns during the final round of any stage, on difficulty 4 or higher, without losing any lives`
 You would probably need to add some extra logic to make this suggested description/design work. But I'd say this is much more clear to the player what is required.
-Suggested Description (alt): `Beat a stage from start to finish, whilst killing a big enemy, on difficulty 4 or higher, and without losing any lives`
+Suggested Description (alt): `Beat a stage from start to finish, defeating a big enemy on difficulty 4 or higher, without losing any lives`
 ### 🔲 📺❗ 2P RP Missing
 ### 🔲 📺💡 RP Expansions
 ### 🔲 🌐❗ High Score Instant Submission
