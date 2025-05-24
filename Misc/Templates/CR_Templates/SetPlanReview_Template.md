@@ -68,6 +68,9 @@ Once you’ve reviewed everything and made any necessary updates or adjustments,
 
 ## 🎓 Development Intentions // TODO, only include this for Jr Dev Requests
 /// Ask what their intentions are for joining the program. We are searching for individuals who wan't to become full devs rather than devs that only stay for a little while.
+- What are your main motivations for joining the RA Developer Program?
+- Do you see yourself becoming a full developer, or are you mainly interested in trying it out temporarily?
+- Are there specific games or genres you’re especially interested in working on?
 
 ## 🎯 Overal Set Design // TODO
 /// Balance, creativity, progression, and content coverage. 
@@ -108,12 +111,12 @@ Consider RA’s [Trigger](https://docs.retroachievements.org/developer-docs/flag
 
 > ### Trigger Indicator
 > `"This functionality allows putting indicators on the screen to help players know when a challenge is active, or more importantly, when they fail the challenge."`
->
+> 
 > A prime example would be for `a damageless boss fight`. A trigger indicator is displayed on screen when the boss fight starts, and is removed from the screen when the player takes damage, giving the player feedback that the challenge has failed, and he has to retry.
 
 > ### Measured Indicator
 > `"Measured marks a condition for tracking progress. It adds a progress bar to the achievement overlay to inform the user how close they are to completing an achievement."`
->
+> 
 > An example would be `collect all coins within a stage`. If there are 9 coins, a measured indicator could keep track of how many are left to collect. This could be done as 0/9 or in %.
 > Another example: `Complete stage x, with only 5 allowed ability activations`. This would start at 5/5 and decrement by 1 when an ability is used, giving the player feedback of how many abilities the player is still alowed to use before the achievement fails.
 
