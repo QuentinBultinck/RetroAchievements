@@ -166,13 +166,24 @@ RA Game Page => _LINK_RA_GAME_PAGE_
 # ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦ // TODO
 
 ### ❓ Hubs & Similar Games // TODO
-/// Hubs need to be added by CR, Juniors don't have permissions.
-Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html) and [RAweb - All Hubs](https://retroachievements.org/hubs))
-Any similar games to add? Think of games that may fit the same genre or games of the same series, perhaps.
+Are there any **hubs** you think should be added?
+Be sure to review the [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html) for proper usage.
+I recommend browsing the full list of hubs via [RAweb - All Hubs](https://retroachievements.org/hubs) to find any relevant matches.
+
+How about **similar games**?
+Consider titles from the same series, or games within a similar genre or with shared mechanics.
+
+If the game includes **multiplayer**, one of the following meta hubs may apply, depending on how the set handles multiplayer functionality:
+- [Meta - Set Disallows Multiplayer](https://retroachievements.org/hub/26213)
+- [Meta - Set Allows Multiplayer](https://retroachievements.org/hub/22986)
+- [Meta - Set Partially Allows Multiplayer](https://retroachievements.org/hub/7115)
+
+Since Junior Developers don’t have permission to add hubs or similar games directly, please make a list of all that apply, and we’ll handle the additions from there.
 
 ### ❓ Game Page Metadata // TODO
 /// [RAdocs - Screenshot Dimensions](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html#screenshot-dimensions) 
 Is everything correctly filled out on the **manage page** and **game page**? (publishers, genre, game screenshots, box art, release date...)
+Juniors devs should be able to edit these fields themselves via the `Dev drop down menu` or via the `Manage page`.
 
 # ✦═══════✦📜 Summary & Final Thoughts 📜✦═══════❖ // TODO
 /// Overview and high-level review conclusion.  

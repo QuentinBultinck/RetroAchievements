@@ -594,7 +594,7 @@ New Art has been uploaded and credited, refer to https://discord.com/channels/31
 # ✦═══════✦ 🔍 CR Reassessment Round #2  ✦═══════✦
 - **Initially Posted on**: `27 May 2025`
 
-@kssfilo I re-evaluated all your changes you made and it seems there's only two remaining issues, I spotted.  So once you addressed these last remarks. We can probably move to wrap up this code review.  Ping me again once you've taken a look at the issue and made any changes if necessary.
+@kssfilo I re-evaluated all your changes you made and it seems there's only two remaining issues, I spotted, + 1 additional prerequisite task, that was overlooked.  So once you addressed these last remarks. We can probably move to wrap up this code review.  Ping me again once you've taken a look at the issue and made any changes if necessary.
 
 ### 🔲 ❗  Achievement [Hatch Obliterator](https://retroachievements.org/achievement/484825) Issues
 Seems like you've made smart use of R/R flags here, translating a values Mem/Delta difference into hitcounts, something I haven't thought of this yet myself, will definitely add this to my skills as well.
@@ -604,11 +604,26 @@ Since the current logic onlys checks for 1P's input, this probably isn't functio
 The description doesn't mention that this achievement is only available in solo mode. Thus either add additional logic to allow 2P to unlock this as well or update the description accordingly.
 
 **Points**
-I think this may be better scored as a 10-pointer instead of 25-pointer, refer to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html). Although in the end it's your choice. Since the player still has to get to Area 7 and then complete this challenge. So it might be OK at that score.
+I think this may be better scored as a 10-pointer instead of 25-pointer, refer to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html). Although in the end it's your choice. On the other hand if the player has to get to Area 7 and then complete this challenge, it might be OK at that score.
 
 ### 🔲 ❗ Leaderboard [8 Ball Madness](https://retroachievements.org/leaderboardinfo.php?i=122542) 2P Issue
 It seems this leaderboard may only be functional for 1P? If this is intented, just as mentioned with above issue: 
 The description doesn't mention that this achievement is only available in solo mode. Thus either add additional logic to allow 2P to unlock this as well or update the description accordingly.
+
+### 🔲 ❓ Hubs & Similar Games
+Are there any **hubs** you think should be added?
+Be sure to review the [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html) for proper usage.
+I recommend browsing the full list of hubs via [RAweb - All Hubs](https://retroachievements.org/hubs) to find any relevant matches.
+
+How about **similar games**?
+Consider titles from the same series, or games within a similar genre or with shared mechanics.
+
+If the game includes **multiplayer**, one of the following meta hubs may apply, depending on how the set handles multiplayer functionality:
+- [Meta - Set Disallows Multiplayer](https://retroachievements.org/hub/26213)
+- [Meta - Set Allows Multiplayer](https://retroachievements.org/hub/22986)
+- [Meta - Set Partially Allows Multiplayer](https://retroachievements.org/hub/7115)
+
+Since Junior Developers don’t have permission to add hubs or similar games directly, please make a list of all that apply, and we’ll handle the additions from there.
 
 # %%%%%%%%%%%%% CODE REVIEW WRAP-UP %%%%%%%%%%%%% #
 
