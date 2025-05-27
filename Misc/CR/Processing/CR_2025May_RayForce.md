@@ -440,7 +440,6 @@ You’ve demonstrated creative intent and some technically sound implementation,
 
 
 # %%%%%%%%%%%%% POST-INITIAL CODE REVIEW %%%%%%%%%%%%% #
-# '''''''''''''''''''''''''''''''''''''''''''''''''''' #
 
 # ✦═══════✦ 🔍 CR Reassessment Round #1  ✦═══════✦
 
@@ -574,7 +573,7 @@ Description updated
 ### ✅ ❓ Leaderboard [High Score No Misses](https://retroachievements.org/leaderboardinfo.php?i=122182) Remarks
 Dev has revamped logic to only allow entries with a min. score of 100,000 points. Although the description could be updated to reflect this minimum requirement.
 ### ✅ ❓ Rich Presence 1P - 2P
-### 🔲 ❗ Leaderboard Descriptions
+### ✅ ❗ Leaderboard Descriptions
 Writing-request ongoing regarding this.
 ### 🔄 ❗ Leaderboard 2P Issue
 Jr is going to add an additional leaderboard focussing on High Score whilst in multiplayer mode.
@@ -590,11 +589,97 @@ New Art has been uploaded and credited, refer to https://discord.com/channels/31
 ### ---⇢ 📌 Additional Tasks (post-set promotion) ⇠---
 🔲 Write/Submit RAnews Set Highlight [Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
 
-#  ✦═══════✦ ✔️ Wrap-Up & Next Steps ✦═══════✦ // TODO
-## 🎓 Reflection & Suggestions
-/// Reflection on what was learned + Feedforward (suggestions for future Jr. Dev process).
 
 
+# ✦═══════✦ 🔍 CR Reassessment Round #2  ✦═══════✦
+- **Initially Posted on**: `27 May 2025`
 
+@kssfilo I re-evaluated all your changes you made and it seems there's only two remaining issues, I spotted.  So once you addressed these last remarks. We can probably move to wrap up this code review.  Ping me again once you've taken a look at the issue and made any changes if necessary.
 
+### 🔲 ❗  Achievement [Hatch Obliterator](https://retroachievements.org/achievement/484825) Issues
+Seems like you've made smart use of R/R flags here, translating a values Mem/Delta difference into hitcounts, something I haven't thought of this yet myself, will definitely add this to my skills as well.
 
+**2P**
+Since the current logic onlys checks for 1P's input, this probably isn't functional for 2P?
+The description doesn't mention that this achievement is only available in solo mode. Thus either add additional logic to allow 2P to unlock this as well or update the description accordingly.
+
+**Points**
+I think this may be better scored as a 10-pointer instead of 25-pointer, refer to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html). Although in the end it's your choice. Since the player still has to get to Area 7 and then complete this challenge. So it might be OK at that score.
+
+### 🔲 ❗ Leaderboard [8 Ball Madness](https://retroachievements.org/leaderboardinfo.php?i=122542) 2P Issue
+It seems this leaderboard may only be functional for 1P? If this is intented, just as mentioned with above issue: 
+The description doesn't mention that this achievement is only available in solo mode. Thus either add additional logic to allow 2P to unlock this as well or update the description accordingly.
+
+# %%%%%%%%%%%%% CODE REVIEW WRAP-UP %%%%%%%%%%%%% #
+
+# ------Promotion Steps (useful for CR)------ 
+0. First post [Wrap-Up & Next Steps] section in Code Review Thread
+
+## ---------When not promoted to full dev---------
+1. Take set/game out of `(In Review)` on RA game page, if necessary. By pressing `Complete Claim Review` in `Dev` drop down menu
+2. Promote all achievements to official, disregard achievements marked `[VOID]`
+3. Tell Junior to complete claim via `Dev` drop down menu
+4. Post `Achievement News Announcement`, reviewed by Junior
+5. Post [✒️ RANews Set Highlight] in Code Review to fill out the form 
+
+## ---------When promoted to full dev--------
+1. Take set/game out of `(In Review)` on RA game page, if necessary. By pressing `Complete Claim Review` in `Dev` drop down menu
+2. Tell Junior/new dev to promote all achievements to official, disregarding achievements marked `[VOID]`
+3. Tell Junior to complete claim via `Dev` drop down menu
+4. Let Junior post `Achievement News Announcement`
+5. Post [✒️ RANews Set Highlight] in Code Review to fill out the form
+
+6. Fill out & update Proficiecy-Checklist 
+
+#  ✦═══════✦ :check: Wrap-Up & Next Steps ✦═══════✦ // TODO
+/// Final phase and closing guidance.
+
+### ---⇢ 🎓 Retrospective ⇠--- // TODO
+/// Summarize/reflect what went well (positive observations) and what didn’t (key challenges or mistakes). Highlight any significant learning moments or improvements made during development/code review.
+
+### ---⇢ 🤔 Suggestions ⇠--- // TODO
+/// Recommend areas for growth using the [Proficiency Checklist]. This may include tools or skills that weren’t demonstrated during the set development.
+/// What is evaluated? Refer to [RAdocs - Jr Dev Graduation Consideration](https://docs.retroachievements.org/developer-docs/jr-dev-rules.html)
+/// Suggestions may include:
+/// - Review other developers’ Code Reviews for common pitfalls and strong practices.
+/// - Use Discord help channels frequently — don’t hesitate to ask for feedback.
+/// - Keep [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/) handy while working; it’s an essential tool.
+
+## ∘───── 🌟 Achievement Unlocked! ─────∘ // TODO, only include this section when promoted to full dev
+/// This section is used for guiding Jr through promotion to full developer (let Jr try to make the Achievement-NewsAnnouncement)
+> *"Promoted to full developer!"*
+...
+
+## ∘───── 🌟 Set Promotion ─────∘ // TODO, only include this section, when not promoted to full dev
+/// Guide junior through set promotion + ask to review "Achievement News Announcement" template
+Alright, we'll be promoting the set, once you're ready. Any achievements marked `[VOID]` will remain in Unofficial.
+
+Please review the **"Achievement News Announcement"** template below, which shall be posted in [#achievement-news in RAdiscord](https://discord.com/channels/310192285306454017/310207383542562816)
+- Let me know if the video I’ve provided is okay, else share a link to a more suitable one if you prefer.
+- Do you have any flavour text you'd like to include with the announcement? Try to write something that will make players excited to try out your set. You could briefly highlight what makes the game fun or unique, or what kind of experience the achievement set offers.
+
+Reply/ping me once you’ve looked it over and are ready to promote it!
+> ℹ️ **NOTE** — Both of us need to be online at the same time to promote the set. Let me know when you're available so we can coordinate.
+> **Here’s how it’ll go**: I will be promoting all achievements to Official. Afterwards you'll need to click the `Complete Claim` button from the `Dev` drop-down menu on the game page, ideally within a reasonable timeframe after the promotion of the set. That’s all there is to it!
+
+### ---⇢ 💎 Achievement News Announcement ⇠---
+/// Post Achievement-NewsAnnouncement_Template.txt here
+
+#  ✦═══════✦ :kirbyjam: Post-Set Promotion ✦═══════✦
+
+## ∘───── ✒️ RANews Set Highlight ─────∘ // TODO
+As a final step, please take a moment to fill out the [RAnews Set Highlight Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview). In it, you’ll be asked to write a short pitch promoting your game/set, aimed at readers of the RetroAchievements digital magazine. Your snippet may be featured—fully or with minor edits—in an upcoming issue under the **"Junior Developer Program"** section.
+
+Use this as a chance to spotlight what makes the game and your achievement set stand out. It’s a great way to highlight your work and get players excited to check it out! Consider briefly mentioning:
+- What the game is about
+- What makes the achievement set fun or unique
+- Any specific design focus or standout challenges
+This isn’t a devlog, just a brief, engaging introduction meant to catch a reader’s attention.
+
+Here are a few examples of past highlights for inspiration:
+- [RANews Issue February 2025](https://news.retroachievements.org/issues/2025-02/jr-developer-program.html) (first appearance of this section)
+- [RANews Issue March 2025](https://news.retroachievements.org/issues/2025-03/jr-developer-program.html)
+- [RANews Issue April 2025](https://news.retroachievements.org/issues/2025-04/jr-developer-program.html)
+- ...
+
+Once you've submitted your entry into the form, feel free to ping me, so we can close this discord thread as :white_check_mark: resolved!

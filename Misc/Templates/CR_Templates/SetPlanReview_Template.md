@@ -64,13 +64,13 @@ Please take some time to carefully read through all the notes and suggestions ou
 
 Once you’ve reviewed everything and made any necessary updates or adjustments, we’ll be ready to move things forward and get you devving in no time!
 
-# ✦═══════✦ 🔍 Set Plan Review ✦═══════✦ // TODO
-
-## 🎓 Development Intentions // TODO, only include this for Jr Dev Requests
+# 🎓 Development Intentions // TODO, only include this for Jr Dev Requests
 /// Ask what their intentions are for joining the program. We are searching for individuals who wan't to become full devs rather than devs that only stay for a little while.
 - What are your main motivations for joining the RA Developer Program?
 - Do you see yourself becoming a full developer, or are you mainly interested in trying it out temporarily?
 - Are there specific games or genres you’re especially interested in working on?
+
+# ✦═══════✦ 🔍 Set Plan Review ✦═══════✦ // TODO
 
 ## 🎯 Overal Set Design // TODO
 /// Balance, creativity, progression, and content coverage. 
