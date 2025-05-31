@@ -25,7 +25,6 @@ Developer:   [0;32m _DEVELOPERS_HERE_ [0m
 Genre:       [0;35m _GENRES_HERE_ [0m
 Released:    [0;33m MMMM DD, YYYY [0m
 ```
-
 A new set was published by @ASolidSnack on _TIMESTAMP_HERE_
 
 _FLAVOR_TEXT_HERE_
@@ -38,6 +37,10 @@ _FLAVOR_TEXT_HERE_
 || Template_CR ||
 '''''''''''''''''
 
+.................
+|| Template_CR ||
+'''''''''''''''''
+
 ```ansi
 Title:       [1;31m _TITLE_HERE_ [0m
 Console:     [0;34m _CONSOLE_HERE_ [0m
@@ -45,7 +48,6 @@ Developer:   [0;32m _DEVELOPERS_HERE_ [0m
 Genre:       [0;35m _GENRES_HERE_ [0m
 Released:    [0;33m MMMM DD, YYYY [0m
 ```
-
 A new set was published by @_USERNAME_HERE on _TIMESTAMP_HERE_
 
 _FLAVOR_TEXT_HERE_
@@ -60,17 +62,20 @@ _FLAVOR_TEXT_HERE_
 || Temp ||
 ''''''''''
 
-```ansi
-Title:       [1;31m Treasures of the Deep [0m
-Console:     [0;34m PlayStation [0m
-Developer:   [0;32m Black Ops Entertainment [0m
-Genre:       [0;35m Action, Simulation [0m
-Released:    [0;33m September 24, 1997 [0m
-```
+.................
+|| Template_CR ||
+'''''''''''''''''
 
-A new set was published by @stoneskipper42 on <t:1747585406:D>
+```ansi
+Title:       [1;31m RayForce (also known as Gunlock) [0m
+Console:     [0;34m Arcade [0m
+Developer:   [0;32m Taito [0m
+Genre:       [0;35m Shoot 'em Up [0m
+Released:    [0;33m February 1994 [0m
+```
+A new set was published by @kssfilo on <t:1748679172:D>
 
 _FLAVOR_TEXT_HERE_
 
-[Gameplay](https://www.youtube.com/watch?v=6jDtggvOnHQ&list=PL21nKMUhIdU3rjAsS2us8iRSuemSvpz6k)
-[RetroAchievements Game Page](https://retroachievements.org/game/19403)
+[Gameplay](https://www.youtube.com/watch?v=IfpxITYueA0)
+[RetroAchievements Game Page](https://retroachievements.org/game/13588)

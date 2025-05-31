@@ -320,6 +320,7 @@ Alright, we'll be promoting the set, once you're ready. Any achievements marked 
 Please review the **"Achievement News Announcement"** template below, which shall be posted in [#achievement-news in RAdiscord](https://discord.com/channels/310192285306454017/310207383542562816)
 - Let me know if the video I’ve provided is okay, else share a link to a more suitable one if you prefer.
 - Do you have any flavour text you'd like to include with the announcement? Try to write something that will make players excited to try out your set. You could briefly highlight what makes the game fun or unique, or what kind of experience the achievement set offers.
+- Are there any additional links which should be included? Perhaps an RAguide?
 
 Reply/ping me once you’ve looked it over and are ready to promote it!
 > ℹ️ **NOTE** — Both of us need to be online at the same time to promote the set. Let me know when you're available so we can coordinate.
@@ -328,7 +329,7 @@ Reply/ping me once you’ve looked it over and are ready to promote it!
 ### ---⇢ 💎 Achievement News Announcement ⇠---
 /// Post Achievement-NewsAnnouncement_Template.txt here
 
-#  ✦═══════✦ :kirbyjam: Post-Set Promotion ✦═══════✦
+#  ✦═══════✦ :kirbyjam: Post-Set Promotion ✦═══════✦ // TODO
 
 ## ∘───── ✒️ RANews Set Highlight ─────∘ // TODO
 As a final step, please take a moment to fill out the [RAnews Set Highlight Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview). In it, you’ll be asked to write a short pitch promoting your game/set, aimed at readers of the RetroAchievements digital magazine. Your snippet may be featured—fully or with minor edits—in an upcoming issue under the **"Junior Developer Program"** section.
