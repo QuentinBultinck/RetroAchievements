@@ -682,7 +682,7 @@ Reply/ping me once you’ve fixed the last description, looked over the "Achieve
 
 ### ---⇢ 💎 Achievement News Announcement ⇠---
 ```ansi
-Title:       [1;31m RayForce (also known as Gunlock) [0m
+Title:       [1;31m RayForce | Gunlock [0m
 Console:     [0;34m Arcade [0m
 Developer:   [0;32m Taito [0m
 Genre:       [0;35m Shoot 'em Up [0m
