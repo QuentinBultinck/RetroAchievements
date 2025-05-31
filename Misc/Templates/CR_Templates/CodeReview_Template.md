@@ -167,11 +167,12 @@ RA Game Page => _LINK_RA_GAME_PAGE_
 
 ### ❓ Hubs & Similar Games // TODO
 Are there any **hubs** you think should be added?
-Be sure to review the [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html) for proper usage.
+Be sure to review the [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html#common-hubs) for proper usage.
 I recommend browsing the full list of hubs via [RAweb - All Hubs](https://retroachievements.org/hubs) to find any relevant matches.
 
 How about **similar games**?
 Consider titles from the same series, or games within a similar genre or with shared mechanics.
+Be sure to review the section on this matter in [RAdocs - Similar Games](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html#similar-games)
 
 If the game includes **multiplayer**, one of the following meta hubs may apply, depending on how the set handles multiplayer functionality:
 - [Meta - Set Disallows Multiplayer](https://retroachievements.org/hub/26213)

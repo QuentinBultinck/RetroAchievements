@@ -104,10 +104,22 @@ You're the expert on this game, so this is up to you.
 /// Consider [#playtest-requests on RAdiscord](https://discord.com/channels/310192285306454017/1169258130555797524)
 
 ### 👉 Metadata & Hubs // TODO
-/// Hubs need to be added by CR, Juniors don't have permissions.
-- Is everything correctly filled out on the **manage page** and **game page**? (publishers, genre, game screenshots, box art, release date...)
-- Any hubs to add? (Refer to [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html) and [RAweb - All Hubs](https://retroachievements.org/hubs))
-- Any similar games to add? Think of games that may fit the same genre or games of the same series, perhaps.
+- Is everything correctly filled out on the **manage page** and **game page**? (publishers, genre, game screenshots, box art, release date, credits...)
+
+Are there any **hubs** you think should be added?
+Be sure to review the [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html#common-hubs) for proper usage.
+I recommend browsing the full list of hubs via [RAweb - All Hubs](https://retroachievements.org/hubs) to find any relevant matches.
+
+How about **similar games**?
+Consider titles from the same series, or games within a similar genre or with shared mechanics.
+Be sure to review the section on this matter in [RAdocs - Similar Games](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html#similar-games)
+
+If the game includes **multiplayer**, one of the following meta hubs may apply, depending on how the set handles multiplayer functionality:
+- [Meta - Set Disallows Multiplayer](https://retroachievements.org/hub/26213)
+- [Meta - Set Allows Multiplayer](https://retroachievements.org/hub/22986)
+- [Meta - Set Partially Allows Multiplayer](https://retroachievements.org/hub/7115)
+
+Since Junior Developers don’t have permission to add hubs or similar games directly, please make a list of all that apply, and we’ll handle the additions from there.
 
 # ------Closing Notes------ // TODO
 
