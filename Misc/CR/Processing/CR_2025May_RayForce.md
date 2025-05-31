@@ -596,7 +596,7 @@ New Art has been uploaded and credited, refer to https://discord.com/channels/31
 
 @kssfilo I re-evaluated all your changes you made and it seems there's only two remaining issues, I spotted, + 1 additional prerequisite task, that was overlooked.  So once you addressed these last remarks. We can probably move to wrap up this code review.  Ping me again once you've taken a look at the issue and made any changes if necessary.
 
-### 🔲 ❗  Achievement [Hatch Obliterator](https://retroachievements.org/achievement/484825) Issues
+### ✅ ❗  Achievement [Hatch Obliterator](https://retroachievements.org/achievement/484825) Issues
 Seems like you've made smart use of R/R flags here, translating a values Mem/Delta difference into hitcounts, something I haven't thought of this yet myself, will definitely add this to my skills as well.
 
 **2P**
@@ -606,11 +606,11 @@ The description doesn't mention that this achievement is only available in solo 
 **Points**
 I think this may be better scored as a 10-pointer instead of 25-pointer, refer to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html). Although in the end it's your choice. On the other hand if the player has to get to Area 7 and then complete this challenge, it might be OK at that score.
 
-### 🔲 ❗ Leaderboard [8 Ball Madness](https://retroachievements.org/leaderboardinfo.php?i=122542) 2P Issue
+### 🔄 ❗ Leaderboard [8 Ball Madness](https://retroachievements.org/leaderboardinfo.php?i=122542) 2P Issue
 It seems this leaderboard may only be functional for 1P? If this is intented, just as mentioned with above issue: 
 The description doesn't mention that this achievement is only available in solo mode. Thus either add additional logic to allow 2P to unlock this as well or update the description accordingly.
 
-### 🔲 ❓ Hubs & Similar Games
+### ✅ ❓ Hubs & Similar Games
 Are there any **hubs** you think should be added?
 Be sure to review the [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html) for proper usage.
 I recommend browsing the full list of hubs via [RAweb - All Hubs](https://retroachievements.org/hubs) to find any relevant matches.
@@ -646,41 +646,56 @@ Since Junior Developers don’t have permission to add hubs or similar games dir
 
 6. Fill out & update Proficiecy-Checklist 
 
-#  ✦═══════✦ :check: Wrap-Up & Next Steps ✦═══════✦ // TODO
-/// Final phase and closing guidance.
+#  ✦═══════✦ :check: Wrap-Up & Next Steps ✦═══════✦
 
-### ---⇢ 🎓 Retrospective ⇠--- // TODO
-/// Summarize/reflect what went well (positive observations) and what didn’t (key challenges or mistakes). Highlight any significant learning moments or improvements made during development/code review.
+### ---⇢ 🎓 Retrospective ⇠---
+@kssfilo, after extensive feedback, revisions, and consistent effort, it’s clear that you’ve grown a lot through this process. Many of the improvements and fixes were handled independently, which is a great sign of initiative and development as a Junior Developer. One recurring point of feedback I’d offer is to pay closer attention to grammar in your achievement descriptions, be sure to make full use of the writing team for polish and clarity.
 
-### ---⇢ 🤔 Suggestions ⇠--- // TODO
-/// Recommend areas for growth using the [Proficiency Checklist]. This may include tools or skills that weren’t demonstrated during the set development.
-/// What is evaluated? Refer to [RAdocs - Jr Dev Graduation Consideration](https://docs.retroachievements.org/developer-docs/jr-dev-rules.html)
-/// Suggestions may include:
-/// - Review other developers’ Code Reviews for common pitfalls and strong practices.
-/// - Use Discord help channels frequently — don’t hesitate to ask for feedback.
-/// - Keep [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/) handy while working; it’s an essential tool.
+It’s clear that a lot of time and care went into building this set. The final product is a well-constructed and creative achievement set that came together nicely through the Code Review process. The two biggest issues were the lack of consideration for 2-player support or not and the excessive leaderboard spam, both of which were addressed. In addition, there were several minor issues related to code standards, which are perfectly normal at this stage and were worked through effectively.
 
-## ∘───── 🌟 Achievement Unlocked! ─────∘ // TODO, only include this section when promoted to full dev
-/// This section is used for guiding Jr through promotion to full developer (let Jr try to make the Achievement-NewsAnnouncement)
-> *"Promoted to full developer!"*
-...
+You’ve shown strong potential, and I’m looking forward to seeing what you take on next. I was especially astonished that you were able to make correct usage of R/R flags. You're definitely on the right path to becoming a full developer—keep up the great work!
 
-## ∘───── 🌟 Set Promotion ─────∘ // TODO, only include this section, when not promoted to full dev
-/// Guide junior through set promotion + ask to review "Achievement News Announcement" template
+### ---⇢ 🤔 Suggestions ⇠---
+- Make use of the writing-team whenever you're making changes to descriptions, you seem to struggle with this consistently, which is no shame.
+- Keep [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/) handy while working; it’s an essential tool.
+
+Regarding toolkit usage:
+- Try implementing a challenge with a PauseLock for one of your next sets, so we can see how you would handle these.
+- More consistent usage of deltas
+- More usage of HitCounts (with AddHits/SubHits flags)
+- Perhaps show us you're able to work with Pointers (using AddAddress flags)
+- In general just show us more varied and correct usage of the whole toolkit going forward.
+
+## ∘───── 🌟 Set Promotion ─────∘
 Alright, we'll be promoting the set, once you're ready. Any achievements marked `[VOID]` will remain in Unofficial.
 
 Please review the **"Achievement News Announcement"** template below, which shall be posted in [#achievement-news in RAdiscord](https://discord.com/channels/310192285306454017/310207383542562816)
 - Let me know if the video I’ve provided is okay, else share a link to a more suitable one if you prefer.
-- Do you have any flavour text you'd like to include with the announcement? Try to write something that will make players excited to try out your set. You could briefly highlight what makes the game fun or unique, or what kind of experience the achievement set offers.
+- Do you have any flavour text you'd like to include with the announcement? Try to write something that will make players excited to try out your set. You could briefly highlight what makes the game fun or unique, or what kind of experience the achievement set offers. Else I could write a short snipper here myself if you prefer or we could leave it blank.
+- Are there any additional links which should be included? Perhaps an RAguide?
 
-Reply/ping me once you’ve looked it over and are ready to promote it!
+Reply/ping me once you’ve fixed the last description, looked over the "Achievement News Announcement" template below and are ready to promote it!
+
 > ℹ️ **NOTE** — Both of us need to be online at the same time to promote the set. Let me know when you're available so we can coordinate.
+> 
 > **Here’s how it’ll go**: I will be promoting all achievements to Official. Afterwards you'll need to click the `Complete Claim` button from the `Dev` drop-down menu on the game page, ideally within a reasonable timeframe after the promotion of the set. That’s all there is to it!
 
 ### ---⇢ 💎 Achievement News Announcement ⇠---
-/// Post Achievement-NewsAnnouncement_Template.txt here
+```ansi
+Title:       [1;31m RayForce (also known as Gunlock) [0m
+Console:     [0;34m Arcade [0m
+Developer:   [0;32m Taito [0m
+Genre:       [0;35m Shoot 'em Up [0m
+Released:    [0;33m February 1994 [0m
+```
+A new set was published by @kssfilo on <t:1748679172:D>
 
-#  ✦═══════✦ :kirbyjam: Post-Set Promotion ✦═══════✦
+_FLAVOR_TEXT_HERE_
+
+[Gameplay](https://www.youtube.com/watch?v=IfpxITYueA0)
+[RetroAchievements Game Page](https://retroachievements.org/game/13588)
+
+#  ✦═══════✦ :kirbyjam: Post-Set Promotion ✦═══════✦ // TODO
 
 ## ∘───── ✒️ RANews Set Highlight ─────∘ // TODO
 As a final step, please take a moment to fill out the [RAnews Set Highlight Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview). In it, you’ll be asked to write a short pitch promoting your game/set, aimed at readers of the RetroAchievements digital magazine. Your snippet may be featured—fully or with minor edits—in an upcoming issue under the **"Junior Developer Program"** section.
