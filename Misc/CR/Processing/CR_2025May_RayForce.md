@@ -690,10 +690,15 @@ Released:    [0;33m February 1994 [0m
 ```
 A new set was published by @kssfilo on <t:1748679172:D>
 
-_FLAVOR_TEXT_HERE_
+Get ready to lock on and dive into the origins of a legendary shoot 'em up series!
+RayForce is the thrilling first entry in the RAY trilogy — a series of arcade shoot 'em ups developed and published by Taito during the 1990s. First launched in arcades and later brought to home consoles like the Sega Saturn, this classic sets the stage for the high-speed, high-stakes action the series is known for.
 
-[Gameplay](https://www.youtube.com/watch?v=IfpxITYueA0)
+At the heart of RayForce lies its iconic lock-on laser mechanic — a groundbreaking system that lets you target and destroy multiple enemies across different layers of the battlefield. Combined with tight, intuitive gameplay, an eerie sci-fi atmosphere, and a hauntingly beautiful soundtrack composed by Tamayo Kawamoto, RayForce offers an unforgettable experience that still feels fresh decades later.
+Whether you're a longtime fan or a newcomer, this is where the RAY legend begins. Are you ready to take flight?
+
+[Gameplay](https://www.youtube.com/watch?v=IZx5e_XAzlM)
 [RetroAchievements Game Page](https://retroachievements.org/game/13588)
+[RayForce Fandom Wiki](https://layersection.fandom.com/wiki/RayForce)
 
 #  ✦═══════✦ :kirbyjam: Post-Set Promotion ✦═══════✦ // TODO
 
