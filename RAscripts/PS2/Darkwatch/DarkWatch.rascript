@@ -5886,7 +5886,7 @@ achievements_titles = {
 	"a_Hangtown": 				{"en": "Noose and Nightmare"},
 	"a_MorningAfter": 			{"en": "When the Sun Rose, It Found Ruins"},
 	"a_Showdown": 				{"en": "The Devil You Know"},
-	"a_RightTrain": 			{"en": "Damnation Express"},	Jericho in Outfit/on horse?
+	"a_RightTrain": 			{"en": "Damnation Express"},
 	"a_Deadfall": 				{"en": "Where the Dead Still Fall"},
 	// --------c_SPend--------
 	"a_CurseWestGood": 			{"en": "Dawn Over Darkness"},
@@ -5927,12 +5927,12 @@ achievements_titles = {
 	"a_GunCurseWest": 			{"en": "Balance of Blood"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	// --------c_Bonus--------
-	"a_GatlingRightTrain":		{"en": "Rotary of Damnation"},	GatlingGun + night aura
-	"a_GatlingPrism":			{"en": "Circle of Suppression"},	GatlingGun + prism/sun aura
-	"a_SunPower":				{"en": "Sun-Kissed Suicide"},	PowerUI + sun aura?
+	"a_GatlingRightTrain":		{"en": "Rotary of Damnation"},
+	"a_GatlingPrism":			{"en": "Circle of Suppression"},
+	"a_SunPower":				{"en": "Sun-Kissed Suicide"},
 	"a_Multikill":				{"en": "Hell's Choir"},
-	"a_AllPowersEvil":			{"en": "Grim Phantom"},	Power UI
-	"a_AllPowersGood":			{"en": "Righteous Revenant"},	Power UI
+	"a_AllPowersEvil":			{"en": "Grim Phantom"},
+	"a_AllPowersGood":			{"en": "Righteous Revenant"},
 	}
 // -------------------------------------
 achievements_descriptions = {
