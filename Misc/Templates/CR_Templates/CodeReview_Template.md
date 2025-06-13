@@ -317,14 +317,17 @@ I'll be using this list here to track your progress as well. As you work through
 /// Guide junior through set promotion + ask to review "Achievement News Announcement" template
 Alright, we'll be promoting the set, once you're ready. Any achievements marked `[VOID]` will remain in Unofficial.
 
-Please review the **"Achievement News Announcement"** template below, which shall be posted in [#achievement-news in RAdiscord](https://discord.com/channels/310192285306454017/310207383542562816)
+Please review the **"Achievement News Announcement"** template below, which shall be posted in [#achievement-news in RAdiscord](https://discord.com/channels/310192285306454017/310207383542562816) once the set goes live.
 - Let me know if the video I’ve provided is okay, else share a link to a more suitable one if you prefer.
 - Do you have any flavour text you'd like to include with the announcement? Try to write something that will make players excited to try out your set. You could briefly highlight what makes the game fun or unique, or what kind of experience the achievement set offers.
 - Are there any additional links which should be included? Perhaps an RAguide?
 
 Reply/ping me once you’ve looked it over and are ready to promote it!
 > ℹ️ **NOTE** — Both of us need to be online at the same time to promote the set. Let me know when you're available so we can coordinate.
+> 
 > **Here’s how it’ll go**: I will be promoting all achievements to Official. Afterwards you'll need to click the `Complete Claim` button from the `Dev` drop-down menu on the game page, ideally within a reasonable timeframe after the promotion of the set. That’s all there is to it!
+> 
+> After that, I’ll post the **"Achievement News Announcement"** on your behalf. Once that’s done, I’ll leave one final comment in the Code Review thread asking for an RAnews Set Highlight snippet. I’ll explain this more when we get to that point.
 
 ### ---⇢ 💎 Achievement News Announcement ⇠---
 /// Post Achievement-NewsAnnouncement_Template.txt here

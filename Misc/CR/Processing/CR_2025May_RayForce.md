@@ -679,6 +679,8 @@ Reply/ping me once you’ve fixed the last description, looked over the "Achieve
 > ℹ️ **NOTE** — Both of us need to be online at the same time to promote the set. Let me know when you're available so we can coordinate.
 > 
 > **Here’s how it’ll go**: I will be promoting all achievements to Official. Afterwards you'll need to click the `Complete Claim` button from the `Dev` drop-down menu on the game page, ideally within a reasonable timeframe after the promotion of the set. That’s all there is to it!
+> 
+> After that, I’ll post the **"Achievement News Announcement"** on your behalf. Once that’s done, I’ll leave one final comment in this Code Review thread asking for an RAnews Set Highlight snippet. I’ll explain this more when we get to that point.
 
 ### ---⇢ 💎 Achievement News Announcement ⇠---
 ```ansi
