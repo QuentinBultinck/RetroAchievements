@@ -5886,7 +5886,7 @@ achievements_titles = {
 	"a_Hangtown": 				{"en": "Noose and Nightmare"},
 	"a_MorningAfter": 			{"en": "When the Sun Rose, It Found Ruins"},
 	"a_Showdown": 				{"en": "The Devil You Know"},
-	"a_RightTrain": 			{"en": "Damnation Express"},
+	"a_RightTrain": 			{"en": "Damnation Express"},	Jericho in Outfit/on horse?
 	"a_Deadfall": 				{"en": "Where the Dead Still Fall"},
 	// --------c_SPend--------
 	"a_CurseWestGood": 			{"en": "Dawn Over Darkness"},
@@ -5927,12 +5927,12 @@ achievements_titles = {
 	"a_GunCurseWest": 			{"en": "Balance of Blood"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	// --------c_Bonus--------
-	"a_GatlingRightTrain":		{"en": "Rotary of Damnation"},
-	"a_GatlingPrism":			{"en": "Circle of Suppression"},
-	"a_SunPower":				{"en": "Sun-Kissed Suicide"},
+	"a_GatlingRightTrain":		{"en": "Rotary of Damnation"},	GatlingGun + night aura
+	"a_GatlingPrism":			{"en": "Circle of Suppression"},	GatlingGun + prism/sun aura
+	"a_SunPower":				{"en": "Sun-Kissed Suicide"},	PowerUI + sun aura?
 	"a_Multikill":				{"en": "Hell's Choir"},
-	"a_AllPowersEvil":			{"en": "Grim Phantom"},
-	"a_AllPowersGood":			{"en": "Righteous Revenant"},
+	"a_AllPowersEvil":			{"en": "Grim Phantom"},	Power UI
+	"a_AllPowersGood":			{"en": "Righteous Revenant"},	Power UI
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -5995,7 +5995,7 @@ achievements_descriptions = {
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	// --------c_Bonus--------
 	"a_GatlingRightTrain":		{"en": "Spin it up and hold the line. In Chapter 15, \"The Right Train\", kill 15 undead in a row with the gatling gun without dismounting or going below 50% vampire shield, on Shootist difficulty or higher. Enemies killed by exploding barrels are not counted"},
-	"a_GatlingPrism":			{"en": "The artefact won't defend itself. In Chapter 10, \"The Deadlight Prism\", rack up 15 kills with the gatling gun without dismounting or or going below 50% vampire shield, on Shootist difficulty or higher. Enemies killed by exploding barrels are not counted"},
+	"a_GatlingPrism":			{"en": "The artefact won't defend itself. In Chapter 10, \"The Deadlight Prism\", rack up 15 kills with the gatling gun without dismounting or going below 50% vampire shield, on Shootist difficulty or higher. Enemies killed by exploding barrels are not counted"},
 	"a_SunPower":				{"en": "The sun burns down on you, but you refuse to yield. Activate Vampire Vision repeatedly under its relentless heat and see how long you can endure, in Single Player or Gunslinger Mode"},
 	"a_Multikill":				{"en": "Send four souls screaming to the afterlife at the same time in Single Player or Gunslinger Mode"},
 	"a_AllPowersEvil":			{"en": "No redemption, no regret—only power. Unlock all Evil powers in Single Player"},
