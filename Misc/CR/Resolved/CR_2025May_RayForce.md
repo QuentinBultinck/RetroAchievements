@@ -690,7 +690,7 @@ Developer:   [0;32m Taito [0m
 Genre:       [0;35m Shoot 'em Up [0m
 Released:    [0;33m February 1994 [0m
 ```
-A new set was published by @kssfilo on <t:1748679172:D>
+A new set was published by @kssfilo on <t:1749886200:D>
 
 Get ready to lock on and dive into the origins of a legendary shoot 'em up series!
 RayForce is the thrilling first entry in the RAY trilogy — a series of arcade shoot 'em ups developed and published by Taito during the 1990s. First launched in arcades and later brought to home consoles like the Sega Saturn, this classic sets the stage for the high-speed, high-stakes action the series is known for.
@@ -702,9 +702,9 @@ Whether you're a longtime fan or a newcomer, this is where the RAY legend begins
 [RetroAchievements Game Page](https://retroachievements.org/game/13588)
 [RayForce Fandom Wiki](https://layersection.fandom.com/wiki/RayForce)
 
-#  ✦═══════✦ :kirbyjam: Post-Set Promotion ✦═══════✦ // TODO
+#  ✦═══════✦ :kirbyjam: Post-Set Promotion ✦═══════✦
 
-## ∘───── ✒️ RANews Set Highlight ─────∘ // TODO
+## ∘───── ✒️ RANews Set Highlight ─────∘
 As a final step, please take a moment to fill out the [RAnews Set Highlight Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview). In it, you’ll be asked to write a short pitch promoting your game/set, aimed at readers of the RetroAchievements digital magazine. Your snippet may be featured—fully or with minor edits—in an upcoming issue under the **"Junior Developer Program"** section.
 
 Use this as a chance to spotlight what makes the game and your achievement set stand out. It’s a great way to highlight your work and get players excited to check it out! Consider briefly mentioning:

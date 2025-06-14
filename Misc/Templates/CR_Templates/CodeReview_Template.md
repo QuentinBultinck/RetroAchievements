@@ -310,11 +310,48 @@ I'll be using this list here to track your progress as well. As you work through
 
 ## ∘───── 🌟 Achievement Unlocked! ─────∘ // TODO, only include this section when promoted to full dev
 /// This section is used for guiding Jr through promotion to full developer (let Jr try to make the Achievement-NewsAnnouncement)
+///
+/// Steps to Promoting:
+/// -------------------
+/// 1. Get them discord and site roles, via (discord) Moderator
+///     - Ping the promoted dev with a welcome message in `#dev-chat`, once they got the role
+/// 2. Walk them through bulk promote, complete claim and Achievement News Announcement (let them do these)
+///     - Explain how to use `!gan [gameid]` in `#botspam`
+///     - Edit in the set release date + ping `achievement-news` role
+///     - Post in `#achievement-news` + click the megaphone 📣 to publish the announcement to other servers hooked on to this channel
+/// 3. Highlight new things available as full dev:
+///     - Up to 4 claims
+///     - Ability to edit achievements to address tickets without demoting
+///     - Linking new hashes
+///     - Channels (dev-requests, dev-chat, dev-help...)
+/// 4. Add hub [Dev Events - Junior Developer Graduate Sets](https://retroachievements.org/hub/7975) to game ( + add it to the list in the forum using the CRTeam account??)
+/// 5. Request the jr-dev-badge for the promoted dev in #dev-requests
+/// 
+/// After things simmer down a bit:
+/// -------------------------------
+/// - Link the devs docs to incentivize reading them again, since new parts apply. Revisions, subsets and collabs in particular should be read again before engaging with setting up notifications for revisions and rescores
+///     - [Dev Tutorial Document](https://docs.google.com/document/d/1Bw5rXp0i1wYe7j1ZgiQje_-oFKxXdJelqKlbdCNXp_E/edit?tab=t.0#heading=h.ksjo1g1oe9n9)
+/// - New available events (devquest, devjam...)
+/// - Ability to work on inactive devs tickets and the way to access them on-site
+/// - Link the many surveys to fill up eventually with no time pressure:
+///     - [RAnews Set Highlight Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
+///     - [Jr-Dev-Program Feedback Form](https://forms.gle/UTKAhdpgx2iaXxxo7)
+///     - Revision/gauntlet opt-out
+///     - Writing touch-ups permissions 
+
 > *"Promoted to full developer!"*
 ...
 
 ## ∘───── 🌟 Set Promotion ─────∘ // TODO, only include this section, when not promoted to full dev
 /// Guide junior through set promotion + ask to review "Achievement News Announcement" template
+///
+/// Steps to Promoting the Set:
+/// --------------------
+/// 1. CR: Click `Complete Review Claim` button in `Dev` drop-down menu
+/// 2. Jr: Click `Complete Claim` button in `Dev` drop-down menu
+/// 3. CR: Post **"Achievement News Announcement"** on their behalf
+/// 4. Update status of set in [Jr-Dev-Proficiency Checklist](https://docs.google.com/spreadsheets/d/1xeVscMX1eCllDAHXEHOUcORxyGUgC0jySDc28KHY6o8/edit?gid=1669062073#gid=1669062073)
+
 Alright, we'll be promoting the set, once you're ready. Any achievements marked `[VOID]` will remain in Unofficial.
 
 Please review the **"Achievement News Announcement"** template below, which shall be posted in [#achievement-news in RAdiscord](https://discord.com/channels/310192285306454017/310207383542562816) once the set goes live.
