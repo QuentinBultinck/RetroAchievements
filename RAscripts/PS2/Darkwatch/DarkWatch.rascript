@@ -5922,7 +5922,7 @@ achievements_titles = {
 	"a_GunHangtown": 			{"en": "No Loose Lead"},
 	"a_GunMorningAfter": 		{"en": "Brutal Grace"},
 	"a_GunShowdown": 			{"en": "Bare-Fanged Brawl"},
-	"a_GunRightTrain": 			{"en": "Irons on the Rails"},
+	"a_GunRightTrain": 			{"en": "Reins on the Rails"},
 	"a_GunDeadfall": 			{"en": "Deadshot Descent"},
 	"a_GunCurseWest": 			{"en": "Balance of Blood"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
