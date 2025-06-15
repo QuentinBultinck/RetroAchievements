@@ -13,12 +13,8 @@ This guide provides comprehensive details on how to unlock each achievement with
 <h3 id=ToC> 📑 Table of Contents</h3>
 
 - 💎 **[Achievement Guide](#AchievementGuide)** 
-
-    <sub> - General Info - </sub>
     - 📜 [Co-op Participation Tracking](#-co-op-participation-tracking)
     - 📜 [Walkthroughs & Resources](WalkthroughsResources)
-
-    <sub> - Achievements - </sub>
     - 🏆 *[Story Progression](#c_Story)*
     - 🏆 *[Story Endings](#c_StoryEnd)*
     - 🏆 *[Challenges](#c_Challenge)*
