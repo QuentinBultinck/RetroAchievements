@@ -48,6 +48,13 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 + [PS2 Manual (English)](https://oldgamesdownload.com/wp-content/uploads/Darkwatch_Manual_PS2_EN.pdf "Darkwatch PS2 Manual (English)")
 + [Capcom Database Fandom Wiki](https://capcom.fandom.com/wiki/Darkwatch "Darkwatch Capcom Database Fandom Wiki")
 + [Official Fandom Wiki](https://darkwatchgame.fandom.com/wiki/Darkwatch_Wiki "Darkwatch Fandom Wiki")
++ [PCSX2 Wiki](https://wiki.pcsx2.net/Darkwatch "PCSX2 Wiki")
+
+Some other interesting links regarding Darkwatch:
+
++ [Darkwatch All Concept Art - Youtube](https://www.youtube.com/watch?v=djleq9gzDOk "Darkwatch All Concept Art - Youtube Video") 
++ [Darkwatch Official Artwork](https://www.jeuxactu.com/jeu/images-darkwatch-4772-6.htm#img "Darkwatch Official Artwork")
++ [Darkwatch Official Concept Art - ArtStation](https://farzadart.artstation.com/projects/Kakrkx "Darkwatch Official Concept Art - ArtStation")
 
 ---
 
@@ -325,7 +332,6 @@ With this guide, the player will not only understand the mechanics behind each l
 | RA-User | Role |
 |:---:|---|
 | <h4>[ASolidSnack](https://retroachievements.org/user/ASolidSnack)</h4> <img src="https://media.retroachievements.org/UserPic/ASolidSnack.png" alt="RA-User Avatar Image" width="96" height="96"> | <b> 🟉 *Achievement Set Developer* \| *Badge Design* \| *RA-Guide Author* </b> <br><br> |
-| <h4>[placeholder_contributor](https://retroachievements.org/user/placeholder_contributer)</h4> <img src="https://media.retroachievements.org/UserPic/placeholder_contributer.png" alt="RA-User Avatar Image" width="96" height="96"> |  <b> 🟉 *Contributor* \| *Tester* </b> <br><br> - Contributed by ... <br> - Tested the ... |
 
 <h1 id=Footnotes>
     ✏️ Footnotes
