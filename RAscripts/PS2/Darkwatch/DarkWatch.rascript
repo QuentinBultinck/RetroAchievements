@@ -2679,7 +2679,7 @@ memory_initialize()
 //																																			  \\
 // ****************************************************************************************************************************************** \\
 // #region ACHIEVEMENTS
-
+// TODO Point Distrubution
 // =========================
 // • ACHIEVEMENT core data •
 // =========================
@@ -2769,7 +2769,7 @@ achievements_coreData = {
 			// "id": 506260, "points": 0000000, "devInfo": "Unlock Concept Art 'Cowboy Animatic'"},
 		// "a_Shower": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506388, "points": 0000000, "devInfo": "Unlock Concept Art 'Showdown Animatic'"},
-		// "a_Saver": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_Intro": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506263, "points": 0000000, "devInfo": "Unlock Concept Art 'Rescue Intro Movie'"},
 		// "a_Moon": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506188, "points": 0000000, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
@@ -3756,7 +3756,7 @@ achievements_triggers = {
 	"a_Shower": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 		const_MIN_REQUIRED_DIFFICULTY = DIFFICULTY_Shootist
 		return achGenerate_FullTrigger_GunslingerUnlock_Difficulty(CHAPTER_15_RightTrain, const_MIN_REQUIRED_DIFFICULTY, enum_releaseRegion)}), // --> (1x) MANUAL_CONSTRUCTION
-	"a_Saver": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
+	"a_Intro": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 		const_REQUIRED_HEADSHOTKILLS = 20
 		/* MANUAL_CONSTRUCTION (AltGroup[7/14])
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
@@ -5892,9 +5892,9 @@ achievements_titles = {
 	"a_CurseWestGood": 			{"en": "Dawn Over Darkness"},
 	"a_CurseWestEvil": 			{"en": "The Devil Wears Spurs"},
 	// --------c_Unlocks--------
-	"a_Boss":					{"en": "Devil's Trophy Case"},
+	"a_Boss":					{"en": "Through Blood and Brotherhood"},
 	"a_Enemy1":					{"en": "Bone-Shattering Precision"},
-	"a_Enemy2":					{"en": "Graveyard Brawl"},
+	"a_Enemy2":					{"en": "Steel over Lead"},
 	"a_Train":					{"en": "Wrong Train, Right Shot"},
 	"a_Guns":					{"en": "The Gunslinger's Craft"},
 	"a_Drivers":				{"en": "Highway to Hell"},
@@ -5904,7 +5904,7 @@ achievements_titles = {
 	"a_Attract":				{"en": "Death's Calling Card"},
 	"a_Cowboy":					{"en": "Butcher of the Citadel"},
 	"a_Shower":					{"en": "Hell on the Rails"},
-	"a_Saver":					{"en": "One Shot, One Salvation"},
+	"a_Intro":					{"en": "One Shot, One Salvation"},
 	"a_Moon":					{"en": "The Devil's Hour"},
 	"a_Archive":				{"en": "The Price of Immortality"},
 	// --------c_Gunslinger--------
@@ -5915,7 +5915,7 @@ achievements_titles = {
 	"a_GunDWOutpost": 			{"en": "The Hunger Within"},
 	"a_GunWarTrain": 			{"en": "Unburned by the Boiler"},
 	"a_GunTortureMaze": 		{"en": "The Butcher's Gospel"},
-	"a_GunBaptismFire": 		{"en": "Clean Shots, Dirty Work"},
+	"a_GunBaptismFire": 		{"en": "Duty by Blazing Fire"},
 	"a_GunRescue": 				{"en": "No Blood of Mine"},
 	"a_GunPrism": 				{"en": "Sunburst Rush"},
 	"a_GunInvasion": 			{"en": "Disciplined Wrath"},
@@ -5959,20 +5959,20 @@ achievements_descriptions = {
 	"a_CurseWestGood": 			{"en": "The night breaks, the curse fades, and the West is free—at least for now. Achieve the good ending during Chapter 17, \"Curse of the West\", in Single Player Mode"},
 	"a_CurseWestEvil": 			{"en": "Ain't a soul left who can stop you. Ain't a god left who'd dare try. Achieve the evil ending during Chapter 17, \"Curse of the West\", in Single Player Mode"},
 	// --------c_Unlocks--------
-	"a_Boss":					{"en": "Earn the right to witness the horrors you've defeated. Unlock the \"Bosses Art\" concept art by completing Chapter 17, \"Curse of the West\", on Shootist difficulty in Gunslinger Mode"},
-	"a_Enemy1":					{"en": "A graveyard ain't the place for wasted bullets. Make every shot count, or end up six feet under. Unlock the \"Enemies 1\" concept art by completing Chapter 3, \"Boneyard\", with 65% or more accuracy in Gunslinger Mode"},
-	"a_Enemy2":					{"en": "Some folks hide behind guns. You settle things the old-fashioned way. Unlock the \"Enemies 2\" concept art by completing Chapter 14, \"Showdown\", with 20 or more melee kills in Gunslinger Mode"},
-	"a_Train":					{"en": "Ain't much room for shaky hands when the devil himself is ridin' the rails. Unlock the \"Wrong Train Animatic\" concept art by completing Chapter 1, \"The Wrong Train\", with 65% or more accuracy in Gunslinger Mode"},
+	"a_Boss":					{"en": "You've fought the worst and stood with the best. Unlock the \"Bosses\" & \"Allies of Darkwatch\" concept art by completing Chapter 17, \"Curse of the West\", on Shootist difficulty in Gunslinger Mode"},
+	"a_Enemy1":					{"en": "A graveyard ain't the place for wasted bullets. Make every shot count, or end up six feet under. Unlock the \"Enemies of Darkwatch 1\" concept art by completing Chapter 3, \"Boneyard\", with 65% or more accuracy in Gunslinger Mode"},
+	"a_Enemy2":					{"en": "Some folks hide behind guns. You settle things the old-fashioned way. Unlock the \"Enemies of Darkwatch 2\" concept art by completing Chapter 14, \"Showdown\", with 20 or more melee kills in Gunslinger Mode"},
+	"a_Train":					{"en": "Ain't much room for shaky hands when the devil himself is ridin' the rails. Unlock \"The Wrong Train Animatic\" concept art by completing Chapter 1, \"The Wrong Train\", with 65% or more accuracy in Gunslinger Mode"},
 	"a_Guns":					{"en": "A real gunslinger measures his worth in bullets. Miss too many, and the West will carve your tombstone early. Unlock the \"Weapons\" concept art by completing Chapter 13, \"The Morning After\", with 70% or more accuracy in Gunslinger Mode"},
 	"a_Drivers":				{"en": "Ain't no safer way to stop the dead than a bullet between the eyes. Unlock the \"Vehicles\" concept art by completing Chapter 16, \"Deadfall\", with 20 or more headshot kills in Gunslinger Mode"},
 	"a_Sights1":				{"en": "The outpost was supposed to be safe—guess nobody told the things crawling inside. Stay standing, or get buried with the rest. Unlock the \"Environments 1\" concept art by completing Chapter 5, \"Darkwatch Outpost\", with no deaths in Gunslinger Mode"},
 	"a_Sights2":				{"en": "This was their home, their last stand. Now it's just another battlefield—if you live long enough to see it. Unlock the \"Environments 2\" concept art by completing Chapter 11, \"Invasion\", on Deadeye difficulty in Gunslinger Mode"},
 	"a_Sights3":				{"en": "Every second the beast lingers, the curse digs deeper. End it fast, or the West won't remember your name at all. Unlock the \"Environments 3\" concept art by completing Chapter 17, \"Curse of the West\", in 10 minutes or less in Gunslinger Mode"},
 	"a_Attract":				{"en": "One man, eighty bodies—death keeps count, and so do you. Hope your saddlebag's big enough for the souls you're dragging. Unlock the \"Attract Mode Movie\" concept art by completing Chapter 10, \"The Deadlight Prism\", with 80+ kills in Gunslinger Mode"},
-	"a_Cowboy":					{"en": "Lead kills from a distance, but steel? Steel makes 'em remember. Let your blade do the talking. Unlock the \"Cowboy Animatic\" concept art by completing Chapter 7, \"Torture Maze\", with 30 or more melee kills in Gunslinger Mode"},
+	"a_Cowboy":					{"en": "Lead kills from a distance, but steel? Steel makes 'em remember. Let your blade do the talking. Unlock the \"Giddy-up, Cowboy Animatic\" concept art by completing Chapter 7, \"Torture Maze\", with 30 or more melee kills in Gunslinger Mode"},
 	"a_Shower":					{"en": "You boarded with a plan, but evil was already waiting. The only way off is through the wreckage. Unlock the \"Showdown Animatic\" concept art by completing Chapter 15, \"The Right Train\", on Shootist or Deadeye difficulty in Gunslinger Mode"},
-	"a_Saver":					{"en": "When the town teetered on ruin, your aim never wavered—each shot a vow to keep the dead where they belong. Unlock the \"Rescue Intro Movie\" concept art by completing Chapter 12, \"Hangtown\", with 20 or more headshot kills in Gunslinger Mode"},
-	"a_Moon":					{"en": "The moon's rising, and you've got minutes to make it count. Run fast, shoot faster, or be swallowed by the night. Unlock the \"Highmoon Trailer\" concept art by completing Chapter 9, \"Rescue\", in 15 minutes or less in Gunslinger Mode"},
+	"a_Intro":					{"en": "When the town teetered on ruin, your aim never wavered—each shot a vow to keep the dead where they belong. Unlock the \"Introduction Movie\" concept art by completing Chapter 12, \"Hangtown\", with 20 or more headshot kills in Gunslinger Mode"},
+	"a_Moon":					{"en": "The moon's rising, and you've got minutes to make it count. Run fast, shoot faster, or be swallowed by the night. Unlock the \"High Moon Trailer\" concept art by completing Chapter 9, \"Rescue\", in 15 minutes or less in Gunslinger Mode"},
 	"a_Archive":				{"en": "A gunslinger's tale ain't written in ink—it's carved in blood and lead. Survive the worst, and your legend might outlast you. Unlock the \"Darkwatch Archives\" concept art by completing all Chapters on Deadeye difficulty in Gunslinger Mode"},
 	// --------c_Gunslinger-------- 
 	"a_GunWrongTrain": 			{"en": "No time for second chances—burn through the rails like hell's on your heels. Complete Chapter 1, \"The Wrong Train\", in Gunslinger Mode on Deadeye difficulty, within 4 minutes, no deaths, and without dropping below 40% HP"},
@@ -6242,7 +6242,7 @@ richPresence_LookupTablesText = {
 		"TortureMaze-1":		{"en": "No guns, no mercy—Cartwright's test starts with blood and steel"},	
 		"TortureMaze-2":		{"en": "Killing is easy—protecting the weak? That's Jericho's real test"},	
 		"TortureMaze-3":		{"en": "Shapes in the fog, death in the air—Jericho's got to cut through both"},	
-		"TortureMaze-4":		{"en": "Cartwright's test leads Jericho into the depths—he must survive the sewers or be doomed to rot in them."},	
+		"TortureMaze-4":		{"en": "Cartwright's test leads Jericho into the depths—he must survive the sewers or be doomed to rot in them"},
 		"TortureMaze-5":		{"en": "Jericho's trial ain't over 'til he outguns a town full of dead gunslingers"},	
 		"TortureMaze-6":		{"en": "Cartwright takes away Jericho's edge—if he wants to survive, he'll need more than fangs"},	
 		"BaptismFire-1":		{"en": "Jericho's got his badge—now it's time to prove it in fire and blood"},	
