@@ -13,17 +13,12 @@ This guide provides comprehensive details on how to unlock each achievement with
 <h3 id=ToC> 📑 Table of Contents</h3>
 
 - 💎 **[Achievement Guide](#AchievementGuide)**
-
-    <sub> - General Info - </sub>
     - 📜 [GeneralInfoSubHeader](#-some_general_info_header)
-    - 📜 [Walkthroughs & Resources](WalkthroughsResources)
-
-    <sub> - Achievements - </sub>
+    - 📜 [Walkthroughs & Resources](#WalkthroughsResources)
     - 🏆 *[Progression](#Progression)*
     - 🏆 *[Challenges](#Challenges)*
     - 🏆 *[Unlocks](#Unlocks)*
     - 🏆 *[Misc_AchievementCategory](#Misc_AchievementCategory)*
-
 - 🥇 **[Leaderboard Guide](#LeaderboardGuide)**
 - 📜 **[Credits](#Credits)**
 - ✏️ **[Footnotes](#Footnotes)**
@@ -63,8 +58,20 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 + info_and_tip
 
+> [!NOTE]
+> Useful information that users should know, even when skimming content.
+
+> [!TIP]
+> Helpful advice for doing things better or more easily.
+
 > [!IMPORTANT]
-> important_info
+> Key information users need to know to achieve their goal.
+
+> [!WARNING]
+> Urgent info that needs immediate user attention to avoid problems.
+
+> [!CAUTION]
+> Advises about risks or negative outcomes of certain actions.
 
 ---
 
@@ -77,7 +84,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 The achievements under this category revolve around ...
 
 > [!WARNING]
-> Warning_info
+> _WARNING_INFO_
 
 ### Progression Achievement List
 
@@ -102,9 +109,11 @@ _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 - _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 - _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 
-> #### Additional Notes
+> [!NOTE]
+> #### ➤ Additional Notes
 > - _ADDITIONAL_NOTES_
 >
+> #### ➤ Additional Notes
 > - _ADDITIONAL_NOTES_
 >
 > **SubTitle**: _ADDITIONAL_NOTES_
@@ -143,15 +152,17 @@ _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 
 _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 
-> [!NOTE]
-> _NOTE_INFO_
+> [!IMPORTANT]
+> _IMPORTANT_INFO_
 
-> #### Additional Notes
+> [!NOTE]
+> #### ➤ Additional Notes
 > - _ADDITIONAL_NOTES_
 >
+> #### ➤ Additional Notes
 > - _ADDITIONAL_NOTES_
 >
-> **Sub_Title**: _ADDITIONAL_NOTES_
+> **SubTitle**: _ADDITIONAL_NOTES_
 
 ### Unlock Achievement List
 
@@ -176,15 +187,17 @@ _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 
 General_info_about_achievement_category
 
-> [!NOTE]
-> Note_info
+> [!WARNING]
+> _WARNING_INFO_
 
-> #### Additional Notes
-> - additional_notes
+> [!NOTE]
+> #### ➤ Additional Notes
+> - _ADDITIONAL_NOTES_
 >
-> - additional_notes
+> #### ➤ Additional Notes
+> - _ADDITIONAL_NOTES_
 >
-> **Sub_Title**: additional_notes
+> **SubTitle**: _ADDITIONAL_NOTES_
 
 ### Misc_AchievementCategory Achievement List
 
