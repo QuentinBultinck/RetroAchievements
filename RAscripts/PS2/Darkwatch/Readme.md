@@ -13,11 +13,7 @@ This guide provides comprehensive details on how to unlock each achievement with
 <h3 id=ToC> 📑 Table of Contents</h3>
 
 - 💎 **[Achievement Guide](#AchievementGuide)** 
-
-    <sub> - General Info - </sub>
-    - 📜 [Walkthroughs & Resources](WalkthroughsResources)
-
-    <sub> - Achievements - </sub>
+    - 📜 [Walkthroughs & Resources](#WalkthroughsResources)    
     - 🏆 *[Story Progression](#c_SPstory)*
     - 🏆 *[Story Ending](#c_SPend)*
     - 🏆 *[Challenges](#c_Gunslinger)*
@@ -39,12 +35,6 @@ Set consists of xxxx achievements worth xxx points
 Set released on DD MMMM YYYY
 ```
 
-## 📜 _SOME_GENERAL_INFO_HEADER_
-### _SOME_GENERAL_INFO_SUB_HEADER_
-
-_SOME_GENERAL_INFO_HERE_
-
-
 <h4 id=WalkthroughsResources>
     Walkthroughs & Resources
 </h4>
@@ -52,18 +42,12 @@ _SOME_GENERAL_INFO_HERE_
 If the explanation here doesn't suffice feel free to search up some guides, here are a few helpful resources:
 
 + [Retro Achievements Game Page](https://retroachievements.org/game/19111 "Retro Achievements Game Page - Darkwatch") 
-+ Resource_1
-+ Resource_2
-+ Resource_3
-
-#### Essential Info & Tips
-
-+ info_and_tip
-
-+ info_and_tip
-
-> [!IMPORTANT]
-> important_info
++ [GameFAQs Guides](https://gamefaqs.gamespot.com/ps2/919568-darkwatch/faqs "GameFAQS Darkwatch Guides")
++ [Written Walkthrough on GameSpot](https://www.gamespot.com/articles/darkwatch-walkthrough/1100-6130663/ "Darkwatch Walkthrough on GameSpot")
++ [Youtube Video Playthrough](https://www.youtube.com/watch?v=dAifQYCWV0A "Darwkatch Youtube Playthrough")
++ [PS2 Manual (English)](https://oldgamesdownload.com/wp-content/uploads/Darkwatch_Manual_PS2_EN.pdf "Darkwatch PS2 Manual (English)")
++ [Capcom Database Fandom Wiki](https://capcom.fandom.com/wiki/Darkwatch "Darkwatch Capcom Database Fandom Wiki")
++ [Official Fandom Wiki](https://darkwatchgame.fandom.com/wiki/Darkwatch_Wiki "Darkwatch Fandom Wiki")
 
 ---
 
@@ -75,7 +59,8 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 These achievements are tied to the completion of the Single Player Story Chapters. These can also be unlocked in Gunslinger Mode.
 
-> #### INFO: Story Chapter Sections
+> [!NOTE]
+> #### ➤ Story Chapter Sections
 > All achievements in this category only require the player to start and complete the final section of a specific chapter. This behavior is due to how the continue system works in Single Player Mode.
 > 
 > A **ChapterSection** is a distinct part of a chapter, separated by a loading screen. For example, Chapter 3, **"Boneyard"**, consists of three sections. If a player quits during the second section (within the Church Catacombs), they can resume from the beginning of that section when continuing Story Mode later.
@@ -119,8 +104,8 @@ These achievements are tied to the completion of the Single Player Story Chapter
 
 These achievements are tied to the two different endings in Single Player Story Mode. They are restricted to Single Player Mode because using Gunslinger Mode to replay the final Chapter would bypass a few key story moments.
 
-#### Tip
-If you’ve already completed the story once, the best/fastest way to unlock the other ending is to restart from Chapter 14, **"Showdown"**, and make the opposite moral choice at the end. This decision, made after the boss fight in **"Showdown"**, determines which ending you’ll receive at the conclusion of the game.
+> [!TIP]
+> If you’ve already completed the story once, the best/fastest way to unlock the other ending is to restart from Chapter 14, **"Showdown"**, and make the opposite moral choice at the end. This decision, made after the boss fight in **"Showdown"**, determines which ending you’ll receive at the conclusion of the game.
 
 > [!WARNING]
 > These two Single Player achievements can **NOT** be unlocked in Gunslinger Mode, unlike the [Story Progression achievements](#c_SPstory), which can also be earned in Gunslinger Mode. The reason for this is mentioned above.
@@ -146,19 +131,20 @@ If you’ve already completed the story once, the best/fastest way to unlock the
 This category features custom-made challenge achievements that can only be earned in Gunslinger Mode.
 All of these achievements require the player to play through a specific Chapter from start to finish (in a single session) on Deadeye difficulty, whilst adhering to the rules of the challenge. Mastering this category is only for the true FPS/Survival Horror fan. 
 
-> [!INFO]
-> ### Requirements for all Gunslinger Challenge Achievements:
+> [!NOTE]
+> 
+> ### ➤ Requirements for all Gunslinger Challenge Achievements:
 > - Only allowed in Gunslinger Mode; Single Player Mode is disallowed
 > - Play on **Deadeye** difficulty
 > - Complete the Chapter **without dying**
 > 
-> ### Retrying the challenge achievement
+> ### ➤ Retrying the challenge achievement
 > - Restarting via the **PauseMenu** is not advised, unless the player stil within the first ChapterSection. Restarting whilst in the first ChapterSection is a viable method to retry the corresponding achievement.
 > - Otherwise the best way to retry the challenge achievement is to quit to **MainMenu** and then restart the Chapter via the Gunslinger Menu. Unless playing on RAsoftcore mode, which in that case the player could just use savestates to simply retry quickly.
 > 
 > A **ChapterSection** is a distinct part of a chapter, separated by a loading screen. For example, Chapter 3, **"Boneyard"**, consists of three sections. If a player quits during the second section (within the Church Catacombs), they can resume from the beginning of that section when continuing Story Mode later. 
 >
-> ### When do the challenge achievements trigger?
+> ### ➤ When do the challenge achievements trigger?
 > If the challenge was completed without any fail conditions being hit, a [Trigger Indicator](#RA_Trigger) will be displayed during the *Post-Chapter Gunslinger Stats Menu*. Then once the player presses the **X** button, to continue, the active challenge achievement should unlock.
 
 </details>
@@ -204,14 +190,18 @@ This achievement category focuses on unlocking all *concept art* available in th
 
 Additionally, these achievements can still be unlocked even if the corresponding *concept art* has already been obtained on the active Player Profile. Simply replay and complete the required Chapter while meeting the necessary objectives to earn them.
 
-### Accuracy Statistic
-If an achievement/unlock requires a minimum accuracy target, the RetroAchievements overlay will always display a Measured Indicator showing the player's current accuracy.
+> [!NOTE]
+> ### ➤ Accuracy Statistic
+> If an achievement/unlock requires a minimum accuracy target, the RetroAchievements overlay will always display a Measured Indicator showing the player's current accuracy.
+> 
+> #### ➤ How does the game measure *accuracy*?
+> - Every shot fired from any weapon counts as *"one shot"*, this includes a shot from a shotgun for example, melee attacks are excluded from this.
+> - Special weapons like the Rail Rocket, Crossbow, and throwable explosives also count as *"one shot"*, but only when their explosive effect triggers. If an enemy is hit within the explosion radius, it counts as *"one successful hit"*, increasing the accuracy stat accordingly.
+> 
+> **Dev Note: Unlock Badge Art**
+> All achievements badges for this category are related to official concept art of the game.  
 
-#### How does the game measure *accuracy*?
-- Every shot fired from any weapon counts as *"one shot"*, this includes a shot from a shotgun for example, melee attacks are excluded from this.
-- Special weapons like the Rail Rocket, Crossbow, and throwable explosives also count as *"one shot"*, but only when their explosive effect triggers. If an enemy is hit within the explosion radius, it counts as *"one successful hit"*, increasing the accuracy stat accordingly.
-
-### All Concept Art Unlockables
+### Concept Art Overview Table
 
 <details>
     <summary><b><u>Click here</u> ◂</b> to toggle open this summary</summary><br>
@@ -272,7 +262,7 @@ If an achievement/unlock requires a minimum accuracy target, the RetroAchievemen
     🏆 Bonus <i><sub><sup>(6 achievements - _XX_ points)</sup></sub></i>
 </h1>
 
-This is a collection of smaller achievements for various aspects of the game.
+This is a collection of smaller bonus achievements for various aspects of the game.
 
 ### Bonus Achievement List
 
