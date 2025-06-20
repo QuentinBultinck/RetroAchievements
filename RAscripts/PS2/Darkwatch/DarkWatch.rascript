@@ -6,7 +6,7 @@
 // md5 (base, without RApatches): 8E6C817041ADC5B20F3011CD0F945F9D (PAL) - 9CE6383CB5260E300CACDE569EA5916D (NTSC-U)
 // RA Hash: https://retroachievements.org/game/19111/hashes
 // Platform: PlayStation 2
-// Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
+// Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Darkwatch-(PlayStation-2)
 // RA Game Page: https://retroachievements.org/game/19111
 // RATools version: v1.15.0 
 

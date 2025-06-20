@@ -30,7 +30,7 @@ This guide provides comprehensive details on how to unlock each achievement with
 <img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/110883.png" alt="Darkwatch - RetroAchievements Mastery Icon">
 
 ```
-Set consists of xxxx achievements worth xxx points
+Set consists of 56 achievements worth 431 points
 
 Set released on DD MMMM YYYY
 ```

@@ -8,7 +8,7 @@
 
 This guide provides comprehensive details on how to unlock each achievement within the base set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
 
-<sup>This guide mirrors the one available on the achievement set developer's *[Github](https://github.com/QuentinBultinck/RetroAchievements/tree/main/RAscripts/PS2/Darkwatch "Darkwatch (PlayStation 2) - Achievement Guide")*</sup>
+<sup>This guide mirrors the one available on the achievement set developer's *[Github](https://github.com/QuentinBultinck/RetroAchievements/tree/main/RAscripts/PS2/Darkwatch_Subset_MultiCoop "Darkwatch (PlayStation 2) - Achievement Guide")*</sup>
 
 <h3 id=ToC> 📑 Table of Contents</h3>
 
@@ -31,7 +31,7 @@ This guide provides comprehensive details on how to unlock each achievement with
 <img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/111259.png" alt="Darkwatch - RetroAchievements Mastery Icon">
 
 ```
-Set consists of xxxx achievements worth xxx points
+Set consists of 39 achievements worth 325 points
 
 Set released on DD MMMM YYYY
 ```
