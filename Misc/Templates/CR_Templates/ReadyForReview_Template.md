@@ -108,7 +108,7 @@ You're the expert on this game, so this is up to you.
 
 Are there any **hubs** you think should be added?
 Be sure to review the [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html#common-hubs) for proper usage.
-I recommend browsing the full list of hubs via [RAweb - All Hubs](https://retroachievements.org/hubs) to find any relevant matches.
+I recommend browsing the full list of hubs via [RAweb - Hubs Central](https://retroachievements.org/hubs) to find any relevant matches.
 
 How about **similar games**?
 Consider titles from the same series, or games within a similar genre or with shared mechanics.
