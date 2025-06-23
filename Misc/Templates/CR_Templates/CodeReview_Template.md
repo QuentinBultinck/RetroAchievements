@@ -171,7 +171,7 @@ Be sure to review the [RAdocs - Hubs Guidelines](https://docs.retroachievements.
 I recommend browsing the full list of hubs via [RAweb - Hubs Central](https://retroachievements.org/hubs) to find any relevant matches.
 
 How about **similar games**?
-Consider titles from the same series, or games within a similar genre or with shared mechanics.
+Consider titles from the same series, or games within a similar genre or with shared mechanics. This list should be limited to 5-6 entries, whilst aiming to have to least 1-2.
 Be sure to review the section on this matter in [RAdocs - Similar Games](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html#similar-games)
 
 If the game includes **multiplayer**, one of the following meta hubs may apply, depending on how the set handles multiplayer functionality:
