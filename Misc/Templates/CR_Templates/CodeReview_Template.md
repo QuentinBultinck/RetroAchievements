@@ -73,21 +73,21 @@ Your Code Review for [_GAME_TITLE_ (_CONSOLE_)](_UNOFFICIAL_ACHIEVEMENT_LIST_LIN
 Please take some time to review everything I've written below. If you have any questions, feel free to reach out.
 
 ## ∘───── 📑 Table of Contents ─────∘ // TODO, link these
-### 🧠 Memory Work & Internal Notes _MSG_LINK_ 
+### 🧠 Memory Work & Internal Notes
 - 🛠️ RAM Digging & Code Notes
 - 🧷 Additional Developer Notes
 - 🧪 Testing & Debugging Results
-### 🕹️ Achievement Set Design _MSG_LINK_
+### 🕹️ Achievement Set Design
 - 🎯 Overall Set Design
 - ✍️ Titles & Descriptions
 - 🖼️ Badge Art
 - ⚖️ Point Distribution
-### ⚙️ Technical Implementation _MSG_LINK_
+### ⚙️ Technical Implementation
 - 🧩 Achievement Logic
 - 🔧 Rich Presence Logic
 - 🔢 Leaderboard Logic
-### 🔑 Misc Prerequisites _MSG_LINK_
-### 📜 Summary & Final Notes _MSG_LINK_
+### 🔑 Misc Prerequisites
+### 📜 Summary & Final Notes
 
 ## ∘───── Related Links ─────∘ // TODO, link these
 Junior Developer => _LINK_TO_RA_USER_
@@ -292,7 +292,7 @@ I'll be using this list here to track your progress as well. As you work through
 4. Let Junior post `Achievement News Announcement`
 5. Post [✒️ RANews Set Highlight] in Code Review to fill out the form
 
-6. Fill out & update Proficiecy-Checklist 
+6. Fill out & update Proficiency-Checklist 
 
 #  ✦═══════✦ :check: Wrap-Up & Next Steps ✦═══════✦ // TODO
 /// Final phase and closing guidance.
