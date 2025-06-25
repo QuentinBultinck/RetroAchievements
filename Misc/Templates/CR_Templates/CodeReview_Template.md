@@ -314,19 +314,42 @@ I'll be using this list here to track your progress as well. As you work through
 /// Steps to Promoting:
 /// -------------------
 /// 1. Get them discord and site roles, via (discord) Moderator
-///     - Ping the promoted dev with a welcome message in `#dev-chat`, once they got the role
+///     - Ping the promoted dev with a welcome message in `#dev-chat`, once they got the role (ping Developer role with this msg)
+@ Developer Please welcome our newest member _DEV_NAME_HERE_
+
 /// 2. Walk them through bulk promote, complete claim and Achievement News Announcement (let them do these)
-///     - Explain how to use `!gan [gameid]` in `#botspam`
+///     - Explain how to use `!gan [gameid]` (without brackets) in `#botspam`
 ///     - Edit in the set release date + ping `achievement-news` role
 ///     - Post in `#achievement-news` + click the megaphone 📣 to publish the announcement to other servers hooked on to this channel
+Whenever you're ready you can promote all you achievements (disregarding `[VOID]` assets) to official.
+Make sure to follow up your set promotion with an **"Achievement New Announcement"** shortly after, which should be posted in [@achievement-news on RAdiscord](https://discord.com/channels/310192285306454017/310207383542562816). 
+A template for this announcement can be generated using the following command `!gan [gameid]` (without brackets) in [#botspam on RAdiscord](https://discord.com/channels/310192285306454017/510694609622532096). This is also the channel where you can test any bot commands. Or you could just edit my custom announcement template:
+------------
+```ansi
+Title:       [1;31m _TITLE_HERE_ [0m
+Console:     [0;34m _CONSOLE_HERE_ [0m
+Developer:   [0;32m _DEVELOPERS_HERE_ [0m
+Genre:       [0;35m _GENRES_HERE_ [0m
+Released:    [0;33m MMMM DD, YYYY [0m
+```
+A new set was published by @ASolidSnack on _TIMESTAMP_HERE_
+
+_FLAVOR_TEXT_HERE_
+
+[Gameplay](_LINK_HERE_)
+[RetroAchievements Game Page](_LINK_HERE_)
+------------
+Don't forget to add the ping `@ achievement-news` and click the megaphone icon :mega: after you post your announcement in the [@achievement-news](https://discord.com/channels/310192285306454017/310207383542562816) channel, so this announcement gets published to any other linked discord servers/channels, for a wider audience.
+
 /// 3. Highlight new things available as full dev:
 ///     - Up to 4 claims
 ///     - Ability to edit achievements to address tickets without demoting
 ///     - Linking new hashes
 ///     - Channels (dev-requests, dev-chat, dev-help...)
 /// 4. Add hub [Dev Events - Junior Developer Graduate Sets](https://retroachievements.org/hub/7975) to game ( + add it to the list in the forum using the CRTeam account??)
-/// 5. Request the jr-dev-badge for the promoted dev in #dev-requests
-/// 
+/// 5. Request the jr-dev-badge for the promoted dev in [#dev-requests](https://discord.com/channels/310192285306454017/729746925330366555)
+
+
 /// After things simmer down a bit:
 /// -------------------------------
 /// - Link the devs docs to incentivize reading them again, since new parts apply. Revisions, subsets and collabs in particular should be read again before engaging with setting up notifications for revisions and rescores
@@ -337,7 +360,12 @@ I'll be using this list here to track your progress as well. As you work through
 ///     - [RAnews Set Highlight Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview)
 ///     - [Jr-Dev-Program Feedback Form](https://forms.gle/UTKAhdpgx2iaXxxo7)
 ///     - Revision/gauntlet opt-out
-///     - Writing touch-ups permissions 
+///     - Writing touch-ups permissions
+Please take a look at following links to guide you through the new things available as full dev, with no time pressure 
+- [Dev Tutorial Document](https://docs.google.com/document/d/1Bw5rXp0i1wYe7j1ZgiQje_-oFKxXdJelqKlbdCNXp_E/edit?tab=t.0#heading=h.ksjo1g1oe9n9)
+- [Jr-Dev-Program Feedback Form](https://forms.gle/UTKAhdpgx2iaXxxo7) 
+- [RAnews Set Highlight Form](https://docs.google.com/forms/d/e/1FAIpQLSfmbOr99x7vg95t9Fznp6jgdywlAGGHg6AyVzfOwGPentvIaQ/viewform?usp=preview) (Highly request to fill this one out, preferably this should be submitted before the next RAnews issue releases, so we can incorporate this new set within the section of the Junior Developed Sets for the corresponding month)
+
 
 > *"Promoted to full developer!"*
 ...
