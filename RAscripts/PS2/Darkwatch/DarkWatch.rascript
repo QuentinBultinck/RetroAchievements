@@ -5991,7 +5991,7 @@ achievements_descriptions = {
 	"a_GunShowdown": 			{"en": "No tricks, no frills—just clean shots and first-tier fury. Complete Chapter 14, \"Showdown\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only tier 1 powers, and with at least 65% accuracy"},
 	"a_GunRightTrain": 			{"en": "That train didn't slow down and neither did you. Complete Chapter 15, \"The Right Train\", in Gunslinger Mode on Deadeye difficulty within 7 minutes, no deaths, and without dropping below 70% HP"},
 	"a_GunDeadfall": 			{"en": "The streets were hell, but your aim never flinched. Complete Chapter 16, \"Deadfall\", in Gunslinger Mode on Deadeye difficulty, with no deaths, achieving at least 30% headshot kills using only the Range Rifle or Carbine"},
-	"a_GunCurseWest": 			{"en": "You walked the line between damnation and salvation—and bled for neither. Complete Chapter 17, \"Curse of the West\", in Gunslinger Mode on Deadeye difficulty, with no deaths, never dropping below 40% HP, and with only 7 allowed power activations"},
+	"a_GunCurseWest": 			{"en": "You walked the line between damnation and salvation—and bled for neither. Complete Chapter 17, \"Curse of the West\", in Gunslinger Mode on Deadeye difficulty, never dropping below 40% HP, and with only 7 allowed power activations"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	// --------c_Bonus--------
 	"a_GatlingRightTrain":		{"en": "Spin it up and hold the line. In Chapter 15, \"The Right Train\", kill 15 undead in a row with the gatling gun without dismounting or going below 50% vampire shield, on Shootist difficulty or higher. Enemies killed by exploding barrels are not counted"},
