@@ -6459,18 +6459,18 @@ achievements_descriptions = {
 	// ----------------c_Misc----------------
 	"a_INFOcoop":		{"en": "No freeloaders in this posse! Achievements require \"active\" participation of both players. If one player slacks or is not engaging with combat, achievements of the current Chapter will be disabled. See RAguide for details on participation tracking"},
 	// ----------------c_Story----------------
-	"a_WrongTrain":		{"en": "You planned a heist, not a reckoning—now it's two guns against the darkness. Complete Chapter 1, \"The Wrong Train\", from start to finish in one session"},
-	"a_RideDevil":		{"en": "The Reaper's breathing down both your necks—and the only way out is forward. Complete Chapter 2, \"Ride Like the Devil\", from start to finish in one session"},
+	"a_WrongTrain":		{"en": "You planned a heist, not a reckoning, now it's two guns against the darkness. Complete Chapter 1, \"The Wrong Train\", from start to finish in one session"},
+	"a_RideDevil":		{"en": "The Reaper's breathing down both your necks, and the only way out is forward. Complete Chapter 2, \"Ride Like the Devil\", from start to finish in one session"},
 	"a_Boneyard":		{"en": "The dead don't take kindly to visitors, but you came packing iron. Complete Chapter 3, \"Boneyard\", from start to finish in one session"},
 	"a_DevilMine":		{"en": "Two guns, one way through the fog and blood. Complete Chapter 4, \"Devil's Belly Mine\", from start to finish in one session"},
-	"a_DWOutpost":		{"en": "It was supposed to be a refuge. Now it's just the place where legends are born—or buried. Complete Chapter 5, \"Darkwatch Outpost\", from start to finish in one session"},
-	"a_WarTrain":		{"en": "This beast ain't slowing down—and neither are you. Complete Chapter 6, \"War Train\", from start to finish in one session"},
+	"a_DWOutpost":		{"en": "It was supposed to be a refuge. Now it's just the place where legends are born, or buried. Complete Chapter 5, \"Darkwatch Outpost\", from start to finish in one session"},
+	"a_WarTrain":		{"en": "This beast ain't slowing down, and neither are you. Complete Chapter 6, \"War Train\", from start to finish in one session"},
 	"a_TortureMaze":	{"en": "You'll need grit, guts, and each other to claw out of Cartwright's killing grounds. Complete Chapter 7, \"Torture Maze\", from start to finish in one session"},
-	"a_BaptismFire":	{"en": "Welcome to the Darkwatch baptism—fire, steel, and no room for hesitation. Complete Chapter 8, \"Baptism of Fire\", from start to finish in one session"},
+	"a_BaptismFire":	{"en": "Welcome to the Darkwatch baptism, fire, steel, and no room for hesitation. Complete Chapter 8, \"Baptism of Fire\", from start to finish in one session"},
 	"a_Rescue":			{"en": "They were left to rot, but not with you two around. Complete Chapter 9, \"Rescue\", from start to finish in one session"},
 	"a_Prism":			{"en": "No monster should wield it. But two might just survive it. Complete Chapter 10, \"The Deadlight Prism\", from start to finish in one session"},
 	"a_Invasion":		{"en": "This land ain't theirs to take, and together, you'll prove it. Complete Chapter 11, \"Invasion\", from start to finish in one session"},
-	"a_Hangtown":		{"en": "The gallows creak, the dead rise—but you're no strangers to final stands. Complete Chapter 12, \"Hangtown\", from start to finish in one session"},
+	"a_Hangtown":		{"en": "The gallows creak, the dead rise, but you're no strangers to final stands. Complete Chapter 12, \"Hangtown\", from start to finish in one session"},
 	"a_MorningAfter":	{"en": "The order fell overnight. Now it's up to two blades in the dark to carry the flame. Complete Chapter 13, \"The Morning After\", from start to finish in one session"},
 	"a_Showdown":		{"en": "The devil's still breathing. Two guns, one shot to end it. Complete Chapter 14, \"Showdown\", from start to finish in one session"},
 	"a_RightTrain":		{"en": "No brakes. No backup. Just two souls strapped to a metal monster bound for hell. Complete Chapter 15, \"The Right Train\", from start to finish in one session"},
@@ -6499,7 +6499,7 @@ achievements_descriptions = {
 	// ----------------c_Bonus----------------
 	"a_MultiKillers":	{"en": "It takes two to clean house. In a Chapter, score one multikill per player, without restarting"},
 	"a_SunHi":			{"en": "You looked straight into the sun and didn't blink. Activate Vampire Vision on both players in broad daylight and survive the burn, together"},
-	"a_AllEvil":		{"en": "You didn't just walk the path of corruption—you became it, together by unlocking all Evil powers"},
+	"a_AllEvil":		{"en": "You didn't just walk the path of corruption, you became it, together by unlocking all Evil powers"},
 	"a_AllGood":		{"en": "From ash and ruin, two rose in unshakable resolve by unlocking all Good powers"},
 	}
 // #endregion ACH - text
