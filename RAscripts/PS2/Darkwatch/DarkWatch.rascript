@@ -2757,12 +2757,12 @@ achievements_coreData = {
 			// "id": 506187, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Weapons'"},
 		// "a_Drivers": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506264, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Vehicles'"},
-		"a_Sights1": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			"id": 506219, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Environments 1'"},
+		// "a_Sights1": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 506219, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Environments 1'"},
 		// "a_Sights2": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506387, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Environments 2'"},
-		"a_Sights3": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			"id": 506184, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Environments 3'"},
+		// "a_Sights3": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 506184, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Environments 3'"},
 		// "a_Attract": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506262, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Attract Mode Movie'"},
 		// "a_Cowboy": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
@@ -2771,28 +2771,28 @@ achievements_coreData = {
 			// "id": 506388, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Showdown Animatic'"},
 		// "a_Intro": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506263, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Rescue Intro Movie'"},
-		"a_Moon": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			"id": 506188, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
+		// "a_Moon": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 506188, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
 		// "a_Archive": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506807, "points": achievement_POINTS_25, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
-		// "a_GunWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunWrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 508863, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
-		// "a_GunRideDevil": { // QA  // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunRideDevil": { // VERIFIED  // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 509576, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a minimum accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
-		// "a_GunBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 510041, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring at least 100 kills with the Crossbow and Carbine equipped (without using throwables)"},
-		// "a_GunDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunBoneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 510041, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, no deaths, using only the Carbine or Crossbow, without scoring 5 body-shot kills in a row, mix in headshot or melee kills"},
+		// "a_GunDevilMine": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 510690, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty, killing only with the Redeemer and Dual Pistols equipped (without using any powers, Neutral powers excluded)"},
 		// "a_GunDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511019, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty, without being below max HP for xx seconds consecutively"},
-		// "a_GunWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunWarTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511009, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty, within xx time and without losing any HP (vampire shield excluded)"},
 		// "a_GunTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511010, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty, only killing with the Scepter and Shotgun equipped, with at least 80% melee kills"},
-		// "a_GunBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 511021, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, only killing with the Redeemer and Rail Rocket equipped, and without scoring 5 body-shot kills in a row—mix it up with headshots or melee kills to break the chain"},
+		// "a_GunBaptismFire": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511021, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, no deaths, without throwing any explosives, and killing at least 40 enemies with the Rail Rocket"},
 		// "a_GunRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511013, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty, without losing any HP (vampire shield excluded)"},
 		// "a_GunPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION
@@ -4111,136 +4111,142 @@ achievements_triggers = {
 		// [6+..+9/15+..+18] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
-	"a_GunBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[4+8])
-		/* NOTE: 
-			- This Chapter should have 80+ enemies, and even more when the player doesn't instakill the Marks of Evil, which keep spawning enemies
-			- For this achievement only: ResetOn_PauseMenu_Restart must reset not only for ChapterSection_1 but during all ChapterSections (for this Achievement; because of MeasuredKillCount)
+	"a_GunBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[5+9])
+		// NOTE: Multi-kills are regarded as 1 standard kill for this challenge
+		/* DEV_NOTE: PauseLocks into AltResetGroups OR PauseLocks into ResetNextIfs
+			Consider following achievement: "Finish Chapter from start to finish, without being below max HP for 10 seconds consecutively" 
+				(each passed second is a hitCount)
+			- PauseLocks into AltResetGroups  (this is preferred for this achievement)
+				(this is more scalable; eg. multiple challenges: can create more AltResetPauseLockGroups)
+				-------------------
+				CORE (logic to unlock cheevo)
+				- CheckIf: Chapter started from beginning (1)		--[StartCondition]--> Delta check, only hits when start chapter from beginning
+				- CheckIf: Chapter finished							--[TriggerCondition]--> Delta check, only hits when chapter is finished
+
+				ALT MEASURED (to display seconds left till challenge failure)
+				- ResetNextIf: back at max HP							--[ConsecutiveResetCondition]--> If this triggers, it will reset the measured hitCount
+				- Measured: xx seconds left being below max HP (10)		--[ConsecutiveChallengeCondition(Measured)]--> display xx seconds left till challenge fails
+				- MeasuredIf: Chapter started from beginning (1)	--[StartCondition]--> Delta check, only hits when start chapter from beginning
+
+				ALT RESET (as PAUSE LOCK) 	--> When triggered once, functions as a PauseLock when below max HP for 10 seconds consecutively:as this will reset the hitcount for StartCondition, which can only trigger on ChapterStart
+				- AndNext: Chapter started from beginning (1)		--> Delta check, only hits when start chapter from beginning
+				- ResetNextIf: when at max HP						--[ConsecutiveResetCondition]--> If this triggers, it will reset the hitCount for ConsecutiveChallengeCondition, even if ConsecutiveChallengeCondition was already triggered it can't turn StartCondition back to true, since it was already reset by the ConsecutiveChallengeCondition
+				- ResetIf: when below max HP for xx seconds (10) 	--[ConsecutiveChallengeCondition]--> If this triggers, it will reset the StartCondition (in CORE and ALT MEASURED). Thus this functions as a PauseLock, until the chapter restarts from the beginning, since the StartCondition only hits once when starting a Chapter
+
+				ALT RESET (Chapter Restart/Quit) --> Reset all HitCounts everywhere
+				- ResetIf: Chapter Restart/Quit
+
+			- PauseLocks into ResetNextIfs
+				(this is less scalable; eg. multiple challenges: can only attach one ResetNextIf to a hitCount, it becomes ugly with OrNextChains, although could have one StartCondition for each seperate challenge)			
+				-------------------
+				CORE (logic to unlock cheevo)
+				- ResetNextIf: back at max HP										--[ConsecutiveResetCondition]--> If this triggers, it will reset the hitCount for ConsecutiveChallengeCondition, even if ConsecutiveChallengeCondition was already triggered it can't turn StartCondition back to true, since it was already reset by the ConsecutiveChallengeCondition
+				- ResetNextIf: 10 seconds spent below max HP consecutively (10) 	--[ConsecutiveChallengeCondition]--> If this triggers, it will reset the StartCondition. Thus this functions as a PauseLock, until the chapter restarts from the beginning, since the StartCondition only hits once when starting a Chapter
+				- CheckIf: Chapter started from beginning (1) 	--[StartCondition]--> This is a delta check, only hits when start chapter from beginning
+				- CheckIf: Chapter finished			--[TriggerCondition]--> Delta check, only hits when chapter is finished
+
+				ALT MEASURED (to display seconds left till challenge failure)
+				- ResetNextIf: back at max HP								--[ConsecutiveResetCondition]--> If this triggers, it will reset the measured hitCount
+				- Measured: xx seconds left being below max HP (10)			--[ConsecutiveChallengeCondition(Measured)]--> display xx seconds left till challenge fails
+				- ResetNextIf: back at max HP										--[ConsecutiveResetCondition]--> If this triggers, it will reset the hitCount for ConsecutiveChallengeCondition, even if ConsecutiveChallengeCondition was already triggered it can't turn StartCondition back to true, since it was already reset by the ConsecutiveChallengeCondition
+				- ResetNextIf: 10 seconds spent below max HP consecutively (10) 	--[ConsecutiveChallengeCondition]--> If this triggers, it will reset the StartCondition. Thus this functions as a PauseLock, until the chapter restarts from the beginning, since the StartCondition only hits once when starting a Chapter
+				- MeasuredIf: Chapter started from beginning (1)	--[StartCondition]--> This is a delta check, only hits when start chapter from beginning
+
+				ALT RESET (Chapter Restart/Quit) --> Reset all HitCounts everywhere
+				- ResetIf: Chapter Restart/Quit
 			*/
+		
 		const_CHAPTER = CHAPTER_3_Boneyard
-		const_REQUIRED_KILLS = 80
+		const_WEAPON_A = WEAPON_Carbine
+		const_WEAPON_B = WEAPON_Crossbow
+		const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW = 4
+
 		return	
-		// [1/9] ==== Alt Logic + Measured + Triggered Group ==== 	-> Group is responsible for unlocking the achievement + Displaying a Measured Indicator kills with required guns + Triggered Indicator when all kills are achieved
+		// [1/10] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as challenge is OK
 			unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& unless(once( // --PauseLock--> When using a throwable explosive 
-				is_flagState_InGame_true(enum_releaseRegion)
-				&& on_Throwable_use(enum_releaseRegion)
-				&& !on_ThrowableType_switch(enum_releaseRegion)))
+			/* DEV_NOTE: Example of PauseLock into ResetNextIf	(this is not preferred for this achievement as there's multiple challenges attached, which could "lock" the achievement)
+				------------
+				&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+					never(repeated(const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW + 1,  // --ResetNextIf--[ConsecutiveChallengeCondition]--> When player scores xx consecutive standard kills, without a melee or headshot kill to break the chain
+						never( // --ResetNextIf--[ConsecutiveResetCondition]--> When player scores a melee or headshot kill
+							is_flagState_InGame_true(enum_releaseRegion)
+							&& current_HeadshotKills_Temp(enum_releaseRegion)
+								+ current_MeleeKills_Temp(enum_releaseRegion) 
+								- prev_HeadshotKills_Temp(enum_releaseRegion)
+								- prev_MeleeKills_Temp(enum_releaseRegion) > 0)						
+						&& is_flagState_InGame_true(enum_releaseRegion)
+						&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
+				*/
 			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
 				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
 				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
-				on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
-			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& measured(tally(const_REQUIRED_KILLS, [
-				repeated(const_REQUIRED_KILLS, 
-					is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion)
-					&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)),
-				
-				repeated(const_REQUIRED_KILLS, 
-					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)), // --AddHit 1--> When Kills increment by 1
-
-				// --AddHit 1--> When Kills increment by 2, because of Explosiveness of Crossbow ammo - PLUS AddHit 1 When Kills increment by 1
-				repeated(const_REQUIRED_KILLS, 
-					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& on_Kills_Temp_incrementBy(2, PLAYER_1, enum_releaseRegion)), 
-
-				// --AddHit 2--> When Kills increment by 3, because of Explosiveness of Crossbow ammo - PLUS AddHit 1 When Kills increment by 1
-				repeated(const_REQUIRED_KILLS, 
-					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& on_Kills_Temp_incrementBy(3, PLAYER_1, enum_releaseRegion)), 
-				repeated(const_REQUIRED_KILLS, 
-					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& on_Kills_Temp_incrementBy(3, PLAYER_1, enum_releaseRegion)), 
-
-				// --AddHit 3--> When Kills increment by 4, because of Explosiveness of Crossbow ammo - PLUS AddHit 1 When Kills increment by 1
-				repeated(const_REQUIRED_KILLS, 
-					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
-				repeated(const_REQUIRED_KILLS, 
-					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
-				repeated(const_REQUIRED_KILLS, 
-					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
-
-				// --AddHit 4--> When Kills increment by 5, because of Explosiveness of Crossbow ammo - PLUS AddHit 1 When Kills increment by 1
-				repeated(const_REQUIRED_KILLS, 
-					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
-				repeated(const_REQUIRED_KILLS, 
-					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
-				repeated(const_REQUIRED_KILLS, 
-					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
-				repeated(const_REQUIRED_KILLS, 
-					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
-				]),
-				when = once( // --MeasuredIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
-					is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-					&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
-			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
-		// [2/10] ==== Alt Triggered Group ====						-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended +  Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/11] ==== Alt Measured Group ====		-> Group is only responsible for displaying a Measured Indicator counting consecutive standard kills
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& unless(once( // --PauseLock--> When using a throwable explosive 
+			&& measured(repeated(const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW +1, // --Measured--> Count consecutive standard kills up to const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW +1
+				never( // --ResetNextIf--[ConsecutiveResetCondition]--> When player scores a melee or headshot kill
+					is_flagState_InGame_true(enum_releaseRegion)
+					&& current_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
+						+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) 
+						- prev_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
+						- prev_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) > 0)		
+				&& is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)),
+				when =
+					once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
+			&& memUtil_alwaysFalse(enum_releaseRegion)
+		// [3/12] ==== Alt Lockout Group ===	-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(once( // --Lockout--> When earning a kill with a non-allowed weapons
 				is_flagState_InGame_true(enum_releaseRegion)
-				&& on_Throwable_use(enum_releaseRegion)
-				&& !on_ThrowableType_switch(enum_releaseRegion)))
-			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
-				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-			&& tally(1, [ // --Tally--OrNext--> CheckIf any of the required weapons are equipped
-				once(is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion)
-					&& never(!is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion))),
-				once(is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
-					&& never(!is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion))),
-				])
-			&& is_flagState_InGame_true(enum_releaseRegion)
-			&& trigger_when(always_false())
-		// [3/11] ==== Alt Lockout Group ==== 		-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& never(once( // --Lockout--> When shooting a non-allowed weapon
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& !on_HUDcontrolGear_weaponSwap(enum_releaseRegion)
+				&& on_HUDcontrolGear_LoadedBullets_decrement(enum_releaseRegion)))
+			&& never(repeated(const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW +1, // --Lockout--[ConsecutiveChallengeCondition]--> When player scores xx consecutive standard kills in a row (without mixing in a headshot or melee kill)
+				never( // --ResetNextIf--[ConsecutiveResetCondition]--> When player scores a melee or headshot kill
+					is_flagState_InGame_true(enum_releaseRegion)
+					&& current_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
+						+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) 
+						- prev_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
+						- prev_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) > 0)
+				&& is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& always_false()
+		// [4/13] ==== Alt Lockout Group ==== 	-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion)
-		// [4/12] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in any ChapterSection
+		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
-				// && is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion) // DISABLED - Reset not only for ChapterSection_1 but for during all ChapterSections (for this Achievement; because of MeasuredKillCount)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
 				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetOn_PauseMenu_Restart (below line) 
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
-					---------
-						AndNext		[8-bit:GameState] == 0x3						| CheckIf: is_AnyInGameMenu_active() 
-
-						AddAddress	[Pointer:UIcontrol(preferred)]
-						Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
-						Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
-
-						AddAddress	[Pointer:UIcontrol(preferred)]
-						AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
-						Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
-						
-						AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-						AddAddress	->[Mem 32-bit] 0xB8
-						AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
-						
-						AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-						AddAddress	->[Mem 32-bit] 0x7C
-						AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
-
-						AddAddress	[Pointer:PlayerInput(preferred)]
-						AndNext		->[Mem Bit0] 0xF 	> 	->[Delta Bit0] 0xF		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
-						*/
+					*/
 				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
-		// [5+..+8/13+..+16] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+		// [6+..+9/15+..+18] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
 	"a_GunDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[4+8])
@@ -4626,74 +4632,17 @@ achievements_triggers = {
 		// [6+..+9/15+..+18] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
-	"a_GunBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[5+9])
-		// NOTE: Multi-kills are regarded as 1 standard kill for this challenge
-		/* DEV_NOTE: PauseLocks into AltResetGroups OR PauseLocks into ResetNextIfs
-			Consider following achievement: "Finish Chapter from start to finish, without being below max HP for 10 seconds consecutively" 
-				(each passed second is a hitCount)
-			- PauseLocks into AltResetGroups  (this is preferred for this achievement)
-				(this is more scalable; eg. multiple challenges: can create more AltResetPauseLockGroups)
-				-------------------
-				CORE (logic to unlock cheevo)
-				- CheckIf: Chapter started from beginning (1)		--[StartCondition]--> Delta check, only hits when start chapter from beginning
-				- CheckIf: Chapter finished							--[TriggerCondition]--> Delta check, only hits when chapter is finished
-
-				ALT MEASURED (to display seconds left till challenge failure)
-				- ResetNextIf: back at max HP							--[ConsecutiveResetCondition]--> If this triggers, it will reset the measured hitCount
-				- Measured: xx seconds left being below max HP (10)		--[ConsecutiveChallengeCondition(Measured)]--> display xx seconds left till challenge fails
-				- MeasuredIf: Chapter started from beginning (1)	--[StartCondition]--> Delta check, only hits when start chapter from beginning
-
-				ALT RESET (as PAUSE LOCK) 	--> When triggered once, functions as a PauseLock when below max HP for 10 seconds consecutively:as this will reset the hitcount for StartCondition, which can only trigger on ChapterStart
-				- AndNext: Chapter started from beginning (1)		--> Delta check, only hits when start chapter from beginning
-				- ResetNextIf: when at max HP						--[ConsecutiveResetCondition]--> If this triggers, it will reset the hitCount for ConsecutiveChallengeCondition, even if ConsecutiveChallengeCondition was already triggered it can't turn StartCondition back to true, since it was already reset by the ConsecutiveChallengeCondition
-				- ResetIf: when below max HP for xx seconds (10) 	--[ConsecutiveChallengeCondition]--> If this triggers, it will reset the StartCondition (in CORE and ALT MEASURED). Thus this functions as a PauseLock, until the chapter restarts from the beginning, since the StartCondition only hits once when starting a Chapter
-
-				ALT RESET (Chapter Restart/Quit) --> Reset all HitCounts everywhere
-				- ResetIf: Chapter Restart/Quit
-
-			- PauseLocks into ResetNextIfs
-				(this is less scalable; eg. multiple challenges: can only attach one ResetNextIf to a hitCount, it becomes ugly with OrNextChains, although could have one StartCondition for each seperate challenge)			
-				-------------------
-				CORE (logic to unlock cheevo)
-				- ResetNextIf: back at max HP										--[ConsecutiveResetCondition]--> If this triggers, it will reset the hitCount for ConsecutiveChallengeCondition, even if ConsecutiveChallengeCondition was already triggered it can't turn StartCondition back to true, since it was already reset by the ConsecutiveChallengeCondition
-				- ResetNextIf: 10 seconds spent below max HP consecutively (10) 	--[ConsecutiveChallengeCondition]--> If this triggers, it will reset the StartCondition. Thus this functions as a PauseLock, until the chapter restarts from the beginning, since the StartCondition only hits once when starting a Chapter
-				- CheckIf: Chapter started from beginning (1) 	--[StartCondition]--> This is a delta check, only hits when start chapter from beginning
-				- CheckIf: Chapter finished			--[TriggerCondition]--> Delta check, only hits when chapter is finished
-
-				ALT MEASURED (to display seconds left till challenge failure)
-				- ResetNextIf: back at max HP								--[ConsecutiveResetCondition]--> If this triggers, it will reset the measured hitCount
-				- Measured: xx seconds left being below max HP (10)			--[ConsecutiveChallengeCondition(Measured)]--> display xx seconds left till challenge fails
-				- ResetNextIf: back at max HP										--[ConsecutiveResetCondition]--> If this triggers, it will reset the hitCount for ConsecutiveChallengeCondition, even if ConsecutiveChallengeCondition was already triggered it can't turn StartCondition back to true, since it was already reset by the ConsecutiveChallengeCondition
-				- ResetNextIf: 10 seconds spent below max HP consecutively (10) 	--[ConsecutiveChallengeCondition]--> If this triggers, it will reset the StartCondition. Thus this functions as a PauseLock, until the chapter restarts from the beginning, since the StartCondition only hits once when starting a Chapter
-				- MeasuredIf: Chapter started from beginning (1)	--[StartCondition]--> This is a delta check, only hits when start chapter from beginning
-
-				ALT RESET (Chapter Restart/Quit) --> Reset all HitCounts everywhere
-				- ResetIf: Chapter Restart/Quit
+	"a_GunBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[4+8])
+		/* NOTE: 
+			- Rail Rocket can be picked up from ChapterSection 2
+			- There should be about 110+ kills achievable, even more when not destroying Marks of Evil too quickly
 			*/
-		
 		const_CHAPTER = CHAPTER_8_BaptismFire
-		const_WEAPON_A = WEAPON_Redeemer
-		const_WEAPON_B = WEAPON_RailRocket
-		const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW = 4
+		const_REQUIRED_RAIL_ROCKET_KILLS = 40
 
 		return	
-		// [1/10] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as challenge is OK
+		// [1/10] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as challenge is OK
 			unless(!is_ReleaseRegion(enum_releaseRegion))
-			/* DEV_NOTE: Example of PauseLock into ResetNextIf	(this is not preferred for this achievement as there's multiple challenges attached, which could "lock" the achievement)
-				------------
-				&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
-					never(repeated(const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW + 1,  // --ResetNextIf--[ConsecutiveChallengeCondition]--> When player scores xx consecutive standard kills, without a melee or headshot kill to break the chain
-						never( // --ResetNextIf--[ConsecutiveResetCondition]--> When player scores a melee or headshot kill
-							is_flagState_InGame_true(enum_releaseRegion)
-							&& current_HeadshotKills_Temp(enum_releaseRegion)
-								+ current_MeleeKills_Temp(enum_releaseRegion) 
-								- prev_HeadshotKills_Temp(enum_releaseRegion)
-								- prev_MeleeKills_Temp(enum_releaseRegion) > 0)						
-						&& is_flagState_InGame_true(enum_releaseRegion)
-						&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
-					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-					&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
-				*/
 			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
 				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
 				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
@@ -4708,24 +4657,101 @@ achievements_triggers = {
 				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
 					never(is_flagState_InGame_true(enum_releaseRegion))
 					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-					&& is_flagState_InGame_false(enum_releaseRegion))
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion))
+				&& tally(const_REQUIRED_RAIL_ROCKET_KILLS, [
+					// --AddHit 1--> When Kills increment by 1, because of Explosiveness of Crossbow ammo
+					repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+						is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+						&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)),
+
+					// --AddHit 1+1--> When Kills increment by 2, because of Explosiveness of Crossbow ammo
+					repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+						is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+						&& on_Kills_Temp_incrementBy(2, PLAYER_1, enum_releaseRegion)), 
+
+					// --AddHit 1+2--> When Kills increment by 3, because of Explosiveness of Crossbow ammo
+					repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+						is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+						&& on_Kills_Temp_incrementBy(3, PLAYER_1, enum_releaseRegion)), 
+					repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+						is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+						&& on_Kills_Temp_incrementBy(3, PLAYER_1, enum_releaseRegion)), 
+
+					// --AddHit 1+3--> When Kills increment by 4, because of Explosiveness of Crossbow ammo
+					repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+						is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+						&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
+					repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+						is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+						&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
+					repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+						is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+						&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
+
+					// --AddHit 1+4--> When Kills increment by 5, because of Explosiveness of Crossbow ammo
+					repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+						is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+						&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+					repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+						is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+						&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+					repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+						is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+						&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+					repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+						is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+						&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+					])
 				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
-		// [2/11] ==== Alt Measured Group ====		-> Group is only responsible for displaying a Measured Indicator counting consecutive standard kills
+		// [2/11] ==== Alt Measured Group ===	-> Group is only responsible for displaying a Measured Indicator tracking kills with required weapon
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& measured(repeated(const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW +1, // --Measured--> Count consecutive standard kills up to const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW +1
-				never( // --ResetNextIf--[ConsecutiveResetCondition]--> When player scores a melee or headshot kill
-					is_flagState_InGame_true(enum_releaseRegion)
-					&& current_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
-						+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) 
-						- prev_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
-						- prev_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) > 0)						
-				&& is_flagState_InGame_true(enum_releaseRegion)
-				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)),
-				when =
-					once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
-						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
+			&& measured(tally(const_REQUIRED_RAIL_ROCKET_KILLS, [
+				// --AddHit 1--> When Kills increment by 1, because of Explosiveness of Crossbow ammo
+				repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+					&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)),
+
+				// --AddHit 1+1--> When Kills increment by 2, because of Explosiveness of Crossbow ammo
+				repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(2, PLAYER_1, enum_releaseRegion)), 
+
+				// --AddHit 1+2--> When Kills increment by 3, because of Explosiveness of Crossbow ammo
+				repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(3, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(3, PLAYER_1, enum_releaseRegion)), 
+
+				// --AddHit 1+3--> When Kills increment by 4, because of Explosiveness of Crossbow ammo
+				repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
+
+				// --AddHit 1+4--> When Kills increment by 5, because of Explosiveness of Crossbow ammo
+				repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_RAIL_ROCKET_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_RailRocket, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+				]),
+				when = once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+					is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
 			&& memUtil_alwaysFalse(enum_releaseRegion)
 		// [3/12] ==== Alt Lockout Group ===	-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -4733,24 +4759,10 @@ achievements_triggers = {
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& on_Throwable_use(enum_releaseRegion)
 				&& !on_ThrowableType_switch(enum_releaseRegion)))
-			&& never(once( // --Lockout--> When earning a kill without any of the required weapons equipped
-				is_flagState_InGame_true(enum_releaseRegion)
-				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
-				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
-				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
-			&& never(repeated(const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW +1, // --Lockout--[ConsecutiveChallengeCondition]--> When player scores xx consecutive standard kills in a row (without mixing in a headshot or melee kill)
-				never( // --ResetNextIf--[ConsecutiveResetCondition]--> When player scores a melee or headshot kill
-					is_flagState_InGame_true(enum_releaseRegion)
-					&& current_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
-						+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) 
-						- prev_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
-						- prev_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) > 0)
-				&& is_flagState_InGame_true(enum_releaseRegion)
-				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
 			&& always_false()
 		// [4/13] ==== Alt Lockout Group ==== 	-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion)
-		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+		// [5/14] ==== Alt Reset Group ====					-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
@@ -4759,7 +4771,7 @@ achievements_triggers = {
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					*/
 				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
-		// [6+..+9/15+..+18] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+		// [6+..+9/15+..+19] ==== (4x) Reset Groups ==== 	-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
 	"a_GunRescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION (AltGroup[3+7])
@@ -5975,12 +5987,12 @@ achievements_descriptions = {
 	// --------c_Gunslinger-------- 
 	"a_GunWrongTrain": 			{"en": "No time for second chances, burn through the rails like hell's on your heels. Complete Chapter 1, \"The Wrong Train\", in Gunslinger Mode on Deadeye difficulty, within 4 minutes, no deaths, and without dropping below 40% HP"},
 	"a_GunRideDevil": 			{"en": "You ain't just riding, you're making every bullet sing. Complete Chapter 2, \"Ride Like the Devil\", in Gunslinger Mode on Deadeye difficulty, with no deaths, at least 70% accuracy, and without falling below 40% HP"},
-	"a_GunBoneyard": 			{"en": "The ground's already full, but you kept digging. Complete Chapter 3, \"Boneyard\", in Gunslinger Mode on Deadeye difficulty, with no deaths, achieving at least 80 kills using the Carbine or Crossbow, and without throwing any explosives"},
+	"a_GunBoneyard": 			{"en": "The ground's already full, but you kept digging. Complete Chapter 3, \"Boneyard\", in Gunslinger Mode on Deadeye difficulty, with no deaths, only firing with the Carbine or Crossbow, without scoring 5 body-shot kills in a row, mix in headshot or melee kills"},
 	"a_GunDevilMine": 			{"en": "Ain't no darkness hiding what you came to do. Complete Chapter 4, \"Devil's Belly Mine\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only the Redeemer or Dual Pistols, and without using any powers"},
 	"a_GunDWOutpost": 			{"en": "The station is drowning in blood, and none of it is yours. Complete Chapter 5, \"Darkwatch Outpost\", in Gunslinger Mode on Deadeye difficulty, with no deaths, and without being below max HP for more than 20 consecutive seconds"},
 	"a_GunWarTrain": 			{"en": "The train kept running. You didn't bleed. Complete Chapter 6, \"War Train\", in Gunslinger Mode on Deadeye difficulty, within 5 minutes, no deaths, and without losing any HP"},
 	"a_GunTortureMaze": 		{"en": "This ain't no gunfight, it's a sermon of steel. Complete Chapter 7, \"Torture Maze\", in Gunslinger Mode on Deadeye difficulty, with no deaths, only killing with the Scepter or Shotgun, and with at least 60% melee kills"},
-	"a_GunBaptismFire": 		{"en": "This baptism ain't in water. Complete Chapter 8, \"Baptism of Fire\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only the Redeemer or Rail Rocket, and without scoring 5 body-shot kills in a row, mix it up with headshot or melee kills"},
+	"a_GunBaptismFire": 		{"en": "This baptism ain't in water. Complete Chapter 8, \"Baptism of Fire\", in Gunslinger Mode on Deadeye difficulty, with no deaths, without throwing any explosives, and killing at least 40 enemies with the Rail Rocket"},
 	"a_GunRescue": 				{"en": "Bullets flew, the dead swarmed, and you walked out clean. Complete Chapter 9, \"Rescue\", in Gunslinger Mode on Deadeye difficulty, with no deaths, and without losing any HP"},
 	"a_GunPrism": 				{"en": "The canyon lit up like Judgment Day, and you brought the thunder. Complete Chapter 10, \"The Deadlight Prism\", in Gunslinger Mode on Deadeye difficulty within 15 minutes, no deaths, and killing only with the Dual Pistols or Shotgun equipped"},
 	"a_GunInvasion": 			{"en": "One power. Five flickers of fury. The rest? Pure skill. Complete Chapter 11, \"Invasion\", in Gunslinger Mode on Deadeye difficulty, with no deaths, using only one distinct power, and with only 5 allowed power activations"},
