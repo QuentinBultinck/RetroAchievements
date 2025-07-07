@@ -288,6 +288,8 @@ memory_StructDefs = {
 		"pointerChainToMember": {
 			"BitFlag:IsPlayerMounted": {
 				"pointerChainOffsets": [0x58, 0x64, 0x28]},
+			"Struct(Coordinates):PlayerLocation(functional)": {
+				"pointerChainOffsets": [0x58, 0x64, 0xF0, 0x00, 0x90, 0x30, 0xB0]},
 			"Float:PlayerHealth(functional)": {
 				"pointerChainOffsets": [0x58, 0x7C, 0x98]},
 			"Float:VampireShield(functional)": {
@@ -296,6 +298,13 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x58, 0x7C, 0xFC]},
 			},
 		},
+	"Struct:Coordinates": {
+		"offsetToMember": {
+			"Float:Coordinate_X": 0x0,
+			"Float:Coordinate_Z": 0x4,
+			"Float:Coordinate_Y": 0x8,},
+		},
+	
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
 	memory_StructDefs[string_structKey]["sizeInBytes"]
@@ -2051,6 +2060,12 @@ function prev_flagState_IsPlayerMounted(enum_player, enum_releaseRegion) =>
 function on_flagState_IsPlayerMounted_change(enum_player, enum_releaseRegion) => 
 	current_flagState_IsPlayerMounted(enum_player, enum_releaseRegion) != prev_flagState_IsPlayerMounted(enum_player, enum_releaseRegion)
 
+function current_flagState_IsPlayerMounted_false(enum_player, enum_releaseRegion) =>
+	current_flagState_IsPlayerMounted(enum_player, enum_releaseRegion) == 0
+
+function current_flagState_IsPlayerMounted_true(enum_player, enum_releaseRegion) =>
+	current_flagState_IsPlayerMounted(enum_player, enum_releaseRegion) == 1
+
 function on_Player_mount(enum_player, enum_releaseRegion) =>
 	current_flagState_IsPlayerMounted(enum_player, enum_releaseRegion) > prev_flagState_IsPlayerMounted(enum_player, enum_releaseRegion)
 
@@ -2640,7 +2655,73 @@ function on_calculated_TotalStoryTime_whileInGame_overflow(enum_releaseRegion) =
 	&& current_calculated_TotalStoryTime_whileInGame(enum_releaseRegion) <= 0x0 + 1000 // --> 1 second (= 1000ms) above 0x0
 
 // #endregion Saved Stats
+// #region Player Location
+// ----------------Location---------------------
+function current_PlayerLocation_X(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer(EntityData_B):PlayerActorData-Player{0}", enum_player)	
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
 
+	let_array_offsetsTo_PlayerLocation_X = memory_getStruct_offsetSequenceToMember("Struct:PlayerEntityData", "Struct(Coordinates):PlayerLocation(functional)")
+	let_offsetTo_Coordinate_X = memory_getStruct_OffsetToMember("Struct:Coordinates", "Float:Coordinate_X") + array_pop(let_array_offsetsTo_PlayerLocation_X)	
+	array_push(let_array_offsetsTo_PlayerLocation_X, let_offsetTo_Coordinate_X)
+
+	return memGenerate_pointerChainAccessor_fromOffsets(
+		let_memAddr_BasePointer, let_array_offsetsTo_PlayerLocation_X,
+		memAccessorFunction_toPointedToMember = float)}
+
+function current_PlayerLocation_Y(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer(EntityData_B):PlayerActorData-Player{0}", enum_player)	
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
+
+	let_array_offsetsTo_PlayerLocation_Y = memory_getStruct_offsetSequenceToMember("Struct:PlayerEntityData", "Struct(Coordinates):PlayerLocation(functional)")
+	let_offsetTo_Coordinate_Y = memory_getStruct_OffsetToMember("Struct:Coordinates", "Float:Coordinate_Y") + array_pop(let_array_offsetsTo_PlayerLocation_Y)	
+	array_push(let_array_offsetsTo_PlayerLocation_Y, let_offsetTo_Coordinate_Y)
+
+	return memGenerate_pointerChainAccessor_fromOffsets(
+		let_memAddr_BasePointer, let_array_offsetsTo_PlayerLocation_Y,
+		memAccessorFunction_toPointedToMember = float)}
+
+function current_PlayerLocation_Z(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer(EntityData_B):PlayerActorData-Player{0}", enum_player)	
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
+
+	let_array_offsetsTo_PlayerLocation_Z = memory_getStruct_offsetSequenceToMember("Struct:PlayerEntityData", "Struct(Coordinates):PlayerLocation(functional)")
+	let_offsetTo_Coordinate_Z = memory_getStruct_OffsetToMember("Struct:Coordinates", "Float:Coordinate_Z") + array_pop(let_array_offsetsTo_PlayerLocation_Z)	
+	array_push(let_array_offsetsTo_PlayerLocation_Z, let_offsetTo_Coordinate_Z)
+
+	return memGenerate_pointerChainAccessor_fromOffsets(
+		let_memAddr_BasePointer, let_array_offsetsTo_PlayerLocation_Z,
+		memAccessorFunction_toPointedToMember = float)}
+
+// ----------------POIs---------------------
+const_Chapter_POI_Data = {
+	/* NOTE: Template DictObject(POI_data):
+		"string_POI_key": {"X": 0.0, "Y": 0.0, "Z": 0.0, "RadiusThreshold": sNULL},
+		*/
+	CHAPTER_15_RightTrain: {
+		"GatlingGun": {"X": 0.05, "Y": -111.9, "Z": 2.0, "RadiusThreshold": 1.5},
+		},
+	}
+
+function get_POI_data(enum_chapter) =>
+	const_Chapter_POI_Data[enum_chapter]
+
+function is_PlayerNearPOI(enum_player, enum_chapter, string_POI_key, enum_releaseRegion) {
+	let_POIdata_target = const_Chapter_POI_Data[enum_chapter][string_POI_key]
+	let_POI_X = let_POIdata_target["X"]
+	let_POI_Y = let_POIdata_target["Y"]
+	let_POI_Z = let_POIdata_target["Z"]
+	let_POI_RadiusThreshold = let_POIdata_target["RadiusThreshold"]
+
+	let_memAccessor_Player_X = current_PlayerLocation_X(enum_player, enum_releaseRegion)
+	let_memAccessor_Player_Y = current_PlayerLocation_Y(enum_player, enum_releaseRegion)
+	let_memAccessor_Player_Z = current_PlayerLocation_Z(enum_player, enum_releaseRegion)
+	return
+			(let_POI_X - let_POI_RadiusThreshold) <= let_memAccessor_Player_X 		&& let_memAccessor_Player_X <= (let_POI_X + let_POI_RadiusThreshold)
+		&& 	(let_POI_Y - let_POI_RadiusThreshold) <= let_memAccessor_Player_Y 		&& let_memAccessor_Player_Y <= (let_POI_Y + let_POI_RadiusThreshold)
+		&& 	(let_POI_Z - let_POI_RadiusThreshold) <= let_memAccessor_Player_Z 		&& let_memAccessor_Player_Z <= (let_POI_Z + let_POI_RadiusThreshold)
+	}
+// #endregion Player Location
 // #endregion Player Data
 
 // =========================
@@ -3362,46 +3443,6 @@ function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, in
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			*/
 		|| achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
-// ----------------Bonus---------------------
-function achGenerate_FullTrigger_GatlingGunner(enum_chapter, enum_chapterSectionWithGatlingGun, enum_difficultyMinimum, int_requiredGatlingGunKillStreak, enum_releaseRegion) => 
-	// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-		measured(
-			repeated(int_requiredGatlingGunKillStreak,
-				never( // --ResetNextIf--> When player vampire shield below 50%.
-					current_flagState_IsPlayerMounted(PLAYER_1, enum_releaseRegion) == 1
-					&& current_Player_VampireShield(PLAYER_1, enum_releaseRegion) < CONST_PLAYER_MAX_VAMPIRESHIELD * 0.50)
-				&& current_flagState_IsPlayerMounted(PLAYER_1, enum_releaseRegion) == 1
-				&& is_flagState_InGame_true(enum_releaseRegion)
-				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)),
-			when =
-				is_ReleaseRegion(enum_releaseRegion)
-				&& is_flagState_InGame_true(enum_releaseRegion)
-				&& is_DifficultyOrHarder(enum_difficultyMinimum, enum_releaseRegion)
-				&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
-				&& is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
-				&& is_ChapterSection(enum_chapter, enum_chapterSectionWithGatlingGun, enum_releaseRegion)
-				&& once(on_Player_mount(PLAYER_1, enum_releaseRegion))
-		)
-	// [2] ==== Alt Trigger Group ====		--> Group is only responsible for displaying a Trigger Indicator when on the gatling gun.
-		|| is_ReleaseRegion(enum_releaseRegion)
-		&& is_flagState_InGame_true(enum_releaseRegion)
-		&& is_DifficultyOrHarder(enum_difficultyMinimum, enum_releaseRegion)
-		&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
-		&& is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
-		&& is_ChapterSection(enum_chapter, enum_chapterSectionWithGatlingGun, enum_releaseRegion)
-		&& current_Player_VampireShield(PLAYER_1, enum_releaseRegion) >= CONST_PLAYER_MAX_VAMPIRESHIELD * 0.50 // --CheckIf--> Vampire Shield >= 50%
-		&& once(on_Player_mount(PLAYER_1, enum_releaseRegion))
-		&& trigger_when(always_false())
-	// [3] ==== Alt Reset Group ====		--> Reset when dismounting the gatling gun
-		|| never_toAlt(
-			is_ReleaseRegion(enum_releaseRegion)
-			&& is_flagState_InGame_true(enum_releaseRegion)
-			&& on_Player_dismount(PLAYER_1, enum_releaseRegion))
-	// [4] ==== Alt Reset Group ====		--> Reset when CHAPTER_SECTION with GatlingGun starts from beginning
-		|| never_toAlt(
-			is_ReleaseRegion(enum_releaseRegion)
-			&& on_ChapterSection_startFromBeginning(enum_chapter, enum_chapterSectionWithGatlingGun, enum_releaseRegion))
-// -------------------------------------
 
 function achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion) =>
 	// [5/] ==== Alt Lockout Group ==== 		-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
@@ -5731,10 +5772,108 @@ achievements_triggers = {
 				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 		}),
 	// --------c_Bonus--------
-	"a_GatlingRightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achGenerate_FullTrigger_GatlingGunner(CHAPTER_15_RightTrain, CHAPTER_SECTION_1, DIFFICULTY_Shootist, 15, enum_releaseRegion)),
-	"a_GatlingPrism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achGenerate_FullTrigger_GatlingGunner(CHAPTER_10_Prism, CHAPTER_SECTION_5, DIFFICULTY_Shootist, 15, enum_releaseRegion)),
+	"a_GatlingRightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = CHAPTER_15_RightTrain
+		const_CHAPTERSECTION_GATLINGGUN = CHAPTER_SECTION_1
+		const_MIN_REQUIRED_DIFFICULTY = DIFFICULTY_Shootist
+		const_VAMPIRE_SHIELD_THRESHOLD = 0.50
+		const_REQUIRED_GATLINGGUN_KILLS = 15
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			measured(
+				repeated(const_REQUIRED_GATLINGGUN_KILLS,
+					never( // --ResetNextIf--> When player vampire shield below const_VAMPIRE_SHIELD_THRESHOLD.
+						current_flagState_IsPlayerMounted(PLAYER_1, enum_releaseRegion) == 1
+						&& current_Player_VampireShield(PLAYER_1, enum_releaseRegion) < CONST_PLAYER_MAX_VAMPIRESHIELD * const_VAMPIRE_SHIELD_THRESHOLD)
+					&& current_flagState_IsPlayerMounted(PLAYER_1, enum_releaseRegion) == 1
+					&& is_flagState_InGame_true(enum_releaseRegion)
+					&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)),
+				when =
+					is_ReleaseRegion(enum_releaseRegion)
+					&& is_flagState_InGame_true(enum_releaseRegion)
+					&& is_DifficultyOrHarder(const_MIN_REQUIRED_DIFFICULTY, enum_releaseRegion)
+					&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
+					&& is_LevelSubstring_StoryChapter(const_CHAPTER, enum_releaseRegion)
+					&& is_ChapterSection(const_CHAPTER, const_CHAPTERSECTION_GATLINGGUN, enum_releaseRegion)
+					&& is_PlayerNearPOI(PLAYER_1, const_CHAPTER, "GatlingGun", enum_releaseRegion) // --CheckIf--[BUGFIX]--> Effectively on GatlingGun AND not on Horseback (as this ChapterSection has both; more details at "BitFlag:IsPlayerMounted")
+					&& once(
+						never(current_flagState_IsPlayerMounted_false(PLAYER_1, enum_releaseRegion))
+						&& on_Player_mount(PLAYER_1, enum_releaseRegion))
+			)
+	// [2] ==== Alt Trigger Group ====		--> Group is only responsible for displaying a Trigger Indicator when on the gatling gun.
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& is_flagState_InGame_true(enum_releaseRegion)
+		&& is_DifficultyOrHarder(const_MIN_REQUIRED_DIFFICULTY, enum_releaseRegion)
+		&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
+		&& is_LevelSubstring_StoryChapter(const_CHAPTER, enum_releaseRegion)
+		&& is_ChapterSection(const_CHAPTER, const_CHAPTERSECTION_GATLINGGUN, enum_releaseRegion)
+		&& current_Player_VampireShield(PLAYER_1, enum_releaseRegion) >= CONST_PLAYER_MAX_VAMPIRESHIELD * const_VAMPIRE_SHIELD_THRESHOLD // --CheckIf--> Vampire Shield >= const_VAMPIRE_SHIELD_THRESHOLD
+		&& is_PlayerNearPOI(PLAYER_1, const_CHAPTER, "GatlingGun", enum_releaseRegion) // --CheckIf--[BUGFIX]--> Effectively on GatlingGun AND not on Horseback (as this ChapterSection has both; more details at "BitFlag:IsPlayerMounted")
+		&& once(
+			never(current_flagState_IsPlayerMounted_false(PLAYER_1, enum_releaseRegion))
+			&& on_Player_mount(PLAYER_1, enum_releaseRegion))
+		&& trigger_when(always_false())
+	// [3] ==== Alt Reset Group ====		--> Reset when dismounting the gatling gun
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& on_Player_dismount(PLAYER_1, enum_releaseRegion))
+	// [4] ==== Alt Reset Group ====		--> Reset when CHAPTER_SECTION with GatlingGun starts from beginning
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_ChapterSection_startFromBeginning(const_CHAPTER, const_CHAPTERSECTION_GATLINGGUN, enum_releaseRegion))}),
+	"a_GatlingPrism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = CHAPTER_10_Prism
+		const_CHAPTERSECTION_GATLINGGUN = CHAPTER_SECTION_5
+		const_MIN_REQUIRED_DIFFICULTY = DIFFICULTY_Shootist
+		const_VAMPIRE_SHIELD_THRESHOLD = 0.50
+		const_REQUIRED_GATLINGGUN_KILLS = 15
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			measured(
+				repeated(const_REQUIRED_GATLINGGUN_KILLS,
+					never( // --ResetNextIf--> When player vampire shield below const_VAMPIRE_SHIELD_THRESHOLD.
+						current_flagState_IsPlayerMounted(PLAYER_1, enum_releaseRegion) == 1
+						&& current_Player_VampireShield(PLAYER_1, enum_releaseRegion) < CONST_PLAYER_MAX_VAMPIRESHIELD * const_VAMPIRE_SHIELD_THRESHOLD)
+					&& current_flagState_IsPlayerMounted(PLAYER_1, enum_releaseRegion) == 1
+					&& is_flagState_InGame_true(enum_releaseRegion)
+					&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)),
+				when =
+					is_ReleaseRegion(enum_releaseRegion)
+					&& is_flagState_InGame_true(enum_releaseRegion)
+					&& is_DifficultyOrHarder(const_MIN_REQUIRED_DIFFICULTY, enum_releaseRegion)
+					&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
+					&& is_LevelSubstring_StoryChapter(const_CHAPTER, enum_releaseRegion)
+					&& is_ChapterSection(const_CHAPTER, const_CHAPTERSECTION_GATLINGGUN, enum_releaseRegion)
+					// && is_PlayerNearPOI(PLAYER_1, const_CHAPTER, "GatlingGun", enum_releaseRegion) // --Unnecessary--> as player can only mount the GatlingGun in this ChapterSection 
+					&& once(
+						never(current_flagState_IsPlayerMounted_false(PLAYER_1, enum_releaseRegion))
+						&& on_Player_mount(PLAYER_1, enum_releaseRegion))
+			)
+	// [2] ==== Alt Trigger Group ====		--> Group is only responsible for displaying a Trigger Indicator when on the gatling gun.
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& is_flagState_InGame_true(enum_releaseRegion)
+		&& is_DifficultyOrHarder(const_MIN_REQUIRED_DIFFICULTY, enum_releaseRegion)
+		&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
+		&& is_LevelSubstring_StoryChapter(const_CHAPTER, enum_releaseRegion)
+		&& is_ChapterSection(const_CHAPTER, const_CHAPTERSECTION_GATLINGGUN, enum_releaseRegion)
+		&& current_Player_VampireShield(PLAYER_1, enum_releaseRegion) >= CONST_PLAYER_MAX_VAMPIRESHIELD * const_VAMPIRE_SHIELD_THRESHOLD // --CheckIf--> Vampire Shield >= const_VAMPIRE_SHIELD_THRESHOLD
+		// && is_PlayerNearPOI(PLAYER_1, const_CHAPTER, "GatlingGun", enum_releaseRegion) // --Unnecessary--> as player can only mount the GatlingGun in this ChapterSection 
+		&& once(
+			never(current_flagState_IsPlayerMounted_false(PLAYER_1, enum_releaseRegion))
+			&& on_Player_mount(PLAYER_1, enum_releaseRegion))
+		&& trigger_when(always_false())
+	// [3] ==== Alt Reset Group ====		--> Reset when dismounting the gatling gun
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& on_Player_dismount(PLAYER_1, enum_releaseRegion))
+	// [4] ==== Alt Reset Group ====		--> Reset when CHAPTER_SECTION with GatlingGun starts from beginning
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_ChapterSection_startFromBeginning(const_CHAPTER, const_CHAPTERSECTION_GATLINGGUN, enum_releaseRegion))}),
 	"a_SunPower": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			unless(
