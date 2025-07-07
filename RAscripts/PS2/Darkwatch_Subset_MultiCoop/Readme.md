@@ -33,7 +33,7 @@ This guide provides comprehensive details on how to unlock each achievement with
 ```
 Set consists of 39 achievements worth 325 points
 
-Set released on DD MMMM YYYY
+Set released on 9 July 2025
 ```
 
 ## 📜 Co-op Participation Tracking 

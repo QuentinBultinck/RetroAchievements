@@ -32,7 +32,7 @@ This guide provides comprehensive details on how to unlock each achievement with
 ```
 Set consists of 56 achievements worth 431 points
 
-Set released on DD MMMM YYYY
+Set released on 9 July 2025
 ```
 
 <h4 id=WalkthroughsResources>
@@ -350,6 +350,7 @@ With this guide, the player will not only understand the mechanics behind each l
 | RA-User | Role |
 |:---:|---|
 | <h4>[ASolidSnack](https://retroachievements.org/user/ASolidSnack)</h4> <img src="https://media.retroachievements.org/UserPic/ASolidSnack.png" alt="RA-User Avatar Image" width="96" height="96"> | <b> 🟉 *Achievement Set Developer* \| *Badge Design* \| *RA-Guide Author* </b> <br><br> |
+| <h4>[TheWTDdude](https://retroachievements.org/user/TheWTFdude)</h4> <img src="https://media.retroachievements.org/UserPic/TheWTFdude.png" alt="RA-User Avatar Image" width="96" height="96"> |  <b> 🟉 *Contributor* \| *Tester* </b> <br><br> Completed a test playthrough in which all challenge achievements were evaluated for viability, difficulty, and logical consistency. Also provided feedback on the difficulty balance of several custom-designed challenge achievements. |
 
 <h1 id=Footnotes>
     ✏️ Footnotes
