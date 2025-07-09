@@ -1251,7 +1251,7 @@ CONST_LEVEL_DATA = {
 		"SavedStatIndex_SinglePlayerMode": 4,
 		},
 	CHAPTER_6_WarTrain: {
-		"LevelID": "Wartrain",
+		"LevelID": "Wartrain", // WARNING: Only in Single Player Mode: after completing CHAPTER_5_Outpost, then moving on to CHAPTER_6_WarTrain, the [ASCII:LevelID(full)] would be "WarTrain" instead of "Wartrain" (check capitalization)
 		"FullString_ChapterSectionIDs": ["M07_C"],
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 5,
@@ -1387,8 +1387,10 @@ CONST_LEVEL_DATA = {
 function LEVEL_DATA_getLevelID(enum_chapter) =>
 	CONST_LEVEL_DATA[enum_chapter]["LevelID"]
 
-function LEVEL_DATA_getLevelID_substring(enum_chapter) =>
-	substring(CONST_LEVEL_DATA[enum_chapter]["LevelID"], 0, 4) // Only check first [4-byte ASCII]
+function LEVEL_DATA_getLevelID_substring(enum_chapter) {
+	if(enum_chapter == CHAPTER_6_WarTrain) return substring(CONST_LEVEL_DATA[enum_chapter]["LevelID"], 0, 3) // Only check first [3-byte ASCII] // --BUGFIX--> Only in Single Player Mode: after completing CHAPTER_5_Outpost, then moving on to CHAPTER_6_WarTrain, the [ASCII:LevelID(full)] would be "WarTrain" instead of "Wartrain" (check capitalization)
+	return substring(CONST_LEVEL_DATA[enum_chapter]["LevelID"], 0, 4) // Only check first [4-byte ASCII]
+	}
 
 function LEVEL_DATA_getFullStringChapterSectionID(enum_chapter, enum_chapterSection) =>
 	CONST_LEVEL_DATA[enum_chapter]["FullString_ChapterSectionIDs"][enum_chapterSection]
