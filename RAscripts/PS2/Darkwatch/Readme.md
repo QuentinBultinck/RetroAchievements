@@ -140,7 +140,7 @@ These achievements are tied to the two different endings in Single Player Story 
 
 
 <h1 id=c_Gunslinger>
-    🏆 Gunslinger Challenges <i><sub><sup>(_COUNT_ achievements - 170 points)</sup></sub></i>
+    🏆 Gunslinger Challenges <i><sub><sup>(17 achievements - 170 points)</sup></sub></i>
 </h1>
 
 This category features custom-made challenge achievements that can only be earned in Gunslinger Mode.
