@@ -1594,9 +1594,9 @@ CONST_LEVEL_DATA = {
 function LEVEL_DATA_getLevelID(enum_chapter) =>
 	CONST_LEVEL_DATA[enum_chapter]["LevelID"]
 
-function LEVEL_DATA_getLevelID_substring(enum_chapter) =>
+function LEVEL_DATA_getLevelID_substring(enum_chapter) {
 	if(enum_chapter == CHAPTER_6_WarTrain) return substring(CONST_LEVEL_DATA[enum_chapter]["LevelID"], 0, 3) // Only check first [3-byte ASCII] // --BUGFIX--> Only in Single Player Mode: after completing CHAPTER_5_Outpost, then moving on to CHAPTER_6_WarTrain, the [ASCII:LevelID(full)] would be "WarTrain" instead of "Wartrain" (check capitalization)
-	substring(CONST_LEVEL_DATA[enum_chapter]["LevelID"], 0, 4) // Only check first [4-byte ASCII]
+	return substring(CONST_LEVEL_DATA[enum_chapter]["LevelID"], 0, 4)} // Only check first [4-byte ASCII]
 
 function LEVEL_DATA_getFullStringChapterSectionID(enum_chapter, enum_chapterSection) =>
 	CONST_LEVEL_DATA[enum_chapter]["FullString_ChapterSectionIDs"][enum_chapterSection]
@@ -2606,7 +2606,9 @@ FMV_GiddyUp = "M09S3_"
 FMV_PromNight = "M11S2_"
 FMV_Monster = "M22S4_"
 FMV_Hero = "M22S3_"
-FMV_Credits = "FINALD"
+FMV_Credits = { // WARNING: [6-byte ASCII:Sofdec_FMVID] is different based on ReleaseRegion
+	RELEASE_REGION_EUR: "FINALD",
+	RELEASE_REGION_USA: "FI8542"}
 
 function is_anyFMV_active(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
@@ -2776,10 +2778,10 @@ achievements_coreData = {
 			// "id": 513482, "points": achievement_POINTS_5, "devInfo": "CHAPTER_16_Deadfall Completion"},
 		},
 	"c_StoryEnd": { // Category - Story Win Condition Achievements
-		// "a_CurseWestGood": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 513484, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
-		// "a_CurseWestEvil": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 513483, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
+		"a_CurseWestGood": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513484, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
+		"a_CurseWestEvil": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513483, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
 		},
 	"c_Challenge": { // Category - info_here
 		// "a_ClgWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
@@ -3236,6 +3238,7 @@ function achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(enum_chap
 
 function achGenerate_FullTrigger_StoryEnd(bool_IsGoodEnding, enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION (AltGroups[1+6+7])
 	const_CHAPTER = CHAPTER_17_CurseWest
+	const_FMV_Credits = FMV_Credits[enum_releaseRegion]
 	const_FMV_ending = FMV_Monster
 	if (bool_IsGoodEnding) const_FMV_ending = FMV_Hero
 
@@ -3303,7 +3306,7 @@ function achGenerate_FullTrigger_StoryEnd(bool_IsGoodEnding, enum_releaseRegion)
 			&& once(
 				never(on_FMV_start(const_FMV_ending, enum_releaseRegion))
 				&& on_FMV_end(const_FMV_ending, enum_releaseRegion))
-			&& on_FMV_end(FMV_Credits, enum_releaseRegion)
+			&& on_FMV_end(const_FMV_Credits, enum_releaseRegion)
 			)
 	// [2/9] ==== Alt Lockout Group ==== 		-> Lockout achievement when one player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
 		|| achGenerate_LockoutGroup_ParticipationTrackingInactivity(const_CHAPTER, enum_releaseRegion)

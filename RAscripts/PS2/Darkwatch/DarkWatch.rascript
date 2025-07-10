@@ -1751,9 +1751,13 @@ FMV_CassidyDies = "M04S1_"
 FMV_TheHaunting = "M05S1_"
 FMV_GiddyUp = "M09S3_"
 FMV_PromNight = "M11S2_"
+FMV_Angel = "M22S1_"
+FMV_Devil = "M22S2_"
 FMV_Monster = "M22S4_"
 FMV_Hero = "M22S3_"
-FMV_Credits = "FINALD"
+FMV_Credits = { // WARNING: [6-byte ASCII:Sofdec_FMVID] is different based on ReleaseRegion
+	RELEASE_REGION_EUR: "FINALD",
+	RELEASE_REGION_USA: "FI8542"}
 
 function is_anyFMV_active(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
@@ -3571,6 +3575,8 @@ achievements_triggers = {
 	"a_CurseWestGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 		const_CHAPTER = CHAPTER_17_CurseWest
 		const_FMV_GoodEnding = FMV_Hero
+		const_FMV_Credits = FMV_Credits[enum_releaseRegion]
+
 		return 
 		// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -3586,17 +3592,17 @@ achievements_triggers = {
 				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
 				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& trigger_when(
-				once(
-					never(on_FMV_start(const_FMV_GoodEnding, enum_releaseRegion))
-					&& on_FMV_end(const_FMV_GoodEnding, enum_releaseRegion))
-				&& on_FMV_end(FMV_Credits, enum_releaseRegion))
+			&& once( // --CheckIf--> Good Ending Achieved
+				never(on_FMV_start(const_FMV_GoodEnding, enum_releaseRegion))
+				&& is_FMV_active(const_FMV_GoodEnding, enum_releaseRegion))
+			&& trigger_when(on_FMV_end(const_FMV_Credits, enum_releaseRegion))
 		// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer || when not in correct Level || when at MainMenu || on PauseMenu->Restart OR on PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_SingleplayerWinCondition(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
 	"a_CurseWestEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 		const_CHAPTER = CHAPTER_17_CurseWest
 		const_FMV_EvilEnding = FMV_Monster
+		const_FMV_Credits = FMV_Credits[enum_releaseRegion]
 		return 
 		// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -3612,11 +3618,10 @@ achievements_triggers = {
 				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
 				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& trigger_when(
-				once(
-					never(on_FMV_start(const_FMV_EvilEnding, enum_releaseRegion))
-					&& on_FMV_end(const_FMV_EvilEnding, enum_releaseRegion))
-				&& on_FMV_end(FMV_Credits, enum_releaseRegion))
+			&& once( // --CheckIf--> Evil Ending Achieved
+				never(on_FMV_start(const_FMV_EvilEnding, enum_releaseRegion))
+				&& is_FMV_active(const_FMV_EvilEnding, enum_releaseRegion))
+			&& trigger_when(on_FMV_end(const_FMV_Credits, enum_releaseRegion))
 		// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer || when not in correct Level || when at MainMenu || on PauseMenu->Restart OR on PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_SingleplayerWinCondition(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
@@ -7550,6 +7555,8 @@ function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_relea
 
 function lbGenerate_FullStartTrigger_SoftStoryCompletion(enum_difficulty, enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 	const_HIGHEST_DIFFICULTY = DIFFICULTY_Deadeye
+	const_FMV_Credits = FMV_Credits[enum_releaseRegion]
+
 	return
 	// [1] ==== Alt Start/Submit Group ====		-> Start/Submit when last Story Chapter is finished AND check if all of the completed chapters are finished on enum_difficulty or higher
 		unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -7560,7 +7567,7 @@ function lbGenerate_FullStartTrigger_SoftStoryCompletion(enum_difficulty, enum_r
 			once(on_FMV_start(FMV_Hero, enum_releaseRegion)),
 			once(on_FMV_start(FMV_Monster, enum_releaseRegion))])
 		&& once( // --CheckIf--> Credits FMV starts 		
-			on_FMV_start(FMV_Credits, enum_releaseRegion)) 
+			on_FMV_start(const_FMV_Credits, enum_releaseRegion)) 
 		&& all_of(CONST_LEVEL_DATA, (enum_chapter) { // --CheckIf--> All Chapters have been completed on enum_difficulty or higher (CHAPTER_Citadel excluded)
 			if (enum_chapter == CHAPTER_Citadel) return always_true() // --> Exclude CHAPTER_Citadel from this Check
 			return 
@@ -7570,7 +7577,7 @@ function lbGenerate_FullStartTrigger_SoftStoryCompletion(enum_difficulty, enum_r
 			})
 		&& current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) >= LB_STORYTIME_Min_Required_TotalStory_Missiontime
 		&& current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) <= LB_STORYTIME_Max_Allowed_TotalStory_Missiontime_softcore
-		&& on_FMV_end(FMV_Credits, enum_releaseRegion)
+		&& on_FMV_end(const_FMV_Credits, enum_releaseRegion)
 	// [2] ==== Alt Reset Group ====		-> Reset when not in Single Player 
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
@@ -7671,16 +7678,19 @@ function lbGenerate_FullCancelTrigger_HardStoryCompletion(enum_releaseRegion) =>
 		&& is_flagState_InGame_false(enum_releaseRegion)
 		&& current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) > LB_STORYTIME_Max_Allowed_TotalStory_Missiontime_hardcore
 
-function lbGenerate_FullSubmitTrigger_HardStoryCompletion(enum_difficulty, enum_releaseRegion) =>
+function lbGenerate_FullSubmitTrigger_HardStoryCompletion(enum_difficulty, enum_releaseRegion) {
+	const_FMV_Credits = FMV_Credits[enum_releaseRegion]
+	
+	return
 	// [1] ==== Alt Submit Group ====			-> Submit when all Chapters have been started once AND FMV_Credits ends
 		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& tally_of(CONST_LEVEL_DATA, length(CONST_LEVEL_DATA), enum_chapter => 
 			once(on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))) // Side Note: Technically CHAPTER_Citadel is started 4x times, but HitCount only once 
-		&& on_FMV_start(FMV_Credits, enum_releaseRegion)
+		&& on_FMV_start(const_FMV_Credits, enum_releaseRegion)
 	// [2] ==== Alt Reset Group ====		-> Reset when entering MainMenu
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
-			&& on_MainMenu_enter(enum_releaseRegion))
+			&& on_MainMenu_enter(enum_releaseRegion))}
 
 
 // #endregion LB - trigger generators
