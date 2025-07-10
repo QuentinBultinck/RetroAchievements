@@ -5925,8 +5925,8 @@ achievements_triggers = {
 		return
 		/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
 			// WARNING - Edit in enum_textLookupKeyPowerName
-			PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=1_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
-			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+			PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=1_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993.1._I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX0000000c_I:0xX00000004_N:d0xX00000048=3965834464_I:{recall}_I:0xX0000000c_I:0xX00000004_T:0xX00000048!=3965834464.1._I:{recall}_I:0xX000000b8_N:d0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993.1.
+			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993.1._I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX0000000c_I:0xX00000004_N:d0xX00000048=3965834464_I:{recall}_I:0xX0000000c_I:0xX00000004_T:0xX00000048!=3965834464.1._I:{recall}_I:0xX000000b8_N:d0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993.1.
 			------
 				PauseIf 	...
 
@@ -5953,32 +5953,40 @@ achievements_triggers = {
 				ResetIf		->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  (2)	| CheckIf: PRIOR FrameTitle == "New Power"	
 
 
-				// -----------------------once(on_NewPowerMenuRender() && is_NewPowerMenu_Power())-----------------------
+				// -----------------------CheckIf: On NewPowerMenu render-------------
 				AndNext		[FlagState_InGame] == false			| is_flagState_InGame_true()
 				AndNext		[GameState] == 0x3					| is_AnyInGameMenu_active()
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	| CheckIf: DELTA FrameTitle != "New Power"
 
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: Mem FrameTitle == "New Power"	
-				
-				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-				AddAddress	->[Mem 32-bit] 0xB8
-				AndNext		->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	| CheckIf: DELTA FrameTitle != "New Power"	
-				
+							->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  	(1)	| CheckIf: Mem FrameTitle == "New Power"
+
+				// -----------------------CheckIf: correct Power-------------
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xC
 				AddAddress	->[Mem 32-bit] 0x4
-							->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 	(1)		| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
-
-
-				// -----------------------Trigger-----------------------
-				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-				AddAddress	->[Mem 32-bit] 0xB8
-				Trigger		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
+							->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 		(1)		| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
 				
+				// -----------------------Trigger: On closing NewPowerMenu-----------------------
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xC
+				AddAddress	->[Mem 32-bit] 0x4
+				AndNext		->[Delta 32-bit] 0x48 == enum_textLookupKeyPowerName 			| CheckIf: MsgBoxText == enum_textLookupKeyPowerName 
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xC
+				AddAddress	->[Mem 32-bit] 0x4
+				Trigger		->[Mem 32-bit] 0x48 != enum_textLookupKeyPowerName 	(1)	| CheckIf: MsgBoxText == enum_textLookupKeyPowerName // --BugFix--> To above 4 lines, as one of the pointers in this pointerChain changes when pressing X "Select" button on the NewPowerMenu
+					
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-				Trigger		->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: DELTA FrameTitle == "New Power"				
+				AndNext		->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: DELTA FrameTitle == "New Power"
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				Trigger		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	(1)		| CheckIf: MEM FrameTitle != "New Power"		
 				*/	
 		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement					
 			unless(
@@ -5996,9 +6004,9 @@ achievements_triggers = {
 		return
 		/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
 			// WARNING - Edit in enum_textLookupKeyPowerName
-			PAL:	xxxx
-			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_R:0xX0000006c!=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=1995014642.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
-				*/	
+			PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=1_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993.1._I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX0000000c_I:0xX00000004_N:d0xX00000048=3965834464_I:{recall}_I:0xX0000000c_I:0xX00000004_T:0xX00000048!=3965834464.1._I:{recall}_I:0xX000000b8_N:d0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993.1.
+			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993.1._I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX0000000c_I:0xX00000004_N:d0xX00000048=3965834464_I:{recall}_I:0xX0000000c_I:0xX00000004_T:0xX00000048!=3965834464.1._I:{recall}_I:0xX000000b8_N:d0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993.1.
+			*/
 		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
