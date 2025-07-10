@@ -3212,7 +3212,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 			never(is_flagState_InGame_true(enum_releaseRegion))
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-			&& is_flagState_InGame_false(enum_releaseRegion))			
+			&& is_flagState_InGame_false(enum_releaseRegion))
 		&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
 	// [2/9] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When in-game
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -3235,7 +3235,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& is_flagState_InGame_true(enum_releaseRegion),
 			format = "percent")
-		&& trigger_when(always_false())
+		&& memUtil_alwaysFalse(enum_releaseRegion)
 	// [3/10] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When not in-game
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
 		/* MANUAL_CONSTRUCTION[0ACC-6ACC] (below Measured): R/R usage
@@ -3255,7 +3255,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& is_flagState_InGame_false(enum_releaseRegion),
 			format = "percent")
-		&& trigger_when(always_false())
+		&& memUtil_alwaysFalse(enum_releaseRegion)
 	// [4+5+6+7] ==== (4x) Reset Groups ==== 				-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 		|| achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 
@@ -3389,7 +3389,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_MeleeKills(enum_chapter, int_r
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& is_flagState_InGame_true(enum_releaseRegion)
 			)
-		&& trigger_when(always_false())
+		&& memUtil_alwaysFalse(enum_releaseRegion)
 	// [3] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for MeleeKillCount - When not in-game
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& measured(
@@ -3399,7 +3399,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_MeleeKills(enum_chapter, int_r
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& is_flagState_InGame_false(enum_releaseRegion)
 			)
-		&& trigger_when(always_false())
+		&& memUtil_alwaysFalse(enum_releaseRegion)
 	// [4+5+6+7] ==== (4x) Reset Groups ==== 			-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 		|| achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 
@@ -3432,7 +3432,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, in
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& is_flagState_InGame_true(enum_releaseRegion)
 			)
-		&& trigger_when(always_false())
+		&& memUtil_alwaysFalse(enum_releaseRegion)
 	// [3] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for MeleeKillCount - When not in-game
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& measured(
@@ -3442,7 +3442,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, in
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& is_flagState_InGame_false(enum_releaseRegion)
 			)
-		&& trigger_when(always_false())
+		&& memUtil_alwaysFalse(enum_releaseRegion)
 	// [4+5+6+7] ==== (4x) Reset Groups ==== 			-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 		/* MANUAL_CONSTRUCTION (AltGroup[7/14]): R/R usage
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
