@@ -98,7 +98,7 @@
 //#####################################################################################################\\
 // #region GENERAL UTILITY
 
-util_isDebugModeActive = true	// if true => extra information may be displayed on achievement titles & descriptions
+util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
 iNULL = -1		// Two types are necessary because RAtools can't compare integers to strings
@@ -745,6 +745,11 @@ function on_MainMenu_SubMenu_close_withSubMenuTitle(enum_mainMenuSubMenuID, enum
 	wasPrev_MainMenu_SubMenuID(MAINMENU_SUBMENU_StatisticsMenu, enum_releaseRegion)
 	&& prev_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_titleTextLookupKey
 	&& on_MainMenu_newSubMenu(enum_releaseRegion)
+
+function is_MainMenu_PostChapterGunslingerStatsMenu_displayed(enum_releaseRegion) =>
+	is_atMainMenu(enum_releaseRegion)
+	&& is_MainMenu_SubMenuID(MAINMENU_SUBMENU_StatisticsMenu, enum_releaseRegion)
+	&& current_MainMenu_SubMenuTitle(enum_releaseRegion) == TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger
 
 function on_MainMenu_PostChapterGunslingerStatsMenu_render(enum_releaseRegion) => 
 	is_atMainMenu(enum_releaseRegion)
@@ -2866,8 +2871,8 @@ achievements_coreData = {
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
 		// "a_GunWrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 508863, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
-		// "a_GunRideDevil": { // VERIFIED  // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 509576, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a minimum accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
+		"a_GunRideDevil": { // VERIFIED  // DISABLED - MANUAL_CONSTRUCTION
+			"id": 509576, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a minimum accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunBoneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 510041, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, no deaths, using only the Carbine or Crossbow, without scoring 5 body-shot kills in a row, mix in headshot or melee kills"},
 		// "a_GunDevilMine": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
@@ -3132,7 +3137,7 @@ function achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_re
 				
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
 				
 				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0x7C
@@ -3191,21 +3196,8 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
 			on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
-		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy achieved
+		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended
 			never(is_flagState_InGame_true(enum_releaseRegion))
-			
-			/* MANUAL_CONSTRUCTION[0ACC-4ACC]:CheckAccuracy (below 3 lines): R/R usage 
-				// WARNING - Edit enum_minRequiredAccuracy
-				PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.65
-				NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.65
-				-----------
-				Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
-				Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
-				AndNext		Recall >= enum_minRequiredAccuracy			*/
-			&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
-			&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) >= enum_minRequiredAccuracy
-			&& memUtil_ManualConstruction_PlaceHolderRequirement(0x4ACC)
-
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 		&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
@@ -3213,6 +3205,24 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 			&& is_flagState_InGame_false(enum_releaseRegion))
+		&& once( // --CheckIf--> PostChapterGunslingerStatsMenu rendered from the required Gunslinger Level/Chapter
+			is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_MainMenu_PostChapterGunslingerStatsMenu_render(enum_releaseRegion))
+
+		&& is_MainMenu_PostChapterGunslingerStatsMenu_displayed(enum_releaseRegion)
+		/* MANUAL_CONSTRUCTION[0ACC-4ACC]:CheckAccuracy (below 3 lines): R/R usage 
+			// WARNING - Edit enum_minRequiredAccuracy
+			PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.65
+			NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.65
+			-----------
+			Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+			Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+			AndNext		Recall >= enum_minRequiredAccuracy			*/
+		&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+		&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) >= enum_minRequiredAccuracy // --CheckIf--> Required Accuracy is achieved 
+		&& memUtil_ManualConstruction_PlaceHolderRequirement(0x4ACC)
+
 		&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
 	// [2/9] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When in-game
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -3531,6 +3541,8 @@ function achGenerate_TallyOf_GunslingerAllDarkwatchWeaponsFavoritedOnce(enum_rel
 // ========================
 // • ACHIEVEMENT triggers •
 // ========================
+// TODO bugfix all CustomChallenges: All logic which may ResetIf or PauseLock using ChapterTotal stats may trigger too early 
+
 // #region ACH - triggers
 achievements_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
@@ -3871,7 +3883,7 @@ achievements_triggers = {
 				
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
 				
 				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0x7C
@@ -4042,8 +4054,9 @@ achievements_triggers = {
 		return 
 		// [1/10] ==== Alt Logic + Triggered Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying Trigger Indicator as long as HP hasn't dropped below xx% 
 			unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& unless(once( // --PauseLock--> When LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy NOT achieved (to hide Trigger Indicator)
-				never(is_flagState_InGame_true(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When PostChapterGunslingerStatsMenu renders from the required Gunslinger Level/Chapter + Required Accuracy NOT achieved (to hide Trigger Indicator)
+				is_LevelSubstring_StoryChapter(const_CHAPTER, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
 				
 				/* MANUAL_CONSTRUCTION[2ACC-1ACC]:CheckAccuracyNotAchieved (below 3 lines) - R/R usage 
 					PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}<f0.70
@@ -4056,8 +4069,7 @@ achievements_triggers = {
 				&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) < const_MIN_REQUIRED_ACCURACY
 				&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1ACC)
 
-				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-				&& on_flagState_InGame_toggleFalse(enum_releaseRegion)))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_render(enum_releaseRegion)))
 			&& unless(once( // --PauseLock--> When player HP drops below xx% HP
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
@@ -4068,23 +4080,6 @@ achievements_triggers = {
 			&& trigger_when(
 				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
 					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy achieved +  Difficulty Deadeye
-					never(is_flagState_InGame_true(enum_releaseRegion))
-					
-					/* MANUAL_CONSTRUCTION[2ACC-3ACC]:CheckAccuracyAchieved (below 3 lines) - R/R usage 
-						PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.70
-						NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.70
-						-----------
-							Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
-							Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
-							AndNext		Recall >= const_MIN_REQUIRED_ACCURACY			*/
-					&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2ACC)
-					&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) >= const_MIN_REQUIRED_ACCURACY
-					&& memUtil_ManualConstruction_PlaceHolderRequirement(0x3ACC)
-
-					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
 					never(is_flagState_InGame_true(enum_releaseRegion))
 					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
@@ -4119,7 +4114,7 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
 					&& is_flagState_InGame_true(enum_releaseRegion),
 				format = "percent")
-			&& trigger_when(always_false())
+			&& memUtil_alwaysFalse(enum_releaseRegion)
 		// [3/12] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When not in-game
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When player HP drops below xx% HP
@@ -4144,7 +4139,7 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
 					&& is_flagState_InGame_false(enum_releaseRegion),
 				format = "percent")
-			&& trigger_when(always_false())
+			&& memUtil_alwaysFalse(enum_releaseRegion)
 		// [4/13] ==== Alt Lockout Group ==== 		-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion)
 		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
@@ -4520,6 +4515,9 @@ achievements_triggers = {
 				&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)))
 			&& never( // --Lockout--> MissionTime exceeds time limit
 				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_MissionTime_Temp(enum_releaseRegion) // TODO bugfix this, this ResetIf may trigger too early, because: Temp + ChapterSection + ChapterTotal > const_TIME_LIMIT
+					+ current_MissionTime_ChapterSection(enum_releaseRegion) // TODO possible fix: place hitcount on this ResetIf, too get rid of false resets
+					!= current_MissionTime_ChapterTotal(enum_releaseRegion)
 				&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) > const_TIME_LIMIT)
 			&& never(once( // --Lockout--> When losing HP
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -5764,7 +5762,7 @@ achievements_triggers = {
 				
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
 				
 				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0x7C
@@ -7457,7 +7455,7 @@ function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_relea
 				
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-							->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+							->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
 				
 				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0x7C
@@ -7546,7 +7544,7 @@ function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_relea
 				
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
 				
 				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0x7C
