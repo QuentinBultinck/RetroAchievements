@@ -1446,7 +1446,7 @@ CONST_LEVEL_DATA = {
 		"ChapterLength": "ChapterLength_Short",
 		},
 	CHAPTER_6_WarTrain: {
-		"LevelID": "Wartrain",
+		"LevelID": "Wartrain", // WARNING: Only in Coop Mode: after completing CHAPTER_5_Outpost, then moving on to CHAPTER_6_WarTrain, the [ASCII:LevelID(full)] would be "WarTrain" instead of "Wartrain" (check capitalization)
 		"FullString_ChapterSectionIDs": ["M07_C"],
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 5,
@@ -1594,8 +1594,9 @@ CONST_LEVEL_DATA = {
 function LEVEL_DATA_getLevelID(enum_chapter) =>
 	CONST_LEVEL_DATA[enum_chapter]["LevelID"]
 
-function LEVEL_DATA_getLevelID_substring(enum_chapter) =>
-	substring(CONST_LEVEL_DATA[enum_chapter]["LevelID"], 0, 4) // Only check first [4-byte ASCII]
+function LEVEL_DATA_getLevelID_substring(enum_chapter) {
+	if(enum_chapter == CHAPTER_6_WarTrain) return substring(CONST_LEVEL_DATA[enum_chapter]["LevelID"], 0, 3) // Only check first [3-byte ASCII] // --BUGFIX--> Only in Single Player Mode: after completing CHAPTER_5_Outpost, then moving on to CHAPTER_6_WarTrain, the [ASCII:LevelID(full)] would be "WarTrain" instead of "Wartrain" (check capitalization)
+	return substring(CONST_LEVEL_DATA[enum_chapter]["LevelID"], 0, 4)} // Only check first [4-byte ASCII]
 
 function LEVEL_DATA_getFullStringChapterSectionID(enum_chapter, enum_chapterSection) =>
 	CONST_LEVEL_DATA[enum_chapter]["FullString_ChapterSectionIDs"][enum_chapterSection]
@@ -2605,7 +2606,9 @@ FMV_GiddyUp = "M09S3_"
 FMV_PromNight = "M11S2_"
 FMV_Monster = "M22S4_"
 FMV_Hero = "M22S3_"
-FMV_Credits = "FINALD"
+FMV_Credits = { // WARNING: [6-byte ASCII:Sofdec_FMVID] is different based on ReleaseRegion
+	RELEASE_REGION_EUR: "FINALD",
+	RELEASE_REGION_USA: "FI8542"}
 
 function is_anyFMV_active(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
@@ -2775,10 +2778,10 @@ achievements_coreData = {
 			// "id": 513482, "points": achievement_POINTS_5, "devInfo": "CHAPTER_16_Deadfall Completion"},
 		},
 	"c_StoryEnd": { // Category - Story Win Condition Achievements
-		// "a_CurseWestGood": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 513484, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
-		// "a_CurseWestEvil": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 513483, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
+		"a_CurseWestGood": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513484, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
+		"a_CurseWestEvil": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			"id": 513483, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
 		},
 	"c_Challenge": { // Category - info_here
 		// "a_ClgWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
@@ -3235,6 +3238,7 @@ function achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(enum_chap
 
 function achGenerate_FullTrigger_StoryEnd(bool_IsGoodEnding, enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION (AltGroups[1+6+7])
 	const_CHAPTER = CHAPTER_17_CurseWest
+	const_FMV_Credits = FMV_Credits[enum_releaseRegion]
 	const_FMV_ending = FMV_Monster
 	if (bool_IsGoodEnding) const_FMV_ending = FMV_Hero
 
@@ -3302,7 +3306,7 @@ function achGenerate_FullTrigger_StoryEnd(bool_IsGoodEnding, enum_releaseRegion)
 			&& once(
 				never(on_FMV_start(const_FMV_ending, enum_releaseRegion))
 				&& on_FMV_end(const_FMV_ending, enum_releaseRegion))
-			&& on_FMV_end(FMV_Credits, enum_releaseRegion)
+			&& on_FMV_end(const_FMV_Credits, enum_releaseRegion)
 			)
 	// [2/9] ==== Alt Lockout Group ==== 		-> Lockout achievement when one player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
 		|| achGenerate_LockoutGroup_ParticipationTrackingInactivity(const_CHAPTER, enum_releaseRegion)
@@ -6314,62 +6318,70 @@ achievements_triggers = {
 		return		
 		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
-				PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=2_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
-				NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=2_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+				// WARNING - Edit in enum_textLookupKeyPowerName
+				PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=2_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993.1._I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=1995014642.1._I:{recall}_I:0xX0000000c_I:0xX00000004_N:d0xX00000048=1995014642_I:{recall}_I:0xX0000000c_I:0xX00000004_T:0xX00000048!=1995014642.1._I:{recall}_I:0xX000000b8_N:d0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993.1.
+				NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=2_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993.1._I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=1995014642.1._I:{recall}_I:0xX0000000c_I:0xX00000004_N:d0xX00000048=1995014642_I:{recall}_I:0xX0000000c_I:0xX00000004_T:0xX00000048!=1995014642.1._I:{recall}_I:0xX000000b8_N:d0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993.1.
 				------
-					PauseIf 	!is_ReleaseRegion(enum_releaseRegion)
-					PauseIf 	!is_InMultiplayerCoopMode(enum_releaseRegion)
+				PauseIf 	...
 
-					AddAddress	[Pointer:UIcontrol(preferred)]
-					Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
-					Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+				Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
 
-					AddAddress	[Pointer:UIcontrol(preferred)]
-					AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
-					Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+				Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
 
+				
+				// -----------------------ResetNextIf-----------------------
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				ResetNextIf	->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"	
+				// -----------------------ResetIf-----------------------
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				ResetIf		->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  (2)	| CheckIf: PRIOR FrameTitle == "New Power"	
+
+
+				// -----------------------CheckIf: On NewPowerMenu render-------------
+				AndNext		[FlagState_InGame] == false			| is_flagState_InGame_true()
+				AndNext		[GameState] == 0x3					| is_AnyInGameMenu_active()
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	| CheckIf: DELTA FrameTitle != "New Power"
+
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+							->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  	(1)	| CheckIf: Mem FrameTitle == "New Power"
+
+				// -----------------------CheckIf: correct Power-------------
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xC
+				AddAddress	->[Mem 32-bit] 0x4
+							->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 		(1)		| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
+				
+				// -----------------------Trigger: On closing NewPowerMenu-----------------------
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xC
+				AddAddress	->[Mem 32-bit] 0x4
+				AndNext		->[Delta 32-bit] 0x48 == enum_textLookupKeyPowerName 			| CheckIf: MsgBoxText == enum_textLookupKeyPowerName 
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xC
+				AddAddress	->[Mem 32-bit] 0x4
+				Trigger		->[Mem 32-bit] 0x48 != enum_textLookupKeyPowerName 	(1)	| CheckIf: MsgBoxText == enum_textLookupKeyPowerName // --BugFix--> To above 4 lines, as one of the pointers in this pointerChain changes when pressing X "Select" button on the NewPowerMenu
 					
-					// -----------------------ResetNextIf-----------------------
-					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-					AddAddress	->[Mem 32-bit] 0xB8
-					ResetNextIf	->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"	
-					// -----------------------ResetIf-----------------------
-					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-					AddAddress	->[Mem 32-bit] 0xB8
-					AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
-					
-					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-					AddAddress	->[Mem 32-bit] 0xB8
-					ResetIf		->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  (2)	| CheckIf: PRIOR FrameTitle == "New Power"	
-
-
-					// -----------------------once(on_NewPowerMenuRender() && is_NewPowerMenu_Power())-----------------------
-					AndNext		[FlagState_InGame] == false			| is_flagState_InGame_true()
-					AndNext		[GameState] == 0x3					| is_AnyInGameMenu_active()
-
-					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-					AddAddress	->[Mem 32-bit] 0xB8
-					AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: Mem FrameTitle == "New Power"	
-					
-					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-					AddAddress	->[Mem 32-bit] 0xB8
-					AndNext		->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	| CheckIf: DELTA FrameTitle != "New Power"	
-					
-					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-					AddAddress	->[Mem 32-bit] 0xC
-					AddAddress	->[Mem 32-bit] 0x4
-								->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 	(1)		| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
-
-
-					// -----------------------Trigger (on NewPowerMenu close)-----------------------
-					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-					AddAddress	->[Mem 32-bit] 0xB8
-					Trigger		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
-					
-					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-					AddAddress	->[Mem 32-bit] 0xB8
-					Trigger		->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: DELTA FrameTitle == "New Power"				
-					*/
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: DELTA FrameTitle == "New Power"
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				Trigger		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	(1)		| CheckIf: MEM FrameTitle != "New Power"		
+				*/	
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_InMultiplayerCoopMode(enum_releaseRegion))
@@ -7769,41 +7781,41 @@ leaderboards_valueMeasures = {
 leaderboards_titles = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
 	// ------lb_Watchers------
-	"lb_WatchersWrongTrain": 			{"en": "The Wrong Train — Elite Regulator Duos Watchlist"},
-	"lb_WatchersRideDevil": 			{"en": "Ride Like the Devil — Elite Regulator Duos Watchlist"},
-	"lb_WatchersBoneyard": 				{"en": "Boneyard — Elite Regulator Duos Watchlist"},
-	"lb_WatchersDevilMine": 			{"en": "Devil's Belly Mine — Elite Regulator Duos Watchlist"},
-	"lb_WatchersDWOutpost": 			{"en": "Darkwatch Outpost — Elite Regulator Duos Watchlist"},
-	"lb_WatchersWarTrain": 				{"en": "War Train — Elite Regulator Duos Watchlist"},
-	"lb_WatchersTortureMaze": 			{"en": "Torture Maze — Elite Regulator Duos Watchlist"},
-	"lb_WatchersBaptismFire": 			{"en": "Baptism of Fire — Elite Regulator Duos Watchlist"},
-	"lb_WatchersRescue": 				{"en": "Rescue — Elite Regulator Duos Watchlist"},
-	"lb_WatchersPrism": 				{"en": "The Deadlight Prism — Elite Regulator Duos Watchlist"},
-	"lb_WatchersInvasion": 				{"en": "Invasion — Elite Regulator Duos Watchlist"},
-	"lb_WatchersHangtown": 				{"en": "Hangtown — Elite Regulator Duos Watchlist"},
-	"lb_WatchersMorningAfter": 			{"en": "The Morning After — Elite Regulator Duos Watchlist"},
-	"lb_WatchersShowdown": 				{"en": "Showdown — Elite Regulator Duos Watchlist"},
-	"lb_WatchersRightTrain": 			{"en": "The Right Train — Elite Regulator Duos Watchlist"},
-	"lb_WatchersDeadfall": 				{"en": "Deadfall — Elite Regulator Duos Watchlist"},
-	"lb_WatchersCurseWest": 			{"en": "Curse of the West — The Undying Duos"},
+	"lb_WatchersWrongTrain": 			{"en": "The Wrong Train - Elite Regulator Duos Watchlist"},
+	"lb_WatchersRideDevil": 			{"en": "Ride Like the Devil - Elite Regulator Duos Watchlist"},
+	"lb_WatchersBoneyard": 				{"en": "Boneyard - Elite Regulator Duos Watchlist"},
+	"lb_WatchersDevilMine": 			{"en": "Devil's Belly Mine - Elite Regulator Duos Watchlist"},
+	"lb_WatchersDWOutpost": 			{"en": "Darkwatch Outpost - Elite Regulator Duos Watchlist"},
+	"lb_WatchersWarTrain": 				{"en": "War Train - Elite Regulator Duos Watchlist"},
+	"lb_WatchersTortureMaze": 			{"en": "Torture Maze - Elite Regulator Duos Watchlist"},
+	"lb_WatchersBaptismFire": 			{"en": "Baptism of Fire - Elite Regulator Duos Watchlist"},
+	"lb_WatchersRescue": 				{"en": "Rescue - Elite Regulator Duos Watchlist"},
+	"lb_WatchersPrism": 				{"en": "The Deadlight Prism - Elite Regulator Duos Watchlist"},
+	"lb_WatchersInvasion": 				{"en": "Invasion - Elite Regulator Duos Watchlist"},
+	"lb_WatchersHangtown": 				{"en": "Hangtown - Elite Regulator Duos Watchlist"},
+	"lb_WatchersMorningAfter": 			{"en": "The Morning After - Elite Regulator Duos Watchlist"},
+	"lb_WatchersShowdown": 				{"en": "Showdown - Elite Regulator Duos Watchlist"},
+	"lb_WatchersRightTrain": 			{"en": "The Right Train - Elite Regulator Duos Watchlist"},
+	"lb_WatchersDeadfall": 				{"en": "Deadfall - Elite Regulator Duos Watchlist"},
+	"lb_WatchersCurseWest": 			{"en": "Curse of the West - The Undying Duos"},
 	}
 leaderboards_descriptions = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
 	// ------lb_Watchers------
 	"lb_WatchersWrongTrain": 			{"en": "Two souls, one cursed ride. Outgun death itself and leave your mark. Finish Chapter 1, \"The Wrong Train\", from start to finish in one session, with precision and speed, side by side"},
 	"lb_WatchersRideDevil": 			{"en": "The devil's got the reins, but you've got each other. Beat the odds and seize your spot. Conquer Chapter 2, \"Ride Like the Devil\", from start to finish in one session, with speed and deadly teamwork"},
-	"lb_WatchersBoneyard": 				{"en": "The dead rose to drag you under—and failed. Survive Chapter 3, \"Boneyard\", from start to finish in one session, with ruthless precision and teamwork to etch your names among legends"},
+	"lb_WatchersBoneyard": 				{"en": "The dead rose to drag you under, and failed. Survive Chapter 3, \"Boneyard\", from start to finish in one session, with ruthless precision and teamwork to etch your names among legends"},
 	"lb_WatchersDevilMine": 			{"en": "The mine swallows cowards whole. Only a sharp pair survives. Fight through Chapter 4, \"Devil's Belly Mine\", from start to finish in one session, with grit and deadeye shooting to make the list"},
 	"lb_WatchersDWOutpost": 			{"en": "No backup. No retreat. Only you two against the dark. Defend the outpost in Chapter 5, \"Darkwatch Outpost\", from start to finish in one session, with speed and precision to earn your place"},
-	"lb_WatchersWarTrain": 				{"en": "Hell's riding the rails—and so are you. Survive the onslaught and take control. Rule Chapter 6, \"War Train\", from start to finish in one session, with flawless teamwork and deadly aim"},
+	"lb_WatchersWarTrain": 				{"en": "Hell's riding the rails, and so are you. Survive the onslaught and take control. Rule Chapter 6, \"War Train\", from start to finish in one session, with flawless teamwork and deadly aim"},
 	"lb_WatchersTortureMaze": 			{"en": "Steel your nerves and back each other through the blood-soaked halls. Endure and dominate Chapter 7, \"Torture Maze\", from start to finish in one session, if you want your names remembered"},
-	"lb_WatchersBaptismFire": 			{"en": "Together you stepped into fire—and came out legends. Carve your legacy in Chapter 8, \"Baptism of Fire\", from start to finish in one session, through pure grit, teamwork, and destruction"},		
+	"lb_WatchersBaptismFire": 			{"en": "Together you stepped into fire, and came out legends. Carve your legacy in Chapter 8, \"Baptism of Fire\", from start to finish in one session, through pure grit, teamwork, and destruction"},		
 	"lb_WatchersRescue": 				{"en": "They left no one behind. You fought, bled, and carved a path through the dead. Stand together and prove you're the toughest by completing Chapter 9, \"Rescue\", from start to finish in one session"},
 	"lb_WatchersPrism": 				{"en": "Power twisted the world, but not you two. Through fire and madness, you seized victory. Crush the chaos and earn your place by completing Chapter 10, \"The Deadlight Prism\", from start to finish in one session"},
 	"lb_WatchersInvasion": 				{"en": "The land held fast because you stood together. Only the deadliest teams with the sharpest shots earn a name on this list through completion of Chapter 11, \"Invasion\", from start to finish in one session"},
 	"lb_WatchersHangtown": 				{"en": "The gallows swung empty by your hands. Steady aim and deadlier teamwork brought you this far. Earn your mark by completing Chapter 12, \"Hangtown\", from start to finish in one session"},
 	"lb_WatchersMorningAfter": 			{"en": "When the Order fell, you two stayed standing. Through steady hands and unshakable trust, you fought side by side. Survive the ashes of Chapter 13, \"The Morning After\", from start to finish in one session, to earn a place among legends"},
-	"lb_WatchersShowdown": 				{"en": "When the end came, you stood as one. Two guns, one will, perfect aim. It takes more than courage—it takes greatness. Claim it by completing Chapter 14, \"Showdown\", from start to finish in one session"},
+	"lb_WatchersShowdown": 				{"en": "When the end came, you stood as one. Two guns, one will, perfect aim. It takes more than courage, it takes greatness. Claim it by completing Chapter 14, \"Showdown\", from start to finish in one session"},
 	"lb_WatchersRightTrain": 			{"en": "This train rides straight into hell, but you held the line. Tear through the horrors with steady aim and an even tighter bond to earn your place among legends by completing Chapter 15, \"The Right Train\", from start to finish in one session"},
 	"lb_WatchersDeadfall": 				{"en": "The city burned, but you didn't fall. Shoulder to shoulder, without wavering, you carved a path through hellfire. Fight for your name by completing Chapter 16, \"Deadfall\", from start to finish in one session"},
 	"lb_WatchersCurseWest": 			{"en": "Together you rewrote fate. Precision, grit, and loyalty carved your mark. Only the greatest duos are remembered. Shape your fate by completing Chapter 17, \"Curse of the West\", from start to finish in one session"},

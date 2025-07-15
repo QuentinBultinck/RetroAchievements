@@ -98,7 +98,7 @@
 //#####################################################################################################\\
 // #region GENERAL UTILITY
 
-util_isDebugModeActive = true	// if true => extra information may be displayed on achievement titles & descriptions
+util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
 iNULL = -1		// Two types are necessary because RAtools can't compare integers to strings
@@ -746,6 +746,11 @@ function on_MainMenu_SubMenu_close_withSubMenuTitle(enum_mainMenuSubMenuID, enum
 	&& prev_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_titleTextLookupKey
 	&& on_MainMenu_newSubMenu(enum_releaseRegion)
 
+function is_MainMenu_PostChapterGunslingerStatsMenu_displayed(enum_releaseRegion) =>
+	is_atMainMenu(enum_releaseRegion)
+	&& is_MainMenu_SubMenuID(MAINMENU_SUBMENU_StatisticsMenu, enum_releaseRegion)
+	&& current_MainMenu_SubMenuTitle(enum_releaseRegion) == TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger
+
 function on_MainMenu_PostChapterGunslingerStatsMenu_render(enum_releaseRegion) => 
 	is_atMainMenu(enum_releaseRegion)
 	&& on_MainMenu_SubMenu_render_withSubMenuTitle(MAINMENU_SUBMENU_StatisticsMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
@@ -1251,7 +1256,7 @@ CONST_LEVEL_DATA = {
 		"SavedStatIndex_SinglePlayerMode": 4,
 		},
 	CHAPTER_6_WarTrain: {
-		"LevelID": "Wartrain",
+		"LevelID": "Wartrain", // WARNING: Only in Single Player Mode: after completing CHAPTER_5_Outpost, then moving on to CHAPTER_6_WarTrain, the [ASCII:LevelID(full)] would be "WarTrain" instead of "Wartrain" (check capitalization)
 		"FullString_ChapterSectionIDs": ["M07_C"],
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 5,
@@ -1387,8 +1392,10 @@ CONST_LEVEL_DATA = {
 function LEVEL_DATA_getLevelID(enum_chapter) =>
 	CONST_LEVEL_DATA[enum_chapter]["LevelID"]
 
-function LEVEL_DATA_getLevelID_substring(enum_chapter) =>
-	substring(CONST_LEVEL_DATA[enum_chapter]["LevelID"], 0, 4) // Only check first [4-byte ASCII]
+function LEVEL_DATA_getLevelID_substring(enum_chapter) {
+	if(enum_chapter == CHAPTER_6_WarTrain) return substring(CONST_LEVEL_DATA[enum_chapter]["LevelID"], 0, 3) // Only check first [3-byte ASCII] // --BUGFIX--> Only in Single Player Mode: after completing CHAPTER_5_Outpost, then moving on to CHAPTER_6_WarTrain, the [ASCII:LevelID(full)] would be "WarTrain" instead of "Wartrain" (check capitalization)
+	return substring(CONST_LEVEL_DATA[enum_chapter]["LevelID"], 0, 4) // Only check first [4-byte ASCII]
+	}
 
 function LEVEL_DATA_getFullStringChapterSectionID(enum_chapter, enum_chapterSection) =>
 	CONST_LEVEL_DATA[enum_chapter]["FullString_ChapterSectionIDs"][enum_chapterSection]
@@ -1749,9 +1756,13 @@ FMV_CassidyDies = "M04S1_"
 FMV_TheHaunting = "M05S1_"
 FMV_GiddyUp = "M09S3_"
 FMV_PromNight = "M11S2_"
+FMV_Angel = "M22S1_"
+FMV_Devil = "M22S2_"
 FMV_Monster = "M22S4_"
 FMV_Hero = "M22S3_"
-FMV_Credits = "FINALD"
+FMV_Credits = { // WARNING: [6-byte ASCII:Sofdec_FMVID] is different based on ReleaseRegion
+	RELEASE_REGION_EUR: "FINALD",
+	RELEASE_REGION_USA: "FI8542"}
 
 function is_anyFMV_active(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
@@ -2832,7 +2843,7 @@ achievements_coreData = {
 			// "id": 506186, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Enemies 1"},
 		// "a_Enemy2": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506261, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Enemies 2'"},
-		// "a_Train": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_Train": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION // NOTE: Updated, but not same logic as other cheevos using achGenerate_FullTrigger_GunslingerUnlock_Accuracy()
 			// "id": 506185, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Wrong Train Animatic'"},
 		// "a_Guns": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506187, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Weapons'"},
@@ -2860,7 +2871,7 @@ achievements_coreData = {
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
 		// "a_GunWrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 508863, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
-		// "a_GunRideDevil": { // VERIFIED  // DISABLED - MANUAL_CONSTRUCTION
+		// "a_GunRideDevil": { // VERIFIED  // DISABLED - MANUAL_CONSTRUCTION // NOTE: Updated, but not same logic as other cheevos of c_Gunslinger
 			// "id": 509576, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a minimum accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunBoneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 510041, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, no deaths, using only the Carbine or Crossbow, without scoring 5 body-shot kills in a row, mix in headshot or melee kills"},
@@ -3126,7 +3137,7 @@ function achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_re
 				
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
 				
 				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0x7C
@@ -3184,30 +3195,37 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 		&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
 			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
-			on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
-		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy achieved
+			// on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
+			is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended
 			never(is_flagState_InGame_true(enum_releaseRegion))
-			
-			/* MANUAL_CONSTRUCTION[0ACC-4ACC]:CheckAccuracy (below 3 lines): R/R usage 
-				// WARNING - Edit enum_minRequiredAccuracy
-				PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.65
-				NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.65
-				-----------
-				Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
-				Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
-				AndNext		Recall >= enum_minRequiredAccuracy			*/
-			&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
-			&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) >= enum_minRequiredAccuracy
-			&& memUtil_ManualConstruction_PlaceHolderRequirement(0x4ACC)
-
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 		&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
 			never(is_flagState_InGame_true(enum_releaseRegion))
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-			&& is_flagState_InGame_false(enum_releaseRegion))			
-		&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+			&& is_flagState_InGame_false(enum_releaseRegion))
+		&& once( // --CheckIf--> PostChapterGunslingerStatsMenu rendered from the required Gunslinger Level/Chapter
+			is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_MainMenu_PostChapterGunslingerStatsMenu_render(enum_releaseRegion))		
+			
+		/* MANUAL_CONSTRUCTION[0ACC-4ACC]:CheckAccuracy (below 3 lines): R/R usage 
+			// WARNING - Edit enum_minRequiredAccuracy
+			PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_{recall}>=f0.65
+			NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_{recall}>=f0.65
+			-----------
+			Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+			Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+			AndNext		Recall >= enum_minRequiredAccuracy			*/
+		&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+		&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) >= enum_minRequiredAccuracy // --CheckIf--> Required Accuracy is achieved 
+		&& memUtil_ManualConstruction_PlaceHolderRequirement(0x4ACC)
+
+		&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_close(enum_releaseRegion))
 	// [2/9] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When in-game
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
 		/* MANUAL_CONSTRUCTION[0ACC-5ACC]:MeasuredAccuracy (below Measured): R/R usage
@@ -3229,7 +3247,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& is_flagState_InGame_true(enum_releaseRegion),
 			format = "percent")
-		&& trigger_when(always_false())
+		&& memUtil_alwaysFalse(enum_releaseRegion)
 	// [3/10] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When not in-game
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
 		/* MANUAL_CONSTRUCTION[0ACC-6ACC] (below Measured): R/R usage
@@ -3249,7 +3267,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& is_flagState_InGame_false(enum_releaseRegion),
 			format = "percent")
-		&& trigger_when(always_false())
+		&& memUtil_alwaysFalse(enum_releaseRegion)
 	// [4+5+6+7] ==== (4x) Reset Groups ==== 				-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 		|| achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 
@@ -3383,7 +3401,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_MeleeKills(enum_chapter, int_r
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& is_flagState_InGame_true(enum_releaseRegion)
 			)
-		&& trigger_when(always_false())
+		&& memUtil_alwaysFalse(enum_releaseRegion)
 	// [3] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for MeleeKillCount - When not in-game
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& measured(
@@ -3393,7 +3411,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_MeleeKills(enum_chapter, int_r
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& is_flagState_InGame_false(enum_releaseRegion)
 			)
-		&& trigger_when(always_false())
+		&& memUtil_alwaysFalse(enum_releaseRegion)
 	// [4+5+6+7] ==== (4x) Reset Groups ==== 			-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 		|| achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 
@@ -3426,7 +3444,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, in
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& is_flagState_InGame_true(enum_releaseRegion)
 			)
-		&& trigger_when(always_false())
+		&& memUtil_alwaysFalse(enum_releaseRegion)
 	// [3] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for MeleeKillCount - When not in-game
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& measured(
@@ -3436,7 +3454,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, in
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& is_flagState_InGame_false(enum_releaseRegion)
 			)
-		&& trigger_when(always_false())
+		&& memUtil_alwaysFalse(enum_releaseRegion)
 	// [4+5+6+7] ==== (4x) Reset Groups ==== 			-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 		/* MANUAL_CONSTRUCTION (AltGroup[7/14]): R/R usage
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
@@ -3525,6 +3543,8 @@ function achGenerate_TallyOf_GunslingerAllDarkwatchWeaponsFavoritedOnce(enum_rel
 // ========================
 // • ACHIEVEMENT triggers •
 // ========================
+// TODO bugfix all CustomChallenges: All logic which may ResetIf or PauseLock using ChapterTotal stats may trigger too early 
+
 // #region ACH - triggers
 achievements_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
@@ -3569,6 +3589,8 @@ achievements_triggers = {
 	"a_CurseWestGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 		const_CHAPTER = CHAPTER_17_CurseWest
 		const_FMV_GoodEnding = FMV_Hero
+		const_FMV_Credits = FMV_Credits[enum_releaseRegion]
+
 		return 
 		// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -3584,17 +3606,17 @@ achievements_triggers = {
 				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
 				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& trigger_when(
-				once(
-					never(on_FMV_start(const_FMV_GoodEnding, enum_releaseRegion))
-					&& on_FMV_end(const_FMV_GoodEnding, enum_releaseRegion))
-				&& on_FMV_end(FMV_Credits, enum_releaseRegion))
+			&& once( // --CheckIf--> Good Ending Achieved
+				never(on_FMV_start(const_FMV_GoodEnding, enum_releaseRegion))
+				&& is_FMV_active(const_FMV_GoodEnding, enum_releaseRegion))
+			&& trigger_when(on_FMV_end(const_FMV_Credits, enum_releaseRegion))
 		// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer || when not in correct Level || when at MainMenu || on PauseMenu->Restart OR on PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_SingleplayerWinCondition(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
 	"a_CurseWestEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 		const_CHAPTER = CHAPTER_17_CurseWest
 		const_FMV_EvilEnding = FMV_Monster
+		const_FMV_Credits = FMV_Credits[enum_releaseRegion]
 		return 
 		// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -3610,11 +3632,10 @@ achievements_triggers = {
 				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
 				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& trigger_when(
-				once(
-					never(on_FMV_start(const_FMV_EvilEnding, enum_releaseRegion))
-					&& on_FMV_end(const_FMV_EvilEnding, enum_releaseRegion))
-				&& on_FMV_end(FMV_Credits, enum_releaseRegion))
+			&& once( // --CheckIf--> Evil Ending Achieved
+				never(on_FMV_start(const_FMV_EvilEnding, enum_releaseRegion))
+				&& is_FMV_active(const_FMV_EvilEnding, enum_releaseRegion))
+			&& trigger_when(on_FMV_end(const_FMV_Credits, enum_releaseRegion))
 		// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer || when not in correct Level || when at MainMenu || on PauseMenu->Restart OR on PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_SingleplayerWinCondition(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
@@ -3864,7 +3885,7 @@ achievements_triggers = {
 				
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
 				
 				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0x7C
@@ -4035,8 +4056,9 @@ achievements_triggers = {
 		return 
 		// [1/10] ==== Alt Logic + Triggered Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying Trigger Indicator as long as HP hasn't dropped below xx% 
 			unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& unless(once( // --PauseLock--> When LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy NOT achieved (to hide Trigger Indicator)
-				never(is_flagState_InGame_true(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When PostChapterGunslingerStatsMenu renders from the required Gunslinger Level/Chapter + Required Accuracy NOT achieved (to hide Trigger Indicator)
+				is_LevelSubstring_StoryChapter(const_CHAPTER, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
 				
 				/* MANUAL_CONSTRUCTION[2ACC-1ACC]:CheckAccuracyNotAchieved (below 3 lines) - R/R usage 
 					PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}<f0.70
@@ -4049,35 +4071,24 @@ achievements_triggers = {
 				&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) < const_MIN_REQUIRED_ACCURACY
 				&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1ACC)
 
-				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-				&& on_flagState_InGame_toggleFalse(enum_releaseRegion)))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_render(enum_releaseRegion)))
 			&& unless(once( // --PauseLock--> When player HP drops below xx% HP
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
 				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))
 			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
 				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& is_LevelSubstring_StoryChapter(const_CHAPTER, enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+				// && on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)) // QA - this line is OG
 			&& trigger_when(
 				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
-					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy achieved +  Difficulty Deadeye
-					never(is_flagState_InGame_true(enum_releaseRegion))
-					
-					/* MANUAL_CONSTRUCTION[2ACC-3ACC]:CheckAccuracyAchieved (below 3 lines) - R/R usage 
-						PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.70
-						NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.70
-						-----------
-							Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
-							Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
-							AndNext		Recall >= const_MIN_REQUIRED_ACCURACY			*/
-					&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2ACC)
-					&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) >= const_MIN_REQUIRED_ACCURACY
-					&& memUtil_ManualConstruction_PlaceHolderRequirement(0x3ACC)
-
-					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LevelSubstring_StoryChapter(const_CHAPTER, enum_releaseRegion)
 					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+					&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+					// on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion)) // QA - this line is OG
 				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
 					never(is_flagState_InGame_true(enum_releaseRegion))
 					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
@@ -4112,7 +4123,7 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
 					&& is_flagState_InGame_true(enum_releaseRegion),
 				format = "percent")
-			&& trigger_when(always_false())
+			&& memUtil_alwaysFalse(enum_releaseRegion)
 		// [3/12] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When not in-game
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When player HP drops below xx% HP
@@ -4137,7 +4148,7 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
 					&& is_flagState_InGame_false(enum_releaseRegion),
 				format = "percent")
-			&& trigger_when(always_false())
+			&& memUtil_alwaysFalse(enum_releaseRegion)
 		// [4/13] ==== Alt Lockout Group ==== 		-> Lockout achievement when player dies, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion)
 		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
@@ -4513,6 +4524,9 @@ achievements_triggers = {
 				&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)))
 			&& never( // --Lockout--> MissionTime exceeds time limit
 				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_MissionTime_Temp(enum_releaseRegion) // TODO bugfix this, this ResetIf may trigger too early, because: Temp + ChapterSection + ChapterTotal > const_TIME_LIMIT
+					+ current_MissionTime_ChapterSection(enum_releaseRegion) // TODO possible fix: place hitcount on this ResetIf, too get rid of false resets
+					!= current_MissionTime_ChapterTotal(enum_releaseRegion)
 				&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) > const_TIME_LIMIT)
 			&& never(once( // --Lockout--> When losing HP
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -5757,7 +5771,7 @@ achievements_triggers = {
 				
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
 				
 				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0x7C
@@ -5918,8 +5932,8 @@ achievements_triggers = {
 		return
 		/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
 			// WARNING - Edit in enum_textLookupKeyPowerName
-			PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=1_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
-			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+			PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=1_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993.1._I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX0000000c_I:0xX00000004_N:d0xX00000048=3965834464_I:{recall}_I:0xX0000000c_I:0xX00000004_T:0xX00000048!=3965834464.1._I:{recall}_I:0xX000000b8_N:d0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993.1.
+			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993.1._I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX0000000c_I:0xX00000004_N:d0xX00000048=3965834464_I:{recall}_I:0xX0000000c_I:0xX00000004_T:0xX00000048!=3965834464.1._I:{recall}_I:0xX000000b8_N:d0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993.1.
 			------
 				PauseIf 	...
 
@@ -5946,32 +5960,40 @@ achievements_triggers = {
 				ResetIf		->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  (2)	| CheckIf: PRIOR FrameTitle == "New Power"	
 
 
-				// -----------------------once(on_NewPowerMenuRender() && is_NewPowerMenu_Power())-----------------------
+				// -----------------------CheckIf: On NewPowerMenu render-------------
 				AndNext		[FlagState_InGame] == false			| is_flagState_InGame_true()
 				AndNext		[GameState] == 0x3					| is_AnyInGameMenu_active()
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	| CheckIf: DELTA FrameTitle != "New Power"
 
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: Mem FrameTitle == "New Power"	
-				
-				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-				AddAddress	->[Mem 32-bit] 0xB8
-				AndNext		->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	| CheckIf: DELTA FrameTitle != "New Power"	
-				
+							->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  	(1)	| CheckIf: Mem FrameTitle == "New Power"
+
+				// -----------------------CheckIf: correct Power-------------
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xC
 				AddAddress	->[Mem 32-bit] 0x4
-							->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 	(1)		| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
-
-
-				// -----------------------Trigger-----------------------
-				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-				AddAddress	->[Mem 32-bit] 0xB8
-				Trigger		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
+							->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 		(1)		| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
 				
+				// -----------------------Trigger: On closing NewPowerMenu-----------------------
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xC
+				AddAddress	->[Mem 32-bit] 0x4
+				AndNext		->[Delta 32-bit] 0x48 == enum_textLookupKeyPowerName 			| CheckIf: MsgBoxText == enum_textLookupKeyPowerName 
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xC
+				AddAddress	->[Mem 32-bit] 0x4
+				Trigger		->[Mem 32-bit] 0x48 != enum_textLookupKeyPowerName 	(1)	| CheckIf: MsgBoxText == enum_textLookupKeyPowerName // --BugFix--> To above 4 lines, as one of the pointers in this pointerChain changes when pressing X "Select" button on the NewPowerMenu
+					
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-				Trigger		->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: DELTA FrameTitle == "New Power"				
+				AndNext		->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: DELTA FrameTitle == "New Power"
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				Trigger		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	(1)		| CheckIf: MEM FrameTitle != "New Power"		
 				*/	
 		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement					
 			unless(
@@ -5989,9 +6011,9 @@ achievements_triggers = {
 		return
 		/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
 			// WARNING - Edit in enum_textLookupKeyPowerName
-			PAL:	xxxx
-			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_R:0xX0000006c!=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=1995014642.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
-				*/	
+			PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=1_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993.1._I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX0000000c_I:0xX00000004_N:d0xX00000048=3965834464_I:{recall}_I:0xX0000000c_I:0xX00000004_T:0xX00000048!=3965834464.1._I:{recall}_I:0xX000000b8_N:d0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993.1.
+			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993.1._I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX0000000c_I:0xX00000004_N:d0xX00000048=3965834464_I:{recall}_I:0xX0000000c_I:0xX00000004_T:0xX00000048!=3965834464.1._I:{recall}_I:0xX000000b8_N:d0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993.1.
+			*/
 		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
@@ -6108,7 +6130,7 @@ achievements_descriptions = {
 	"a_CurseWestGood": 			{"en": "The night breaks, the curse fades, and the West is free, at least for now. Achieve the good ending during Chapter 17, \"Curse of the West\", in Single Player Mode"},
 	"a_CurseWestEvil": 			{"en": "Ain't a soul left who can stop you. Ain't a god left who'd dare try. Achieve the evil ending during Chapter 17, \"Curse of the West\", in Single Player Mode"},
 	// --------c_Unlocks--------
-	"a_Boss":					{"en": "You've fought the worst and stood with the best. Unlock the \"Bosses\" & \"Allies of Darkwatch\" concept art by completing Chapter 17, \"Curse of the West\", on Shootist difficulty in Gunslinger Mode"},
+	"a_Boss":					{"en": "You've fought the worst and stood with the best. Unlock the \"Bosses\" & \"Allies of Darkwatch\" concept art by completing Chapter 17, \"Curse of the West\", on Shootist or Deadeye difficulty in Gunslinger Mode"},
 	"a_Enemy1":					{"en": "A graveyard ain't the place for wasted bullets. Make every shot count, or end up six feet under. Unlock the \"Enemies of Darkwatch 1\" concept art by completing Chapter 3, \"Boneyard\", with 65% or more accuracy in Gunslinger Mode"},
 	"a_Enemy2":					{"en": "Some folks hide behind guns. You settle things the old-fashioned way. Unlock the \"Enemies of Darkwatch 2\" concept art by completing Chapter 14, \"Showdown\", with 20 or more melee kills in Gunslinger Mode"},
 	"a_Train":					{"en": "Ain't much room for shaky hands when the devil himself is ridin' the rails. Unlock \"The Wrong Train Animatic\" concept art by completing Chapter 1, \"The Wrong Train\", with 65% or more accuracy in Gunslinger Mode"},
@@ -7442,7 +7464,7 @@ function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_relea
 				
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-							->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+							->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
 				
 				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0x7C
@@ -7531,7 +7553,7 @@ function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_relea
 				
 				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0xB8
-				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
 				
 				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 				AddAddress	->[Mem 32-bit] 0x7C
@@ -7548,6 +7570,8 @@ function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_relea
 
 function lbGenerate_FullStartTrigger_SoftStoryCompletion(enum_difficulty, enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 	const_HIGHEST_DIFFICULTY = DIFFICULTY_Deadeye
+	const_FMV_Credits = FMV_Credits[enum_releaseRegion]
+
 	return
 	// [1] ==== Alt Start/Submit Group ====		-> Start/Submit when last Story Chapter is finished AND check if all of the completed chapters are finished on enum_difficulty or higher
 		unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -7558,7 +7582,7 @@ function lbGenerate_FullStartTrigger_SoftStoryCompletion(enum_difficulty, enum_r
 			once(on_FMV_start(FMV_Hero, enum_releaseRegion)),
 			once(on_FMV_start(FMV_Monster, enum_releaseRegion))])
 		&& once( // --CheckIf--> Credits FMV starts 		
-			on_FMV_start(FMV_Credits, enum_releaseRegion)) 
+			on_FMV_start(const_FMV_Credits, enum_releaseRegion)) 
 		&& all_of(CONST_LEVEL_DATA, (enum_chapter) { // --CheckIf--> All Chapters have been completed on enum_difficulty or higher (CHAPTER_Citadel excluded)
 			if (enum_chapter == CHAPTER_Citadel) return always_true() // --> Exclude CHAPTER_Citadel from this Check
 			return 
@@ -7568,7 +7592,7 @@ function lbGenerate_FullStartTrigger_SoftStoryCompletion(enum_difficulty, enum_r
 			})
 		&& current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) >= LB_STORYTIME_Min_Required_TotalStory_Missiontime
 		&& current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) <= LB_STORYTIME_Max_Allowed_TotalStory_Missiontime_softcore
-		&& on_FMV_end(FMV_Credits, enum_releaseRegion)
+		&& on_FMV_end(const_FMV_Credits, enum_releaseRegion)
 	// [2] ==== Alt Reset Group ====		-> Reset when not in Single Player 
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
@@ -7669,16 +7693,19 @@ function lbGenerate_FullCancelTrigger_HardStoryCompletion(enum_releaseRegion) =>
 		&& is_flagState_InGame_false(enum_releaseRegion)
 		&& current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) > LB_STORYTIME_Max_Allowed_TotalStory_Missiontime_hardcore
 
-function lbGenerate_FullSubmitTrigger_HardStoryCompletion(enum_difficulty, enum_releaseRegion) =>
+function lbGenerate_FullSubmitTrigger_HardStoryCompletion(enum_difficulty, enum_releaseRegion) {
+	const_FMV_Credits = FMV_Credits[enum_releaseRegion]
+	
+	return
 	// [1] ==== Alt Submit Group ====			-> Submit when all Chapters have been started once AND FMV_Credits ends
 		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& tally_of(CONST_LEVEL_DATA, length(CONST_LEVEL_DATA), enum_chapter => 
 			once(on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))) // Side Note: Technically CHAPTER_Citadel is started 4x times, but HitCount only once 
-		&& on_FMV_start(FMV_Credits, enum_releaseRegion)
+		&& on_FMV_start(const_FMV_Credits, enum_releaseRegion)
 	// [2] ==== Alt Reset Group ====		-> Reset when entering MainMenu
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
-			&& on_MainMenu_enter(enum_releaseRegion))
+			&& on_MainMenu_enter(enum_releaseRegion))}
 
 
 // #endregion LB - trigger generators
@@ -8266,63 +8293,63 @@ leaderboards_valueMeasures = {
 leaderboards_titles = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
 	// ------lb_Watchers------
-	"lb_WatchersWrongTrain": 			{"en": "The Wrong Train — Elite Regulators Watchlist"},
-	"lb_WatchersRideDevil": 			{"en": "Ride Like the Devil — Elite Regulators Watchlist"},
-	"lb_WatchersBoneyard": 				{"en": "Boneyard — Elite Regulators Watchlist"},
-	"lb_WatchersDevilMine": 			{"en": "Devil's Belly Mine — Elite Regulators Watchlist"},
-	"lb_WatchersDWOutpost": 			{"en": "Darkwatch Outpost — Elite Regulators Watchlist"},
-	"lb_WatchersWarTrain": 				{"en": "War Train — Elite Regulators Watchlist"},
-	"lb_WatchersTortureMaze": 			{"en": "Torture Maze — Elite Regulators Watchlist"},
-	"lb_WatchersBaptismFire": 			{"en": "Baptism of Fire — Elite Regulators Watchlist"},
-	"lb_WatchersRescue": 				{"en": "Rescue — Elite Regulators Watchlist"},
-	"lb_WatchersPrism": 				{"en": "The Deadlight Prism — Elite Regulators Watchlist"},
-	"lb_WatchersInvasion": 				{"en": "Invasion — Elite Regulators Watchlist"},
-	"lb_WatchersHangtown": 				{"en": "Hangtown — Elite Regulators Watchlist"},
-	"lb_WatchersMorningAfter": 			{"en": "The Morning After — Elite Regulators Watchlist"},
-	"lb_WatchersShowdown": 				{"en": "Showdown — Elite Regulators Watchlist"},
-	"lb_WatchersRightTrain": 			{"en": "The Right Train — Elite Regulators Watchlist"},
-	"lb_WatchersDeadfall": 				{"en": "Deadfall — Elite Regulators Watchlist"},
-	"lb_WatchersCurseWest": 			{"en": "Curse of the West — The Undying List"},
+	"lb_WatchersWrongTrain": 			{"en": "The Wrong Train - Elite Regulators Watchlist"},
+	"lb_WatchersRideDevil": 			{"en": "Ride Like the Devil - Elite Regulators Watchlist"},
+	"lb_WatchersBoneyard": 				{"en": "Boneyard - Elite Regulators Watchlist"},
+	"lb_WatchersDevilMine": 			{"en": "Devil's Belly Mine - Elite Regulators Watchlist"},
+	"lb_WatchersDWOutpost": 			{"en": "Darkwatch Outpost - Elite Regulators Watchlist"},
+	"lb_WatchersWarTrain": 				{"en": "War Train - Elite Regulators Watchlist"},
+	"lb_WatchersTortureMaze": 			{"en": "Torture Maze - Elite Regulators Watchlist"},
+	"lb_WatchersBaptismFire": 			{"en": "Baptism of Fire - Elite Regulators Watchlist"},
+	"lb_WatchersRescue": 				{"en": "Rescue - Elite Regulators Watchlist"},
+	"lb_WatchersPrism": 				{"en": "The Deadlight Prism - Elite Regulators Watchlist"},
+	"lb_WatchersInvasion": 				{"en": "Invasion - Elite Regulators Watchlist"},
+	"lb_WatchersHangtown": 				{"en": "Hangtown - Elite Regulators Watchlist"},
+	"lb_WatchersMorningAfter": 			{"en": "The Morning After - Elite Regulators Watchlist"},
+	"lb_WatchersShowdown": 				{"en": "Showdown - Elite Regulators Watchlist"},
+	"lb_WatchersRightTrain": 			{"en": "The Right Train - Elite Regulators Watchlist"},
+	"lb_WatchersDeadfall": 				{"en": "Deadfall - Elite Regulators Watchlist"},
+	"lb_WatchersCurseWest": 			{"en": "Curse of the West - The Undying List"},
 	// ------lb_StoryTime------
-	"lb_StoryTimeSoftGreenhorn": 	{"en": "Darkwatch Dispatches — Greenhorn Logs"},
-	"lb_StoryTimeSoftCowboy": 		{"en": "Darkwatch Dispatches — Cowboy Logs"},
-	"lb_StoryTimeSoftShootist": 	{"en": "Darkwatch Dispatches — Shootist Logs"},
-	"lb_StoryTimeSoftDeadeye": 		{"en": "Darkwatch Dispatches — Deadeye Logs"},
-	"lb_StoryTimeHardGreenhorn": 	{"en": "Hardcore Vanguards — Greenhorn Records"},
-	"lb_StoryTimeHardCowboy": 		{"en": "Hardcore Vanguards — Cowboy Records"},
-	"lb_StoryTimeHardShootist": 	{"en": "Hardcore Vanguards — Shootist Records"},
-	"lb_StoryTimeHardDeadeye": 		{"en": "Hardcore Vanguards — Deadeye Records"},
+	"lb_StoryTimeSoftGreenhorn": 	{"en": "Darkwatch Dispatches - Greenhorn Logs"},
+	"lb_StoryTimeSoftCowboy": 		{"en": "Darkwatch Dispatches - Cowboy Logs"},
+	"lb_StoryTimeSoftShootist": 	{"en": "Darkwatch Dispatches - Shootist Logs"},
+	"lb_StoryTimeSoftDeadeye": 		{"en": "Darkwatch Dispatches - Deadeye Logs"},
+	"lb_StoryTimeHardGreenhorn": 	{"en": "Hardcore Vanguards - Greenhorn Records"},
+	"lb_StoryTimeHardCowboy": 		{"en": "Hardcore Vanguards - Cowboy Records"},
+	"lb_StoryTimeHardShootist": 	{"en": "Hardcore Vanguards - Shootist Records"},
+	"lb_StoryTimeHardDeadeye": 		{"en": "Hardcore Vanguards - Deadeye Records"},
 	// ------lb_Challenges------
 	}
 leaderboards_descriptions = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
 	// ------lb_Watchers------
-	"lb_WatchersWrongTrain": 			{"en": "The Reaper was on board, but you weren't on his list. Make sure your name lands on this one instead—finish Chapter 1, \"The Wrong Train\", with precision and speed"},
+	"lb_WatchersWrongTrain": 			{"en": "The Reaper was on board, but you weren't on his list. Make sure your name lands on this one instead, finish Chapter 1, \"The Wrong Train\", with precision and speed"},
 	"lb_WatchersRideDevil": 			{"en": "The Reaper's close, and the devil's got the reins. Only the fastest and deadliest make this list. Dominate Chapter 2, \"Ride Like the Devil\", with sheer speed and precision to earn your spot"},
 	"lb_WatchersBoneyard": 				{"en": "The dead don't take kindly to visitors. If you're still standing when the dust settles, you've earned your place among the best. Survive Chapter 3, \"Boneyard\", with ruthless efficiency to make the list"},
-	"lb_WatchersDevilMine": 			{"en": "Plenty have gone into these tunnels—few ever come out. Only the sharpest shots and the quickest hands make it out in one piece. Carve your name in stone by dominating Chapter 4, \"Devil's Belly\" Mine"},
-	"lb_WatchersDWOutpost": 			{"en": "Sanctuary is a thing of the past—now it's just you, the undead, and your gun. If you can hold the line with speed and precision, you'll earn your name on this list. Prove it in Chapter 5, \"Darkwatch Outpost\""},
+	"lb_WatchersDevilMine": 			{"en": "Plenty have gone into these tunnels, few ever come out. Only the sharpest shots and the quickest hands make it out in one piece. Carve your name in stone by dominating Chapter 4, \"Devil's Belly\" Mine"},
+	"lb_WatchersDWOutpost": 			{"en": "Sanctuary is a thing of the past, now it's just you, the undead, and your gun. If you can hold the line with speed and precision, you'll earn your name on this list. Prove it in Chapter 5, \"Darkwatch Outpost\""},
 	"lb_WatchersWarTrain": 				{"en": "The steel rails run straight through hell, and you're riding shotgun. Survive the slaughter and show them who runs this train. The best gunslingers earn their place by ruling Chapter 6, \"War Train\""},
-	"lb_WatchersTortureMaze": 			{"en": "This ain't a test of strength—it's a test of survival. If you made it through and still had the guts to fight, you just might belong on this list. Show 'em how it's done in Chapter 7, \"Torture Maze\""},
-	"lb_WatchersBaptismFire": 			{"en": "Blood, fire, and gunpowder—your introduction to the Darkwatch is anything but gentle. If you fought your way through and left nothing but wreckage, this list might just have your name on it. Conquer Chapter 8, \"Baptism of Fire\""},
+	"lb_WatchersTortureMaze": 			{"en": "This ain't a test of strength, it's a test of survival. If you made it through and still had the guts to fight, you just might belong on this list. Show 'em how it's done in Chapter 7, \"Torture Maze\""},
+	"lb_WatchersBaptismFire": 			{"en": "Blood, fire, and gunpowder, your introduction to the Darkwatch is anything but gentle. If you fought your way through and left nothing but wreckage, this list might just have your name on it. Conquer Chapter 8, \"Baptism of Fire\""},
 	"lb_WatchersRescue": 				{"en": "The dead don't rest, but neither do you. If you took down everything in your way and made sure no one was left behind, then you've earned your place. Only the strongest warriors top Chapter 9, \"Rescue\""},
 	"lb_WatchersPrism": 				{"en": "Power corrupts, but you? You ain't backing down. If you fought through the chaos and took control of this nightmare, you've got a shot at the Watchlist. Prove your mettle in Chapter 10, \"The Deadlight Prism\""},
 	"lb_WatchersInvasion": 				{"en": "This land ain't theirs to take, and you made damn sure they knew it. If you sent the dead back where they belong with ruthless efficiency, your name deserves a place on this list. Dominate Chapter 11, \"Invasion\""},
-	"lb_WatchersHangtown": 				{"en": "The gallows still swing, but the dead ain't hanging. You cut them down—again. If your aim was true and your hands steady, you earned your place among the best. Prove it in Chapter 12, \"Hangtown\""},
+	"lb_WatchersHangtown": 				{"en": "The gallows still swing, but the dead ain't hanging. You cut them down again. If your aim was true and your hands steady, you earned your place among the best. Prove it in Chapter 12, \"Hangtown\""},
 	"lb_WatchersMorningAfter": 			{"en": "Centuries of vigilance burned in a single night. But you? You didn't burn with it. If you fought through the wreckage and left nothing but bodies in your wake, you've earned your place. Survive Chapter 13, \"The Morning After\""},
 	"lb_WatchersShowdown": 				{"en": "Darkwatch is rubble, but the fight ain't over. If you had the guts to stare into the abyss and fire the last shot, this list might just bear your name. End it for good in Chapter 14, \"Showdown\""},
-	"lb_WatchersRightTrain": 			{"en": "This train ain't bound for anywhere holy—just straight into the jaws of damnation. If you tore through the horrors on board and sent them screaming into the void, you belong on this list. Dominate Chapter 15, \"The Right Train\""},
+	"lb_WatchersRightTrain": 			{"en": "This train ain't bound for anywhere holy, just straight into the jaws of damnation. If you tore through the horrors on board and sent them screaming into the void, you belong on this list. Dominate Chapter 15, \"The Right Train\""},
 	"lb_WatchersDeadfall": 				{"en": "The city's crumbling, the sky's burning, and you're knee-deep in hell. If you walked through the fire and left nothing standing in your way, you've got a spot among the best. Prove your worth in Chapter 16, \"Deadfall\""},
 	"lb_WatchersCurseWest": 			{"en": "The night is over, or the nightmare is just beginning. Whether you brought salvation or destruction, the West won't forget your name. Only the most ruthless or righteous make the list. Shape your fate in Chapter 17, \"Curse of the West\""},
 	// ------lb_StoryTime------
-	"lb_StoryTimeSoftGreenhorn": 	{"en": "You took the oath, drew your gun, and cleared the West—whether for justice or damnation. Only those who finish what they started will have their names engraved into the Dispatches, tracking total Story completion time on Greenhorn difficulty"},
-	"lb_StoryTimeSoftCowboy": 		{"en": "You took the oath, drew your gun, and cleared the West—whether for justice or damnation. Only those who finish what they started will have their names engraved into the Dispatches, tracking total Story completion time on Cowboy difficulty"},
-	"lb_StoryTimeSoftShootist": 	{"en": "You took the oath, drew your gun, and cleared the West—whether for justice or damnation. Only those who finish what they started will have their names engraved into the Dispatches, tracking total Story completion time on Shootist difficulty"},
-	"lb_StoryTimeSoftDeadeye": 		{"en": "You took the oath, drew your gun, and cleared the West—whether for justice or damnation. Only those who finish what they started will have their names engraved into the Dispatches, tracking total Story completion time on Deadeye difficulty"},
-	"lb_StoryTimeHardGreenhorn": 	{"en": "Speed is salvation—or damnation. Beat the story on Greenhorn from start to finish in one sitting and they'll stamp your name among the quickest. An optional timer overlay is available by holding \"Select\" whilst choosing the difficulty"},
-	"lb_StoryTimeHardCowboy": 		{"en": "Speed is salvation—or damnation. Beat the story on Cowboy from start to finish in one sitting and they'll stamp your name among the quickest. An optional timer overlay is available by holding \"Select\" whilst choosing the difficulty"},
-	"lb_StoryTimeHardShootist": 	{"en": "Speed is salvation—or damnation. Beat the story on Shootist from start to finish in one sitting and they'll stamp your name among the quickest. An optional timer overlay is available by holding \"Select\" whilst choosing the difficulty"},
-	"lb_StoryTimeHardDeadeye": 		{"en": "Speed is salvation—or damnation. Beat the story on Deadeye from start to finish in one sitting and they'll stamp your name among the quickest. An optional timer overlay is available by holding \"Select\" whilst choosing the difficulty"},
+	"lb_StoryTimeSoftGreenhorn": 	{"en": "You took the oath, drew your gun, and cleared the West, whether for justice or damnation. Only those who finish what they started will have their names engraved into the Dispatches, tracking total Story completion time on Greenhorn difficulty"},
+	"lb_StoryTimeSoftCowboy": 		{"en": "You took the oath, drew your gun, and cleared the West, whether for justice or damnation. Only those who finish what they started will have their names engraved into the Dispatches, tracking total Story completion time on Cowboy difficulty"},
+	"lb_StoryTimeSoftShootist": 	{"en": "You took the oath, drew your gun, and cleared the West, whether for justice or damnation. Only those who finish what they started will have their names engraved into the Dispatches, tracking total Story completion time on Shootist difficulty"},
+	"lb_StoryTimeSoftDeadeye": 		{"en": "You took the oath, drew your gun, and cleared the West, whether for justice or damnation. Only those who finish what they started will have their names engraved into the Dispatches, tracking total Story completion time on Deadeye difficulty"},
+	"lb_StoryTimeHardGreenhorn": 	{"en": "Speed is salvation, or damnation. Beat the story on Greenhorn from start to finish in one sitting and they'll stamp your name among the quickest. An optional timer overlay is available by holding \"Select\" whilst choosing the difficulty"},
+	"lb_StoryTimeHardCowboy": 		{"en": "Speed is salvation, or damnation. Beat the story on Cowboy from start to finish in one sitting and they'll stamp your name among the quickest. An optional timer overlay is available by holding \"Select\" whilst choosing the difficulty"},
+	"lb_StoryTimeHardShootist": 	{"en": "Speed is salvation, or damnation. Beat the story on Shootist from start to finish in one sitting and they'll stamp your name among the quickest. An optional timer overlay is available by holding \"Select\" whilst choosing the difficulty"},
+	"lb_StoryTimeHardDeadeye": 		{"en": "Speed is salvation, or damnation. Beat the story on Deadeye from start to finish in one sitting and they'll stamp your name among the quickest. An optional timer overlay is available by holding \"Select\" whilst choosing the difficulty"},
 		// ------lb_Challenges------
 	}
 // #endregion LB - text
