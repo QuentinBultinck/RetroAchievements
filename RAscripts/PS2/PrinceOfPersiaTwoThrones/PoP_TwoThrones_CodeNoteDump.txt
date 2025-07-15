@@ -1,0 +1,47 @@
+// Prince of Persia: The Two Thrones
+// #ID = 3291
+
+// $7B1F88: [PAL][32-bit:FMV_EndMarker]
+//          - This address is only valid when an FMV is active
+//          - This valie is the last frame of the FMV
+//          - When [FMV_ActiveKeyFrame(functional)] == ThisValue --> Video End
+//          - Can also be used to ID FMVs
+//          
+//          # FMV_EndMarker IDs (list incomplete)
+//          | ''''''''''''''''''''''
+//          | 0x8a5 => FMV_MainMenuIntro (plays when idle at MainMenu)
+//          | ...
+// $7B1F8C: [PAL][32-bit:FMV_ActiveKeyFrame(functional)]
+//          - Address is only valid when an FMV is active
+//          - Active frame being displayed on screen.
+//          - Changing this value at runtime, will move the FMV to that keyframe.
+// $7B1F90: [PAL][32-bit:FMV_ActiveKeyFrame(copy)]
+//          - Address is only valid when an FMV is active
+// $7B1FA8: [PAL][32-bit:FMV_ID]
+//          - Address is only valid when an FMV is active
+//          
+//          # FMV_IDs (list incomplete)
+//          | ''''''''''''''''''''''
+//          | 0x001536dc => FMV_UbisoftLogo (plays on game boot)
+//          | 0x0014f50c => FMV_DevStudios (plays on game boot)
+//          | 0x0014ba28 => FMV_TitleLogo (plays on game boot)
+//          | 00056f74 => FMV_LoadingStart_A (plays on game boot)
+//          |
+//          | 0x000e9b0c => FMV_LoadingStart_B (plays when MainLoading begins)
+//          | 0x00049420 => FMV_LoadingEnd (plays when MainLoading finishes)
+//          |
+//          | 0x01ba1e38 => FMV_MainMenuIntro
+//          | 0x0674651c => FMV_NewGameIntro
+// $A91740: [PAL][32-bit (base) Pointer:PrinceCoordinates]
+//          +0x60 - [12-byte Struct(Coordinates):PrinceLocation]
+// $A922AC: Pointer (32-bit)
+//          +0x38 = Area ID (32-bit)
+//          +0x54 = Difficulty (8-bit)
+//          0x00 = Easy
+//          0x01 = Normal
+//          0x02 = Hard
+// $B94F38: [32-bit Player Pointer]
+//          
+//          +0x380=Player Health [32-bit]
+// $EAFE4C: [PAL][12-byte Struct(Coordinates):CameraAttachLocation]
+//          - This is the location of the camera, which follows the Prince
