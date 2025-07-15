@@ -2843,7 +2843,7 @@ achievements_coreData = {
 			// "id": 506186, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Enemies 1"},
 		// "a_Enemy2": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506261, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Enemies 2'"},
-		// "a_Train": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_Train": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION // NOTE: Updated, but not same logic as other cheevos using achGenerate_FullTrigger_GunslingerUnlock_Accuracy()
 			// "id": 506185, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Wrong Train Animatic'"},
 		// "a_Guns": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506187, "points": achievement_POINTS_5, "devInfo": "Unlock Concept Art 'Weapons'"},
@@ -2871,8 +2871,8 @@ achievements_coreData = {
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
 		// "a_GunWrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 508863, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
-		"a_GunRideDevil": { // VERIFIED  // DISABLED - MANUAL_CONSTRUCTION
-			"id": 509576, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a minimum accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
+		// "a_GunRideDevil": { // VERIFIED  // DISABLED - MANUAL_CONSTRUCTION // NOTE: Updated, but not same logic as other cheevos of c_Gunslinger
+			// "id": 509576, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a minimum accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunBoneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 510041, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, no deaths, using only the Carbine or Crossbow, without scoring 5 body-shot kills in a row, mix in headshot or melee kills"},
 		// "a_GunDevilMine": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
@@ -3195,7 +3195,10 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 		&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
 			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
-			on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
+			// on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
+			is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
 		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended
 			never(is_flagState_InGame_true(enum_releaseRegion))
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
@@ -3208,13 +3211,12 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 		&& once( // --CheckIf--> PostChapterGunslingerStatsMenu rendered from the required Gunslinger Level/Chapter
 			is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
-			&& on_MainMenu_PostChapterGunslingerStatsMenu_render(enum_releaseRegion))
-
-		&& is_MainMenu_PostChapterGunslingerStatsMenu_displayed(enum_releaseRegion)
+			&& on_MainMenu_PostChapterGunslingerStatsMenu_render(enum_releaseRegion))		
+			
 		/* MANUAL_CONSTRUCTION[0ACC-4ACC]:CheckAccuracy (below 3 lines): R/R usage 
 			// WARNING - Edit enum_minRequiredAccuracy
-			PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.65
-			NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.65
+			PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_{recall}>=f0.65
+			NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_{recall}>=f0.65
 			-----------
 			Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
 			Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
@@ -3223,7 +3225,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 		&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) >= enum_minRequiredAccuracy // --CheckIf--> Required Accuracy is achieved 
 		&& memUtil_ManualConstruction_PlaceHolderRequirement(0x4ACC)
 
-		&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_close(enum_releaseRegion))
 	// [2/9] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When in-game
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
 		/* MANUAL_CONSTRUCTION[0ACC-5ACC]:MeasuredAccuracy (below Measured): R/R usage
@@ -4076,10 +4078,17 @@ achievements_triggers = {
 				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))
 			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
 				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& is_LevelSubstring_StoryChapter(const_CHAPTER, enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+				// && on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)) // QA - this line is OG
 			&& trigger_when(
 				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
-					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+					is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LevelSubstring_StoryChapter(const_CHAPTER, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+					// on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion)) // QA - this line is OG
 				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
 					never(is_flagState_InGame_true(enum_releaseRegion))
 					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
@@ -6121,7 +6130,7 @@ achievements_descriptions = {
 	"a_CurseWestGood": 			{"en": "The night breaks, the curse fades, and the West is free, at least for now. Achieve the good ending during Chapter 17, \"Curse of the West\", in Single Player Mode"},
 	"a_CurseWestEvil": 			{"en": "Ain't a soul left who can stop you. Ain't a god left who'd dare try. Achieve the evil ending during Chapter 17, \"Curse of the West\", in Single Player Mode"},
 	// --------c_Unlocks--------
-	"a_Boss":					{"en": "You've fought the worst and stood with the best. Unlock the \"Bosses\" & \"Allies of Darkwatch\" concept art by completing Chapter 17, \"Curse of the West\", on Shootist difficulty in Gunslinger Mode"},
+	"a_Boss":					{"en": "You've fought the worst and stood with the best. Unlock the \"Bosses\" & \"Allies of Darkwatch\" concept art by completing Chapter 17, \"Curse of the West\", on Shootist or Deadeye difficulty in Gunslinger Mode"},
 	"a_Enemy1":					{"en": "A graveyard ain't the place for wasted bullets. Make every shot count, or end up six feet under. Unlock the \"Enemies of Darkwatch 1\" concept art by completing Chapter 3, \"Boneyard\", with 65% or more accuracy in Gunslinger Mode"},
 	"a_Enemy2":					{"en": "Some folks hide behind guns. You settle things the old-fashioned way. Unlock the \"Enemies of Darkwatch 2\" concept art by completing Chapter 14, \"Showdown\", with 20 or more melee kills in Gunslinger Mode"},
 	"a_Train":					{"en": "Ain't much room for shaky hands when the devil himself is ridin' the rails. Unlock \"The Wrong Train Animatic\" concept art by completing Chapter 1, \"The Wrong Train\", with 65% or more accuracy in Gunslinger Mode"},
