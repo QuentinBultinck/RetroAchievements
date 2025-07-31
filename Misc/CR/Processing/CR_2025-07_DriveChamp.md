@@ -92,20 +92,55 @@ Please take some time to review everything I've written below. If you have any q
 ## ∘───── Related Links ─────∘
 Junior Developer => https://retroachievements.org/user/Ventilo1
 Set Plan Review/Jr. Dev Request => Not found
-Set Plan => Not found
+Set Plan => https://docs.google.com/spreadsheets/d/1EF7DQ13QQRKXFCK5cYVMpPHaYrjVEMvQnVv8mAnLUBY/edit?gid=1889006780#gid=1889006780
 Ready for Review Thread => https://discord.com/channels/310192285306454017/1363182423009132664
 Play Test Thread => https://discord.com/channels/310192285306454017/1364940876979245221
 RA Game Page => https://retroachievements.org/game/10091
 
-# ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦ // TODO
-/// Grouped to represent all the under-the-hood work.
+# ✦═══════✦ 🧠 Memory Work & Internal Notes ✦═══════✦
 
 ## ∘───── 🛠️ RAM Digging & Code Notes ─────∘
-/// Conform to https://docs.retroachievements.org/guidelines/content/code-notes.html
+General feedback for your code notes: It seems you're still in the beginning phase on what's the best method to code note things, especially blocks of data which are correlated, structures or as you refer to them as arrays, consider my feedback below. Most of these are just suggestions, but they would've made it easier for my to understand how certain logic/data structures are reused accross the game.
 
 ### ❓ `$0x923ec` Code Note Clarity
 Original: ```[float] Qualify time [NTSC]```
 How exactly does the float translate to time? In what time unit? What time does f1.0 translate to for example?
+
+### 💡 Documenting Arrays or Structures
+Take for example the following code notes: `$0x00099ca0`, `$0x0009a568`. Since this appears to be static RAM, it may be more effective to break these notes down into individual components, rather than lumping everything together in a large, vague note.
+
+A good approach is to document the data layout explicitly using structure definitions. For example, here’s how I’ve done it in some of my sets:
+```
+[Definition Struct:Coordinates |16-byte]
+|''''''''''''''''''''''''''''''''
+|+0x0 - [32-bit Float:W_Component]
+|¨| - This is perspective divide component. It has a role in perspective projection, where the final coordinates are obtained by dividing X, Y, Z by W.
+|+0x4 - [32-bit Float:Y_Coordinate]
+|+0x8 - [32-bit Float:Z_Coordinate]
+|+0xC - [32-bit Float:X_Coordinate]
+```
+This format does a few important things:
+- It clearly outlines the structure layout.
+- It uses explicit offsets (+0x0, +0x4, etc.) relative to the base address, making it easier to trace how each field is accessed. For instance, if the base is 0xB00, then X_Coordinate is at 0xB0C.
+- It documents the meaning of each field when known, not just the data type.
+
+Personally, I reserve this struct-style format for data blocks that are pointed to (ie. dynamic or reoccuring structures), but you can adapt it to static arrays/structs as well—particularly if the pattern is repeated and consistent. So you could define the struct once, and if it occurs or is referenced in other spots in game RAM, you can refer to the code note which has the Struct defined.
+
+You can also combine approaches when it makes sense. For example, see how I handled:
+- [PoP Warrior Within (PS2)](https://retroachievements.org/codenotes.php?g=3319) `$0x1365650` where static values are pointed to by pointers, and I mixed structural and pointer-based documentation.
+- [PoP Warrior Within (PS2)](https://retroachievements.org/codenotes.php?g=3319) `$0x7dda40` for a clear example of how to document bitfields/bitsets with flag-level granularity.
+
+Structuring your notes like this not only makes them easier to read and maintain, but also demonstrates that you understand how the data is laid out and interacted with programmatically.
+I'd suggest revisiting the notes you have on similar memory blocks and considering whether a structural format or more detailed breakdown would add clarity.
+
+### 💡 Defining Values
+For example `$0x97f88` & `$0x99ca8`:
+```[32-bit] [PAL] Address of the 1st track of the 1st championship, mainly used as an arbitrary value for the region check````
+
+Think about adding the following:
+```ThisValue == 0x8009a828 --> PAL Region```
+
+Preferably whenever you check if something is equal to a specific value, it should always be documented within the code notes. 
 
 ### 💡 Documenting Flags Clearly
 Take for example `$0x94698`, original code note:
@@ -180,11 +215,41 @@ I strongly recommend revisiting your full set of notes with a fresh perspective.
 
 That said, feel free to use your own judgment here. But keep in mind that improving readability and naming clarity isn’t just for aesthetics—it makes your documentation significantly more useful to others and showcases a deeper understanding of how these values are used in practice. Clarity in reverse engineering is often half the battle won.
 
-## ∘───── 🧷 Additional Developer Notes ─────∘  // TODO
-/// [Optional] Comments left in logic, RAScript, planning documents, other threads on discord.
+### 💡 [Step by Step](https://retroachievements.org/achievement/500954) & code note `$0x97d10`
+In your RAScript, you’ve identified the score thresholds at which the player gains a new rank. It would be a great improvement if you also included this same rank progression data directly within the code notes for $0x97d10.
 
-## ∘───── 🧪 Testing & Debugging Results ─────∘  // TODO
-/// Mentioned bugs, testing methods, hardcore/softcore checks, peer testing, issues encountered during development, and any achievement concepts that could not be implemented.
+Adding that list—just like you have in the script—not only makes the note more complete but also reinforces the context of how this address is used. Here's why this matters:
+- Anyone reading the code notes in isolation should be able to understand what the value means and how it changes.
+- Hardcoded values used in RAScripts (like thresholds, IDs, or conditionals) should generally also exist in code notes for transparency and future-proofing.
+- This also helps with cross-referencing when debugging or expanding logic for achievements, leaderboards, or rich presence.
+
+In this specific case, having a clear breakdown such as:
+```
+[32-bit] Player Score [PAL]
+
+Rank Thresholds:
+- 0     => Rank 0
+- 5000  => Rank 1
+- 10000 => Rank 2
+...
+```
+...makes the note significantly more informative.
+
+As a general best practice: any value you're checking against in logic (equality checks, thresholds, ranges, etc.) should ideally be documented in the associated code note—especially when they're key to progression, state changes, or unlocking features.
+
+It makes the notes far more useful to others (and your future self), and improves the long-term maintainability of both your logic and documentation.
+
+## ∘───── 🧷 Additional Developer Notes ─────∘
+I pretty much reviewed RAScript in correlation with the section on Code Notes.
+The set plan looks good.
+
+## ∘───── 🧪 Testing & Debugging Results ─────∘
+
+### ❓ Development Questions
+- I did not fully ready through the Ready for Review thread. But were there any hiccups/problems/remarks that others found/gave and how did you resolve them?
+- Did you encounter any problems during set development? Elaborate please.
+- Any assets/concepts which you were unable to design/develop?
+Seems like you tested things yourself and also requested a play test, which went smoothly.
 
 # ✦═══════✦ 🕹️ Achievement Set Design ✦═══════✦ // TODO
 /// Grouped to cover all visible/user-facing parts.
