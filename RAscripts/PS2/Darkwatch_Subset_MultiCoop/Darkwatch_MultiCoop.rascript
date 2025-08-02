@@ -2719,7 +2719,8 @@ memory_initialize()
 	- Game Bug Chapter 8: 		Entering House after picking up RailRocket, Crash to BIOS
 	- No Dying Condition: 		doesn't fail the achievements properly
 		eg. Chapter 4, Deadeye Challenge: 	False Trigger (players died, but achievement still worked fine)
-	- Chapter 2, 6 & 15 Bug: 	(involving horses) may not start properly when entering the chapter by completing the previous chapter. They only start correctly when entering via the MainMenu.
+	- Chapter 2, 6 & 15 challenges Bug: 	(involving horses) may not start properly when entering the chapter by completing the previous chapter. They only start correctly when entering via the MainMenu.
+	- Chapter 7 challenge Bug:		achievement fails wrongly, when player that is allowed to shoot, earns a shooting kill + may also be a problem with particiaptin tracking, for accuracy + bullets fired, since one player is melee only
 	*/
 
 // =========================
@@ -4552,10 +4553,10 @@ achievements_triggers = {
 					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
 					&& current_MeleeKills_Temp(enum_player, enum_releaseRegion) > prev_MeleeKills_Temp(enum_player, enum_releaseRegion))
 				))
-			&& never(tally_of([PLAYER_1, PLAYER_2], 2, enum_player => // --Lockout--Tally(2)-> when both players scored a standardKill		
+			&& never(tally_of([PLAYER_1, PLAYER_2], 2, enum_player => // --Lockout--Tally(2)-> when both players scored a standardKill
 				once(
 					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
-					&& current_Kills_Temp(enum_player, enum_releaseRegion) != current_MeleeKills_Temp(enum_player, enum_releaseRegion)) // If (Kills != MeleeKills) then a standarKill was scored
+					&& current_Kills_Temp(enum_player, enum_releaseRegion) != current_MeleeKills_Temp(enum_player, enum_releaseRegion)) // If (Kills != MeleeKills) then a standardKill was scored
 				))
 			&& always_false()
 		// [5/16] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player dies, by Resetting HitCount on [StartCondition]
