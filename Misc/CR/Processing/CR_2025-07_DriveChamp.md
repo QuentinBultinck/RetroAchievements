@@ -251,40 +251,55 @@ The set plan looks good.
 - Any assets/concepts which you were unable to design/develop?
 Seems like you tested things yourself and also requested a play test, which went smoothly.
 
-# ✦═══════✦ 🕹️ Achievement Set Design ✦═══════✦ // TODO
-/// Grouped to cover all visible/user-facing parts.
-/// Conform to https://docs.retroachievements.org/guidelines/content/achievement-set-requirements.html  
-///         and https://docs.retroachievements.org/developer-docs/achievement-development-overview.html
-/// [#poll-me](https://discord.com/channels/310192285306454017/511718348178849792) on RAdiscord
+# ✦═══════✦ 🕹️ Achievement Set Design ✦═══════✦
 
-## ∘───── 🎯 Overall Set Design ─────∘  // TODO
-/// Balance, creativity, progression, and content coverage.  
-/// Achievement types: https://docs.retroachievements.org/guidelines/content/progression-and-win-condition-guidelines.html  
-/// Difficulty balance: https://docs.retroachievements.org/developer-docs/difficulty-scale-and-balance.html
-/// Any unwelcome concepts? https://docs.retroachievements.org/guidelines/content/unwelcome-concepts.html
+## ∘───── 🎯 Overall Set Design ─────∘
 
 ### 👍 Positive Observations
+Smart usage of Trigger flags to give player feedback on which challenge is active.
+Your bread and butter leaderboards for the average racing game, good work! 
+You have a few unique challenge achievements sprinkled in the set, love to see it! Make sure you have as much of these as possible in your future sets. 
 
 ### ---⇢ 🏆 Achievements ⇠---
-/// Smart usage of `Measured` & `Trigger` flags
+### ❓ Achievement Type Markings
+It looks like you’ve only marked Progression / Win Condition / Missable on 4 achievements. I’m not entirely sure how the game’s progression works, but from my short gametime it seemed like you begin with access to just the Novice Cup and Spider Cup, then unlock further Cups by winning the earlier ones. If that’s correct, then the Invitational Cup would logically be the final win condition, with the Cups in between serving as progression milestones.
+
+Could you elaborate on how you’re defining progression and win condition in this set? It would help me understand your design choices better.
+
+As for Missables, I’d encourage you to carefully consider whether any achievements can truly be missed. For example:
+- If the game has replay functionality (eg. you can redo a race or cup at any time), then the achievement shouldn’t be marked missable.
+- Missable should really be reserved for situations where the player would need to replay a significant portion of the game in order to unlock it, if they missed it the first time around.
+
+Being consistent and accurate with these markers is important since they set expectations for players and are often factored into how difficult set feels to complete.
+
 ### ---⇢ 📺 Rich Presence ⇠---
-/// Rich Presence design, all content covered?
+Looks pretty good to me, perhaps a little basic, would've love to see it expanded a bit more for specific modes or perhaps which team the player is driving for. But it's fine. 
+
+You may want to consider switching the pipe `|` character with another separator. The pipe is a bit overused on the site for RP, and (in my opinion) it doesn’t look very clean. I think any seperators listed [here](https://symbl.cc/en/collections/list-bullets/) may give a more polished look to RP. It's up to you. 
+
+For the following RP: `Watching a replay`. I doubt this adds anything useful, perhaps introduce which replay of which track is being watched and what the player's score/standing was of the replay. Just to add a little more flair to this RP string, it otherwise feels kinda flat imo. Perhaps something like: `Watching replay of Car_XX on Spider Cup, reaching 1st_place, with a race time of xx:xx:xx` would fit better. But it's up to you.
+
 ### ---⇢ 🌐 Leaderboards ⇠---
 /// Any leaderboards? No leaderboard spam?
 
-## ∘───── ✍️ Titles & Descriptions ─────∘  // TODO
-/// Conform to https://docs.retroachievements.org/guidelines/content/writing-policy.html
-/// Consider [#writing-requests on RAdiscord](https://discord.com/channels/310192285306454017/1100757231294750730)
-/// Rich Presence text
+## ∘───── ✍️ Titles & Descriptions ─────∘
+Titles and descriptions look great! Although personally I hate seeing some titles copying the exact track names/races, without any added flair to it. The `"Complete _race/cup_ in 1st place"` and `Win a race using a _car_` achievements kinda fall into this. I would love to see if you could spruce up these titles a bit more. But they'll do. 
 
-## ∘───── 🖼️ Badge Art ─────∘  // TODO
-/// Conform to https://docs.retroachievements.org/guidelines/content/badge-and-icon-guidelines.html  
-///          and https://docs.retroachievements.org/developer-docs/badge-and-icon-creation.html
-/// Consider [#art-requests on RAdiscord](https://discord.com/channels/310192285306454017/1048102604963586048)
-/// Badge Style & Consistency, Visual Badge Quality
+You do have 2 achievement descriptions which make use of `()`, but they it feels like they fir, so it's ok.
 
-## ∘───── ⚖️ Point Distribution ─────∘  // TODO
-/// Conform to [RAdocs - Achievement Scoring](https://docs.retroachievements.org/developer-docs/achievement-scoring.html)
+## ∘───── 🖼️ Badge Art ─────∘
+I reckon most of the badge art comes from in-game assets or screenshots? They certainly work, but some of them feel a bit flat—mainly due to a lack of contrast—which makes it harder to clearly see what’s being represented.
+
+You may want to consider posting a request in [#art-requests on RAdiscord](https://discord.com/channels/310192285306454017/1048102604963586048). Of course, it’s your set, so it’s entirely up to you. Just something to keep in mind.
+
+> "There’s a saying about a janitor who keeps everything spotless, yet no one notices—because that’s the point. The place looks great because someone took pride in doing their job well. High-quality work often goes unseen, but it speaks for itself through the results."
+
+In this case though, titles, descriptions, and badge art are the first things an RA user sees. They set the tone for the whole set, so putting extra care into them can make a strong first impression.
+
+## ∘───── ⚖️ Point Distribution ─────∘
+I don't know much about the game, but I think this aspect is fine as is, even the higher scored ones:
+- 4x 25-pointers
+- 2x 50-pointers
 
 # ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦ // TODO
 /// Grouped for logic quality and RA feature usage.
@@ -297,17 +312,28 @@ Seems like you tested things yourself and also requested a play test, which went
 /// Multi-hash support?
 /// Protections: Demo/Cheat/Save/Bios/DipSwitch?  
 
-## ∘───── 🔧 Rich Presence Logic ─────∘  // TODO
-/// Is a dynamic RP present? Not overly bloated or using unsupported Unicode.  
-/// Macros and lookupTables used appropriately?  
-/// Refer to https://docs.retroachievements.org/developer-docs/rich-presence.html#rich-presence
+## ∘───── 🔧 Rich Presence Logic ─────∘
+👍 Dynamic RP with multiple conditional display strings present, with NTSCU/PAL support, love to see it! Lookup tables and macros were used, nicely done!
 
-## ∘───── 🔢 Leaderboard Logic ─────∘  // TODO
-/// Leaderboards with instant Start/Submit implemented?
+## ∘───── 🔢 Leaderboard Logic ─────∘
 
-# ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦ // TODO
+### ❓ Leaderboards Instant Start/Submit
+It looks like all of the “Best Lap” leaderboards are currently set up as Instant Start/Submit. That works fine, but the logic could be simplified to make this clearer — it wasn’t obvious at first glance.
 
-### ❓ Hubs & Similar Games // TODO
+- START is fine as you’ve written it, since it only triggers when a lap is finished.
+- CANCEL should be an always-false condition eg. `val 0 == val 1`
+- SUBMIT should be an always-true condition eg. `val 1 == val 1`
+
+Right now you have extra logic sitting in the SUBMIT and CANCEL groups, but this is unnecessary. With instant Start/Submit, all requirements should be handled entirely within START. This keeps the logic shorter, easier to follow, and immediately clear to anyone reviewing it.
+
+### ❗ CANCEL Region Countdown Check
+All of the “Best Lap” leaderboards currently have CANCELs where alt groups 2 and 4 only check whether the countdown is active or not. I’d strongly recommend also adding the region check to each of these, just as you’ve already done in the other CANCEL alt groups.
+
+When supporting multiple regions with the method you’re using, each ALT group should include its own region check. This keeps the logic consistent and avoids ambiguity about which group is currently active. For clarity’s sake, I’d also suggest placing the region check as the first condition in each alt group. That way it’s immediately clear at a glance which region the group applies to. You may also want to review any other assets for this.
+
+# ✦═══════✦ 🔑 Misc Prerequisites ✦═══════✦
+
+### ❓ Hubs & Similar Games
 Are there any **hubs** you think should be added?
 Be sure to review the [RAdocs - Hubs Guidelines](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html#common-hubs) for proper usage.
 I recommend browsing the full list of hubs via [RAweb - Hubs Central](https://retroachievements.org/hubs) to find any relevant matches. 
@@ -323,7 +349,7 @@ If the game includes **multiplayer**, one of the following meta hubs may apply, 
 
 Since Junior Developers don’t have permission to add hubs or similar games directly, please make a list of all that apply, and we’ll handle the additions from there.
 
-### ❓ Game Page Metadata // TODO
+### ❓ Game Page Metadata
 /// [RAdocs - Screenshot Dimensions](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html#screenshot-dimensions) 
 Is everything correctly filled out on the **manage page** and **game page**? (publishers, genre, game screenshots, box art, release date...)
 Juniors devs should be able to edit these fields themselves via the `Dev drop down menu` or via the `Manage page`.
