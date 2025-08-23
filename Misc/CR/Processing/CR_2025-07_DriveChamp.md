@@ -69,10 +69,10 @@ Do this instead of that...
 
 Hello @_JR_DEV_USERNAME_
 
-Your Code Review for [World Driver Championship (Nintendo 64)](https://retroachievements.org/game/10091?f=5) has finally arrived!
+Your Code Review for [World Driver Championship (Nintendo 64)](https://retroachievements.org/game/10091?f=5) is finished!
 Please take some time to review everything I've written below. If you have any questions, feel free to reach out.
 
-## ∘───── 📑 Table of Contents ─────∘ // TODO, link these
+## ∘───── 📑 Table of Contents ─────∘
 ### 🧠 Memory Work & Internal Notes
 - 🛠️ RAM Digging & Code Notes
 - 🧷 Additional Developer Notes
@@ -102,9 +102,12 @@ RA Game Page => https://retroachievements.org/game/10091
 ## ∘───── 🛠️ RAM Digging & Code Notes ─────∘
 General feedback for your code notes: It seems you're still in the beginning phase on what's the best method to code note things, especially blocks of data which are correlated, structures or as you refer to them as arrays, consider my feedback below. Most of these are just suggestions, but they would've made it easier for my to understand how certain logic/data structures are reused accross the game.
 
+### ❗ `$0x923f4` AddAddress Pointer Documentation
+It seems you use this address as a pointer by using it with the AddAddress flag. You're also SubSourcing the pointed to value for some reason. What is going on there?
+
 ### ❓ `$0x923ec` Code Note Clarity
 Original: ```[float] Qualify time [NTSC]```
-How exactly does the float translate to time? In what time unit? What time does f1.0 translate to for example?
+How exactly does the float translate to time? In what time unit? What time does f1.0 translate to for example? I would also advise adding what size the Float is, just for the sake of completeness, as other sizes do exist.
 
 ### 💡 Documenting Arrays or Structures
 Take for example the following code notes: `$0x00099ca0`, `$0x0009a568`. Since this appears to be static RAM, it may be more effective to break these notes down into individual components, rather than lumping everything together in a large, vague note.
@@ -132,6 +135,30 @@ You can also combine approaches when it makes sense. For example, see how I hand
 
 Structuring your notes like this not only makes them easier to read and maintain, but also demonstrates that you understand how the data is laid out and interacted with programmatically.
 I'd suggest revisiting the notes you have on similar memory blocks and considering whether a structural format or more detailed breakdown would add clarity.
+
+For `$0x098848` for example you have:
+```
+[700-bytes Array] [NTSC] 20 bytes per car :
+Byte 5: (championship mode) 0x00 if car is locked, 0x01 if car is unlocked
+Byte 6: (quick race mode) 0x00 if car is locked, 0x01 if car is unlocked
+Byte 12: car ID
+```
+I would note it as:
+```
+[NTSC][700-bytes Array:CarUnlockData] List of (35x) [20-byte Struct:CarUnlockData]
+
+[Definition Struct:CarUnlockData |20-byte]
+|''''''''''''''''''''''''''''''''
+|+0x5 - [bit0 BitFlag:IsCarUnlocked_ChampionShipMode]
+|¨| 0 => false; 1 => true
+|
+|+0x6 - [bit0 BitFlag:IsCarUnlocked_QuickRaceMode]
+|
+|+0x12 - [8-bit:CarID]
+|¨| - Refer to $0xBBB for CarIDs
+'
+```
+Labeling BitFlags as IsCarUnlocked implies that 0 => false and 1 => true, if this was reversed I would use [bit0 InvertedBitFlag:IsCarUnlocked_ChampionShipMode], but you could always add the explanation.
 
 ### 💡 Defining Values
 For example `$0x97f88` & `$0x99ca8`:
@@ -239,6 +266,7 @@ As a general best practice: any value you're checking against in logic (equality
 
 It makes the notes far more useful to others (and your future self), and improves the long-term maintainability of both your logic and documentation.
 
+
 ## ∘───── 🧷 Additional Developer Notes ─────∘
 I pretty much reviewed RAScript in correlation with the section on Code Notes.
 The set plan looks good.
@@ -261,6 +289,13 @@ Your bread and butter leaderboards for the average racing game, good work!
 You have a few unique challenge achievements sprinkled in the set, love to see it! Make sure you have as much of these as possible in your future sets. 
 
 ### ---⇢ 🏆 Achievements ⇠---
+### ❓ Game Content Coverage
+Since I don't fully know the extent of the game, did you manage to cover all/most of the game content with interesting achievements? Is Championship the only main game mode?
+There also seems to be multiplayer? Make sure to provide the player with feedback what they can expect from the set via following hubs:
+- [Meta - Set Disallows Multiplayer](https://retroachievements.org/hub/26213)
+- [Meta - Set Allows Multiplayer](https://retroachievements.org/hub/22986)
+- [Meta - Set Partially Allows Multiplayer](https://retroachievements.org/hub/7115)
+
 ### ❓ Achievement Type Markings
 It looks like you’ve only marked Progression / Win Condition / Missable on 4 achievements. I’m not entirely sure how the game’s progression works, but from my short gametime it seemed like you begin with access to just the Novice Cup and Spider Cup, then unlock further Cups by winning the earlier ones. If that’s correct, then the Invitational Cup would logically be the final win condition, with the Cups in between serving as progression milestones.
 
@@ -272,6 +307,9 @@ As for Missables, I’d encourage you to carefully consider whether any achievem
 
 Being consistent and accurate with these markers is important since they set expectations for players and are often factored into how difficult set feels to complete.
 
+### ❓ Cheat Protection
+It seems you have incorporated some cheats within the achievement design, love to see it! Have you also considered the other cheats and how they could affect cheating whilst doing other achievements the intended way? 
+
 ### ---⇢ 📺 Rich Presence ⇠---
 Looks pretty good to me, perhaps a little basic, would've love to see it expanded a bit more for specific modes or perhaps which team the player is driving for. But it's fine. 
 
@@ -280,7 +318,7 @@ You may want to consider switching the pipe `|` character with another separator
 For the following RP: `Watching a replay`. I doubt this adds anything useful, perhaps introduce which replay of which track is being watched and what the player's score/standing was of the replay. Just to add a little more flair to this RP string, it otherwise feels kinda flat imo. Perhaps something like: `Watching replay of Car_XX on Spider Cup, reaching 1st_place, with a race time of xx:xx:xx` would fit better. But it's up to you.
 
 ### ---⇢ 🌐 Leaderboards ⇠---
-/// Any leaderboards? No leaderboard spam?
+Leaderboards time trials for each track. Pretty good.
 
 ## ∘───── ✍️ Titles & Descriptions ─────∘
 Titles and descriptions look great! Although personally I hate seeing some titles copying the exact track names/races, without any added flair to it. The `"Complete _race/cup_ in 1st place"` and `Win a race using a _car_` achievements kinda fall into this. I would love to see if you could spruce up these titles a bit more. But they'll do. 
@@ -301,16 +339,24 @@ I don't know much about the game, but I think this aspect is fine as is, even th
 - 4x 25-pointers
 - 2x 50-pointers
 
-# ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦ // TODO
-/// Grouped for logic quality and RA feature usage.
-/// [AutoCR](https://authorblues.github.io/retroachievements/AutoCR/)
+# ✦═══════✦ ⚙️ Technical Implementation ✦═══════✦
 
-### 👍 Positive Observations
+## ∘───── 🧩 Achievement Logic ─────∘
+- Good work on creating unique challenge achievements, making use of Hit Counts with ResetIfs and Trigger flags. This is pretty much the alternative to PauseLock design so very good! As a reference for your future within the Junior program, try to make a few challenge achievements using the PauseLock design as well, just so we can see you understand the philosohpy there as well. You either choose a Start-Reset-Trigger design or the PauseLock design for challenge achievements. Try to show us you understand both.
+- Good work on implementing logic for multiple release regions, this is the exact method I use in my sets.
+- Multi-region support implemnted with AltGroups, very nice!
 
-## ∘───── 🧩 Achievement Logic ─────∘  // TODO
-/// Triggers, reset conditions, edge cases. Were flags used correctly? Refer to the Proficiency-Checklist
-/// Multi-hash support?
-/// Protections: Demo/Cheat/Save/Bios/DipSwitch?  
+### ❗ `$0x923f4` SubSource & AddAddress Pointer Usage
+You're using `$0x923f4` as a pointer in multiple assets and SubSourcing the pointed to value to determine what exactly? The logic may seem to work, but I think it could be simplified. But I'm rather unsure what you're checking here. It seems you're using this as an index to point to a specific block of data correlated to the active Championship. Take for example [Emperor Challenge](https://retroachievements.org/achievement/500286):
+```
+  9: SubSource   Mem   32-bit 0x000923f8 
+ 10: AddAddress  Mem   32-bit 0x000923f4 *   Value        112        
+ 11:             Mem   32-bit 0x00097fdc =   Value        1          (0)
+```
+Perhaps you could explain how these RAM addresses should be used to determine exactly what it is you're checking here within the respective code notes. Why is that specific part of a Championship ListItem supposed to be 1? That seems to not be explained anywhere? Or did I miss this? 
+
+### ❓ [Collector](https://retroachievements.org/achievement/500958) AddSource
+You're using `8-bit AddSource` to check if all cars are unlocked but I think you may be able to simplify them as BitFlag checks instead of 8-bit, refer to my remarks on [💡 Documenting Arrays or Structures]
 
 ## ∘───── 🔧 Rich Presence Logic ─────∘
 👍 Dynamic RP with multiple conditional display strings present, with NTSCU/PAL support, love to see it! Lookup tables and macros were used, nicely done!
@@ -350,17 +396,13 @@ If the game includes **multiplayer**, one of the following meta hubs may apply, 
 Since Junior Developers don’t have permission to add hubs or similar games directly, please make a list of all that apply, and we’ll handle the additions from there.
 
 ### ❓ Game Page Metadata
-/// [RAdocs - Screenshot Dimensions](https://docs.retroachievements.org/guidelines/content/game-info-and-hub-guidelines.html#screenshot-dimensions) 
 Is everything correctly filled out on the **manage page** and **game page**? (publishers, genre, game screenshots, box art, release date...)
 Juniors devs should be able to edit these fields themselves via the `Dev drop down menu` or via the `Manage page`.
 
-# ✦═══════✦📜 Summary & Final Thoughts 📜✦═══════❖ // TODO
-/// Overview and high-level review conclusion.  
-/// What still needs to be proven or improved?  
-/// Was everything from https://docs.retroachievements.org/developer-docs/am-i-ready-for-review.html covered?
+# ✦═══════✦📜 Summary & Final Thoughts 📜✦═══════❖
 
-## ∘───── 📋 TODO Checklist ─────∘ // TODO
-- **Initially Posted on**: `DD Month YYYY` - `Initial Code Review`
+## ∘───── 📋 TODO Checklist ─────∘
+- **Initially Posted on**: `23 August 2025` - `Initial Code Review`
 - **Last Updated on**: `DD Month YYYY` - `Checklist Assessment #0-[ChecklistAssessmentNumber]` // CR_TODO Perform next Checklist Assessment Round
 
 Please use the list below as a working guideline. I recommend copying it or creating your own version, ideally in a format I can also access and follow along with. A good option would be to add a new tab in your existing Set Plan Excel document for this purpose.
@@ -374,12 +416,24 @@ I'll be using this list here to track your progress as well. As you work through
 - 🟨 DISMISSED – Task was reviewed and ruled out (by CR)
 - ❌ CANCELED — Task was dropped or no longer applicable (by Reviewee)
 
-### ---⇢ 📌 Initial Code Review Tasks ⇠--- // TODO
-### 🔲 🧪❗ ...
-### 🔲 🖼️❓ ...
-### 🔲 🧩❓ ...
-### 🔲 🧩❗ ...
-### 🔲 🔧❓ ...
+### ---⇢ 📌 Initial Code Review Tasks ⇠---
+### 🔲 🛠️❗ `$0x923f4` AddAddress Pointer Documentation
+### 🔲 🛠️❓ `$0x923ec` Code Note Clarity
+### 🔲 🛠️💡 Documenting Arrays or Structures
+### 🔲 🛠️💡 Defining Values
+### 🔲 🛠️💡 Documenting Flags Clearly
+### 🔲 🛠️💡 Documentation of Integer Identifiers
+### 🔲 🛠️💡 `$0x96870` Not Identified as ASCII
+### 🔲 🛠️💡 `$0x7f954` Improve Clarity of Labeling
+### 🔲 🛠️💡 [Step by Step](https://retroachievements.org/achievement/500954) & code note `$0x97d10`
+### 🔲 🧪❓ Development Questions
+### 🔲 🏆❓ Game Content Coverage
+### 🔲 🏆❓ Achievement Type Markings
+### 🔲 🏆❓ Cheat Protection
+### 🔲 🧩❗ `$0x923f4` SubSource & AddAddress Pointer Usage
+### 🔲 🧩❓ [Collector](https://retroachievements.org/achievement/500958) AddSource
+### 🔲 🔢❓ Leaderboards Instant Start/Submit
+### 🔲 🔢❗ CANCEL Region Countdown Check
 ### 🔲 🔑❓ Hubs & Similar Games
 ### 🔲 🔑❓ Game Page Metadata
 
@@ -394,7 +448,17 @@ I'll be using this list here to track your progress as well. As you work through
 
 When the full checklist is completed and confirmed, we can proceed with finalizing the review and begin discussing the set’s promotion. Until then, feel free to ping me anytime if you’ve completed the task list or have further questions, I’ll be happy to review things again when ready.
 
-## ∘───── 📚 Final Thoughts ─────∘ // TODO
+## ∘───── 📚 Final Thoughts ─────∘
+Overall, the set looks very well designed at first glance, the structure and achievement ideas come across solid. However, under the hood there’s still some work to be done to ensure everything is thoroughly documented in the code notes, which would hopefully make your achievement logic choices somewhat clearer. It’s definitely a good set overall, but taking the time to clean up the code notes and tighten the logic documentation would make it much stronger and easier for others to follow. Achievement logic just wasn't clean enough for me to follow easily, but that may just be inherit to how reading/understanding others code is.
+
+Keep at it, you’re clearly heading in the right direction.
+
+As a reference for future sets you make within the Junior Dev Program, we would love to see you master the following things:
+- PauseLocks
+- Correct usage of Achievements Type Markings (progression, win condition, missables)
+- Clearer documentation
+- Usage of more logic features (MeasuredIf, Bit-level memory accessors, AddHits/SubHits, Pointers, R/R...)
+Generally we want to see you make a "few" more sets in which you broaden you expertise with the toolkit. Don't stick to what you know. Try out other genres and move out of your comfort zone, only then you'll be able to craft more unique challenges which you haven't designed yet before, because that's where you're able to learn most of the toolkit.
 
 # %%%%%%%%%%%%% POST-INITIAL CODE REVIEW %%%%%%%%%%%%% #
 
