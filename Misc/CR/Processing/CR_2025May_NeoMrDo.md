@@ -491,17 +491,19 @@ I'll be using this list here to track your progress as well. As you work through
 - ❌ CANCELED — Task was dropped or no longer applicable (by Reviewee)
 
 ### ---⇢ 📌 Reassessment Round #1 Tasks ⇠---
-### 🔲 🧪❓ Testing Questions
+### ✅ 🧪❓ Testing Questions
 - Can you recall how exactly you fixed the problems found in the [#playtest-request](https://discord.com/channels/310192285306454017/1339642437164863498)?
 - Were there any other problems you encountered during development? How did you fix them?
 - Were there any achievements you were unable to design?
 - How did your own testing process look like?
-### 🔄 🏆❓ Achievement [We Live in a Society](https://retroachievements.org/achievement/499156) Enemy Combo?
+### ✅ 🏆❓ Achievement [We Live in a Society](https://retroachievements.org/achievement/499156) Enemy Combo?
 Current Description: `Get 5 combo on defeated enemies on difficulty 4 or higher`
 Suggested Description: `Kill 5 enemies with one projectile on difficulty 4 or higher`
 Since "combo" isn't a term used in the game itself, it might be clearer to directly state what the player needs to do. Otherwise, you risk confusing or frustrating players due to vague wording, especially since this isn't an adventure or puzzle game where ambiguity is expected. The only thing they will still have to figure out is, is that this can only be achieved with the "straight ball" projectile...
-### 🔄 🏆❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Item Combo?
+### 🟨 🏆❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Item Combo?
 Just like [❓ Achievement [We Live in a Society](https://retroachievements.org/achievement/499156) Enemy Combo?] where the enemy combo requirement was unclear, I would suggest updating this description to make it more straightforward. When I first read it, I wasn’t sure what I was supposed to do, and clearer wording would definitely help avoid confusion.
+
+-> Jr changed 
 ### 🔄 🏆❓ Achievement [Pie in the Face](https://retroachievements.org/achievement/499155) Challenge clarity?
 Based on the current Description: `Beat the big enemy on any stage and not lose a life on difficulty 4 or higher`, it's not clear to me at what point the challenge of "not losing a life" starts? 
 
@@ -509,32 +511,32 @@ You could make it a general achievement, which may be unlockable on any Stage, l
 Suggested Description: `Beat a stage from start to finish, defeating the big enemy that spawns during the final round of any stage, on difficulty 4 or higher, without losing any lives`
 You would probably need to add some extra logic to make this suggested description/design work. But I'd say this is much more clear to the player what is required.
 Suggested Description (alt): `Beat a stage from start to finish, defeating a big enemy on difficulty 4 or higher, without losing any lives`
-### 🔲 📺❗ 2P RP Missing
+### ✅ 📺❗ 2P RP Missing
 Your set allows multiplayer, but RP only checks for the data of 1P(player 1), their lives.
 Make sure you have corresponding RP for the following situations:
 - when only 1P is active.
 - when only 2P (player 2) is active.
 - when both 1P and 2P is active.
-### 🔲 📺💡 RP Expansions
+### ✅ 📺💡 RP Expansions
 RP looks solid overall, though I personally think it could be expanded a bit. I’d love to see the following additions:
 - **High Score**: Showing the player's current high score in RP would be a great fit for a game like this. It’s a core part of arcade-style replayability and would give more context to a player’s current session.
 - **Coins**: Since lives are already displayed, it feels natural to include the player's current coin count as well. It adds more depth to the session snapshot and aligns with traditional game stat displays.
 - **Difficulty**: If difficulty affects gameplay mechanics in any meaningful way, I think it would be valuable to show that in RP too. It helps contextualize the player's progress or performance.
 - **Extra Stage, time left**: I think displaying time left for the extra stage could be interesting.
 That said, if you feel any of these wouldn’t be a good fit for Rich Presence, I’d appreciate your insight on how the current RP setup already meets the game’s needs. You know this title better than anyone, after all.
-### 🔲 🌐❗ High Score Instant Submission
+### ✅ 🌐❗ High Score Instant Submission
 You have one leaderboard hooking on to the high score as the submitted value. Because of this, since the high score is already shown on-screen, it would be best designed as an instant submission leaderboard, please refer to [RAdocs - Leaderboard Design Tips](https://docs.retroachievements.org/developer-docs/leaderboards.html#design-tips).
 ### 🔲 🌐💡 Multiplayer Leaderboards
 Your set allows multiplayer, I think there should be at least an equivalent of the High Score leaderboard, but for multiplayer in mind.
 This leaderboard would then function as an instant submission leaderboard, submitting when both player's were active and one of them lost all their lives. Thus when the total combined high scores drops, the leaderboard submits. Take a look for yourself, how you could make such a leaderboard function correctly, it definitely doable with the RAM values you've already documented. 
-### 🔲 ✍️❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) "WIP" in Title + Description 1P
+### ✅ ✍️❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) "WIP" in Title + Description 1P
 When you submit your set for review (Ready for Review), make sure everything is final. Think of it as if you're releaseing your set to the public, be professional in this regard. Either release a full developed set or wait until it's fully done, so having (WIP) in the title is not advised. Although this leaderboard still has some other problems as well, more details futher below.
 
 **Description**
 This leaderboard only accounts for 1P slot right? Is this clear enough from the description? I'd rather phrase it as:
 `Achieve the highest score on difficulty 4 or higher, with starting lives at 3 or less, using 1-player's slot`
 Take a look at how other achievement sets have phrased such requirements, perhaps ask the writing-team.
-### 🔲 🧩❗ `AndNext` Misuse
+### ✅ 🧩❗ `AndNext` Misuse
 `AndNext` should only be used for checkpoint HitCounts or HitCounts in general or in combination with other flags such as (ResetIf/PauseIf)
 Following achievements use `AndNext`, but they may not be necessary, can probably be left out safely:
 - [Scaramouche Is Here](https://retroachievements.org/achievement/499142)
@@ -543,7 +545,7 @@ Following achievements use `AndNext`, but they may not be necessary, can probabl
 - [A Fake Clown](https://retroachievements.org/achievement/499150)
 
 Achievement [Scapino Flees from Fight](https://retroachievements.org/achievement/499146) does use them correctly, attached to a ResetIf.
-### 🔄 🧩❓ Missing Demo Mode Protection?
+### ✅ 🧩❓ Missing Demo Mode Protection?
 - [Time to Change Oversized Shoes](https://retroachievements.org/achievement/499153)
 - [Nobody Likes a Clown at Midnight](https://retroachievements.org/achievement/499154)
 Edited achievements have some other issues now.
@@ -565,7 +567,7 @@ Core:Line[3] may be redundant:
 Mem 	8-bit 	0x002144 	= 	Mem 	8-bit 	0x002144 	(0)
 ```
 - This is always true, so there's no reason to keep this. If you ever need to use an always_true condition consider just doing `val 0x1 == val 0x1`.
-### 🔲 🧩❓ Achievement [You Are Not a Clown, You Are the Entire Circus](https://retroachievements.org/achievement/499140) Issues?
+### ✅ 🧩❓ Achievement [You Are Not a Clown, You Are the Entire Circus](https://retroachievements.org/achievement/499140) Issues?
 ```
   1:         Mem   8-bit 0x0000fd8a >=  Value 3     (0)
   2:         Mem   8-bit 0x0000fd89 <=  Value 3     (0)
@@ -584,7 +586,7 @@ Core:Line[8] has a trigger flag, but this trigger indicator will only be display
 
 **2P Issue**
 There's a possible issue with this achievement, what if at one point join in with 2P mid-way through the game? Does this not make the achievement somewhat easier then? Elaborate on how this would or would not affect balancing... Alas, you're the expert here.
-### 🔲 🧩❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Math?
+### 🔄 🧩❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Math?
 ```
 CORE
 1:   Mem   8-bit 0x0000fd8a >=  Value  3  (0)
@@ -600,7 +602,7 @@ Alt_2
 2:             Mem   8-bit 0x000064a2 =   Value 0 (0)
 ```
 You're using SubSource here, but I'm not sure what exactly is happening there, from a glance. Perhaps you could extend the correlating code notes somewhat to explain what is happening or what is calculated by doing this math.
-### 🔲 🔢❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) Logic Issues + Questions
+### 🔄 🔢❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) Logic Issues + Questions
 This leaderboard would be better designed as an instant submission leaderboard. But I will critique it as it is currently. It does seems to function as an instant submission leaderboard, I think from my testing. It never tracks right? It just submits when you lose all lives? or when you enter the "Continue" state? Although an instant submission leaderboard would have an always_false CANCEL condition and an always_true SUBMIT condition. 
 
 **START**
@@ -629,6 +631,29 @@ Since high score is seperate between 1P and 2P, I think it would be feasible to 
 
 **VALUE**
 How exactly does `$0x4652` 1P Score multiply work? What does the math calculate exactly, it wasn't clear to me by just reading the code notes?
+
+
+# ✦═══════✦ 🔍 CR Reassessment Round #2  ✦═══════✦
+- **Initially Posted on**: `26 August 2025` - `Reassessment Round #2`
+
+### ---⇢ 📌 Reassessment Round #2 Tasks ⇠---
+### 🔄 🏆❓ Achievement [Pie in the Face](https://retroachievements.org/achievement/499155) Challenge clarity?
+Based on the current Description: `Beat the big enemy on any stage and not lose a life on difficulty 4 or higher`, it's not clear to me at what point the challenge of "not losing a life" starts? 
+I'd suggest: `Clear a round on difficulty 4 or higher by beating the big enemy and without losing a life`
+### 🔲 🌐💡 Multiplayer Leaderboards
+Your set allows multiplayer, I think there should be at least an equivalent of the High Score leaderboard, but for multiplayer in mind.
+This leaderboard would then function as an instant submission leaderboard, submitting when both player's were active and one of them lost all their lives. Thus when the total combined high scores drops, the leaderboard submits. Take a look for yourself, how you could make such a leaderboard function correctly, it definitely doable with the RAM values you've already documented. 
+### 🔄 🧩❓ Achievement [Perfect Juggler](https://retroachievements.org/achievement/499147) Math?
+I'd also suggest adding the following to the relevant **code note**: 
+> If `1P/2P item groups collected [0x64a0 + 0x64a2] - total item groups within the round [0x0d30] = 0` then all items in a round are collected
+Also why isn't `$0x0d32` a viable address to use here?
+**Suggested Description** in that case: `Using only 1 player, clear a round on difficulty 4 or higher by collecting all items without losing a life`
+### 🔄 🔢❗ Leaderboard [High Score (WIP)](https://retroachievements.org/leaderboardinfo.php?i=126016) Logic Issues + Questions
+**SUBMIT**
+You could just limit it to 1P slot, as an easy alternative.
+**VALUE**
+I would add the following to the code note of  `$0x4652`
+> `P1 Score = (65535 * ThisValue) + ThisValue`
 
 # %%%%%%%%%%%%% CODE REVIEW WRAP-UP %%%%%%%%%%%%% #
 
