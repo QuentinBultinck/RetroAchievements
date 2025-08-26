@@ -638,8 +638,7 @@ How exactly does `$0x4652` 1P Score multiply work? What does the math calculate 
 
 ### ---⇢ 📌 Reassessment Round #2 Tasks ⇠---
 ### 🔄 🏆❓ Achievement [Pie in the Face](https://retroachievements.org/achievement/499155) Challenge clarity?
-Based on the current Description: `Beat the big enemy on any stage and not lose a life on difficulty 4 or higher`, it's not clear to me at what point the challenge of "not losing a life" starts? 
-I'd suggest: `Clear a round on difficulty 4 or higher by beating the big enemy and without losing a life`
+Wording of edited description doesn't quite read well. I'd suggest: `Clear a round on difficulty 4 or higher by beating the big enemy and without losing a life`
 ### 🔲 🌐💡 Multiplayer Leaderboards
 Your set allows multiplayer, I think there should be at least an equivalent of the High Score leaderboard, but for multiplayer in mind.
 This leaderboard would then function as an instant submission leaderboard, submitting when both player's were active and one of them lost all their lives. Thus when the total combined high scores drops, the leaderboard submits. Take a look for yourself, how you could make such a leaderboard function correctly, it definitely doable with the RAM values you've already documented. 
