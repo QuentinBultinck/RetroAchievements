@@ -1,8 +1,8 @@
-{
+[{ // BaseSettings + TodoTree Settings
+    "openInGitHub.remote.name": "/QuentinBultinck/RetroAchievements",
     "editor.tokenColorCustomizations": {        
         "comments": "#00960c"
     },
-    "openInGitHub.remote.name": "/QuentinBultinck/RetroAchievements",
     "todo-tree.general.tags": [
         "$",
 
@@ -20,7 +20,7 @@
 
         "TODO",
         "PENDING",
-        "CR_TODO"
+        "CR_TODO",
         
         "TODO_OPTIONAL",
         
@@ -30,7 +30,7 @@
         "QA",
 
         "WARNING",
-        "MANUAL_CONSTRUCTION"
+        "MANUAL_CONSTRUCTION",
 
         "BUG",
         "ERROR",
@@ -41,7 +41,7 @@
         "DISABLED",
         "OFF",
         "INACTIVE",
-        "DISCONTINUED"
+        "DISCONTINUED",
 
         "UNVERIFIED",
         "TEST",
@@ -296,4 +296,12 @@
     "todo-tree.tree.scanMode": "open files",
     "todo-tree.tree.disableCompactFolders": false,
     "todo-tree.tree.showCountsInTree": true
-}
+},
+{ // Region-Viewer Settings    
+    "region-viewer.markers-overrides": {
+        "rascript": {
+            "start": "^\\s*//\\s*#?region\\b(?<name>.*)", // <name> will be used to to give the region a name
+            "end": "^\\s*//\\s*#?endregion\\b"
+        },
+    }
+}]
