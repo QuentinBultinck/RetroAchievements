@@ -2,12 +2,13 @@
 //	 █▀▄ ▄▀█ █▀█ █▄▀ █░█░█ ▄▀█ ▀█▀ █▀▀ █░█	 						\\
 //	 █▄▀ █▀█ █▀▄ █░█ ▀▄▀▄▀ █▀█ ░█░ █▄▄ █▀█	MULTIPLAYER COOPERATIVE \\
 // **************************************************************** \\
-// #ID = 24401
+// #ID = 19111
+// Set = 28799
 // md5: 8E6C817041ADC5B20F3011CD0F945F9D (PAL) - 9CE6383CB5260E300CACDE569EA5916D (NTSC-U)
-// RA Hash: https://retroachievements.org/game/24401/hashes
+// RA Hash: https://retroachievements.org/game/19111/hashes?set=28799
 // Platform: PlayStation 2
 // Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Darkwatch-%5BSubset-%E2%80%90-Multiplayer-Cooperative%5D-(PlayStation-2)
-// RA Game Page: https://retroachievements.org/game/24401
+// RA Game Page: https://retroachievements.org/game/19111?set=28799
 // RATools version: v1.15.1
 
 //#####################################################################################################\\
@@ -55,7 +56,7 @@
 //#####################################################################################################\\
 // #region GENERAL UTILITY
 
-util_isDebugModeActive = true	// if true => extra information may be displayed on achievement titles & descriptions
+util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
 iNULL = -1		// Two types are necessary because RAtools can't compare integers to strings
@@ -2792,45 +2793,45 @@ achievements_coreData = {
 			// "id": 513483, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
 		},
 	"c_Challenge": { // Category - info_here
-		// "a_ClgWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgWrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 513820, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty with no deaths and a minimum combined accuracy of xx%"}, 
-		// "a_ClgRideDevil": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgRideDevil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 513876, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty with no deaths and the combined HP never goes below xx%"},
-		// "a_ClgBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgBoneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 513877, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty with no deaths, no throwables, using only the Crossbow and Carbine to score at least xx kills total (without restart)"},
-		// "a_ClgDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgDevilMine": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515977, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty with no deaths and no powers, where one player only uses pistols and the other only two-handed weapons (no explosives)"},
-		// "a_ClgDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgDWOutpost": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515978, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty with no deaths and the combined HP never being below max HP for xx seconds consecutively"},
-		// "a_ClgWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgWarTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515981, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty with no deaths, within xx time and without any player losing any HP"}, 
-		// "a_ClgTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgTortureMaze": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515982, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty with no deaths, with at least xx% melee kills, where one player only uses the Scepter and the other only shoots (powers allowed)"}, 
-		// "a_ClgBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgBaptismFire": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515980, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty with no deaths, no throwables, using only the Redeemer and the Rail Rocket to score at least xx kills total (without restart)"}, 
-		// "a_ClgRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgRescue": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515985, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty with within xx time and without any player going below xx% HP"},
-		// "a_ClgPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgPrism": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515975, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty with no deaths, where each player can only use each power once"},
-		// "a_ClgInvasion": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgInvasion": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515976, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty with no deaths using only the Dual Pistols or Shotgun (no explosives)"},
-		// "a_ClgHangtown": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgHangtown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515987, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty with no deaths using the Range Rifle as the only means of shooting, with a minimum combined accuracy of xx%"},
-		// "a_ClgMorningAfter": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgMorningAfter": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515986, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty with no deaths using only tier 2 and 3 powers, with at least xx% headshot or melee kills"},
-		// "a_ClgShowdown": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgShowdown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515983, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty with no deaths, with a minimum combined accuracy of xx% and where each player can only use 1 distinct power"},
-		// "a_ClgRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgRightTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515984, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty with no deaths within xx time and without any player going below xx% HP"},
-		// "a_ClgDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgDeadfall": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515988, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty with no deaths, killing only with the Range Rifle and Carbine equipped and with at least xx% headshot kills (throwables allowed)"},
-		// "a_ClgCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_ClgCurseWest": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 515979, "points": achievement_POINTS_10, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty with no deaths, with less than xx power activations"},
 		},
 	"c_Bonus": { // Category - Bonus achievements
 		// "a_MultiKillers": { // VERIFIED
 			// "id": 521090, "points": achievement_POINTS_4, "devInfo": "In a Chapter, have each player score at least one multikill"},
-		// "a_SunHi": { // QA
+		// "a_SunHi": { // VERIFIED
 			// "id": 521091, "points": achievement_POINTS_1, "devInfo": "Both player use powers in sunlight"},
 		// "a_AllEvil": { // VERIFIED
 			// "id": 521088, "points": achievement_POINTS_10, "devInfo": "Unlock all Evil powers"},
@@ -2987,6 +2988,7 @@ function achGenerate_5x_AltResetGroups_ChapterProgression(enum_chapter, enum_rel
 	// [4] ==== Alt Reset Group ==== 			-> Reset on PauseMenu->Restart when at ChapterSection_1
 		/* MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart (PlaceHolder[FD1-FD2]]) 
 			// BUG fix to be implemented --> Player_2 Restart doesn't actually restart any achievements properly, due to a few parts of R/R not being reused for Player_2 restart logic, which it is for Player_1. --> Is already fixed in below 2 serialized logic lines, it just needs to be implemented on all achievements in this set (Quit works on both Players, it's just Restart on ChapterSection_1 doesn't work on PLAYER_2)
+				// in some cases, this altGroup works as is it was previously (without this fix), but sometimes not?? --> test
 			PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
 			NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM0000000f>d0xM0000000f.1._I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_C:0xM00000043>d0xM00000043.1._Z:0xX00953ce4!=0_N:0xX00953ce4=0_C:d0xX00953ce4!=0.1._Z:0xX00953e10!=0_N:0xX00953e10=0_C:d0xX00953e10!=0.1._R:0=1.3._0=1
 			*/	
@@ -4549,16 +4551,36 @@ achievements_triggers = {
 			&& memUtil_alwaysFalse(enum_releaseRegion)
 		// [4/15] ==== Alt Lockout Group ==== 		-> Lockout achievement when both players scored a meleeKill || when both players scored a standardKill, by Resetting HitCount on [StartCondition]
 			|| unless(!is_ReleaseRegion(enum_releaseRegion)) 
-			&& never(tally_of([PLAYER_1, PLAYER_2], 2, enum_player => // --Lockout--Tally(2)-> when both players scored a meleeKill
-				once(
-					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
-					&& current_MeleeKills_Temp(enum_player, enum_releaseRegion) > prev_MeleeKills_Temp(enum_player, enum_releaseRegion))
-				))
 			&& never(tally_of([PLAYER_1, PLAYER_2], 2, enum_player => // --Lockout--Tally(2)-> when both players scored a standardKill
 				once(
 					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
-					&& current_Kills_Temp(enum_player, enum_releaseRegion) != current_MeleeKills_Temp(enum_player, enum_releaseRegion)) // If (Kills != MeleeKills) then a standardKill was scored
+					&& current_Kills_Temp(enum_player, enum_releaseRegion) > prev_Kills_Temp(enum_player, enum_releaseRegion) // If (Kills increments && MeleeKills doesn't increment) --> standardkill
+					&& current_MeleeKills_Temp(enum_player, enum_releaseRegion) == prev_MeleeKills_Temp(enum_player, enum_releaseRegion))
 				))
+			&& never(tally_of([PLAYER_1, PLAYER_2], 2, enum_player => // --Lockout--Tally(2)-> when both players scored a meleeKill
+				once(
+					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& current_Kills_Temp(enum_player, enum_releaseRegion) > prev_Kills_Temp(enum_player, enum_releaseRegion) // If (Kills increments && MeleeKills increments) --> meleeKill
+					&& current_MeleeKills_Temp(enum_player, enum_releaseRegion) > prev_MeleeKills_Temp(enum_player, enum_releaseRegion)) 
+				))
+			&& never(tally(2, [ // --Lockout--> when PLAYER_1 scored both a standardKill AND meleeKill
+				once( // --CheckIf--> PLAYER_1 scored a standardKill
+					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& current_Kills_Temp(PLAYER_1, enum_releaseRegion) > prev_Kills_Temp(PLAYER_1, enum_releaseRegion)
+					&& current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) == prev_MeleeKills_Temp(PLAYER_1, enum_releaseRegion)),
+				once( // --CheckIf--> PLAYER_1 scored a meleeKill
+					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) > prev_MeleeKills_Temp(PLAYER_1, enum_releaseRegion))
+			]))
+			&& never(tally(2, [ // --Lockout--> when PLAYER_2 scored both a standardKill AND meleeKill
+				once( // --CheckIf--> PLAYER_2 scored a standardKill
+					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& current_Kills_Temp(PLAYER_2, enum_releaseRegion) > prev_Kills_Temp(PLAYER_2, enum_releaseRegion)
+					&& current_MeleeKills_Temp(PLAYER_2, enum_releaseRegion) == prev_MeleeKills_Temp(PLAYER_2, enum_releaseRegion)),
+				once( // --CheckIf--> PLAYER_1 scored a meleeKill
+					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& current_MeleeKills_Temp(PLAYER_2, enum_releaseRegion) > prev_MeleeKills_Temp(PLAYER_2, enum_releaseRegion))
+			]))
 			&& always_false()
 		// [5/16] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player dies, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion)
