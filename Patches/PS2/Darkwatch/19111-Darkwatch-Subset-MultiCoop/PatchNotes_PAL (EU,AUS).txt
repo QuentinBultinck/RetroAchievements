@@ -22,8 +22,9 @@ Notes - FPS patch:
 Notes - Widescreen patch:
 - Using Widescreen patch on PAL, activates NTSC 60Hz mode, instead of PAL 50 Hz mode. --> NTSC mode @ 30 fps || PAL mode @ 25 fps
 - Combining FPS patch with Widescreen patch on PAL version, results in 60 FPS
-- Widescreen patch, results in both playerCharacterModels in Multiplayer Cooperative mode to become Jericho, instead of the default Darkwatch Regulator Models
---- This has probably something to do with loading in a higher resolution texture/model pack. As by default, this mode has very low resolution on textures
+//- Widescreen patch, results in both playerCharacterModels in Multiplayer Cooperative mode to become Jericho, instead of the default Darkwatch Regulator Models
+//-This has probably something to do with loading in a higher resolution texture/model pack. As by default, this mode has very low resolution on textures 
+//==> (this has been disabled, because it causes achievement bugs, as the different characterModel changed how some character stats (eg. HP) are saved within the characterObject)
 
 
 
@@ -42,7 +43,7 @@ Notes - Widescreen patch:
 -   $0x006429f4     3fe38e38            $0x00F7C6F4     3FAAAAAB            3fe38e38      Hardcoded float, read from ROM into this RAMaddress -> This determines screen render size
 
 //16:9 Widescreen - Image Render Multiplayer Coop/Versus
--   $0x002cd9f4     24110001            $0x00C076F4     0000882d            24110001      Insert new MIPS instruction, read from ROM into this RAMaddress
+//- $0x002cd9f4     24110001            $0x00C076F4     0000882d            24110001      Insert new MIPS instruction, read from ROM into this RAMaddress --> This change is reverted (results in both playerCharacterModels in Multiplayer Cooperative mode to become Jericho, bugs out some achievements)
 -   $0x00642bb0     402aaaaa            $0x00F7C8B0     3fb33333            402aaaaa      Hardcoded float, read from ROM into this RAMaddress -> This determines screen render size for Player A
 -   $0x00642bb4     40638e38            $0x00F7C8B4     402aaaa8            40638e38      Hardcoded float, read from ROM into this RAMaddress -> This determines screen render size for Player A
 -   $0x00642bcc     402AAAAA            $0x00F7C8CC     3fb33333            402aaaaa      Hardcoded float, read from ROM into this RAMaddress -> This determines screen render size for Player B
