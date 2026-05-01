@@ -1,8 +1,11 @@
-{
+{ 
+    // BaseSettings
+    "openInGitHub.remote.name": "/QuentinBultinck/RetroAchievements",
     "editor.tokenColorCustomizations": {        
         "comments": "#00960c"
     },
-    "openInGitHub.remote.name": "/QuentinBultinck/RetroAchievements",
+    
+    // Todo-Tree Settings
     "todo-tree.general.tags": [
         "$",
 
@@ -20,7 +23,7 @@
 
         "TODO",
         "PENDING",
-        "CR_TODO"
+        "CR_TODO",
         
         "TODO_OPTIONAL",
         
@@ -30,7 +33,7 @@
         "QA",
 
         "WARNING",
-        "MANUAL_CONSTRUCTION"
+        "MANUAL_CONSTRUCTION",
 
         "BUG",
         "ERROR",
@@ -41,7 +44,7 @@
         "DISABLED",
         "OFF",
         "INACTIVE",
-        "DISCONTINUED"
+        "DISCONTINUED",
 
         "UNVERIFIED",
         "TEST",
@@ -293,7 +296,7 @@
     "todo-tree.general.statusBar": "current file",
     "todo-tree.general.showActivityBarBadge": true,
     "todo-tree.tree.showBadges": true,
-    "todo-tree.tree.scanMode": "open files",
+    "todo-tree.tree.scanMode": "current file",
     "todo-tree.tree.disableCompactFolders": false,
     "todo-tree.tree.showCountsInTree": true
 }

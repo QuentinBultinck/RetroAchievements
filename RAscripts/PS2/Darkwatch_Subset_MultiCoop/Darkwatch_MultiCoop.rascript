@@ -2715,6 +2715,14 @@ memory_initialize()
 // ****************************************************************************************************************************************** \\
 // #region ACHIEVEMENTS
 
+/* TODO Current Bug List
+	- Game Bug Chapter 8: 		Entering House after picking up RailRocket, Crash to BIOS
+	- No Dying Condition: 		doesn't fail the achievements properly
+		eg. Chapter 4, Deadeye Challenge: 	False Trigger (players died, but achievement still worked fine)
+	- Chapter 2, 6 & 15 challenges Bug: 	(involving horses) may not start properly when entering the chapter by completing the previous chapter. They only start correctly when entering via the MainMenu.
+	- Chapter 7 challenge Bug:		achievement fails wrongly, when player that is allowed to shoot, earns a shooting kill + may also be a problem with particiaptin tracking, for accuracy + bullets fired, since one player is melee only
+	*/
+
 // =========================
 // • ACHIEVEMENT core data •
 // =========================
@@ -2778,10 +2786,10 @@ achievements_coreData = {
 			// "id": 513482, "points": achievement_POINTS_5, "devInfo": "CHAPTER_16_Deadfall Completion"},
 		},
 	"c_StoryEnd": { // Category - Story Win Condition Achievements
-		"a_CurseWestGood": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 513484, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
-		"a_CurseWestEvil": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 513483, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
+		// "a_CurseWestGood": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 513484, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
+		// "a_CurseWestEvil": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 513483, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
 		},
 	"c_Challenge": { // Category - info_here
 		// "a_ClgWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
@@ -2952,7 +2960,7 @@ function achGenerate_LockoutGroup_ParticipationTrackingInactivity(enum_chapter, 
 	}
 
 function achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion) =>
-	// [5/] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player dies, by Resetting HitCount on [StartCondition]
+	// ==== Alt Lockout Group ==== 		-> Lockout achievement when any player dies, by Resetting HitCount on [StartCondition]
 		never( // --Lockout--> When PLAYER_1 dies
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
@@ -3824,7 +3832,7 @@ achievements_triggers = {
 				// -------- (Last) Requirements for Unlock --------
 				&& on_Loading_start(enum_releaseRegion)
 				)
-		// [2/12] === Alt Measured Group ====	-> Group is only responsible for displaying a Measured Indicator tracking kills with required weapons
+		// [2/12] ==== Alt Measured Group ====	-> Group is only responsible for displaying a Measured Indicator tracking kills with required weapons
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_InMultiplayerCoopMode(enum_releaseRegion)) 
@@ -4545,10 +4553,10 @@ achievements_triggers = {
 					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
 					&& current_MeleeKills_Temp(enum_player, enum_releaseRegion) > prev_MeleeKills_Temp(enum_player, enum_releaseRegion))
 				))
-			&& never(tally_of([PLAYER_1, PLAYER_2], 2, enum_player => // --Lockout--Tally(2)-> when both players scored a standardKill		
+			&& never(tally_of([PLAYER_1, PLAYER_2], 2, enum_player => // --Lockout--Tally(2)-> when both players scored a standardKill
 				once(
 					is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
-					&& current_Kills_Temp(enum_player, enum_releaseRegion) != current_MeleeKills_Temp(enum_player, enum_releaseRegion)) // If (Kills != MeleeKills) then a standarKill was scored
+					&& current_Kills_Temp(enum_player, enum_releaseRegion) != current_MeleeKills_Temp(enum_player, enum_releaseRegion)) // If (Kills != MeleeKills) then a standardKill was scored
 				))
 			&& always_false()
 		// [5/16] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player dies, by Resetting HitCount on [StartCondition]
