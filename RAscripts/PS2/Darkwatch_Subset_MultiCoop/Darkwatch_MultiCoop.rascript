@@ -4549,7 +4549,7 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
 				format = "percent")
 			&& memUtil_alwaysFalse(enum_releaseRegion)
-		// [4/15] ==== Alt Lockout Group ==== 		-> Lockout achievement when both players scored a meleeKill || when both players scored a standardKill, by Resetting HitCount on [StartCondition]
+		// [4/15] ==== Alt Lockout Group ==== 		-> Lockout achievement when both players scored a meleeKill || when both players scored a standardKill || when one player scored both a standardKill AND meleeKill, by Resetting HitCount on [StartCondition]
 			|| unless(!is_ReleaseRegion(enum_releaseRegion)) 
 			&& never(tally_of([PLAYER_1, PLAYER_2], 2, enum_player => // --Lockout--Tally(2)-> when both players scored a standardKill
 				once(
