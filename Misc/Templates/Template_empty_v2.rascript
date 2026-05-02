@@ -1,14 +1,14 @@
 // ****************************************** \\
-//  █▀ █▀█ █▀▀ █░░ █░░ █▀▀ ▄▀█ █▀ ▀█▀ █▀▀ █▀█ \\
-//  ▄█ █▀▀ ██▄ █▄▄ █▄▄ █▄▄ █▀█ ▄█ ░█░ ██▄ █▀▄ \\
+//   █▀▀ ▄▀█ █▀▄▀█ █▀▀    ▀█▀ █ ▀█▀ █░░ █▀▀   \\
+//   █▄█ █▀█ █░▀░█ ██▄    ░█░ █ ░█░ █▄▄ ██▄   \\
 // ****************************************** \\
-// #ID = 13233
-// md5: 0e1449dd7df4fd0995ccf802bb74cba0 (USA, Europe, Brazil)
-// RA Hash: 0e1449dd7df4fd0995ccf802bb74cba0 (USA, Europe, Brazil)
-// Platform: Sega Master System
+// #ID = [game_ID_here]	// TODO Set header info - Two Line Text Generator: https://www.fancytextpro.com/BigTextGenerator
+// md5: [hash_here] (region_here)
+// RA Hash: [hash_here] (region_here)
+// Platform: [platform_here]
 // Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
-// RA Game Page: https://retroachievements.org/game/13233
-// RATools version: 1.17.0
+// RA Game Page: [link_to_game_page]
+// RATools version: [version_here] // TODO set last used RATools version here
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -48,30 +48,6 @@
 // 	- Markdown editing
 //		-- Enable: Markdown Enhanced Preview => Install extension: 'Markdown Preview Enhanced' by 'Yiyi Wang'
 //  - VScode extension list: Region Viewer Extension - Todo Tree - Markdown Preview Enhanced
-
-
-// CONCEPT Idea's
-// Achievements:
-// - Progression achievements for each 12 stages/chapters??
-// - Complete game taking only xxx strength/HP damage || do a certain stage taking only xxx damage
-// - Complete game within xxx minutes (maybe just leaderboard for this) --> complete whole game --> needs password protection//hitCounts
-// - complete certain stage without using a basic attack
-// - Challenges for each stage???
-// --- without dying, taking only xx hits, taking only xx damage, without healing, using only certain spell
-// - Unlock all items (partial: unlock all armor + unlock all weapons)
-// - Boss Challenges??
-// - Acquire xxx Strength total || Acquire xxx Energy total
-// - Tutorial-isk achievement: 
-// --- cast a certain spell by clicking it in the menu and then pressing [Button_1 + Dpad_Down]
-// --- maybe something about casting charged normal attack??
-// - Secret/funny interactions within AdventureMode??
-// - Pick up orange balls/energy
-// - Pick up blue balls/strength
-// - Acquire certain items --> https://shrines.rpgclassics.com/sms/spellcaster/items.shtml
-// --- X-Ray Glasses is an optional item to acquire, could be bonus cheevo
-
-// WARNING
-// - Using passwords: sends to certain points in the campaign, with all Strength, Energy and Items.
 
 // #endregion DEVELOPER NOTES
 
@@ -981,9 +957,3 @@ leaderboards = CLASS_LeaderboardLogic()
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
 // ====================================================================== \\
 // #region RAScript Initialization
-function initializeRAscript() {
-	achievements.initialize() // --> Functional as a CLASS, since everything is hardcoded
-	richPresence_initialize() // --> Not functional as CLASS, because some dictionaries may be altered during runtime of this script, therefor RP is fully coded with global functions and variables
-	leaderboards.initialize()} // --> Functional as a CLASS, since everything is hardcoded
-initializeRAscript()
-// #endregion RAScript Initialization
