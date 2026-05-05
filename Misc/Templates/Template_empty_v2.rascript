@@ -173,13 +173,12 @@ class CLASS_MemoryData {
 		}
 
 	function getAddress(string_addrKey, enum_releaseRegion) {
-		let_memAddr = dict_addresses[string_addrKey][enum_releaseRegion]
+		let_memAddr = this.dict_addresses[string_addrKey][enum_releaseRegion]
 		if(let_memAddr == util.sNULL) util.throwError(format("Memory address for '{0}' - Region '{1}' is NULL", string_addrKey, enum_releaseRegion))
 		return let_memAddr}	
 
 	// #endregion MEM - Address Storage
-	}
-memory = CLASS_MemoryData()
+} memory = CLASS_MemoryData()
 
 class CLASS_MemoryUtility {
 	// #region MemUtil - Custom ASCII comparitors
@@ -321,18 +320,20 @@ class CLASS_MemoryUtility {
 		let_dummyAddress = (int_placeHolderIndex * 0x10000) + 0xBEEF
 		return dword(let_dummyAddress) == 0xBAADF00D}
 	// #endregion MemUtil - Main
-	}
-memUtil = CLASS_MemoryUtility()
+} memUtil = CLASS_MemoryUtility()
 
-function is_ReleaseRegion(enum_releaseRegion) { // TODO implement is_ReleaseRegion()
-	let_string_GameID = util.sNULL
-	if(enum_releaseRegion == ENUM_ReleaseRegion.USA) let_string_GameID = util.sNULL // FullString: "xxxxx"
-	else if(enum_releaseRegion == ENUM_ReleaseRegion.JPN) let_string_GameID = util.sNULL // FullString: "xxxxx"
-	else if(enum_releaseRegion == ENUM_ReleaseRegion.EUR) let_string_GameID = util.sNULL // FullString: "xxxxx"
-	
-	if (let_string_GameID == util.sNULL) util.throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
-	return memUtil.is_ASCII_EqualTo(memory.getAddress("ASCII:GameID", enum_releaseRegion), let_string_GameID)
-	}
+class CLASS_MEMLOGIC_ReleaseRegion { // TODO implement is_ReleaseRegion()
+	function is(enum_releaseRegion) {	
+		let_string_GameID = util.sNULL
+		if(enum_releaseRegion == ENUM_ReleaseRegion.USA) let_string_GameID = util.sNULL // FullString: "xxxxx"
+		else if(enum_releaseRegion == ENUM_ReleaseRegion.JPN) let_string_GameID = util.sNULL // FullString: "xxxxx"
+		else if(enum_releaseRegion == ENUM_ReleaseRegion.EUR) let_string_GameID = util.sNULL // FullString: "xxxxx"
+		
+		if (let_string_GameID == util.sNULL) util.throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
+		return memUtil.is_ASCII_EqualTo(memory.getAddress("ASCII:GameID", enum_releaseRegion), let_string_GameID)
+		}
+} releaseRegion = CLASS_MEMLOGIC_ReleaseRegion()
+
 function never_toAlt(comparison) => // never_toAlt() => creates a single alt group for a 'Reset If' comparison
 	(
 		(
@@ -397,8 +398,7 @@ class CLASS_ENUM_AchievementPointClasses {
 	Hard_25			= 25 	// Hard - Completing the game 
 	VeryHard_50		= 50 	// VeryHard - Achieving 100% completion
 	Impossible_100	= 100 	// Impossible - Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets)
-	}
-ENUM_AchievementPointClass = CLASS_ENUM_AchievementPointClasses()
+} ENUM_AchievementPointClass = CLASS_ENUM_AchievementPointClasses()
 
 class CLASS_ENUM_AchievementTypes {
 	Progression = "progression"
@@ -446,10 +446,10 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 
 // #region ACH - Triggers
 dict_triggers = {
-	"a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
+	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()),
 	}
 // #endregion ACH - Triggers
 
@@ -520,8 +520,7 @@ function initialize() {
 			)
 		}}
 	}
-}
-achievements = CLASS_AchievementLogic()
+} achievements = CLASS_AchievementLogic()
 // #endregion ACH - Initialization
 
 // #endregion ACHIEVEMENTS
@@ -649,7 +648,7 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 
 // function rp_TemplateDisplayScript(enum_releaseRegion) { 
 	// function condition(enum_releaseRegion) =>
-	// 	is_ReleaseRegion(enum_releaseRegion)
+	// 	releaseRegion.is(enum_releaseRegion)
 	// return rich_presence_conditional_display( 
 	// 	condition(enum_releaseRegion),
 	// 	richPresence_getText_withRegionSuperScript("rp_Template", enum_releaseRegion),
@@ -660,7 +659,7 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 
 function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
 	function condition(enum_releaseRegion) =>
-		is_ReleaseRegion(enum_releaseRegion)
+		releaseRegion.is(enum_releaseRegion)
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
 		richPresence_getText_withRegionSuperScript("rp_DefaultPlus", enum_releaseRegion)
@@ -686,8 +685,7 @@ class CLASS_ENUM_RichPresenceParameterTypes {
 	LOOKUP_HEX = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
 	LOOKUP_STRING = 3	// rich_presence_ascii_string_lookup(name, memAddr_ASCII, dictionary, [fallback])
 	MACRO = 4			// rich_presence_macro(macro, expression)
-	}
-ENUM_RichPresenceParameterType = CLASS_ENUM_RichPresenceParameterTypes()
+} ENUM_RichPresenceParameterType = CLASS_ENUM_RichPresenceParameterTypes()
 // -------------------------------------
 richPresence_parameterData = {
 	// DEV_NOTE: rich presence
@@ -948,8 +946,7 @@ function initialize() {
 			lower_is_better = let_leaderboardData["isLowerBetter"])}
 	}
 // #endregion LB - Initialization
-}
-leaderboards = CLASS_LeaderboardLogic()
+} leaderboards = CLASS_LeaderboardLogic()
 // #endregion LEADERBOARDS
 
 // ====================================================================== \\
@@ -957,3 +954,9 @@ leaderboards = CLASS_LeaderboardLogic()
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
 // ====================================================================== \\
 // #region RAScript Initialization
+function initializeRAscript() {
+	achievements.initialize() // --> Functional as a CLASS, since everything is hardcoded
+	richPresence_initialize() // --> Not functional as CLASS, because some dictionaries may be altered during runtime of this script, therefor RP is fully coded with global functions and variables
+	leaderboards.initialize()} // --> Functional as a CLASS, since everything is hardcoded
+initializeRAscript()
+// #endregion RAScript Initialization
