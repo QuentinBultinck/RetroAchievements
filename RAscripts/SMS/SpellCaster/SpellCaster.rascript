@@ -68,7 +68,15 @@
 // - Pick up orange balls/energy
 // - Pick up blue balls/strength
 // - Acquire certain items --> https://shrines.rpgclassics.com/sms/spellcaster/items.shtml
-// --- X-Ray Glasses is an optional item to acquire, could be bonus cheevo
+//
+// Shimono Chapter
+// --- X-Ray Glasses is an optional item to acquire, (during Shimono Chapter) --> item is used to check ocean floor for treasure OR Use xray glasses to spot treasure??
+// --- Kill all 7 spirits with lute??
+// - Taste each type of food and regain strength at Midori House (Shimono chapter)
+// - acquire armor_bracers here + acquire weapon_vajira here
+// 
+// Eat Spaghetti at stand (Izumo2 confirmed, idk bout first visit)
+// - Acquiring Necklace from Kuma at Izumo (FinalBattle section) (optional item, restores strength if it reaches zero)
 
 // WARNING
 // - Using passwords: sends to certain points in the campaign, with all Strength, Energy and Items.
@@ -116,12 +124,12 @@ class CLASS_Utility {
 util = CLASS_Utility()
 
 class CLASS_ENUM_ReleaseRegions {
-	USA = "NTSC-U"
-	JPN = "NTSC-J"
-	EUR = "PAL"
+	USA_EUR = "EUR_USA_Brazil" // --> SpellCaster (USA, Europe, Brazil) (En).sms
+	// JPN = "NTSC-J"
+	// EUR = "PAL"
 	}
 ENUM_ReleaseRegion = CLASS_ENUM_ReleaseRegions()
-RELEASE_REGIONS_SUPPORTED = [] // TODO add regions
+RELEASE_REGIONS_SUPPORTED = [ENUM_ReleaseRegion.USA_EUR]
 
 // #endregion GENERAL UTILITY
 
@@ -193,17 +201,49 @@ class CLASS_MemoryData {
 	// #endregion MEM - Struct Definitions
 	// #region MEM - Address Storage
 	dict_addresses = {
-		// "memAddrKey": {ENUM_ReleaseRegion.USA: util.sNULL, ENUM_ReleaseRegion.EUR: util.sNULL, ENUM_ReleaseRegion.JPN: util.sNULL},
+		// "memAddrKey": {ENUM_ReleaseRegion.USA_EUR: util.sNULL},
+		"BitFlag:IsDemoActive": {ENUM_ReleaseRegion.USA_EUR: 0x0003},
+		"BitFlag:IsActionModeActive": {ENUM_ReleaseRegion.USA_EUR: 0x0020},
+
+		"Flag:IsItemAcquired_Armor_Bracers": {ENUM_ReleaseRegion.USA_EUR: 0x0032},
+		"Flag:IsItemAcquired_Armor_Helmet": {ENUM_ReleaseRegion.USA_EUR: 0x0033},
+		"Flag:IsItemAcquired_Armor_Body": {ENUM_ReleaseRegion.USA_EUR: 0x0034},
+		"Flag:IsItemAcquired_Armor_Leg": {ENUM_ReleaseRegion.USA_EUR: 0x0035},
+		"Flag:IsItemAcquired_Weapon_Dokko": {ENUM_ReleaseRegion.USA_EUR: 0x0036},
+		"Flag:IsItemAcquired_Weapon_Trident": {ENUM_ReleaseRegion.USA_EUR: 0x0037},
+		"Flag:IsItemAcquired_Weapon_Vajira": {ENUM_ReleaseRegion.USA_EUR: 0x0038},
+		"Flag:IsItemAcquired_Weapon_WarHammer": {ENUM_ReleaseRegion.USA_EUR: 0x0039},
+
+		// MainQuestEventFlags
+		// MiscEventFlags
+		// ItemInventoryFlags
+
+		// Max STGH
+		// Men ENGY
+
+		"BCD:Player_Strength": {ENUM_ReleaseRegion.USA_EUR: 0x0025},
+		"BCD:Player_Energy": {ENUM_ReleaseRegion.USA_EUR: 0x0027},
+
+		"8-bit:GameState_A": {ENUM_ReleaseRegion.USA_EUR: 0x0021},
+		"8-bit:GameState_B": {ENUM_ReleaseRegion.USA_EUR: 0x0647},
+		"8-bit:OutroSequenceState": {ENUM_ReleaseRegion.USA_EUR: 0x0649},
+		"8-bit:AdventureScene_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0205},
+		"8-bit:StoryChapter_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0022},
+
+		"16-bit:ActionModeLevel_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0023},
+		"16-bit:AdventureModeDialogueText_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0208},
+
+		// Method to ID password usage
+
 		}
 
 	function getAddress(string_addrKey, enum_releaseRegion) {
-		let_memAddr = dict_addresses[string_addrKey][enum_releaseRegion]
+		let_memAddr = this.dict_addresses[string_addrKey][enum_releaseRegion]
 		if(let_memAddr == util.sNULL) util.throwError(format("Memory address for '{0}' - Region '{1}' is NULL", string_addrKey, enum_releaseRegion))
 		return let_memAddr}	
 
 	// #endregion MEM - Address Storage
-	}
-memory = CLASS_MemoryData()
+} memory = CLASS_MemoryData()
 
 class CLASS_MemoryUtility {
 	// #region MemUtil - Custom ASCII comparitors
@@ -345,18 +385,20 @@ class CLASS_MemoryUtility {
 		let_dummyAddress = (int_placeHolderIndex * 0x10000) + 0xBEEF
 		return dword(let_dummyAddress) == 0xBAADF00D}
 	// #endregion MemUtil - Main
-	}
-memUtil = CLASS_MemoryUtility()
+} memUtil = CLASS_MemoryUtility()
 
-function is_ReleaseRegion(enum_releaseRegion) { // TODO implement is_ReleaseRegion()
-	let_string_GameID = util.sNULL
-	if(enum_releaseRegion == ENUM_ReleaseRegion.USA) let_string_GameID = util.sNULL // FullString: "xxxxx"
-	else if(enum_releaseRegion == ENUM_ReleaseRegion.JPN) let_string_GameID = util.sNULL // FullString: "xxxxx"
-	else if(enum_releaseRegion == ENUM_ReleaseRegion.EUR) let_string_GameID = util.sNULL // FullString: "xxxxx"
-	
-	if (let_string_GameID == util.sNULL) util.throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
-	return memUtil.is_ASCII_EqualTo(memory.getAddress("ASCII:GameID", enum_releaseRegion), let_string_GameID)
-	}
+class CLASS_MEMLOGIC_ReleaseRegion { // DISABLED - Check unnecessary as only 1 region supported
+	// function is(enum_releaseRegion) {	
+		// let_string_GameID = util.sNULL
+		// if(enum_releaseRegion == ENUM_ReleaseRegion.USA) let_string_GameID = util.sNULL // FullString: "xxxxx"
+		// else if(enum_releaseRegion == ENUM_ReleaseRegion.JPN) let_string_GameID = util.sNULL // FullString: "xxxxx"
+		// else if(enum_releaseRegion == ENUM_ReleaseRegion.EUR) let_string_GameID = util.sNULL // FullString: "xxxxx"
+		
+		// if (let_string_GameID == util.sNULL) util.throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
+		// return memUtil.is_ASCII_EqualTo(memory.getAddress("ASCII:GameID", enum_releaseRegion), let_string_GameID)
+		// }
+} // releaseRegion = CLASS_MEMLOGIC_ReleaseRegion()
+
 function never_toAlt(comparison) => // never_toAlt() => creates a single alt group for a 'Reset If' comparison
 	(
 		(
@@ -368,14 +410,192 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 		)
 	)
 
-// ................
-// ◦ Sub_Header_1 ◦
-// ''''''''''''''''
-// #region Sub_Header_1
+// ..............
+// ◦ GameStates ◦
+// ''''''''''''''
+// #region GameStates
+class CLASS_MEMLOGIC_GameStateA {
+	// ----Values/Enums----
+	StartMenu_MainMenu = 0x81 
+	Demo = 0x82 
+	PasswordMenu = 0x83 
+	ActionModeMenu = 0x84 
+	IntroScene = 0x85 
+	OutroSequence = 0x86 
+	AdventureMode = 0x88 
+	ActionMode = 0x89
 
-// ----------------Divider---------------------
+	// ----Functions----
+	function current(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:GameState_A", enum_releaseRegion))
+	function prev(enum_releaseRegion) =>
+		prev(this.current(enum_releaseRegion))
 
-// #endregion Sub_Header_1
+	function is_active(enum_gameStateA, enum_releaseRegion) =>
+		this.current_GameStateA(enum_releaseRegion) == enum_gameStateA
+
+	function on_outroSequenceStart(enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == this.OutroSequence
+		&& this.prev(enum_releaseRegion)
+
+	function is_valid(enum_releaseRegion) => any_of([
+		this.StartMenu_MainMenu, this.Demo, this.PasswordMenu, this.ActionModeMenu, this.IntroScene, this.OutroSequence, this.AdventureMode, this.ActionMode], 
+		enum_gameState =>
+			this.current(enum_releaseRegion) == enum_gameState)
+
+	function is_inGame(enum_releaseRegion) => any_of([
+		this.ActionModeMenu, this.OutroSequence, this.AdventureMode, this.ActionMode], 
+		enum_gameState =>
+			this.current(enum_releaseRegion) == enum_gameState)		
+} gameStateA = CLASS_MEMLOGIC_GameStateA()
+
+class CLASS_MEMLOGIC_GameStateB {
+	// ----Values/Enums----
+	BootingGame_StartMenu_Demo = 0x0
+	Started_MainMenu_InGame = 0x1
+	OutroSequence = 0xE
+	
+	// ----Functions----
+	function current(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:GameState_B", enum_releaseRegion))
+	function prev(enum_releaseRegion) =>
+		prev(this.current(enum_releaseRegion))
+
+
+	function is_active(enum_gameStateB, enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == enum_gameStateB
+
+	function is_gameStarted(enum_releaseRegion) =>
+		this.current(enum_releaseRegion) != this.BootingGame_StartMenu_Demo
+
+	function on_outroSequenceStart(enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == this.OutroSequence
+		&& this.prev(enum_releaseRegion)
+} gameStateB = CLASS_MEMLOGIC_GameStateB()
+// -------------------------------------
+class CLASS_MEMLOGIC_Demo {
+	// ----Values/Enums----
+	FLAG_IsDemoActive_true = 1
+	FLAG_IsDemoActive_false = 0
+
+	// ----Functions----
+	function is_active(enum_releaseRegion) =>
+	 	bit2(memory.getAddress("BitFlag:IsDemoActive", enum_releaseRegion)) == this.FLAG_IsDemoActive_true
+} demo = CLASS_MEMLOGIC_Demo()
+// -------------------------------------
+class CLASS_MEMLOGIC_OutroSequenceState {
+	// ----Values/Enums----
+	FirstTextParagraph = 0x0
+	SecondTextParagraph = 0x1
+	EndingScene = 0x2
+
+	// ----Functions----
+	function current(enum_ReleaseRegion) =>
+		byte(memory.getAddress("8-bit:OutroSequenceState", enum_ReleaseRegion))
+	function prev(enum_ReleaseRegion) =>
+		this.current(enum_ReleaseRegion)
+
+	function is(enum_outroSequenceState, enum_ReleaseRegion) =>
+		current(enum_ReleaseRegion) == enum_outroSequenceState
+	function on_changeTo(enum_outroSequenceState, enum_ReleaseRegion) =>
+		prev(enum_ReleaseRegion) != enum_outroSequenceState
+		&& current(enum_ReleaseRegion) == enum_outroSequenceState	
+} OutroSequenceState = CLASS_MEMLOGIC_OutroSequenceState()
+
+// #endregion GameStates
+
+// .................................................
+// ◦ Story Chapter & AdventureScene Identification ◦
+// '''''''''''''''''''''''''''''''''''''''''''''''''
+// #region Story Chapter Identification
+class CLASS_MEMLOGIC_StoryChapterIdentification {
+	Ch_0_TroubleAtEnrikuTemple = 0x1
+	Ch_1_Investigation = 0x2
+	Ch_2_SwordOfKusanagi = 0x3
+	Ch_3_FalseEnemy = 0x4
+	Ch_4_Pyramid = 0x5
+	Ch_5_Underworld = 0x6
+	Ch_6_Preperation = 0x7
+	Ch_7_FinalBattle = 0x8
+
+	function current(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:StoryChapter_ID", enum_releaseRegion)) 
+	function prev(enum_releaseRegion) =>
+		prev(this.current(enum_releaseRegion))
+
+	function is(enum_storyChapterID, enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == enum_storyChapterID
+	function on_changeTo(enum_storyChapterID, enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == enum_storyChapterID
+		&& this.prev(enum_releaseRegion) != enum_storyChapterID
+
+} storyChapter = CLASS_MEMLOGIC_StoryChapterIdentification()
+// #endregion Story Chapter Identification
+
+// #region AdventureScene Identification
+class CLASS_MEMLOGIC_AdventureSceneIdentification {
+	// ----Values/Enums----
+	KashimaTemple = 0x59
+
+	// ----Functions----
+	function current(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:AdventureScene_ID", enum_releaseRegion))
+	function prev(enum_releaseRegion) =>
+		prev(this.current(enum_releaseRegion))
+
+	function is(enum_adventureSceneID, enum_releaseRegion) => 
+		this.current(enum_releaseRegion) == enum_adventureSceneID
+	function on_changeTo(enum_adventureSceneID, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) != enum_adventureSceneID
+		&& this.current(enum_releaseRegion) == enum_adventureSceneID
+} adventureScene = CLASS_MEMLOGIC_AdventureSceneIdentification()
+
+// #endregion AdventureScene Identification
+
+// ....................
+// ◦ Inventory & Gear ◦
+// ''''''''''''''''''''
+// #region Inventory & Gear
+class CLASS_MEMLOGIC_Gear {
+	// ----Values/Enums----
+	FLAG_IsGearAcquired_true = 1
+	FLAG_IsGearAcquired_false = 0
+	Armor_Bracers = "Armor_Bracers"
+	Armor_Helmet = "Armor_Helmet"
+	Armor_Body = "Armor_Body"
+	Armor_Leg = "Armor_Leg"
+	Weapon_Dokko = "Weapon_Dokko"
+	Weapon_Trident = "Weapon_Trident"
+	Weapon_Vajira = "Weapon_Vajira"
+	Weapon_WarHammer = "Weapon_WarHammer"
+
+	// ----Functions----
+	function is_acquired(enum_gear, enum_releaseRegion) {
+		string_addrKey = format("Flag:IsItemAcquired_{0}", enum_gear)
+		return bit0(memory.getAddress(string_addrKey, enum_releaseRegion))}
+} gear = CLASS_MEMLOGIC_Gear()
+//---------------------------
+class CLASS_MEMLOGIC_Inventory {
+	// ----Values/Enums----
+	// 0x1 => true (the game may write any value > 0x0 when the player acquires an item)
+	// anyValue > 0x0 => true (but game mostly writes 0x1)
+	// 0x0 => false
+	Armor_Bracers = "Armor_Bracers"
+	Armor_Helmet = "Armor_Helmet"
+	Armor_Body = "Armor_Body"
+	Armor_Leg = "Armor_Leg"
+	Weapon_Dokko = "Weapon_Dokko"
+	Weapon_Trident = "Weapon_Trident"
+	Weapon_Vajira = "Weapon_Vajira"
+	Weapon_WarHammer = "Weapon_WarHammer"
+
+	// ----Functions----
+	function is_acquired(enum_gear, enum_releaseRegion) {
+		string_addrKey = format("Flag:IsItemAcquired_{0}", enum_gear)
+		return bit0(memory.getAddress(string_addrKey, enum_releaseRegion))}
+} inventory = CLASS_MEMLOGIC_Inventory()
+
+// #endregion Inventory & Gear
 
 // ................
 // ◦ Sub_Header_2 ◦
@@ -421,16 +641,14 @@ class CLASS_ENUM_AchievementPointClasses {
 	Hard_25			= 25 	// Hard - Completing the game 
 	VeryHard_50		= 50 	// VeryHard - Achieving 100% completion
 	Impossible_100	= 100 	// Impossible - Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets)
-	}
-ENUM_AchievementPointClass = CLASS_ENUM_AchievementPointClasses()
+} ENUM_AchievementPointClass = CLASS_ENUM_AchievementPointClasses()
 
 class CLASS_ENUM_AchievementTypes {
 	Progression = "progression"
 	WinCondition = "win_condition"
 	Missable = "missable"
 	Standard = ""
-	}
-ENUM_AchievementType = CLASS_ENUM_AchievementTypes()
+} ENUM_AchievementType = CLASS_ENUM_AchievementTypes()
 
 class CLASS_AchievementLogic {
 // #region ACH - Core Data
@@ -470,10 +688,10 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 
 // #region ACH - Triggers
 dict_triggers = {
-	"a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
+	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()),
 	}
 // #endregion ACH - Triggers
 
@@ -570,8 +788,9 @@ achievements = CLASS_AchievementLogic()
 //	- Contains text for the rich presence script
 richPresence_text = {
 	// "rp_Template": 				{"en": "xxxxxxxx"},
-	"rp_DefaultPlus":				{"en": "xxxxxxxx"},
-	"rp_Default":					{"en": "xxxxxxxx"}}
+	"rp_InGame":					{"en": "Playing SpellCaster ✦ {0}"},
+	"rp_DefaultPlus":				{"en": "Playing SpellCaster {0}"},
+	"rp_Default":					{"en": "Playing SpellCaster"}}
 richPresence_LookupTablesText = {
 	// "lupText_Template": {
 		// "LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
@@ -579,19 +798,38 @@ richPresence_LookupTablesText = {
 		// "LookupTextKey_B":				{"en": "xxxxxxxx"},
 		// "LookupTextKey_C":				{"en": "xxxxxxxx"},
 		// },
+	"lupText_GameState": {
+		"_empty_":				{"en": ""},
+		"StartMenu_MainMenu": 	{"en": "✦ At the crossroads of fate"},
+		"Demo": 				{"en": "✦ A glimpse of the journey ahead"},
+		"PasswordMenu": 		{"en": "✦ Resuming the journey from a sacred password"},
+		"IntroScene": 			{"en": "✦ Trouble stirs at Enriku Temple"},
+		"OutroSequence": 		{"en": "✦ Kane's journey reaches its end'"},
+		},
+	"lupText_StoryChapterFlavorText": {
+		"LOOKUP_FALLBACK":              {"en":"Kane hones his arcane spells"},
+		"Ch_0_TroubleAtEnrikuTemple":   {"en":"Daikok dispatches Kane to uncover the disturbance at Enriku Temple"},
+		"Ch_1_Investigation":           {"en":"Kane investigates the mysterious death of the Tokak"},
+		"Ch_2_SwordOfKusanagi":         {"en":"Kane sets out to claim the legendary Sword of Kusanagi"},
+		"Ch_3_FalseEnemy":              {"en":"Truth blurs as Kane seeks the Serpent God"},
+		"Ch_4_Pyramid":                 {"en":"Beneath ancient stone, Kane unearths secrets of the pyramid"},
+		"Ch_5_Underworld":              {"en":"Kane descends into the depths of the Underworld"},
+		"Ch_6_Preperation":             {"en":"With steel and spirit, Kane prepares for the final trial"},
+		"Ch_7_FinalBattle":             {"en":"Empowered at last, Kane confronts the true evil"}
+		},
 	}
-richPresence_ReleaseRegion_toSuperScript = {
+// richPresence_ReleaseRegion_toSuperScript = { // DISABLED - Check unnecessary as only 1 region supported
 	// NOTE: Text to superscript --> https://lingojam.com/SuperscriptGenerator
-	ENUM_ReleaseRegion.USA: "ᵘˢ",
-	ENUM_ReleaseRegion.EUR: "ᵉᵘ",
-	ENUM_ReleaseRegion.JPN: "ʲᵖ",
-	}
+	// ENUM_ReleaseRegion.USA: "ᵘˢ",
+	// ENUM_ReleaseRegion.EUR: "ᵉᵘ",
+	// ENUM_ReleaseRegion.JPN: "ʲᵖ",
+	// }
 	
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util.language]
 
-function richPresence_getText_withRegionSuperScript(string_textKey, enum_releaseRegion) =>
-	format("{0} {1}", richPresence_ReleaseRegion_toSuperScript[enum_releaseRegion], richPresence_getText(string_textKey))
+// function richPresence_getText_withRegionSuperScript(string_textKey, enum_releaseRegion) => // DISABLED - Unnecessary as only 1 region supported
+	// format("{0} {1}", richPresence_ReleaseRegion_toSuperScript[enum_releaseRegion], richPresence_getText(string_textKey))
 
 function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableTextKey) =>
 	richPresence_LookupTablesText[string_lookupTableKey][let_lookupTableTextKey][util.language]
@@ -605,6 +843,32 @@ richPresence_lookupTables = {
 		// 	enum_XXX_C:					"LookupTextKey_C",
 		// 	},
 		// },
+	"lup_GameState": {
+		"LookupTableText_Key": "lupText_GameState",
+		"LookUpTable": {
+			gameStateA.StartMenu_MainMenu: 	"StartMenu_MainMenu", 
+			gameStateA.Demo: 				"Demo", 
+			gameStateA.PasswordMenu: 		"PasswordMenu", 
+			gameStateA.IntroScene: 			"IntroScene", 
+			gameStateA.OutroSequence: 		"OutroSequence", 
+			gameStateA.ActionModeMenu: 		"_empty_", 
+			gameStateA.AdventureMode: 		"_empty_", 
+			gameStateA.ActionMode: 			"_empty_",
+			},
+		},
+	"lup_StoryChapter": {
+		"LookupTableText_Key": "lupText_StoryChapterFlavorText",
+		"LookUpTable": {
+			storyChapter.Ch_0_TroubleAtEnrikuTemple:	"Ch_0_TroubleAtEnrikuTemple",
+			storyChapter.Ch_1_Investigation: 			"Ch_1_Investigation",
+			storyChapter.Ch_2_SwordOfKusanagi: 			"Ch_2_SwordOfKusanagi",
+			storyChapter.Ch_3_FalseEnemy: 				"Ch_3_FalseEnemy",
+			storyChapter.Ch_4_Pyramid: 					"Ch_4_Pyramid",
+			storyChapter.Ch_5_Underworld: 				"Ch_5_Underworld",
+			storyChapter.Ch_6_Preperation: 				"Ch_6_Preperation",
+			storyChapter.Ch_7_FinalBattle: 				"Ch_7_FinalBattle",
+			},
+		},
 	}
 function richPresence_getLookupTable(string_lookupTableKey) =>
 	richPresence_lookupTables[string_lookupTableKey]["LookUpTable"]
@@ -676,18 +940,29 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 	// 	is_ReleaseRegion(enum_releaseRegion)
 	// return rich_presence_conditional_display( 
 	// 	condition(enum_releaseRegion),
-	// 	richPresence_getText_withRegionSuperScript("rp_Template", enum_releaseRegion),
+	// richPresence_getText("rp_Template")
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 0
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 1
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion) // 2
 	// )}
 
-function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+function rp_InGame(enum_releaseRegion) { 
 	function condition(enum_releaseRegion) =>
-		is_ReleaseRegion(enum_releaseRegion)
+		gameStateA.is_valid(enum_releaseRegion)
+		&& __ornext(gameStateA.is_inGame(enum_releaseRegion))
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
-		richPresence_getText_withRegionSuperScript("rp_DefaultPlus", enum_releaseRegion)
+		richPresence_getText("rp_InGame"),
+		richPresence_callParameterFunction("rpp_StoryChapter", enum_releaseRegion) // 0
+	)}
+function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+	function condition(enum_releaseRegion) =>
+		gameStateA.is_valid(enum_releaseRegion)
+		&& !gameStateA.is_inGame(enum_releaseRegion) 
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_DefaultPlus"),
+		richPresence_callParameterFunction("rpp_GameState", enum_releaseRegion) // 0
 	)}
 function rp_Default() {
 	return rich_presence_display(
@@ -695,9 +970,10 @@ function rp_Default() {
 	)}
 // -------------------------------------
 function richPresence_initializeDisplays() {
-	rp_Default() // TODO rp_Default
+	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		// rp_DefaultPlus(enum_releaseRegion) // CONCEPT rp_DefaultPlus
+		rp_DefaultPlus(enum_releaseRegion) // CONCEPT rp_DefaultPlus
+		rp_InGame(enum_releaseRegion)
 	}} 
 // #endregion RP - Display Script
 
@@ -710,8 +986,7 @@ class CLASS_ENUM_RichPresenceParameterTypes {
 	LOOKUP_HEX = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
 	LOOKUP_STRING = 3	// rich_presence_ascii_string_lookup(name, memAddr_ASCII, dictionary, [fallback])
 	MACRO = 4			// rich_presence_macro(macro, expression)
-	}
-ENUM_RichPresenceParameterType = CLASS_ENUM_RichPresenceParameterTypes()
+} ENUM_RichPresenceParameterType = CLASS_ENUM_RichPresenceParameterTypes()
 // -------------------------------------
 richPresence_parameterData = {
 	// DEV_NOTE: rich presence
@@ -757,6 +1032,18 @@ richPresence_parameterData = {
 		// "MacroFormat": "Number"},
 	
 	
+	"rpp_StoryChapter": {
+		"RPtype": ENUM_RichPresenceParameterType.LOOKUP_HEX,
+		"Expression": {
+			ENUM_ReleaseRegion.USA_EUR: storyChapter.current(ENUM_ReleaseRegion.USA_EUR)},
+		"LookupTableID": "lup_StoryChapter",
+		"LookupFallback": richPresence_getLookupTableText("lupText_StoryChapterFlavorText", "LOOKUP_FALLBACK")},
+	"rpp_GameState": {
+		"RPtype": ENUM_RichPresenceParameterType.LOOKUP_HEX,
+		"Expression": {
+			ENUM_ReleaseRegion.USA_EUR: gameStateA.current(ENUM_ReleaseRegion.USA_EUR)},
+		"LookupTableID": "lup_GameState",
+		"LookupFallback": richPresence_getLookupTableText("lupText_GameState", "_empty_")},
 
 	}
 // -------------------------------------
