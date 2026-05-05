@@ -233,6 +233,8 @@ class CLASS_MemoryData {
 		"16-bit:ActionModeLevel_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0023},
 		"16-bit:AdventureModeDialogueText_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0208},
 
+		"FlagArray:MainQuestEventFlags": {ENUM_ReleaseRegion.USA_EUR: 0x0281},
+
 		// Method to ID password usage
 
 		}
@@ -505,7 +507,7 @@ class CLASS_MEMLOGIC_OutroSequenceState {
 // #endregion GameStates
 
 // .................................................
-// ◦ Story Chapter & AdventureScene Identification ◦
+// ◦ Story Chapter, Main Quest & AdventureScene Identification ◦
 // '''''''''''''''''''''''''''''''''''''''''''''''''
 // #region Story Chapter Identification
 class CLASS_MEMLOGIC_StoryChapterIdentification {
@@ -534,7 +536,8 @@ class CLASS_MEMLOGIC_StoryChapterIdentification {
 
 // #region AdventureScene Identification
 class CLASS_MEMLOGIC_AdventureSceneIdentification {
-	// ----Values/Enums----
+	// ----AdventureSceneIDs----
+	IzumoShrine_Outside = 0x4
 	KashimaTemple = 0x59
 
 	// ----Functions----
@@ -551,6 +554,37 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 } adventureScene = CLASS_MEMLOGIC_AdventureSceneIdentification()
 
 // #endregion AdventureScene Identification
+
+// #region Main Quest Progress
+class CLASS_MEMLOGIC_MainQuestProgress {
+	// ----Variables----
+	FLAG_isEventCompleted_true = 0x1
+	FLAG_isEventCompleted_false = 0x0
+
+	// ----MainQuestEvents (=flagIndex in FlagArray)----
+	Ch1_MysteryManDefeated = 5
+
+	// ----Functions----
+	function current_flagState(int_flagIndex, enum_ReleaseRegion) => 
+		byte(memory.getAddress("FlagArray:MainQuestEventFlags", enum_ReleaseRegion) + int_flagIndex)
+	function prev_flagState(int_flagIndex, enum_ReleaseRegion) => 
+		prev(this.current_flagState(int_flagIndex, enum_ReleaseRegion))
+
+	// Progress completes sequentially through the FlagArray (event flags toggle true in ordered fashion)
+	// Sums up all previous event flags leading up to an event to check if they are all true up to that point
+	function checkPriorFlagsCompleted(enum_event, enum_ReleaseRegion) {
+		if(enum_event < 1) return always_true()
+		array_eventFlagIndicesToSum = []
+		for let_index in range(0, enum_event -1)
+			array_push(array_eventFlagIndicesToSum, let_index)
+		return sum_of(array_eventFlagIndicesToSum, int_flagIndx => this.current_flagState(int_flagIndx, enum_ReleaseRegion)) == enum_event}
+
+	function on_eventFlagState_toggleTrue(enum_event, enum_releaseRegion) =>
+		this.checkPriorFlagsCompleted(enum_event, enum_releaseRegion)
+		&& this.prev_flagState(enum_event, enum_releaseRegion) == this.FLAG_isEventCompleted_false
+		&& this.current_flagState(enum_event, enum_releaseRegion) == this.FLAG_isEventCompleted_true
+} mainQuest = CLASS_MEMLOGIC_MainQuestProgress()
+// #endregion Main Quest Progress
 
 // ....................
 // ◦ Inventory & Gear ◦
@@ -660,9 +694,11 @@ dict_coreData = {
 	// "a_Template": { // CONCEPT a_template
 		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
-	"c_Template": { // Category - info_here
+	"c_StoryProgress": { // Story Progression
 		// "a_Template": {
-		// 	"id": 000000, "points": ENUM_AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
+			// "id": 000000, "points": ENUM_AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
+		// "a_Boss1MysteryMan": { // QA
+			// "id": 606009, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeating Mysterious Man at IzumoTemple (StoryChapter_1)"}
 		},
 	"c_Template2": { // Category - info_here
 		// "a_Template2": {
@@ -681,7 +717,7 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 	// ------------------------------------------------------
 	
 	// "c_Template": 	ENUM_AchievementType.Standard,
-	"c_Template": 		ENUM_AchievementType.Standard
+	"c_StoryProgress": 		ENUM_AchievementType.Progression
 	}
 
 // #endregion ACH - Core Data
@@ -690,17 +726,28 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 dict_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-		// 	is_ReleaseRegion(enum_releaseRegion)
-		// 	&& always_false()),
+			// always_false()),
+	"a_Boss1MysteryMan": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			__ornext(gameStateA.is_inGame(enum_releaseRegion))
+			&& gameStateB.is_gameStarted(enum_releaseRegion)
+
+			&& storyChapter.is(storyChapter.Ch_1_Investigation, enum_releaseRegion)
+			&& adventureScene.is(adventureScene.IzumoShrine_Outside, enum_releaseRegion)
+			&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch1_MysteryManDefeated, enum_releaseRegion)
+		),
+	
 	}
 // #endregion ACH - Triggers
 
 // #region ACH - Text
 dict_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
+	"a_Boss1MysteryMan": 			{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
+	"a_Boss1MysteryMan": 			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
@@ -779,13 +826,16 @@ achievements = CLASS_AchievementLogic()
 //																										 \\
 // ***************************************************************************************************** \\
 // #region RICH PRESENCE
-// TODO implement Rich Presence
 
 // ======================
 // • RICH PRESENCE text •
 // ======================
 // #region RP - Text
 //	- Contains text for the rich presence script
+// CONCEPT rp_InGame expanded: 
+	// - include STGH & ENGY
+	// - more detailed objective flavor text, based on amount of MainQuestEventFlags true?
+	// - include location (based on [8-bit:AdventureScene_ID] & [16-bit:ActionModeLevel_ID])
 richPresence_text = {
 	// "rp_Template": 				{"en": "xxxxxxxx"},
 	"rp_InGame":					{"en": "Playing SpellCaster ✦ {0}"},
