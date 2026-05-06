@@ -121,22 +121,22 @@ class CLASS_MemoryData {
 	// -------------------------------------
 	dict_structDefinitions = {}
 	function getStruct_SizeInBytes(string_structKey) =>
-		dict_structDefinitions[string_structKey]["sizeInBytes"]
+		this.dict_structDefinitions[string_structKey]["sizeInBytes"]
 
 	function getStruct_OffsetToMember(string_structKey, string_memberKey) =>
-		dict_structDefinitions[string_structKey]["offsetToMember"][string_memberKey]
+		this.dict_structDefinitions[string_structKey]["offsetToMember"][string_memberKey]
 
 	function getStruct_offsetSequenceToMember(string_structKey, string_pointerChainKey) =>
-		dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"]
+		this.dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"]
 
 	function getStruct_offsetSequenceToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) =>
-		dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"][enum_releaseRegion]
+		this.dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"][enum_releaseRegion]
 
 	function getStruct_OffsetToPointedToMember(string_structKey, string_pointerChainKey) => 
-		dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"]
+		this.dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"]
 		
 	function getStruct_OffsetToPointedToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) => 
-		dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"][enum_releaseRegion]
+		this.dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"][enum_releaseRegion]
 
 	function generate_pointerChainAccessor(string_structKey, string_pointerChainKey, memAdrr_basePointer, int_offsetToPointedToMember = 0, memAccessorFunction_toPointedToMember = dword) {
 		let_array_pointerChainOffsets = this.getStruct_offsetSequenceToMember(string_structKey, string_pointerChainKey)
