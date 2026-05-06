@@ -151,24 +151,33 @@ class CLASS_MemoryData {
 	function getRegionOffset(string_structKey, string_offsetKey) =>
 		this.dict_regionOffsets[string_structKey][string_offsetKey]
 	// -------------------------------------
-	dict_structDefinitions = {}
+	dict_structDefinitions = {
+		"Struct:Entity": {
+			"offsetToMember": {
+				"8-bit:Entity_ID": 0x0,
+				"8-bit:Entity_xLocation": 0x2,
+				"8-bit:Entity_yLocation": 0x4,
+				"8-bit:Entity_HP": 0x15,
+				},
+			},
+		}
 	function getStruct_SizeInBytes(string_structKey) =>
-		dict_structDefinitions[string_structKey]["sizeInBytes"]
+		this.dict_structDefinitions[string_structKey]["sizeInBytes"]
 
 	function getStruct_OffsetToMember(string_structKey, string_memberKey) =>
-		dict_structDefinitions[string_structKey]["offsetToMember"][string_memberKey]
+		this.dict_structDefinitions[string_structKey]["offsetToMember"][string_memberKey]
 
 	function getStruct_offsetSequenceToMember(string_structKey, string_pointerChainKey) =>
-		dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"]
+		this.dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"]
 
 	function getStruct_offsetSequenceToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) =>
-		dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"][enum_releaseRegion]
+		this.dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"][enum_releaseRegion]
 
 	function getStruct_OffsetToPointedToMember(string_structKey, string_pointerChainKey) => 
-		dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"]
+		this.dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"]
 		
 	function getStruct_OffsetToPointedToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) => 
-		dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"][enum_releaseRegion]
+		this.dict_structDefinitions[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"][enum_releaseRegion]
 
 	function generate_pointerChainAccessor(string_structKey, string_pointerChainKey, memAdrr_basePointer, int_offsetToPointedToMember = 0, memAccessorFunction_toPointedToMember = dword) {
 		let_array_pointerChainOffsets = this.getStruct_offsetSequenceToMember(string_structKey, string_pointerChainKey)
@@ -235,6 +244,7 @@ class CLASS_MemoryData {
 
 		"FlagArray:MainQuestEventFlags": {ENUM_ReleaseRegion.USA_EUR: 0x0281},
 
+		"Struct:Entity(boss)_C": {ENUM_ReleaseRegion.USA_EUR: 0x0460},
 		// Method to ID password usage
 
 		}
@@ -448,7 +458,10 @@ class CLASS_MEMLOGIC_GameStateA {
 	function is_inGame(enum_releaseRegion) => any_of([
 		this.ActionModeMenu, this.OutroSequence, this.AdventureMode, this.ActionMode], 
 		enum_gameState =>
-			this.current(enum_releaseRegion) == enum_gameState)		
+			this.current(enum_releaseRegion) == enum_gameState)
+
+	function is_actionMode_active(enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == this.ActionMode
 } gameStateA = CLASS_MEMLOGIC_GameStateA()
 
 class CLASS_MEMLOGIC_GameStateB {
@@ -506,9 +519,9 @@ class CLASS_MEMLOGIC_OutroSequenceState {
 
 // #endregion GameStates
 
-// .................................................
-// ◦ Story Chapter, Main Quest & AdventureScene Identification ◦
-// '''''''''''''''''''''''''''''''''''''''''''''''''
+// ..................................................
+// ◦ Story Progress & World Location Identification ◦
+// ''''''''''''''''''''''''''''''''''''''''''''''''''
 // #region Story Chapter Identification
 class CLASS_MEMLOGIC_StoryChapterIdentification {
 	Ch_0_TroubleAtEnrikuTemple = 0x1
@@ -552,7 +565,6 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 		this.prev(enum_releaseRegion) != enum_adventureSceneID
 		&& this.current(enum_releaseRegion) == enum_adventureSceneID
 } adventureScene = CLASS_MEMLOGIC_AdventureSceneIdentification()
-
 // #endregion AdventureScene Identification
 
 // #region Main Quest Progress
@@ -585,6 +597,37 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 		&& this.current_flagState(enum_event, enum_releaseRegion) == this.FLAG_isEventCompleted_true
 } mainQuest = CLASS_MEMLOGIC_MainQuestProgress()
 // #endregion Main Quest Progress
+
+// #region Adventure Mode Dialogue Text Identification
+class CLASS_MEMLOGIC_AdventureModeDialogueTextIdentification {
+	FirstBossFight_A = 0x49 // "Mysterious Enemy: Kusanagi!!!" - After defeating 1st boss (mysterious man) at IzumoTemple
+	FirstBossFight_B = 0x50 // "with that word, the mysterious enemy disappears!
+
+	function current(enum_releaseRegion) =>
+		word(memory.getAddress("16-bit:AdventureModeDialogueText_ID", enum_releaseRegion))
+	function prior(enum_releaseRegion) =>
+		prior(this.current(enum_releaseRegion))
+	function prev(enum_releaseRegion) =>
+		prev(this.current(enum_releaseRegion))
+} adventureDialogueText = CLASS_MEMLOGIC_AdventureModeDialogueTextIdentification()
+// #endregion Adventure Mode Dialogue Text Identification
+
+// #region ActionMode Level Identification
+class CLASS_MEMLOGIC_ActionModeLevelIdentification {
+	IzumoShrine_BossArena = 0x0202
+	AttaroShrine_BossArena = 0x0106
+	MtMiwa_BossArena = 0x0208
+
+	function current(enum_releaseRegion) =>
+		word(memory.getAddress("16-bit:ActionModeLevel_ID", enum_releaseRegion))
+	function prev(enum_releaseRegion) =>
+		prev(this.current(enum_releaseRegion))
+	
+	function is(enum_actionLevel, enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == enum_actionLevel
+} actionLevel = CLASS_MEMLOGIC_ActionModeLevelIdentification()
+// #endregion Main Quest Progress
+
 
 // ....................
 // ◦ Inventory & Gear ◦
@@ -630,6 +673,59 @@ class CLASS_MEMLOGIC_Inventory {
 } inventory = CLASS_MEMLOGIC_Inventory()
 
 // #endregion Inventory & Gear
+
+// ............
+// ◦ Entities ◦
+// ''''''''''''
+// #region Entities
+class CLASS_MEMLOGIC_BossEntities {
+	MysteriousEnemy = 100
+	Jukak = 101
+	Wakahiko = 102
+
+	dict_BossData = {
+		MysteriousEnemy: {
+			"EntityID": 0x5e,
+			"EntityStartHP": 0x32,
+			"BossArena_ActionModeLevel_ID": actionLevel.IzumoShrine_BossArena,
+			"StructLocation": "C"},
+		Jukak: {
+			"EntityID": 0x65,
+			"EntityStartHP": 0x32,
+			"BossArena_ActionModeLevel_ID": actionLevel.AttaroShrine_BossArena,
+			"StructLocation": "C"},
+		Wakahiko: {
+			"EntityID": 0x62,
+			"EntityStartHP": 0x3c,
+			"BossArena_ActionModeLevel_ID": actionLevel.MtMiwa_BossArena,
+			"StructLocation": "C"},
+		}
+	function get_EntityID(enum_boss) => this.dict_BossData[enum_boss]["EntityID"]
+	function get_EntityStartHP(enum_boss) => this.dict_BossData[enum_boss]["EntityStartHP"]
+	function get_BossArena_ActionModeLevel_ID(enum_boss) => this.dict_BossData[enum_boss]["BossArena_ActionModeLevel_ID"]
+	function get_StructLocation(enum_boss) => this.dict_BossData[enum_boss]["StructLocation"]
+		
+	function current_HP(enum_boss, enum_releaseRegion) {
+		let_offsetToMember_EntityHP = memory.getStruct_OffsetToMember("Struct:Entity", "8-bit:Entity_HP")
+		let_memAddr_Struct_BossEntity = memory.getAddress(format("Struct:Entity(boss)_{0}", this.get_StructLocation(enum_boss)), enum_releaseRegion) 
+		return byte(let_memAddr_Struct_BossEntity + let_offsetToMember_EntityHP)}
+	function prev_HP(enum_boss, enum_releaseRegion) =>
+		prev(this.current_HP(enum_boss, enum_releaseRegion))
+
+	// CheckIf(delta): Entity HP drops from full HP to 0
+	// function on_oneHitKill(enum_boss, enum_releaseRegion) => // DISABLED - Impossible, as strongest attack/spell "FUDO" hits multiple times over 3-5 frames (not as 1 single hit)
+		// this.prev_HP(enum_boss, enum_releaseRegion) == this.get_EntityStartHP(enum_boss)
+		// && this.current_HP(enum_boss, enum_releaseRegion) == 0
+
+	// CheckIf: Entity_ID is valid && ActionModeLevel_ID (bossArena) is valid
+	function is_active(enum_boss, enum_releaseRegion) {
+		let_offsetToMember_EntityID = memory.getStruct_OffsetToMember("Struct:Entity", "8-bit:Entity_ID")
+		let_memAddr_Struct_BossEntity = memory.getAddress(format("Struct:Entity(boss)_{0}", this.get_StructLocation(enum_boss)), enum_releaseRegion) 
+		return 
+			byte(let_memAddr_Struct_BossEntity + let_offsetToMember_EntityID) == this.get_EntityID(enum_boss)
+			&& actionLevel.is(this.get_BossArena_ActionModeLevel_ID(enum_boss), enum_releaseRegion)}
+} bossEnemy = CLASS_MEMLOGIC_BossEntities()
+// #endregion Entities
 
 // ................
 // ◦ Sub_Header_2 ◦
@@ -697,12 +793,12 @@ dict_coreData = {
 	"c_StoryProgress": { // Story Progression
 		// "a_Template": {
 			// "id": 000000, "points": ENUM_AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
-		// "a_Boss1MysteryMan": { // QA
+		// "a_Ch1MysteryMan": { // VERIFIED
 			// "id": 606009, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeating Mysterious Man at IzumoTemple (StoryChapter_1)"}
 		},
-	"c_Template2": { // Category - info_here
-		// "a_Template2": {
-		// 	"id": 000000, "points": ENUM_AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
+	"c_Bonus": { // Category - info_here
+		"a_OneHitHumanBoss": {
+			"id": 000000, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Defeat a boss with one hit from full HP (earlier bosses using Fudo spell)"}
 		},
 	}
 
@@ -716,8 +812,9 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 	//	- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
 	
-	// "c_Template": 	ENUM_AchievementType.Standard,
-	"c_StoryProgress": 		ENUM_AchievementType.Progression
+	// "c_Template": 		ENUM_AchievementType.Standard,
+	"c_StoryProgress": 		ENUM_AchievementType.Progression,
+	"c_Bonus":				ENUM_AchievementType.Standard,
 	}
 
 // #endregion ACH - Core Data
@@ -727,15 +824,36 @@ dict_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			// always_false()),
-	"a_Boss1MysteryMan": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+	"a_Ch1MysteryMan": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			__ornext(gameStateA.is_inGame(enum_releaseRegion))
 			&& gameStateB.is_gameStarted(enum_releaseRegion)
 
 			&& storyChapter.is(storyChapter.Ch_1_Investigation, enum_releaseRegion)
 			&& adventureScene.is(adventureScene.IzumoShrine_Outside, enum_releaseRegion)
+			&& adventureDialogueText.prior(enum_releaseRegion) == adventureDialogueText.FirstBossFight_A
+			&& adventureDialogueText.current(enum_releaseRegion) == adventureDialogueText.FirstBossFight_B
 			&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch1_MysteryManDefeated, enum_releaseRegion)
 		),
+	
+	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { //  _template
+		const_ALLOWED_BOSSES_toOneHit = [bossEnemy.MysteriousEnemy, bossEnemy.Jukak, bossEnemy.Wakahiko]
+		
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			gameStateB.is_gameStarted(enum_releaseRegion)
+			&& gameStateA.is_actionMode_active(enum_releaseRegion)
+
+
+			// && once() // TODO: add CheckIf Spell "Fudo" was cast + ResetNextIf on this hitCount when it takes too long to kill the boss
+			&& tally_of(const_ALLOWED_BOSSES_toOneHit, 1, enum_boss => // --Tally--OrNext--> CheckIf: BossEntityID is correct && BossArena is correct && Boss dies in one hit && 
+				once(
+					never(__ornext(!bossEnemy.is_active(enum_boss, enum_releaseRegion)))
+					&& bossEnemy.is_active(enum_boss, enum_releaseRegion)
+					&& bossEnemy.on_oneHitKill(enum_boss, enum_releaseRegion)) // BUG --> this doesn't work, as FUDO hits multiple times, not all damage at once --> alternative: "kill boss with a single attack": checkIf FUDO was cast and boss takes all frame hits exactly frame by frame...
+			)
+		}),
+	
 	
 	}
 // #endregion ACH - Triggers
@@ -743,11 +861,15 @@ dict_triggers = {
 // #region ACH - Text
 dict_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
-	"a_Boss1MysteryMan": 			{"en": "xxxxxxxxx"},
+	"a_Ch1MysteryMan": 			{"en": "xxxxxxxxx"},
+	
+	"a_OneHitHumanBoss": 			{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_Boss1MysteryMan": 			{"en": "xxxxxxxxx"},
+	"a_Ch1MysteryMan": 			{"en": "xxxxxxxxx"},
+	
+	"a_OneHitHumanBoss": 			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
@@ -809,9 +931,9 @@ function initialize() {
 			)
 		}}
 	}
-}
-achievements = CLASS_AchievementLogic()
 // #endregion ACH - Initialization
+
+} achievements = CLASS_AchievementLogic()
 
 // #endregion ACHIEVEMENTS
 
