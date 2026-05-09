@@ -238,6 +238,7 @@ class CLASS_MemoryData {
 		"8-bit:OutroSequenceState": {ENUM_ReleaseRegion.USA_EUR: 0x0649},
 		"8-bit:AdventureScene_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0205},
 		"8-bit:StoryChapter_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0022},
+		"8-bit:SelectedSpell": {ENUM_ReleaseRegion.USA_EUR: 0x0029},
 
 		"16-bit:ActionModeLevel_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0023},
 		"16-bit:AdventureModeDialogueText_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0208},
@@ -460,8 +461,10 @@ class CLASS_MEMLOGIC_GameStateA {
 		enum_gameState =>
 			this.current(enum_releaseRegion) == enum_gameState)
 
+	// CheckIf: is in ActionMode or in the ActionModeMenu
 	function is_actionMode_active(enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == this.ActionMode
+		|| this.current(enum_releaseRegion) == this.ActionModeMenu
 } gameStateA = CLASS_MEMLOGIC_GameStateA()
 
 class CLASS_MEMLOGIC_GameStateB {
@@ -550,7 +553,8 @@ class CLASS_MEMLOGIC_StoryChapterIdentification {
 // #region AdventureScene Identification
 class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	// ----AdventureSceneIDs----
-	IzumoShrine_Outside = 0x4
+	IzumoShrine_OutsideBeforeBossFight = 0x4
+	IzumoShrine_OutsideAfterBossFight = 0x5
 	KashimaTemple = 0x59
 
 	// ----Functions----
@@ -625,6 +629,10 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	
 	function is(enum_actionLevel, enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == enum_actionLevel
+
+	function on_enter(enum_actionLevel, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) != enum_actionLevel
+		&& this.current(enum_releaseRegion) == enum_actionLevel
 } actionLevel = CLASS_MEMLOGIC_ActionModeLevelIdentification()
 // #endregion Main Quest Progress
 
@@ -671,7 +679,6 @@ class CLASS_MEMLOGIC_Inventory {
 		string_addrKey = format("Flag:IsItemAcquired_{0}", enum_gear)
 		return bit0(memory.getAddress(string_addrKey, enum_releaseRegion))}
 } inventory = CLASS_MEMLOGIC_Inventory()
-
 // #endregion Inventory & Gear
 
 // ............
@@ -704,7 +711,13 @@ class CLASS_MEMLOGIC_BossEntities {
 	function get_EntityStartHP(enum_boss) => this.dict_BossData[enum_boss]["EntityStartHP"]
 	function get_BossArena_ActionModeLevel_ID(enum_boss) => this.dict_BossData[enum_boss]["BossArena_ActionModeLevel_ID"]
 	function get_StructLocation(enum_boss) => this.dict_BossData[enum_boss]["StructLocation"]
-		
+	
+	function current_ID(enum_boss, enum_releaseRegion) {
+		let_memAddr_Struct_BossEntity = memory.getAddress(format("Struct:Entity(boss)_{0}", this.get_StructLocation(enum_boss)), enum_releaseRegion) 
+		let_memAddr_BossEntity_ID = let_memAddr_Struct_BossEntity + memory.getStruct_OffsetToMember("Struct:Entity", "8-bit:Entity_ID")
+		return byte(let_memAddr_BossEntity_ID)}
+	function prev_ID(enum_boss, enum_releaseRegion) =>
+		prev(this.current_ID(enum_boss, enum_releaseRegion))
 	function current_HP(enum_boss, enum_releaseRegion) {
 		let_offsetToMember_EntityHP = memory.getStruct_OffsetToMember("Struct:Entity", "8-bit:Entity_HP")
 		let_memAddr_Struct_BossEntity = memory.getAddress(format("Struct:Entity(boss)_{0}", this.get_StructLocation(enum_boss)), enum_releaseRegion) 
@@ -712,20 +725,68 @@ class CLASS_MEMLOGIC_BossEntities {
 	function prev_HP(enum_boss, enum_releaseRegion) =>
 		prev(this.current_HP(enum_boss, enum_releaseRegion))
 
-	// CheckIf(delta): Entity HP drops from full HP to 0
-	// function on_oneHitKill(enum_boss, enum_releaseRegion) => // DISABLED - Impossible, as strongest attack/spell "FUDO" hits multiple times over 3-5 frames (not as 1 single hit)
-		// this.prev_HP(enum_boss, enum_releaseRegion) == this.get_EntityStartHP(enum_boss)
-		// && this.current_HP(enum_boss, enum_releaseRegion) == 0
+	function is_atMaxHP(enum_boss, enum_releaseRegion) =>
+		this.current_HP(enum_boss, enum_releaseRegion) == this.get_EntityStartHP(enum_boss)
+	function is_belowMaxHP(enum_boss, enum_releaseRegion) =>
+		this.current_HP(enum_boss, enum_releaseRegion) < this.get_EntityStartHP(enum_boss)
 
-	// CheckIf: Entity_ID is valid && ActionModeLevel_ID (bossArena) is valid
-	function is_active(enum_boss, enum_releaseRegion) {
-		let_offsetToMember_EntityID = memory.getStruct_OffsetToMember("Struct:Entity", "8-bit:Entity_ID")
+	function on_spawn(enum_boss, enum_releaseRegion) {
 		let_memAddr_Struct_BossEntity = memory.getAddress(format("Struct:Entity(boss)_{0}", this.get_StructLocation(enum_boss)), enum_releaseRegion) 
-		return 
-			byte(let_memAddr_Struct_BossEntity + let_offsetToMember_EntityID) == this.get_EntityID(enum_boss)
-			&& actionLevel.is(this.get_BossArena_ActionModeLevel_ID(enum_boss), enum_releaseRegion)}
+		let_memAddr_BossEntity_ID = let_memAddr_Struct_BossEntity + memory.getStruct_OffsetToMember("Struct:Entity", "8-bit:Entity_ID")
+		return
+			this.prev_ID(enum_boss, enum_releaseRegion) != this.get_EntityID(enum_boss)
+			&& this.current_ID(enum_boss, enum_releaseRegion) == this.get_EntityID(enum_boss)
+			&& this.prev_HP(enum_boss, enum_releaseRegion) != this.get_EntityStartHP(enum_boss)
+			&& this.current_HP(enum_boss, enum_releaseRegion) == this.get_EntityStartHP(enum_boss)
+			}
+	
+	// Entity dies when: HP hits 0x0 OR when HP overflows negatively (eg. HP at 15, takes 20 damage ===> 0xF(15)-15 = 0x0 ===> 0x0(0)-1 = 0xFF ===> 0xFF(255) - 4 = 251)
+	function on_HP_hitsZero(enum_boss, enum_releaseRegion) =>
+		1 <= this.prev_HP(enum_boss, enum_releaseRegion) && this.prev_HP(enum_boss, enum_releaseRegion) <= 50
+		&& this.current_HP(enum_boss, enum_releaseRegion) == 0	
+	function on_HP_negativelyOverflows(enum_boss, enum_releaseRegion) =>
+		0 <= this.prev_HP(enum_boss, enum_releaseRegion) && this.prev_HP(enum_boss, enum_releaseRegion) <= 50
+		&& 200 <= this.current_HP(enum_boss, enum_releaseRegion) && this.current_HP(enum_boss, enum_releaseRegion) <= 255
+
+	function is_bossArena_active(enum_boss, enum_releaseRegion) =>
+		actionLevel.is(this.get_BossArena_ActionModeLevel_ID(enum_boss), enum_releaseRegion)
+	function on_bossArena_enter(enum_boss, enum_releaseRegion) =>
+		actionLevel.on_enter(this.get_BossArena_ActionModeLevel_ID(enum_boss), enum_releaseRegion) 
 } bossEnemy = CLASS_MEMLOGIC_BossEntities()
 // #endregion Entities
+
+// ..........................
+// ◦ Player Character Logic ◦
+// ''''''''''''''''''''''''''
+// #region Player Character Logic
+class CLASS_MEMENUM_Spells {
+	Hakuji = 0x1
+	Indra = 0x2
+	Fudo = 0x3
+	Kannon = 0x4
+	Hatten = 0x5
+	Mars = 0x6
+	Makiri = 0x7
+	Nobota = 0x8
+} spell = CLASS_MEMENUM_Spells()
+class CLASS_MEMLOGIC_PlayerCharacterLogic {
+
+	function current_STGH(enum_releaseRegion) =>
+		bcd(word(memory.getAddress("BCD:Player_Strength", enum_releaseRegion)))
+	function prev_STGH(enum_releaseRegion) =>
+		prev(this.current_STGH(enum_releaseRegion))
+	function current_ENGY(enum_releaseRegion) =>
+		bcd(word(memory.getAddress("BCD:Player_Energy", enum_releaseRegion)))
+	function prev_ENGY(enum_releaseRegion) =>
+		prev(this.current_ENGY(enum_releaseRegion))		
+	function current_spellSelected(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:SelectedSpell", enum_releaseRegion))
+
+	function on_spellCast(enum_spell, enum_releaseRegion) =>
+		this.current_spellSelected(enum_releaseRegion) == enum_spell
+		&& this.current_ENGY(enum_releaseRegion) < this.prev_ENGY(enum_releaseRegion)
+} player = CLASS_MEMLOGIC_PlayerCharacterLogic()
+// #endregion Player Character Logic
 
 // ................
 // ◦ Sub_Header_2 ◦
@@ -796,9 +857,9 @@ dict_coreData = {
 		// "a_Ch1MysteryMan": { // VERIFIED
 			// "id": 606009, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeating Mysterious Man at IzumoTemple (StoryChapter_1)"}
 		},
-	"c_Bonus": { // Category - info_here
-		"a_OneHitHumanBoss": {
-			"id": 000000, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Defeat a boss with one hit from full HP (earlier bosses using Fudo spell)"}
+	"c_Bonus": { // Bonus - Misc bonus achievements
+		// "a_OneHitHumanBoss": { // VERIFIED
+			// "id": 607151, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Defeat a boss with one hit from full HP (earlier bosses using Fudo spell)"}
 		},
 	}
 
@@ -830,31 +891,51 @@ dict_triggers = {
 			&& gameStateB.is_gameStarted(enum_releaseRegion)
 
 			&& storyChapter.is(storyChapter.Ch_1_Investigation, enum_releaseRegion)
-			&& adventureScene.is(adventureScene.IzumoShrine_Outside, enum_releaseRegion)
+			&& adventureScene.is(adventureScene.IzumoShrine_OutsideAfterBossFight, enum_releaseRegion)
 			&& adventureDialogueText.prior(enum_releaseRegion) == adventureDialogueText.FirstBossFight_A
 			&& adventureDialogueText.current(enum_releaseRegion) == adventureDialogueText.FirstBossFight_B
 			&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch1_MysteryManDefeated, enum_releaseRegion)
 		),
 	
-	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { //  _template
-		const_ALLOWED_BOSSES_toOneHit = [bossEnemy.MysteriousEnemy, bossEnemy.Jukak, bossEnemy.Wakahiko]
-		
+	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ALLOWED_BOSSES = [bossEnemy.MysteriousEnemy, bossEnemy.Jukak, bossEnemy.Wakahiko]
+		const_FRAMES_ALLOWED_TILL_BOSSDEATH = 40
+
+		let_array_requirements_BossBelowMaxHPChecks = []
+		let_array_requirements_BossDeathChecks = []
+		for enum_boss in const_ALLOWED_BOSSES {
+			let_requirement_BossHPBelowMaxHP = 
+				repeated(const_FRAMES_ALLOWED_TILL_BOSSDEATH, // --CheckIf--> Boss is below max HP for xx frames
+					bossEnemy.is_bossArena_active(enum_boss, enum_releaseRegion)
+					&& bossEnemy.is_belowMaxHP(enum_boss, enum_releaseRegion))
+			array_push(let_array_requirements_BossBelowMaxHPChecks, let_requirement_BossHPBelowMaxHP)
+
+			let_requirement_BossHPHitsZero = 
+				once( // --CheckIf--> Boss dies via "bossEnemy.on_HP_hitsZero()"
+					never(!bossEnemy.is_bossArena_active(enum_boss, enum_releaseRegion))
+					&& bossEnemy.on_HP_hitsZero(enum_boss, enum_releaseRegion))
+			let_requirement_BossHPNegativelyOverflows =
+				once( // --CheckIf--> Boss dies via "bossEnemy.on_HP_negativelyOverflows()"
+					never(!bossEnemy.is_bossArena_active(enum_boss, enum_releaseRegion))
+					&& bossEnemy.on_HP_negativelyOverflows(enum_boss, enum_releaseRegion))			
+			array_push(let_array_requirements_BossDeathChecks, let_requirement_BossHPHitsZero)
+			array_push(let_array_requirements_BossDeathChecks, let_requirement_BossHPNegativelyOverflows)
+		}
+
 		return
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			gameStateB.is_gameStarted(enum_releaseRegion)
-			&& gameStateA.is_actionMode_active(enum_releaseRegion)
-
-
-			// && once() // TODO: add CheckIf Spell "Fudo" was cast + ResetNextIf on this hitCount when it takes too long to kill the boss
-			&& tally_of(const_ALLOWED_BOSSES_toOneHit, 1, enum_boss => // --Tally--OrNext--> CheckIf: BossEntityID is correct && BossArena is correct && Boss dies in one hit && 
-				once(
-					never(__ornext(!bossEnemy.is_active(enum_boss, enum_releaseRegion)))
-					&& bossEnemy.is_active(enum_boss, enum_releaseRegion)
-					&& bossEnemy.on_oneHitKill(enum_boss, enum_releaseRegion)) // BUG --> this doesn't work, as FUDO hits multiple times, not all damage at once --> alternative: "kill boss with a single attack": checkIf FUDO was cast and boss takes all frame hits exactly frame by frame...
-			)
-		}),
-	
-	
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(tally(const_FRAMES_ALLOWED_TILL_BOSSDEATH, let_array_requirements_BossBelowMaxHPChecks)) // --PauseIf--> one of the bosses is below max HP for xx frames
+			&& gameStateB.is_gameStarted(enum_releaseRegion)
+			&& once(player.on_spellCast(spell.Fudo, enum_releaseRegion)) // --> Boss can only be "one hit" by Fudo spell
+			&& tally(1, let_array_requirements_BossDeathChecks) // --TallyOf--OrNext--> CheckIf: one of the bosses has died ==> boss either dies via "bossEnemy.on_HP_hitsZero()" OR "bossEnemy.on_HP_negativelyOverflows()"
+		// [1] ==== Alt Reset Group ====			-> Reset when one of the bosses has spawned
+			|| never_toAlt(any_of(const_ALLOWED_BOSSES, enum_boss =>
+				gameStateB.is_gameStarted(enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(enum_boss, enum_releaseRegion)
+				&& bossEnemy.on_spawn(enum_boss, enum_releaseRegion)))
+		// [2] ==== Alt Reset Group ====			-> Reset when not in ActionMode || not in ActionModeMenu
+			|| never_toAlt(!gameStateA.is_actionMode_active(enum_releaseRegion))
+		})	
 	}
 // #endregion ACH - Triggers
 
