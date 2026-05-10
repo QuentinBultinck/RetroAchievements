@@ -223,13 +223,6 @@ class CLASS_MemoryData {
 		"Flag:IsItemAcquired_Weapon_Vajira": {ENUM_ReleaseRegion.USA_EUR: 0x0038},
 		"Flag:IsItemAcquired_Weapon_WarHammer": {ENUM_ReleaseRegion.USA_EUR: 0x0039},
 
-		// MainQuestEventFlags
-		// MiscEventFlags
-		// ItemInventoryFlags
-
-		// Max STGH
-		// Men ENGY
-
 		"BCD:Player_Strength": {ENUM_ReleaseRegion.USA_EUR: 0x0025},
 		"BCD:Player_Energy": {ENUM_ReleaseRegion.USA_EUR: 0x0027},
 
@@ -244,10 +237,9 @@ class CLASS_MemoryData {
 		"16-bit:AdventureModeDialogueText_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0208},
 
 		"FlagArray:MainQuestEventFlags": {ENUM_ReleaseRegion.USA_EUR: 0x0281},
+		"FlagArray:ItemInventoryFlags": {ENUM_ReleaseRegion.USA_EUR: 0x02e0},
 
 		"Struct:Entity(boss)_C": {ENUM_ReleaseRegion.USA_EUR: 0x0460},
-		// Method to ID password usage
-
 		}
 
 	function getAddress(string_addrKey, enum_releaseRegion) {
@@ -577,30 +569,40 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 	FLAG_isEventCompleted_true = 0x1
 	FLAG_isEventCompleted_false = 0x0
 
-	// ----MainQuestEvents (=flagIndex in FlagArray)----
+	// ----MainQuestEvents (=flagIndex in "FlagArray:MainQuestEventFlags")----
 	Ch1_MysteryManDefeated = 5
+	Ch2_LuteSpiritVanquished = 11
 
 	// ----Functions----
-	function current_flagState(int_flagIndex, enum_ReleaseRegion) => 
-		byte(memory.getAddress("FlagArray:MainQuestEventFlags", enum_ReleaseRegion) + int_flagIndex)
-	function prev_flagState(int_flagIndex, enum_ReleaseRegion) => 
-		prev(this.current_flagState(int_flagIndex, enum_ReleaseRegion))
+	function current_flagState(int_flagIndex, enum_releaseRegion) =>
+		byte(memory.getAddress("FlagArray:MainQuestEventFlags", enum_releaseRegion) + int_flagIndex)
+	function prev_flagState(int_flagIndex, enum_releaseRegion) => 
+		prev(this.current_flagState(int_flagIndex, enum_releaseRegion))
 
+	function is_eventCompleted(int_flagIndx, enum_releaseRegion) =>
+		this.current_flagState(int_flagIndex, enum_releaseRegion) == FLAG_isEventCompleted_true
+	
 	// Progress completes sequentially through the FlagArray (event flags toggle true in ordered fashion)
 	// Sums up all previous event flags leading up to an event to check if they are all true up to that point
-	function checkPriorFlagsCompleted(enum_event, enum_ReleaseRegion) {
+	function is_priorEventsCompleted(enum_event, enum_releaseRegion) {
 		if(enum_event < 1) return always_true()
 		array_eventFlagIndicesToSum = []
 		for let_index in range(0, enum_event -1)
 			array_push(array_eventFlagIndicesToSum, let_index)
-		return sum_of(array_eventFlagIndicesToSum, int_flagIndx => this.current_flagState(int_flagIndx, enum_ReleaseRegion)) == enum_event}
+		return sum_of(array_eventFlagIndicesToSum, int_flagIndx => this.current_flagState(int_flagIndx, enum_releaseRegion)) == enum_event}
 
 	function on_eventFlagState_toggleTrue(enum_event, enum_releaseRegion) =>
-		this.checkPriorFlagsCompleted(enum_event, enum_releaseRegion)
+		this.is_priorEventsCompleted(enum_event, enum_releaseRegion)
 		&& this.prev_flagState(enum_event, enum_releaseRegion) == this.FLAG_isEventCompleted_false
 		&& this.current_flagState(enum_event, enum_releaseRegion) == this.FLAG_isEventCompleted_true
 } mainQuest = CLASS_MEMLOGIC_MainQuestProgress()
 // #endregion Main Quest Progress
+
+// #region Misc Event Flags
+class CLASS_MEMLOGIC_MiscEventFlags {
+
+} miscellaneousEvent = CLASS_MEMLOGIC_MiscEventFlags()
+// #endregion Misc Event Flags
 
 // #region Adventure Mode Dialogue Text Identification
 class CLASS_MEMLOGIC_AdventureModeDialogueTextIdentification {
@@ -661,24 +663,24 @@ class CLASS_MEMLOGIC_Gear {
 } gear = CLASS_MEMLOGIC_Gear()
 //---------------------------
 class CLASS_MEMLOGIC_Inventory {
-	// ----Values/Enums----
-	// 0x1 => true (the game may write any value > 0x0 when the player acquires an item)
-	// anyValue > 0x0 => true (but game mostly writes 0x1)
-	// 0x0 => false
-	Armor_Bracers = "Armor_Bracers"
-	Armor_Helmet = "Armor_Helmet"
-	Armor_Body = "Armor_Body"
-	Armor_Leg = "Armor_Leg"
-	Weapon_Dokko = "Weapon_Dokko"
-	Weapon_Trident = "Weapon_Trident"
-	Weapon_Vajira = "Weapon_Vajira"
-	Weapon_WarHammer = "Weapon_WarHammer"
+	// ----Items (=flagIndex in "FlagArray:ItemInventoryFlags")----
+	Ch2_Lute = 5
 
 	// ----Functions----
-	function is_acquired(enum_gear, enum_releaseRegion) {
-		string_addrKey = format("Flag:IsItemAcquired_{0}", enum_gear)
-		return bit0(memory.getAddress(string_addrKey, enum_releaseRegion))}
-} inventory = CLASS_MEMLOGIC_Inventory()
+	function current_inventoryFlagState(int_flagIndex, enum_releaseRegion) => 
+		byte(memory.getAddress("FlagArray:ItemInventoryFlags", enum_releaseRegion) + int_flagIndex)
+	function prev_inventoryFlagState(int_flagIndex, enum_releaseRegion) => 
+		prev(this.current_inventoryFlagState(int_flagIndex, enum_releaseRegion))
+
+	function is_inInventory(enum_item, enum_releaseRegion) =>
+		this.current_inventoryFlagState(enum_item, enum_releaseRegion) > 0 
+	function on_acquire(enum_item, enum_releaseRegion) =>
+		this.prev_inventoryFlagState(enum_item, enum_releaseRegion) == 0
+		&& this.current_inventoryFlagState(enum_item, enum_releaseRegion) > 0
+	function on_lose(enum_item, enum_releaseRegion) =>
+		this.prev_inventoryFlagState(enum_item, enum_releaseRegion) > 0
+		&& this.current_inventoryFlagState(enum_item, enum_releaseRegion) == 0
+} item = CLASS_MEMLOGIC_Inventory()
 // #endregion Inventory & Gear
 
 // ............
@@ -852,14 +854,14 @@ dict_coreData = {
 		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_StoryProgress": { // Story Progression
-		// "a_Template": {
-			// "id": 000000, "points": ENUM_AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
 		// "a_Ch1MysteryMan": { // VERIFIED
 			// "id": 606009, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeating Mysterious Man at IzumoTemple (StoryChapter_1)"}
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
 			// "id": 607151, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Defeat a boss with one hit from full HP (earlier bosses using Fudo spell)"}
+		"a_SeaSpirits": { // CONCEPT a_SeaSpirits
+			"id": 000000, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeat all 5 sea spirits at Dannoura (Shimonoseki coast/sea)"}
 		},
 	}
 
@@ -895,8 +897,7 @@ dict_triggers = {
 			&& adventureDialogueText.prior(enum_releaseRegion) == adventureDialogueText.FirstBossFight_A
 			&& adventureDialogueText.current(enum_releaseRegion) == adventureDialogueText.FirstBossFight_B
 			&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch1_MysteryManDefeated, enum_releaseRegion)
-		),
-	
+		),	
 	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ALLOWED_BOSSES = [bossEnemy.MysteriousEnemy, bossEnemy.Jukak, bossEnemy.Wakahiko]
 		const_FRAMES_ALLOWED_TILL_BOSSDEATH = 40
@@ -935,7 +936,20 @@ dict_triggers = {
 				&& bossEnemy.on_spawn(enum_boss, enum_releaseRegion)))
 		// [2] ==== Alt Reset Group ====			-> Reset when not in ActionMode || not in ActionModeMenu
 			|| never_toAlt(!gameStateA.is_actionMode_active(enum_releaseRegion))
-		})	
+		}),
+	"a_SeaSpirits": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP a_SeaSpirits
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			gameStateB.is_gameStarted(enum_releaseRegion)
+			&& gameStateA.is_inGame(enum_releaseRegion)
+			&& storyChapter.is(storyChapter.Ch_2_SwordOfKusanagi, enum_releaseRegion)
+			&& mainQuest.is_priorEventsCompleted(mainQuest.Ch2_LuteSpiritVanquished, enum_releaseRegion)
+			&& mainQuest.is_eventCompleted(mainQuest.Ch2_LuteSpiritVanquished, enum_releaseRegion)
+			&& item.is_inInventory(item.Ch2_Lute, enum_releaseRegion)
+
+			// TODO a_SeaSpirits, flags documented
+			// sum of prev sea spirit flags = 4 defeated
+			// sum of current sea spirit flags = 5 defeated
+			),
 	}
 // #endregion ACH - Triggers
 
@@ -944,13 +958,15 @@ dict_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_Ch1MysteryMan": 			{"en": "xxxxxxxxx"},
 	
-	"a_OneHitHumanBoss": 			{"en": "xxxxxxxxx"},
+	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
+	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_Ch1MysteryMan": 			{"en": "xxxxxxxxx"},
 	
-	"a_OneHitHumanBoss": 			{"en": "xxxxxxxxx"},
+	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
+	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
