@@ -238,6 +238,7 @@ class CLASS_MemoryData {
 
 		"FlagArray:MainQuestEventFlags": {ENUM_ReleaseRegion.USA_EUR: 0x0281},
 		"FlagArray:ItemInventoryFlags": {ENUM_ReleaseRegion.USA_EUR: 0x02e0},
+		"FlagArray:MiscEventFlags_A": {ENUM_ReleaseRegion.USA_EUR: 0x02b0},
 
 		"Struct:Entity(boss)_C": {ENUM_ReleaseRegion.USA_EUR: 0x0460},
 		}
@@ -569,7 +570,7 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 	FLAG_isEventCompleted_true = 0x1
 	FLAG_isEventCompleted_false = 0x0
 
-	// ----MainQuestEvents (=flagIndex in "FlagArray:MainQuestEventFlags")----
+	// ----MainQuestEvents (enum = flagIndex in "FlagArray:MainQuestEventFlags")----
 	Ch1_MysteryManDefeated = 5
 	Ch2_LuteSpiritVanquished = 11
 
@@ -600,7 +601,38 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 
 // #region Misc Event Flags
 class CLASS_MEMLOGIC_MiscEventFlags {
+	// ----Variables----
+	FLAG_isEventCompleted_true = 0x1
+	FLAG_isEventCompleted_false = 0x0
 
+	// ----MiscEvents (enum = flagIndex in "FlagArray:MiscEventFlags_A")----
+	Ch2_SeaSpiritVanquished_atPier = 4
+	Ch2_SeaSpiritVanquished_southEastOfHelmet = 5
+	Ch2_SeaSpiritVanquished_atVajira = 6
+	Ch2_SeaSpiritVanquished_southOfLute = 8
+	Ch2_SeaSpiritVanquished_middleOfSea = 9
+	Ch2_SeaSpiritVanquished_atHelmet = 10
+
+	function current_flagState(int_flagIndx, enum_releaseRegion) =>
+		byte(memory.getAddress("FlagArray:MiscEventFlags_A", enum_releaseRegion) + int_flagIndx)
+	function prev_flagState(int_flagIndx, enum_releaseRegion) =>
+		prev(this.current_flagState(int_flagIndx, enum_releaseRegion))
+
+	function on_Ch2_AllSeaSpiritsVanquished(enum_releaseRegion) {
+		let_array_SeaSpiritVanquishedEvents = [
+			miscellaneousEvent.Ch2_SeaSpiritVanquished_atPier, 
+			miscellaneousEvent.Ch2_SeaSpiritVanquished_southEastOfHelmet,
+			miscellaneousEvent.Ch2_SeaSpiritVanquished_atVajira,
+			miscellaneousEvent.Ch2_SeaSpiritVanquished_southOfLute,
+			miscellaneousEvent.Ch2_SeaSpiritVanquished_middleOfSea,
+			miscellaneousEvent.Ch2_SeaSpiritVanquished_atHelmet]
+		return 
+			sum_of(let_array_SeaSpiritVanquishedEvents, enum_event => // --SumOf--> all delta event flags = 5 ----> (delta: 5 defeated spirits)
+				miscellaneousEvent.prev_flagState(enum_event, enum_releaseRegion)) == length(let_array_SeaSpiritVanquishedEvents) -1
+			&& sum_of(let_array_SeaSpiritVanquishedEvents, enum_event => // --SumOf--> all current event flags ----> (current: 6 defeated spirits)
+				miscellaneousEvent.current_flagState(enum_event, enum_releaseRegion)) == length(let_array_SeaSpiritVanquishedEvents)}
+	// TODO function to sum all flags Ch2_SeaSpiritVanquished
+	
 } miscellaneousEvent = CLASS_MEMLOGIC_MiscEventFlags()
 // #endregion Misc Event Flags
 
@@ -638,7 +670,6 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 } actionLevel = CLASS_MEMLOGIC_ActionModeLevelIdentification()
 // #endregion Main Quest Progress
 
-
 // ....................
 // ◦ Inventory & Gear ◦
 // ''''''''''''''''''''
@@ -663,7 +694,7 @@ class CLASS_MEMLOGIC_Gear {
 } gear = CLASS_MEMLOGIC_Gear()
 //---------------------------
 class CLASS_MEMLOGIC_Inventory {
-	// ----Items (=flagIndex in "FlagArray:ItemInventoryFlags")----
+	// ----Items (enum = flagIndex in "FlagArray:ItemInventoryFlags")----
 	Ch2_Lute = 5
 
 	// ----Functions----
@@ -937,7 +968,7 @@ dict_triggers = {
 		// [2] ==== Alt Reset Group ====			-> Reset when not in ActionMode || not in ActionModeMenu
 			|| never_toAlt(!gameStateA.is_actionMode_active(enum_releaseRegion))
 		}),
-	"a_SeaSpirits": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP a_SeaSpirits
+	"a_SeaSpirits": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // TESTING a_SeaSpirits
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			gameStateB.is_gameStarted(enum_releaseRegion)
 			&& gameStateA.is_inGame(enum_releaseRegion)
@@ -945,11 +976,8 @@ dict_triggers = {
 			&& mainQuest.is_priorEventsCompleted(mainQuest.Ch2_LuteSpiritVanquished, enum_releaseRegion)
 			&& mainQuest.is_eventCompleted(mainQuest.Ch2_LuteSpiritVanquished, enum_releaseRegion)
 			&& item.is_inInventory(item.Ch2_Lute, enum_releaseRegion)
-
-			// TODO a_SeaSpirits, flags documented
-			// sum of prev sea spirit flags = 4 defeated
-			// sum of current sea spirit flags = 5 defeated
-			),
+			&& miscellaneousEvent.on_Ch2_AllSeaSpiritsVanquished(enum_releaseRegion)
+		),
 	}
 // #endregion ACH - Triggers
 
