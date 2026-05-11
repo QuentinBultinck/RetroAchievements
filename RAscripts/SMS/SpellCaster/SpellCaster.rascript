@@ -213,6 +213,7 @@ class CLASS_MemoryData {
 		// "memAddrKey": {ENUM_ReleaseRegion.USA_EUR: util.sNULL},
 		"BitFlag:IsDemoActive": {ENUM_ReleaseRegion.USA_EUR: 0x0003},
 		"BitFlag:IsActionModeActive": {ENUM_ReleaseRegion.USA_EUR: 0x0020},
+		"BitFlag:IsAdventureModeDialogueTextDisplayed": {ENUM_ReleaseRegion.USA_EUR: 0x020a},
 
 		"Flag:IsItemAcquired_Armor_Bracers": {ENUM_ReleaseRegion.USA_EUR: 0x0032},
 		"Flag:IsItemAcquired_Armor_Helmet": {ENUM_ReleaseRegion.USA_EUR: 0x0033},
@@ -438,7 +439,7 @@ class CLASS_MEMLOGIC_GameStateA {
 		prev(this.current(enum_releaseRegion))
 
 	function is_active(enum_gameStateA, enum_releaseRegion) =>
-		this.current_GameStateA(enum_releaseRegion) == enum_gameStateA
+		this.current(enum_releaseRegion) == enum_gameStateA
 
 	function on_outroSequenceStart(enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == this.OutroSequence
@@ -549,7 +550,9 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	IzumoShrine_OutsideBeforeBossFight = 0x4
 	IzumoShrine_OutsideAfterBossFight = 0x5
 	KashimaTemple = 0x59
-
+	Dannoura_A = 0x18
+	Dannoura_Y = 0x30
+	
 	// ----Functions----
 	function current(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:AdventureScene_ID", enum_releaseRegion))
@@ -561,6 +564,10 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	function on_changeTo(enum_adventureSceneID, enum_releaseRegion) =>
 		this.prev(enum_releaseRegion) != enum_adventureSceneID
 		&& this.current(enum_releaseRegion) == enum_adventureSceneID
+
+	// CheckIf: player is on Dannoura (Shimonoseki coast/sea) => by checking if current AdventureScene_ID is in valueRange[0x18-0x30], these are all scenes at Dannoura
+	function is_atSeaOnDannoura(enum_releaseRegion) =>
+		this.Dannoura_A <= this.current(enum_releaseRegion) && this.current(enum_releaseRegion) <= this.Dannoura_Y
 } adventureScene = CLASS_MEMLOGIC_AdventureSceneIdentification()
 // #endregion AdventureScene Identification
 
@@ -580,8 +587,8 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 	function prev_flagState(int_flagIndex, enum_releaseRegion) => 
 		prev(this.current_flagState(int_flagIndex, enum_releaseRegion))
 
-	function is_eventCompleted(int_flagIndx, enum_releaseRegion) =>
-		this.current_flagState(int_flagIndex, enum_releaseRegion) == FLAG_isEventCompleted_true
+	function is_eventCompleted(int_flagIndex, enum_releaseRegion) =>
+		this.current_flagState(int_flagIndex, enum_releaseRegion) == this.FLAG_isEventCompleted_true
 	
 	// Progress completes sequentially through the FlagArray (event flags toggle true in ordered fashion)
 	// Sums up all previous event flags leading up to an event to check if they are all true up to that point
@@ -617,29 +624,22 @@ class CLASS_MEMLOGIC_MiscEventFlags {
 		byte(memory.getAddress("FlagArray:MiscEventFlags_A", enum_releaseRegion) + int_flagIndx)
 	function prev_flagState(int_flagIndx, enum_releaseRegion) =>
 		prev(this.current_flagState(int_flagIndx, enum_releaseRegion))
-
-	function on_Ch2_AllSeaSpiritsVanquished(enum_releaseRegion) {
-		let_array_SeaSpiritVanquishedEvents = [
-			miscellaneousEvent.Ch2_SeaSpiritVanquished_atPier, 
-			miscellaneousEvent.Ch2_SeaSpiritVanquished_southEastOfHelmet,
-			miscellaneousEvent.Ch2_SeaSpiritVanquished_atVajira,
-			miscellaneousEvent.Ch2_SeaSpiritVanquished_southOfLute,
-			miscellaneousEvent.Ch2_SeaSpiritVanquished_middleOfSea,
-			miscellaneousEvent.Ch2_SeaSpiritVanquished_atHelmet]
-		return 
-			sum_of(let_array_SeaSpiritVanquishedEvents, enum_event => // --SumOf--> all delta event flags = 5 ----> (delta: 5 defeated spirits)
-				miscellaneousEvent.prev_flagState(enum_event, enum_releaseRegion)) == length(let_array_SeaSpiritVanquishedEvents) -1
-			&& sum_of(let_array_SeaSpiritVanquishedEvents, enum_event => // --SumOf--> all current event flags ----> (current: 6 defeated spirits)
-				miscellaneousEvent.current_flagState(enum_event, enum_releaseRegion)) == length(let_array_SeaSpiritVanquishedEvents)}
-	// TODO function to sum all flags Ch2_SeaSpiritVanquished
 	
 } miscellaneousEvent = CLASS_MEMLOGIC_MiscEventFlags()
 // #endregion Misc Event Flags
 
 // #region Adventure Mode Dialogue Text Identification
 class CLASS_MEMLOGIC_AdventureModeDialogueTextIdentification {
-	FirstBossFight_A = 0x49 // "Mysterious Enemy: Kusanagi!!!" - After defeating 1st boss (mysterious man) at IzumoTemple
-	FirstBossFight_B = 0x50 // "with that word, the mysterious enemy disappears!
+	// ----Variables----
+	FLAG_isAdventureModeDialogueTextDisplayed_true = 1
+	FLAG_isAdventureModeDialogueTextDisplayed_false = 0
+
+	// ----AdventureModeDialogueText_IDs----
+	FirstBossFight_A = 0x31 // "Mysterious Enemy: Kusanagi!!!" - After defeating 1st boss (mysterious man) at IzumoTemple
+	FirstBossFight_B = 0x32 // "with that word, the mysterious enemy disappears!
+	XRayGlasses_Use = 0xDA // "Kane puts on the X-Ray Glasses"
+	XRayGlasses_Success = 0xEB // "Kane: I can see a chest on the seabed!"
+
 
 	function current(enum_releaseRegion) =>
 		word(memory.getAddress("16-bit:AdventureModeDialogueText_ID", enum_releaseRegion))
@@ -647,6 +647,23 @@ class CLASS_MEMLOGIC_AdventureModeDialogueTextIdentification {
 		prior(this.current(enum_releaseRegion))
 	function prev(enum_releaseRegion) =>
 		prev(this.current(enum_releaseRegion))
+
+	function is(enum_dialogueText, enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == enum_dialogueText
+	function wasPrior(enum_dialogueText, enum_releaseRegion) =>
+		this.prior(enum_releaseRegion)
+
+	// ----------------------------
+	function current_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) =>
+		bit0(memory.getAddress("BitFlag:IsAdventureModeDialogueTextDisplayed", enum_releaseRegion))
+	function prev_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) =>
+		prev(this.current_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion))
+
+	function is_textBox_displayed(enum_releaseRegion) =>
+		this.current_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) == this.FLAG_isAdventureModeDialogueTextDisplayed_true
+	function on_textBox_hide(enum_releaseRegion) =>
+		this.prev_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) == this.FLAG_isAdventureModeDialogueTextDisplayed_true
+		&& this.current_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) == this.FLAG_isAdventureModeDialogueTextDisplayed_false
 } adventureDialogueText = CLASS_MEMLOGIC_AdventureModeDialogueTextIdentification()
 // #endregion Adventure Mode Dialogue Text Identification
 
@@ -886,13 +903,16 @@ dict_coreData = {
 	
 	"c_StoryProgress": { // Story Progression
 		// "a_Ch1MysteryMan": { // VERIFIED
-			// "id": 606009, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeating Mysterious Man at IzumoTemple (StoryChapter_1)"}
+			// "id": 606009, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeating Mysterious Man at IzumoTemple (StoryChapter_1)"},
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
-			// "id": 607151, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Defeat a boss with one hit from full HP (earlier bosses using Fudo spell)"}
-		"a_SeaSpirits": { // CONCEPT a_SeaSpirits
-			"id": 000000, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeat all 5 sea spirits at Dannoura (Shimonoseki coast/sea)"}
+			// "id": 607151, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Defeat a boss with one hit from full HP (earlier bosses using Fudo spell)"},
+		// "a_SeaSpirits": { // VERIFIED
+			// "id": 607698, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeat all 5 sea spirits at Dannoura (Shimonoseki coast/sea)"},
+		"a_xRaying": { // VERIFIED
+			"id": 607701, "points": 0000000, "devInfo": "spot a chest with the x-ray glasses at Dannoura (Shimonoseki coast/sea)"},
+		
 		},
 	}
 
@@ -917,16 +937,20 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 dict_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			// __ornext(gameStateA.is_inGame(enum_releaseRegion))
+			// && gameStateB.is_gameStarted(enum_releaseRegion)
+			// && !demo.is_active(enum_releaseRegion)
 			// always_false()),
 	"a_Ch1MysteryMan": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			__ornext(gameStateA.is_inGame(enum_releaseRegion))
 			&& gameStateB.is_gameStarted(enum_releaseRegion)
+			&& !demo.is_active(enum_releaseRegion)
 
 			&& storyChapter.is(storyChapter.Ch_1_Investigation, enum_releaseRegion)
 			&& adventureScene.is(adventureScene.IzumoShrine_OutsideAfterBossFight, enum_releaseRegion)
-			&& adventureDialogueText.prior(enum_releaseRegion) == adventureDialogueText.FirstBossFight_A
-			&& adventureDialogueText.current(enum_releaseRegion) == adventureDialogueText.FirstBossFight_B
+			&& adventureDialogueText.wasPrior(adventureDialogueText.FirstBossFight_A, enum_releaseRegion)
+			&& adventureDialogueText.is(adventureDialogueText.FirstBossFight_B, enum_releaseRegion)
 			&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch1_MysteryManDefeated, enum_releaseRegion)
 		),	
 	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -956,28 +980,68 @@ dict_triggers = {
 
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			unless(tally(const_FRAMES_ALLOWED_TILL_BOSSDEATH, let_array_requirements_BossBelowMaxHPChecks)) // --PauseIf--> one of the bosses is below max HP for xx frames
+			unless(demo.is_active(enum_releaseRegion))
+			&& unless(tally(const_FRAMES_ALLOWED_TILL_BOSSDEATH, let_array_requirements_BossBelowMaxHPChecks)) // --PauseIf--> one of the bosses is below max HP for xx frames
 			&& gameStateB.is_gameStarted(enum_releaseRegion)
 			&& once(player.on_spellCast(spell.Fudo, enum_releaseRegion)) // --> Boss can only be "one hit" by Fudo spell
 			&& tally(1, let_array_requirements_BossDeathChecks) // --TallyOf--OrNext--> CheckIf: one of the bosses has died ==> boss either dies via "bossEnemy.on_HP_hitsZero()" OR "bossEnemy.on_HP_negativelyOverflows()"
-		// [1] ==== Alt Reset Group ====			-> Reset when one of the bosses has spawned
+		// [2] ==== Alt Reset Group ====			-> Reset when one of the bosses has spawned
 			|| never_toAlt(any_of(const_ALLOWED_BOSSES, enum_boss =>
 				gameStateB.is_gameStarted(enum_releaseRegion)
 				&& bossEnemy.is_bossArena_active(enum_boss, enum_releaseRegion)
 				&& bossEnemy.on_spawn(enum_boss, enum_releaseRegion)))
-		// [2] ==== Alt Reset Group ====			-> Reset when not in ActionMode || not in ActionModeMenu
-			|| never_toAlt(!gameStateA.is_actionMode_active(enum_releaseRegion))
+		// [3] ==== Alt Reset Group ====			-> Reset when not in ActionMode || not in ActionModeMenu
+			|| never_toAlt(
+				!gameStateA.is_actionMode_active(enum_releaseRegion))
 		}),
-	"a_SeaSpirits": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // TESTING a_SeaSpirits
+	"a_SeaSpirits": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_array_SEASPIRIT_VANQUISHED_EVENTS = [
+			miscellaneousEvent.Ch2_SeaSpiritVanquished_atPier, 
+			miscellaneousEvent.Ch2_SeaSpiritVanquished_southEastOfHelmet,
+			miscellaneousEvent.Ch2_SeaSpiritVanquished_atVajira,
+			miscellaneousEvent.Ch2_SeaSpiritVanquished_southOfLute,
+			miscellaneousEvent.Ch2_SeaSpiritVanquished_middleOfSea,
+			miscellaneousEvent.Ch2_SeaSpiritVanquished_atHelmet]
+
+		let_sumOf_deltaFlagStates_SeaSpiritVanquishedEvents = 
+			sum_of(const_array_SEASPIRIT_VANQUISHED_EVENTS, enum_event =>
+				miscellaneousEvent.prev_flagState(enum_event, enum_releaseRegion))
+		let_sumOf_currentFlagStates_SeaSpiritVanquishedEvents = 
+			sum_of(const_array_SEASPIRIT_VANQUISHED_EVENTS, enum_event =>
+				miscellaneousEvent.current_flagState(enum_event, enum_releaseRegion))
+		
+		return 
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			gameStateB.is_gameStarted(enum_releaseRegion)
-			&& gameStateA.is_inGame(enum_releaseRegion)
+			__ornext(gameStateA.is_inGame(enum_releaseRegion))			
+			&& gameStateB.is_gameStarted(enum_releaseRegion)
+			&& !demo.is_active(enum_releaseRegion)
 			&& storyChapter.is(storyChapter.Ch_2_SwordOfKusanagi, enum_releaseRegion)
 			&& mainQuest.is_priorEventsCompleted(mainQuest.Ch2_LuteSpiritVanquished, enum_releaseRegion)
 			&& mainQuest.is_eventCompleted(mainQuest.Ch2_LuteSpiritVanquished, enum_releaseRegion)
 			&& item.is_inInventory(item.Ch2_Lute, enum_releaseRegion)
-			&& miscellaneousEvent.on_Ch2_AllSeaSpiritsVanquished(enum_releaseRegion)
-		),
+
+			&& let_sumOf_deltaFlagStates_SeaSpiritVanquishedEvents == length(const_array_SEASPIRIT_VANQUISHED_EVENTS) -1  // --SumOf--> all delta event flags ----> (delta: 5 defeated spirits)
+			&& measured(let_sumOf_currentFlagStates_SeaSpiritVanquishedEvents == length(const_array_SEASPIRIT_VANQUISHED_EVENTS))  // --Measured--SumOf--> all current event flags ----> (current: 6 defeated spirits)
+		}),
+	
+	"a_xRaying": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Logic + Trigger Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement + displaying TriggerIndactor
+			gameStateB.is_gameStarted(enum_releaseRegion)
+			&& gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion)
+			&& storyChapter.is(storyChapter.Ch_2_SwordOfKusanagi, enum_releaseRegion)
+
+			&& once( // --CheckIf--> XRayGlasses is used whilst out at sea on Dannoura
+				never( // --ResetNextIf--> No chest is spotted with XRayGlasses
+					adventureDialogueText.is_textBox_displayed(enum_releaseRegion)
+					&& !adventureDialogueText.is(adventureDialogueText.XRayGlasses_Use, enum_releaseRegion)
+					&& !adventureDialogueText.is(adventureDialogueText.XRayGlasses_Success, enum_releaseRegion))
+				&& adventureDialogueText.is_textBox_displayed(enum_releaseRegion)
+				&& adventureDialogueText.is(adventureDialogueText.XRayGlasses_Use, enum_releaseRegion)
+				&& adventureScene.is_atSeaOnDannoura(enum_releaseRegion))
+			&& trigger_when( // --Trigger--> Only to give players a hint for this achievement;  When nothing is seen with xRayGlasses, there's a seperate dialogueText to hide TriggerIndicator
+				adventureDialogueText.is(adventureDialogueText.XRayGlasses_Success, enum_releaseRegion)
+				&& adventureDialogueText.on_textBox_hide(enum_releaseRegion)) 
+			),
 	}
 // #endregion ACH - Triggers
 
@@ -988,13 +1052,15 @@ dict_titles = {
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
+	"a_xRaying": 				{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_Ch1MysteryMan": 			{"en": "xxxxxxxxx"},
+	"a_Ch1MysteryMan": 			{"en": "xxxxxxxx"},
 	
-	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
-	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
+	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
+	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
+	"a_xRaying": 				{"en": "xxxxxxxx"},
 	}
 // #endregion ACH - Text
 
