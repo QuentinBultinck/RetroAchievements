@@ -51,6 +51,7 @@
 
 
 // CONCEPT Idea's
+// ==================
 // Achievements:
 // - Progression achievements for each 12 stages/chapters??
 // - Complete game taking only xxx strength/HP damage || do a certain stage taking only xxx damage
@@ -68,6 +69,8 @@
 // - Pick up orange balls/energy
 // - Pick up blue balls/strength
 // - Acquire certain items --> https://shrines.rpgclassics.com/sms/spellcaster/items.shtml
+// - optional bosses in pyramid
+// - enter all rooms in pyramid // pick up all unique blue orbs in pyramid (they increase STGH)
 //
 // Shimono Chapter
 // --- X-Ray Glasses is an optional item to acquire, (during Shimono Chapter) --> item is used to check ocean floor for treasure OR Use xray glasses to spot treasure??
@@ -77,6 +80,70 @@
 // 
 // Eat Spaghetti at stand (Izumo2 confirmed, idk bout first visit)
 // - Acquiring Necklace from Kuma at Izumo (FinalBattle section) (optional item, restores strength if it reaches zero)
+
+// Story Script
+//================
+// ----Chap1 start---- (trouble at enriku temple)
+// Investigate enriku Temple -> discover dead tokak soldiers --> "Izumo" tip from tokak soldier 
+// ----Chap2 start---- (Investigation)
+// 1.investigate Izumo -> Kuma: something going on at Izumo Shrine --> mysterious man: "Kusanagi" + charm from Iwato family 
+// 	- Sword of Kusanagi at attaro shrine --> jukak
+// 	- MtMiwa for Iwato fam investigation: MtMiwaGuard --> Wakahiko: "friends are calling Serpent God"
+// 2. Go to Kashima Shrine to investigate Serpent God calling there --> Kashima Fire Boss --> Sword of branches acquire
+// ----Chap3 start---- (Shimono)
+// Daikak: "Iwato looking for real sword of kusanagi in underwater shrine" --> Shimono to acquire it --> defeat Iwato at sea + learn Iwato still wanna revive Serpent God, now at Izumo Shrine
+// ----Chap4 start---- (FalseEnemy)
+// 1. Izumo Temple: Princess asaka/dragon boss fight --> Shimazu + asaka explain everything --> head outside Izumo temple --> Shimazu + asaka attacked by centipede --> bossFight --> Shimazu dies: "visit kumano shrine + talk with Utsuho"
+// 2. KumanoShrine: show ShimazuBall to Utsuho, becomes friendly: "go to serpent god at Kakogen"
+// 3. Kakogen in well cave --> at KakogenTemple find battleship "Ameno" --> return to Utsuho "An ancient god was <transplanted> into the computer! He has watched over the people of Iwato since then! Daikok only knows how to restore a god, not a machine but he can control us at will."
+// 4. move to Mt Hinokami to face off with Daikok (who's controlled by evil god) --> bossFight Kezeus (alien) --> bossfight Daikok robot --> armorbracers
+// 5. move back to KumanoShrine, Utusho: "That armor was Daikok's special armor! It is likely the key to waking up the serpent!"
+// 6. move back to Kakogen + startup battleship Ameno/serpent god Ooku: 
+// 	"Long ago the Iwato ruled a highly advanced world. In their time 
+// 	they trapped an evil lord which threatened their planet. But in trapping the
+// 	beast they used up their magic force and were ruined. 
+// 	For many years they kept this beast trapped in a pyramid on a distant planet. 
+// 	When your people came, the few remaining Iwato decided not to interfere, 
+// 	choosing instead to fade away, taking the secret of the evil lord with them. 
+// 	This is the truth behind the legends. Kane, evil beings seek to revive the evil lord. 
+// 	He is trapped in the pyramid on Mt.Minakami! This ship is heading for the place. 
+// 	You must stop the forces of evil from taking over the pyramid!"
+// 	start spaceship and head to pyramid at Mt Minakami
+// ----Chap5 start---- (Pyramid)
+// 1. find hidden entrance to pyramid --> find pyramid point --> exit pyramid + place point on top of pyramid --> new entrance opens
+// 2. enter pyramid (+ find optional equipment + optional bosses) --> Demon (head of the evil lord's army) + Regina possesses --> save Regina --> demon bossfight --> pyramid collapses --> Kane exits with Regina back to spaceship --> back to SummitTemple
+// Back at SummitTemple: 
+// 	Daikak: "The evil lord's prison was opened?"
+// 	Kane: "Yes. The enemy's forces we did defeat, but... "
+// 	Daikak:" If the dark lord is revived... We have to rely on the gods to help us. 
+// 		Kane, ride the Ameno to the underworld! Find Izanami! Perhaps Izanami will bless you 
+// 		with a gift. The dark lord has been freed, but he is still not awake. We must hurry 
+// 		before he begins to stir!" 
+// 	--> head to Underworld with spaceship
+// ----Chap6 start---- (Underworld)
+// Underworld guard --> FerryCrossing: ferryman sleepy --> Gaurd: wakeup with nectar --> Chizu Sea: dancing band + Nectar --> Ferryman-Misty crossing -> Yomotsu plains
+// 	--> (defeat Amano/magic creature) --> Inazami Shrine: "Find mirrot and return to me to defeat Evil lord. Go to Yomotsu Shrine"
+// 	--> Yomotsu Shrine is gaurded by cerberus --> Amano tips you now: "find music at Toki Field" --> Toki plains: MoveRock (need Oar from Ferryman) --> find harp of Amano
+// 	--> Chizu Sea --> make music --> bad music + learn to make music --> Yomotsu shrine: play music --> Yomotsu: "The 8 swords of fury are needed. One is held by the Thunder God!"
+// 	--> Ferryman: takes you to thunder god --> bossfight --> take sword of fury 
+// 	--> Yomotsu: "You got it! You defeated the god of thunder A very powerful god indeed! 
+// 		Now go to the holy bridge to find the sacred mirror! "
+// 	--> Amano tells you where Holy Bridge is --> at Holy Bridge: stick sword of fury in pedestal --> door opens --> SnakeDemon bossfight --> drops sacredMirror
+// 	--> Show Inazami SacredMirror: 
+// 		"only one way to to kill the Dark Lord... You, Kane, must do it yourself. "
+// 		"You received a gift of increased power earlier... But you do not yet know your true capacity for strength! 
+// 		Now face your destiny as a Spellcaster! Awaken the serpent god and call his power unto yourself!
+// 		The serpent hasmuch energy.Concentrate theenergy using thesacred mirror.Use the sword ofKusanagi to drawthe power into yourself! 
+// 		That mystic power...along with everythingyou have learned..will give you the strength to defeat the Dark Lord... 
+//         If your heart remains pure! Kane,everyone is awaiting your victory!"
+// ----Chap7 start---- (FinalBattle prep)
+// Summit Temple --> Kashima Shrine --> Strike stone with SwordOfBranches --> unleach serpent god --> serpent god fills mirror with energy --> sword of kusanagi as catalyst to invoke power of mirror into Kane 
+// ----Chap8 start---- (FinalBattle)
+// ending:	
+// 	"The evil lord and his armies have been defeated. But as long as suffering exists,
+// 	the threat that the Dark Lord will return remains. "
+// 	"You must strive to relieve that suffering. The road ahead of you is long, hard and endless. 
+// 	You must not pause, but journey ever onward. For that is your destiny, Master of Spells"
 
 // WARNING
 // - Using passwords: sends to certain points in the campaign, with all Strength, Energy and Items.
