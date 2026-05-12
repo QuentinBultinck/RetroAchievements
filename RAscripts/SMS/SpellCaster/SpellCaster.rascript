@@ -993,8 +993,8 @@ dict_coreData = {
 	"c_StoryProgress": { // Story Progression
 		// "a_Ch1MysteryMan": { // VERIFIED
 			// "id": 606009, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeating Mysterious Man at IzumoTemple (StoryChapter_1)"},
-		// "a_Ch2KashimaBoss": { // VERIFIED
-			// "id": 608244, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Stop the Serpent God calling at Kashima (after defeating Kashima Fire Boss) (StoryChapter_2)"},
+		// "a_Ch1KashimaBoss": { // VERIFIED
+			// "id": 608244, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Stop the Serpent God calling at Kashima (after defeating Kashima Fire Boss) (StoryChapter_1)"},
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
@@ -1069,7 +1069,7 @@ dict_triggers = {
 				&& adventureDialogueText.is(adventureDialogueText.FirstBossFight_B, enum_releaseRegion)
 				&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch1_MysteryManDefeated, enum_releaseRegion))
 		}),	
-	"a_Ch2KashimaBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_Ch1KashimaBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_BOSS = bossEnemy.KashimaFireBoss
 		const_CHAPTER = storyChapter.Ch_1_Investigation
 
@@ -1199,7 +1199,7 @@ dict_triggers = {
 dict_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_Ch1MysteryMan": 			{"en": "xxxxxxxxx"},
-	"a_Ch2KashimaBoss": 		{"en": "xxxxxxxxx"},
+	"a_Ch1KashimaBoss": 		{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
@@ -1208,7 +1208,7 @@ dict_titles = {
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_Ch1MysteryMan": 			{"en": "xxxxxxxx"},
-	"a_Ch2KashimaBoss": 		{"en": "xxxxxxxxx"},
+	"a_Ch1KashimaBoss": 		{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
