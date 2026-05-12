@@ -290,6 +290,7 @@ class CLASS_MemoryData {
 		"Flag:IsItemAcquired_Weapon_Trident": {ENUM_ReleaseRegion.USA_EUR: 0x0037},
 		"Flag:IsItemAcquired_Weapon_Vajira": {ENUM_ReleaseRegion.USA_EUR: 0x0038},
 		"Flag:IsItemAcquired_Weapon_WarHammer": {ENUM_ReleaseRegion.USA_EUR: 0x0039},
+		"Flag:IsPlayerDead": {ENUM_ReleaseRegion.USA_EUR: 0x00b5},
 
 		"BCD:Player_Strength": {ENUM_ReleaseRegion.USA_EUR: 0x0025},
 		"BCD:Player_Energy": {ENUM_ReleaseRegion.USA_EUR: 0x0027},
@@ -508,10 +509,10 @@ class CLASS_MEMLOGIC_GameStateA {
 	function is_active(enum_gameStateA, enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == enum_gameStateA
 
-	function on_outroSequenceStart(enum_releaseRegion) =>
-		this.current(enum_releaseRegion) == this.OutroSequence
-		&& this.prev(enum_releaseRegion)
-
+	function on_changeTo(enum_gameState, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) != enum_gameState
+		&& this.current(enum_releaseRegion) == enum_gameState
+	
 	function is_valid(enum_releaseRegion) => any_of([
 		this.StartMenu_MainMenu, this.Demo, this.PasswordMenu, this.ActionModeMenu, this.IntroScene, this.OutroSequence, this.AdventureMode, this.ActionMode], 
 		enum_gameState =>
@@ -546,10 +547,6 @@ class CLASS_MEMLOGIC_GameStateB {
 
 	function is_gameStarted(enum_releaseRegion) =>
 		this.current(enum_releaseRegion) != this.BootingGame_StartMenu_Demo
-
-	function on_outroSequenceStart(enum_releaseRegion) =>
-		this.current(enum_releaseRegion) == this.OutroSequence
-		&& this.prev(enum_releaseRegion)
 } gameStateB = CLASS_MEMLOGIC_GameStateB()
 // -------------------------------------
 class CLASS_MEMLOGIC_Demo {
@@ -616,7 +613,8 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	// ----AdventureSceneIDs----
 	IzumoShrine_OutsideBeforeBossFight = 0x4
 	IzumoShrine_OutsideAfterBossFight = 0x5
-	KashimaTemple = 0x59
+	KashimaTemple_FirstVisit = 0x11
+	KashimaTemple_PreFinalBattle = 0x59
 	Dannoura_A = 0x18
 	Dannoura_Y = 0x30
 	
@@ -718,7 +716,7 @@ class CLASS_MEMLOGIC_AdventureModeDialogueTextIdentification {
 	function is(enum_dialogueText, enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == enum_dialogueText
 	function wasPrior(enum_dialogueText, enum_releaseRegion) =>
-		this.prior(enum_releaseRegion)
+		this.prior(enum_releaseRegion) == enum_dialogueText
 
 	// ----------------------------
 	function current_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) =>
@@ -739,6 +737,7 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	IzumoShrine_BossArena = 0x0202
 	AttaroShrine_BossArena = 0x0106
 	MtMiwa_BossArena = 0x0208
+	KashimaTemple_BossArena = 0x010a
 
 	function current(enum_releaseRegion) =>
 		word(memory.getAddress("16-bit:ActionModeLevel_ID", enum_releaseRegion))
@@ -806,6 +805,8 @@ class CLASS_MEMLOGIC_BossEntities {
 	MysteriousEnemy = 100
 	Jukak = 101
 	Wakahiko = 102
+	KashimaFireBoss = 103
+
 
 	dict_BossData = {
 		MysteriousEnemy: {
@@ -822,6 +823,11 @@ class CLASS_MEMLOGIC_BossEntities {
 			"EntityID": 0x62,
 			"EntityStartHP": 0x3c,
 			"BossArena_ActionModeLevel_ID": actionLevel.MtMiwa_BossArena,
+			"StructLocation": "C"},
+		KashimaFireBoss: {
+			"EntityID": 0x70,
+			"EntityStartHP": 0x3c,
+			"BossArena_ActionModeLevel_ID": actionLevel.KashimaTemple_BossArena,
 			"StructLocation": "C"},
 		}
 	function get_EntityID(enum_boss) => this.dict_BossData[enum_boss]["EntityID"]
@@ -887,6 +893,10 @@ class CLASS_MEMENUM_Spells {
 	Nobota = 0x8
 } spell = CLASS_MEMENUM_Spells()
 class CLASS_MEMLOGIC_PlayerCharacterLogic {
+	// ----Variables----
+	// FLAG_IsPlayerDead_false: anyOtherValue => false
+	FLAG_IsPlayerDead_true = 0x8F
+
 
 	function current_STGH(enum_releaseRegion) =>
 		bcd(word(memory.getAddress("BCD:Player_Strength", enum_releaseRegion)))
@@ -898,6 +908,18 @@ class CLASS_MEMLOGIC_PlayerCharacterLogic {
 		prev(this.current_ENGY(enum_releaseRegion))		
 	function current_spellSelected(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:SelectedSpell", enum_releaseRegion))
+
+	function current_flagState_IsPlayerDead(enum_releaseRegion) =>
+		byte(memory.getAddress("Flag:IsPlayerDead", enum_releaseRegion))
+	function prev_flagState_IsPlayerDead(enum_releaseRegion) =>
+		prev(this.current_flagState_IsPlayerDead(enum_releaseRegion))
+
+	function is_alive(enum_releaseRegion) =>
+		this.current_flagState_IsPlayerDead(enum_releaseRegion) != this.FLAG_IsPlayerDead_true
+
+	function on_death(enum_releaseRegion) =>
+		this.prev_flagState_IsPlayerDead(enum_releaseRegion) != this.FLAG_IsPlayerDead_true
+		&& this.current_flagState_IsPlayerDead(enum_releaseRegion) == this.FLAG_IsPlayerDead_true
 
 	function on_spellCast(enum_spell, enum_releaseRegion) =>
 		this.current_spellSelected(enum_releaseRegion) == enum_spell
@@ -971,14 +993,16 @@ dict_coreData = {
 	"c_StoryProgress": { // Story Progression
 		// "a_Ch1MysteryMan": { // VERIFIED
 			// "id": 606009, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeating Mysterious Man at IzumoTemple (StoryChapter_1)"},
+		// "a_Ch2KashimaBoss": { // VERIFIED
+			// "id": 608244, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Stop the Serpent God calling at Kashima (after defeating Kashima Fire Boss) (StoryChapter_2)"},
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
 			// "id": 607151, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Defeat a boss with one hit from full HP (earlier bosses using Fudo spell)"},
 		// "a_SeaSpirits": { // VERIFIED
 			// "id": 607698, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeat all 5 sea spirits at Dannoura (Shimonoseki coast/sea)"},
-		"a_xRaying": { // VERIFIED
-			"id": 607701, "points": 0000000, "devInfo": "spot a chest with the x-ray glasses at Dannoura (Shimonoseki coast/sea)"},
+		// "a_xRaying": { // VERIFIED
+			// "id": 607701, "points": 0000000, "devInfo": "spot a chest with the x-ray glasses at Dannoura (Shimonoseki coast/sea)"},
 		
 		},
 	}
@@ -1008,18 +1032,77 @@ dict_triggers = {
 			// && gameStateB.is_gameStarted(enum_releaseRegion)
 			// && !demo.is_active(enum_releaseRegion)
 			// always_false()),
-	"a_Ch1MysteryMan": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			__ornext(gameStateA.is_inGame(enum_releaseRegion))
-			&& gameStateB.is_gameStarted(enum_releaseRegion)
-			&& !demo.is_active(enum_releaseRegion)
+	"a_Ch1MysteryMan": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_BOSS = bossEnemy.MysteriousEnemy
+		const_CHAPTER = storyChapter.Ch_1_Investigation
 
-			&& storyChapter.is(storyChapter.Ch_1_Investigation, enum_releaseRegion)
-			&& adventureScene.is(adventureScene.IzumoShrine_OutsideAfterBossFight, enum_releaseRegion)
-			&& adventureDialogueText.wasPrior(adventureDialogueText.FirstBossFight_A, enum_releaseRegion)
-			&& adventureDialogueText.is(adventureDialogueText.FirstBossFight_B, enum_releaseRegion)
-			&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch1_MysteryManDefeated, enum_releaseRegion)
-		),	
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			never(!gameStateA.is_inGame(enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never( // --ResetIf--> When players dies in ActionMode
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion))
+			&& never( // --ResetIf--> Boss spawns in BossArena
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& bossEnemy.on_spawn(const_BOSS, enum_releaseRegion))
+
+			&& player.is_alive(enum_releaseRegion)
+			&& storyChapter.is(const_CHAPTER, enum_releaseRegion)			
+
+			&& once( // --CheckIf--[StartCondition]--> Boss starts at max HP
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& bossEnemy.is_atMaxHP(const_BOSS, enum_releaseRegion))
+
+			&& tally(1, [ // --Tally--OrNext--> CheckIf: Boss dies, there's two death scenarios (see below)
+				once( // --CheckIf--> Boss dies on_HP_hitsZero()
+					bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+					&& bossEnemy.on_HP_hitsZero(const_BOSS, enum_releaseRegion)),
+				once( // --CheckIf--> Boss dies on_HP_negativelyOverflows()
+					bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+					&& bossEnemy.on_HP_negativelyOverflows(const_BOSS, enum_releaseRegion))
+				])
+
+			&& trigger_when(
+				adventureScene.is(adventureScene.IzumoShrine_OutsideAfterBossFight, enum_releaseRegion)
+				&& adventureDialogueText.wasPrior(adventureDialogueText.FirstBossFight_A, enum_releaseRegion)
+				&& adventureDialogueText.is(adventureDialogueText.FirstBossFight_B, enum_releaseRegion)
+				&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch1_MysteryManDefeated, enum_releaseRegion))
+		}),	
+	"a_Ch2KashimaBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_BOSS = bossEnemy.KashimaFireBoss
+		const_CHAPTER = storyChapter.Ch_1_Investigation
+
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			never(!gameStateA.is_inGame(enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never( // --ResetIf--> When players dies in ActionMode
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion))
+			&& never( // --ResetIf--> Boss spawns in BossArena
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& bossEnemy.on_spawn(const_BOSS, enum_releaseRegion))
+			
+			&& storyChapter.is(const_CHAPTER, enum_releaseRegion)
+			&& player.is_alive(enum_releaseRegion)
+			&& adventureScene.is(adventureScene.KashimaTemple_FirstVisit, enum_releaseRegion)
+
+			&& once( // --CheckIf--[StartCondition]--> Boss starts at max HP
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& bossEnemy.is_atMaxHP(const_BOSS, enum_releaseRegion))
+
+			&& tally(1, [ // --Tally--OrNext--> CheckIf: KashimaFireBoss dies, there's two death scenarios (see below)
+				once( // --CheckIf--> Boss dies on_HP_hitsZero()
+					bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+					&& bossEnemy.on_HP_hitsZero(const_BOSS, enum_releaseRegion)),
+				once( // --CheckIf--> Boss dies on_HP_negativelyOverflows()
+					bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+					&& bossEnemy.on_HP_negativelyOverflows(const_BOSS, enum_releaseRegion))
+				])
+
+			&& trigger_when(gameStateA.on_changeTo(gameStateA.AdventureMode, enum_releaseRegion))
+			}),
 	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ALLOWED_BOSSES = [bossEnemy.MysteriousEnemy, bossEnemy.Jukak, bossEnemy.Wakahiko]
 		const_FRAMES_ALLOWED_TILL_BOSSDEATH = 40
@@ -1116,6 +1199,7 @@ dict_triggers = {
 dict_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_Ch1MysteryMan": 			{"en": "xxxxxxxxx"},
+	"a_Ch2KashimaBoss": 		{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
@@ -1124,6 +1208,7 @@ dict_titles = {
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_Ch1MysteryMan": 			{"en": "xxxxxxxx"},
+	"a_Ch2KashimaBoss": 		{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
