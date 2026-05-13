@@ -83,16 +83,16 @@
 
 // Story Script
 //================
-// ----Chap1 start---- (trouble at enriku temple)
+// ----Chap0 start---- (trouble at enriku temple)
 // Investigate enriku Temple -> discover dead tokak soldiers --> "Izumo" tip from tokak soldier 
-// ----Chap2 start---- (Investigation)
+// ----Chap1 start---- (Investigation)
 // 1.investigate Izumo -> Kuma: something going on at Izumo Shrine --> mysterious man: "Kusanagi" + charm from Iwato family 
 // 	- Sword of Kusanagi at attaro shrine --> jukak
 // 	- MtMiwa for Iwato fam investigation: MtMiwaGuard --> Wakahiko: "friends are calling Serpent God"
 // 2. Go to Kashima Shrine to investigate Serpent God calling there --> Kashima Fire Boss --> Sword of branches acquire
-// ----Chap3 start---- (Shimono)
+// ----Chap2 start---- (Shimono)
 // Daikak: "Iwato looking for real sword of kusanagi in underwater shrine" --> Shimono to acquire it --> defeat Iwato at sea + learn Iwato still wanna revive Serpent God, now at Izumo Shrine
-// ----Chap4 start---- (FalseEnemy)
+// ----Chap3 start---- (FalseEnemy)
 // 1. Izumo Temple: Princess asaka/dragon boss fight --> Shimazu + asaka explain everything --> head outside Izumo temple --> Shimazu + asaka attacked by centipede --> bossFight --> Shimazu dies: "visit kumano shrine + talk with Utsuho"
 // 2. KumanoShrine: show ShimazuBall to Utsuho, becomes friendly: "go to serpent god at Kakogen"
 // 3. Kakogen in well cave --> at KakogenTemple find battleship "Ameno" --> return to Utsuho "An ancient god was <transplanted> into the computer! He has watched over the people of Iwato since then! Daikok only knows how to restore a god, not a machine but he can control us at will."
@@ -109,7 +109,7 @@
 // 	He is trapped in the pyramid on Mt.Minakami! This ship is heading for the place. 
 // 	You must stop the forces of evil from taking over the pyramid!"
 // 	start spaceship and head to pyramid at Mt Minakami
-// ----Chap5 start---- (Pyramid)
+// ----Chap4 start---- (Pyramid)
 // 1. find hidden entrance to pyramid --> find pyramid point --> exit pyramid + place point on top of pyramid --> new entrance opens
 // 2. enter pyramid (+ find optional equipment + optional bosses) --> Demon (head of the evil lord's army) + Regina possesses --> save Regina --> demon bossfight --> pyramid collapses --> Kane exits with Regina back to spaceship --> back to SummitTemple
 // Back at SummitTemple: 
@@ -120,7 +120,7 @@
 // 		with a gift. The dark lord has been freed, but he is still not awake. We must hurry 
 // 		before he begins to stir!" 
 // 	--> head to Underworld with spaceship
-// ----Chap6 start---- (Underworld)
+// ----Chap5 start---- (Underworld)
 // Underworld guard --> FerryCrossing: ferryman sleepy --> Gaurd: wakeup with nectar --> Chizu Sea: dancing band + Nectar --> Ferryman-Misty crossing -> Yomotsu plains
 // 	--> (defeat Amano/magic creature) --> Inazami Shrine: "Find mirrot and return to me to defeat Evil lord. Go to Yomotsu Shrine"
 // 	--> Yomotsu Shrine is gaurded by cerberus --> Amano tips you now: "find music at Toki Field" --> Toki plains: MoveRock (need Oar from Ferryman) --> find harp of Amano
@@ -136,9 +136,9 @@
 // 		The serpent hasmuch energy.Concentrate theenergy using thesacred mirror.Use the sword ofKusanagi to drawthe power into yourself! 
 // 		That mystic power...along with everythingyou have learned..will give you the strength to defeat the Dark Lord... 
 //         If your heart remains pure! Kane,everyone is awaiting your victory!"
-// ----Chap7 start---- (FinalBattle prep)
+// ----Chap6 start---- (FinalBattle prep)
 // Summit Temple --> Kashima Shrine --> Strike stone with SwordOfBranches --> unleach serpent god --> serpent god fills mirror with energy --> sword of kusanagi as catalyst to invoke power of mirror into Kane 
-// ----Chap8 start---- (FinalBattle)
+// ----Chap7 start---- (FinalBattle)
 // ending:	
 // 	"The evil lord and his armies have been defeated. But as long as suffering exists,
 // 	the threat that the Dark Lord will return remains. "
@@ -599,11 +599,20 @@ class CLASS_MEMLOGIC_StoryChapterIdentification {
 	function prev(enum_releaseRegion) =>
 		prev(this.current(enum_releaseRegion))
 
+	function on_change(enum_releaseRegion) =>
+		this.current(enum_releaseRegion) != this.prev(enum_releaseRegion)
+
 	function is(enum_storyChapterID, enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == enum_storyChapterID
 	function on_changeTo(enum_storyChapterID, enum_releaseRegion) =>
-		this.current(enum_releaseRegion) == enum_storyChapterID
-		&& this.prev(enum_releaseRegion) != enum_storyChapterID
+		this.prev(enum_releaseRegion) != enum_storyChapterID
+		&& this.current(enum_releaseRegion) == enum_storyChapterID
+
+	function on_finish(enum_storyChapterID, enum_releaseRegion) {
+		if (enum_storyChapterID == 7) memUtil.throwError("Ch_7_FinalBattle has no follow-up value on finishing the chapter/game")
+		return 
+			this.prev(enum_releaseRegion) == enum_storyChapterID
+			&& this.current(enum_releaseRegion) == enum_storyChapterID +1}
 
 } storyChapter = CLASS_MEMLOGIC_StoryChapterIdentification()
 // #endregion Story Chapter Identification
@@ -617,6 +626,9 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	KashimaTemple_PreFinalBattle = 0x59
 	Dannoura_A = 0x18
 	Dannoura_Y = 0x30
+	UnderwaterShrine = 0x33
+	Dannoura_IwatoBattle = 0x34
+	SummitTemple_PostChapter2 = 0x35
 	
 	// ----Functions----
 	function current(enum_releaseRegion) =>
@@ -645,6 +657,7 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 	// ----MainQuestEvents (enum = flagIndex in "FlagArray:MainQuestEventFlags")----
 	Ch1_MysteryManDefeated = 5
 	Ch2_LuteSpiritVanquished = 11
+	Ch2_AcquireSwordOfKusanagi = 18
 
 	// ----Functions----
 	function current_flagState(int_flagIndex, enum_releaseRegion) =>
@@ -693,8 +706,8 @@ class CLASS_MEMLOGIC_MiscEventFlags {
 } miscellaneousEvent = CLASS_MEMLOGIC_MiscEventFlags()
 // #endregion Misc Event Flags
 
-// #region Adventure Mode Dialogue Text Identification
-class CLASS_MEMLOGIC_AdventureModeDialogueTextIdentification {
+// #region Dialogue Text Identification
+class CLASS_MEMLOGIC_DialogueTextIdentification {
 	// ----Variables----
 	FLAG_isAdventureModeDialogueTextDisplayed_true = 1
 	FLAG_isAdventureModeDialogueTextDisplayed_false = 0
@@ -704,7 +717,11 @@ class CLASS_MEMLOGIC_AdventureModeDialogueTextIdentification {
 	FirstBossFight_B = 0x32 // "with that word, the mysterious enemy disappears!
 	XRayGlasses_Use = 0xDA // "Kane puts on the X-Ray Glasses"
 	XRayGlasses_Success = 0xEB // "Kane: I can see a chest on the seabed!"
-
+	UnderwaterShrine_TakeSwordOfKusanagi = 0x0130  // "Kane takes the real sword of kusanagi"
+	IwatoBattleDannoura_SwordOfKusanagi_Use_A = 0x13A // "Kane brandishes the sword of Kusanagi" - Using Sword of Kusanagi against Iwato Family on Dannoura
+	IwatoBattleDannoura_SwordOfKusanagi_Use_B = 0x13B // "The sword begins to release its pent-up energy."
+	IwatoBattleDannoura_SwordOfKusanagi_Use_E = 0x013E // "The remnants of the men of Iwato begin to run!"
+ 	IwatoBattleDannoura_SwordOfKusanagi_Use_F = 0x013F // "Kane: The sword of Kusanagi saved me!..."
 
 	function current(enum_releaseRegion) =>
 		word(memory.getAddress("16-bit:AdventureModeDialogueText_ID", enum_releaseRegion))
@@ -717,7 +734,8 @@ class CLASS_MEMLOGIC_AdventureModeDialogueTextIdentification {
 		this.current(enum_releaseRegion) == enum_dialogueText
 	function wasPrior(enum_dialogueText, enum_releaseRegion) =>
 		this.prior(enum_releaseRegion) == enum_dialogueText
-
+	function wasPrev(enum_dialogueText, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) == enum_dialogueText	
 	// ----------------------------
 	function current_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) =>
 		bit0(memory.getAddress("BitFlag:IsAdventureModeDialogueTextDisplayed", enum_releaseRegion))
@@ -729,8 +747,8 @@ class CLASS_MEMLOGIC_AdventureModeDialogueTextIdentification {
 	function on_textBox_hide(enum_releaseRegion) =>
 		this.prev_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) == this.FLAG_isAdventureModeDialogueTextDisplayed_true
 		&& this.current_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) == this.FLAG_isAdventureModeDialogueTextDisplayed_false
-} adventureDialogueText = CLASS_MEMLOGIC_AdventureModeDialogueTextIdentification()
-// #endregion Adventure Mode Dialogue Text Identification
+} dialogueText = CLASS_MEMLOGIC_DialogueTextIdentification()
+// #endregion Dialogue Text Identification
 
 // #region ActionMode Level Identification
 class CLASS_MEMLOGIC_ActionModeLevelIdentification {
@@ -779,6 +797,7 @@ class CLASS_MEMLOGIC_Gear {
 class CLASS_MEMLOGIC_Inventory {
 	// ----Items (enum = flagIndex in "FlagArray:ItemInventoryFlags")----
 	Ch2_Lute = 5
+	Ch2_SwordOfKusanagi = 7
 
 	// ----Functions----
 	function current_inventoryFlagState(int_flagIndex, enum_releaseRegion) => 
@@ -995,6 +1014,8 @@ dict_coreData = {
 			// "id": 606009, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeating Mysterious Man at IzumoTemple (StoryChapter_1)"},
 		// "a_Ch1KashimaBoss": { // VERIFIED
 			// "id": 608244, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Stop the Serpent God calling at Kashima (after defeating Kashima Fire Boss) (StoryChapter_1)"},
+		// "a_Ch2SwordKusanagi": { // VERIFIED
+			// "id": 608452, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Acquire Sword of Kusanagi at Underwater shrine + then use it to vanquish Iwato family at sea (showcasing it's power)"},
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
@@ -1065,8 +1086,8 @@ dict_triggers = {
 
 			&& trigger_when(
 				adventureScene.is(adventureScene.IzumoShrine_OutsideAfterBossFight, enum_releaseRegion)
-				&& adventureDialogueText.wasPrior(adventureDialogueText.FirstBossFight_A, enum_releaseRegion)
-				&& adventureDialogueText.is(adventureDialogueText.FirstBossFight_B, enum_releaseRegion)
+				&& dialogueText.wasPrior(dialogueText.FirstBossFight_A, enum_releaseRegion)
+				&& dialogueText.is(dialogueText.FirstBossFight_B, enum_releaseRegion)
 				&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch1_MysteryManDefeated, enum_releaseRegion))
 		}),	
 	"a_Ch1KashimaBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -1103,6 +1124,40 @@ dict_triggers = {
 
 			&& trigger_when(gameStateA.on_changeTo(gameStateA.AdventureMode, enum_releaseRegion))
 			}),
+	"a_Ch2SwordKusanagi": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			never(!gameStateB.is_gameStarted(enum_releaseRegion))
+			&& never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never(repeated(2, // --ResetIf--> Not in correct Chapter for 2 frames 
+				never(storyChapter.on_change(enum_releaseRegion)) // --ResetNextIf--> to allow the storyChapter.on_finish() within the TriggerIndicator of this achievement to become true
+				&& !storyChapter.is(storyChapter.Ch_2_SwordOfKusanagi, enum_releaseRegion)))
+
+			&& once( // --CheckIf--[Startcondition_A]--> Player acquires SwordOfKusanagi at UnderwaterShrine  (toggles at same time as [Startcondition_B], but not same frame)
+				adventureScene.is(adventureScene.UnderwaterShrine,enum_releaseRegion) 
+				&& dialogueText.is(dialogueText.UnderwaterShrine_TakeSwordOfKusanagi, enum_releaseRegion)
+				&& item.on_acquire(item.Ch2_SwordOfKusanagi, enum_releaseRegion))
+			&& once( // --CheckIf--[Startcondition_B]--> Player acquires SwordOfKusanagi at UnderwaterShrine (toggles at same time as [Startcondition_A], but not same frame)
+				adventureScene.is(adventureScene.UnderwaterShrine,enum_releaseRegion) 
+				&& mainQuest.is_priorEventsCompleted(mainQuest.Ch2_AcquireSwordOfKusanagi, enum_releaseRegion)
+				&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch2_AcquireSwordOfKusanagi, enum_releaseRegion))
+
+			&& trigger_when( // --Trigger--> When power of SwordOfKusanagi is showcased
+				once( // --CheckIf--> AdventureScene changes to adventureScene.Dannoura_IwatoBattle from adventureScene.UnderwaterShrine
+					adventureScene.prev(enum_releaseRegion) == adventureScene.UnderwaterShrine
+					&& adventureScene.current(enum_releaseRegion) == adventureScene.Dannoura_IwatoBattle)
+				&& once( // --CheckIf--> player uses SwordOfKusanagi at Dannoura against Iwato Family (part 1)
+					adventureScene.is(adventureScene.Dannoura_IwatoBattle,enum_releaseRegion) 
+					&& item.is_inInventory(item.Ch2_SwordOfKusanagi, enum_releaseRegion)
+					&& dialogueText.wasPrev(dialogueText.IwatoBattleDannoura_SwordOfKusanagi_Use_A, enum_releaseRegion)
+					&& dialogueText.is(dialogueText.IwatoBattleDannoura_SwordOfKusanagi_Use_B, enum_releaseRegion))
+				&& once( // --CheckIf--> player uses SwordOfKusanagi at Dannoura against Iwato Family (part 2)
+					adventureScene.is(adventureScene.Dannoura_IwatoBattle,enum_releaseRegion) 
+					&& item.is_inInventory(item.Ch2_SwordOfKusanagi, enum_releaseRegion)
+					&& dialogueText.wasPrev(dialogueText.IwatoBattleDannoura_SwordOfKusanagi_Use_E, enum_releaseRegion)
+					&& dialogueText.is(dialogueText.IwatoBattleDannoura_SwordOfKusanagi_Use_F, enum_releaseRegion))
+				&& dialogueText.on_textBox_hide(enum_releaseRegion))
+		),
 	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ALLOWED_BOSSES = [bossEnemy.MysteriousEnemy, bossEnemy.Jukak, bossEnemy.Wakahiko]
 		const_FRAMES_ALLOWED_TILL_BOSSDEATH = 40
@@ -1182,15 +1237,15 @@ dict_triggers = {
 
 			&& once( // --CheckIf--> XRayGlasses is used whilst out at sea on Dannoura
 				never( // --ResetNextIf--> No chest is spotted with XRayGlasses
-					adventureDialogueText.is_textBox_displayed(enum_releaseRegion)
-					&& !adventureDialogueText.is(adventureDialogueText.XRayGlasses_Use, enum_releaseRegion)
-					&& !adventureDialogueText.is(adventureDialogueText.XRayGlasses_Success, enum_releaseRegion))
-				&& adventureDialogueText.is_textBox_displayed(enum_releaseRegion)
-				&& adventureDialogueText.is(adventureDialogueText.XRayGlasses_Use, enum_releaseRegion)
+					dialogueText.is_textBox_displayed(enum_releaseRegion)
+					&& !dialogueText.is(dialogueText.XRayGlasses_Use, enum_releaseRegion)
+					&& !dialogueText.is(dialogueText.XRayGlasses_Success, enum_releaseRegion))
+				&& dialogueText.is_textBox_displayed(enum_releaseRegion)
+				&& dialogueText.is(dialogueText.XRayGlasses_Use, enum_releaseRegion)
 				&& adventureScene.is_atSeaOnDannoura(enum_releaseRegion))
-			&& trigger_when( // --Trigger--> Only to give players a hint for this achievement;  When nothing is seen with xRayGlasses, there's a seperate dialogueText to hide TriggerIndicator
-				adventureDialogueText.is(adventureDialogueText.XRayGlasses_Success, enum_releaseRegion)
-				&& adventureDialogueText.on_textBox_hide(enum_releaseRegion)) 
+			&& trigger_when( // --Trigger--> Only to give players a hint for this achievement;  When nothing is seen with xRayGlasses, there's a seperate dialogue line to hide TriggerIndicator
+				dialogueText.is(dialogueText.XRayGlasses_Success, enum_releaseRegion)
+				&& dialogueText.on_textBox_hide(enum_releaseRegion)) 
 			),
 	}
 // #endregion ACH - Triggers
@@ -1200,6 +1255,7 @@ dict_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_Ch1MysteryMan": 			{"en": "xxxxxxxxx"},
 	"a_Ch1KashimaBoss": 		{"en": "xxxxxxxxx"},
+	"a_Ch2SwordKusanagi": 		{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
@@ -1209,6 +1265,7 @@ dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_Ch1MysteryMan": 			{"en": "xxxxxxxx"},
 	"a_Ch1KashimaBoss": 		{"en": "xxxxxxxxx"},
+	"a_Ch2SwordKusanagi": 		{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
