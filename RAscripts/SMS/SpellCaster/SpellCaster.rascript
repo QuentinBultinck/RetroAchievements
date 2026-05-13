@@ -82,7 +82,7 @@
 // - Acquiring Necklace from Kuma at Izumo (FinalBattle section) (optional item, restores strength if it reaches zero)
 
 // Story Script
-//================
+// ================
 // ----Chap0 start---- (trouble at enriku temple)
 // Investigate enriku Temple -> discover dead tokak soldiers --> "Izumo" tip from tokak soldier 
 // ----Chap1 start---- (Investigation)
@@ -91,11 +91,14 @@
 // 	- MtMiwa for Iwato fam investigation: MtMiwaGuard --> Wakahiko: "friends are calling Serpent God"
 // 2. Go to Kashima Shrine to investigate Serpent God calling there --> Kashima Fire Boss --> Sword of branches acquire
 // ----Chap2 start---- (Shimono)
-// Daikak: "Iwato looking for real sword of kusanagi in underwater shrine" --> Shimono to acquire it --> defeat Iwato at sea + learn Iwato still wanna revive Serpent God, now at Izumo Shrine
+// Daikak: "Iwato looking for real sword of kusanagi in underwater shrine" --> Shimono to acquire it 
+// 				--> defeat Iwato at sea + learn Iwato still wanna revive Serpent God, now at Izumo Shrine
 // ----Chap3 start---- (FalseEnemy)
-// 1. Izumo Temple: Princess asaka/dragon boss fight --> Shimazu + asaka explain everything --> head outside Izumo temple --> Shimazu + asaka attacked by centipede --> bossFight --> Shimazu dies: "visit kumano shrine + talk with Utsuho"
+// 1. Izumo Temple: Princess asaka/dragon boss fight --> Shimazu + asaka explain everything --> head outside Izumo temple 
+// 		--> Shimazu + asaka attacked by centipede --> bossFight --> Shimazu dies: "visit kumano shrine + talk with Utsuho"
 // 2. KumanoShrine: show ShimazuBall to Utsuho, becomes friendly: "go to serpent god at Kakogen"
-// 3. Kakogen in well cave --> at KakogenTemple find battleship "Ameno" --> return to Utsuho "An ancient god was <transplanted> into the computer! He has watched over the people of Iwato since then! Daikok only knows how to restore a god, not a machine but he can control us at will."
+// 3. Kakogen in well cave --> at KakogenTemple find battleship "Ameno" --> return to Utsuho "An ancient god was <transplanted> into the computer! He has watched over 
+// 		the people of Iwato since then! Daikok only knows how to restore a god, not a machine but he can control us at will."
 // 4. move to Mt Hinokami to face off with Daikok (who's controlled by evil god) --> bossFight Kezeus (alien) --> bossfight Daikok robot --> armorbracers
 // 5. move back to KumanoShrine, Utusho: "That armor was Daikok's special armor! It is likely the key to waking up the serpent!"
 // 6. move back to Kakogen + startup battleship Ameno/serpent god Ooku: 
@@ -108,10 +111,11 @@
 // 	This is the truth behind the legends. Kane, evil beings seek to revive the evil lord. 
 // 	He is trapped in the pyramid on Mt.Minakami! This ship is heading for the place. 
 // 	You must stop the forces of evil from taking over the pyramid!"
-// 	start spaceship and head to pyramid at Mt Minakami
+// 	--> start spaceship and head to pyramid at Mt Minakami
 // ----Chap4 start---- (Pyramid)
 // 1. find hidden entrance to pyramid --> find pyramid point --> exit pyramid + place point on top of pyramid --> new entrance opens
-// 2. enter pyramid (+ find optional equipment + optional bosses) --> Demon (head of the evil lord's army) + Regina possesses --> save Regina --> demon bossfight --> pyramid collapses --> Kane exits with Regina back to spaceship --> back to SummitTemple
+// 2. enter pyramid (+ find optional equipment + optional bosses) --> Demon (head of the evil lord's army) + Regina possesses 
+// 		--> save Regina --> demon bossfight --> pyramid collapses --> Kane exits with Regina back to spaceship --> back to SummitTemple
 // Back at SummitTemple: 
 // 	Daikak: "The evil lord's prison was opened?"
 // 	Kane: "Yes. The enemy's forces we did defeat, but... "
@@ -124,7 +128,8 @@
 // Underworld guard --> FerryCrossing: ferryman sleepy --> Gaurd: wakeup with nectar --> Chizu Sea: dancing band + Nectar --> Ferryman-Misty crossing -> Yomotsu plains
 // 	--> (defeat Amano/magic creature) --> Inazami Shrine: "Find mirrot and return to me to defeat Evil lord. Go to Yomotsu Shrine"
 // 	--> Yomotsu Shrine is gaurded by cerberus --> Amano tips you now: "find music at Toki Field" --> Toki plains: MoveRock (need Oar from Ferryman) --> find harp of Amano
-// 	--> Chizu Sea --> make music --> bad music + learn to make music --> Yomotsu shrine: play music --> Yomotsu: "The 8 swords of fury are needed. One is held by the Thunder God!"
+// 	--> Chizu Sea --> make music --> bad music + learn to make music --> Yomotsu shrine: play music 
+// 				--> Yomotsu: "The 8 swords of fury are needed. One is held by the Thunder God!"
 // 	--> Ferryman: takes you to thunder god --> bossfight --> take sword of fury 
 // 	--> Yomotsu: "You got it! You defeated the god of thunder A very powerful god indeed! 
 // 		Now go to the holy bridge to find the sacred mirror! "
@@ -137,7 +142,8 @@
 // 		That mystic power...along with everythingyou have learned..will give you the strength to defeat the Dark Lord... 
 //         If your heart remains pure! Kane,everyone is awaiting your victory!"
 // ----Chap6 start---- (FinalBattle prep)
-// Summit Temple --> Kashima Shrine --> Strike stone with SwordOfBranches --> unleach serpent god --> serpent god fills mirror with energy --> sword of kusanagi as catalyst to invoke power of mirror into Kane 
+// Summit Temple --> Kashima Shrine --> Strike stone with SwordOfBranches --> unleach serpent god --> serpent god fills mirror with energy 
+// 			--> sword of kusanagi as catalyst to invoke power of mirror into Kane 
 // ----Chap7 start---- (FinalBattle)
 // ending:	
 // 	"The evil lord and his armies have been defeated. But as long as suffering exists,
@@ -629,6 +635,9 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	UnderwaterShrine = 0x33
 	Dannoura_IwatoBattle = 0x34
 	SummitTemple_PostChapter2 = 0x35
+	IzumoTemple_OutsideWithShimazuAsaka = 0x37
+	IzumoTemple_InsideWithShimazuAsaka = 0x38
+	ShimazuDeath = 0x39
 	
 	// ----Functions----
 	function current(enum_releaseRegion) =>
@@ -658,6 +667,8 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 	Ch1_MysteryManDefeated = 5
 	Ch2_LuteSpiritVanquished = 11
 	Ch2_AcquireSwordOfKusanagi = 18
+	Ch3_AcquireBallOfShimazu = 3
+	Ch3_ShimazuDeathEnd = 4
 
 	// ----Functions----
 	function current_flagState(int_flagIndex, enum_releaseRegion) =>
@@ -722,6 +733,8 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
 	IwatoBattleDannoura_SwordOfKusanagi_Use_B = 0x13B // "The sword begins to release its pent-up energy."
 	IwatoBattleDannoura_SwordOfKusanagi_Use_E = 0x013E // "The remnants of the men of Iwato begin to run!"
  	IwatoBattleDannoura_SwordOfKusanagi_Use_F = 0x013F // "Kane: The sword of Kusanagi saved me!..."
+	ShimazuDeath_AcquireBall = 0x26 // "Shimazu: I meant to give you this before, but..."
+	ShimazuDeath_AsakaLeaves = 0x2F // "with those words, Asaka disappears!"
 
 	function current(enum_releaseRegion) =>
 		word(memory.getAddress("16-bit:AdventureModeDialogueText_ID", enum_releaseRegion))
@@ -798,6 +811,7 @@ class CLASS_MEMLOGIC_Inventory {
 	// ----Items (enum = flagIndex in "FlagArray:ItemInventoryFlags")----
 	Ch2_Lute = 5
 	Ch2_SwordOfKusanagi = 7
+	Ch3_BallOfShimazu = 1
 
 	// ----Functions----
 	function current_inventoryFlagState(int_flagIndex, enum_releaseRegion) => 
@@ -1016,6 +1030,8 @@ dict_coreData = {
 			// "id": 608244, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Stop the Serpent God calling at Kashima (after defeating Kashima Fire Boss) (StoryChapter_1)"},
 		// "a_Ch2SwordKusanagi": { // VERIFIED
 			// "id": 608452, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Acquire Sword of Kusanagi at Underwater shrine + then use it to vanquish Iwato family at sea (showcasing it's power)"},
+		// "a_Ch3Shimazu": { // VERIFIED
+			// "id": 608453, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Unearthing the some of true intentions of the Iwato, after Shimazu's death"},
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
@@ -1129,11 +1145,9 @@ dict_triggers = {
 			never(!gameStateB.is_gameStarted(enum_releaseRegion))
 			&& never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
 			&& never(demo.is_active(enum_releaseRegion))
-			&& never(repeated(2, // --ResetIf--> Not in correct Chapter for 2 frames 
-				never(storyChapter.on_change(enum_releaseRegion)) // --ResetNextIf--> to allow the storyChapter.on_finish() within the TriggerIndicator of this achievement to become true
-				&& !storyChapter.is(storyChapter.Ch_2_SwordOfKusanagi, enum_releaseRegion)))
+			&& never(!storyChapter.is(storyChapter.Ch_2_SwordOfKusanagi, enum_releaseRegion))
 
-			&& once( // --CheckIf--[Startcondition_A]--> Player acquires SwordOfKusanagi at UnderwaterShrine  (toggles at same time as [Startcondition_B], but not same frame)
+			&& once( // --CheckIf--[Startcondition_A]--> Player acquires SwordOfKusanagi at UnderwaterShrine (toggles at same time as [Startcondition_B], but not same frame)
 				adventureScene.is(adventureScene.UnderwaterShrine,enum_releaseRegion) 
 				&& dialogueText.is(dialogueText.UnderwaterShrine_TakeSwordOfKusanagi, enum_releaseRegion)
 				&& item.on_acquire(item.Ch2_SwordOfKusanagi, enum_releaseRegion))
@@ -1158,6 +1172,25 @@ dict_triggers = {
 					&& dialogueText.is(dialogueText.IwatoBattleDannoura_SwordOfKusanagi_Use_F, enum_releaseRegion))
 				&& dialogueText.on_textBox_hide(enum_releaseRegion))
 		),
+	"a_Ch3Shimazu": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			never(!gameStateB.is_gameStarted(enum_releaseRegion))
+			&& never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never(!storyChapter.is(storyChapter.Ch_3_FalseEnemy, enum_releaseRegion))
+			&& never(!adventureScene.is(adventureScene.ShimazuDeath, enum_releaseRegion))
+
+			&& once( // --CheckIf--[StartCondition_A]-> Player acquires BallOfShimazu (toggles at same time as [Startcondition_B], but not same frame)				
+				dialogueText.is(dialogueText.ShimazuDeath_AcquireBall, enum_releaseRegion)
+				&& item.on_acquire(item.Ch3_BallOfShimazu, enum_releaseRegion))
+			&& once( // --CheckIf--[StartCondition_B]-> Player acquires BallOfShimazu (toggles at same time as [StartCondition_A], but not same frame)
+				dialogueText.is(dialogueText.ShimazuDeath_AcquireBall, enum_releaseRegion)
+				&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch3_AcquireBallOfShimazu, enum_releaseRegion))
+
+			&& trigger_when( // --Trigger--> When Asaka leaves
+				dialogueText.is(dialogueText.ShimazuDeath_AsakaLeaves, enum_releaseRegion)
+				&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch3_ShimazuDeathEnd, enum_releaseRegion))
+			),
 	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ALLOWED_BOSSES = [bossEnemy.MysteriousEnemy, bossEnemy.Jukak, bossEnemy.Wakahiko]
 		const_FRAMES_ALLOWED_TILL_BOSSDEATH = 40
@@ -1254,8 +1287,9 @@ dict_triggers = {
 dict_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_Ch1MysteryMan": 			{"en": "xxxxxxxxx"},
-	"a_Ch1KashimaBoss": 		{"en": "xxxxxxxxx"},
-	"a_Ch2SwordKusanagi": 		{"en": "xxxxxxxxx"},
+	"a_Ch1KashimaBoss": 		{"en": "Stopping the Serpent God"},
+	"a_Ch2SwordKusanagi": 		{"en": "The Power of Kusanagi"},
+	"a_Ch3Shimazu":  			{"en": "Friends or Enemies"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
@@ -1264,8 +1298,9 @@ dict_titles = {
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_Ch1MysteryMan": 			{"en": "xxxxxxxx"},
-	"a_Ch1KashimaBoss": 		{"en": "xxxxxxxxx"},
-	"a_Ch2SwordKusanagi": 		{"en": "xxxxxxxxx"},
+	"a_Ch1KashimaBoss": 		{"en": "xxxxxxxx"},
+	"a_Ch2SwordKusanagi": 		{"en": "xxxxxxxx"},
+	"a_Ch3Shimazu":  			{"en": "xxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
