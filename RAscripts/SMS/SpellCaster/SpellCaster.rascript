@@ -638,6 +638,7 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	IzumoTemple_OutsideWithShimazuAsaka = 0x37
 	IzumoTemple_InsideWithShimazuAsaka = 0x38
 	ShimazuDeath = 0x39
+	AmenoSpaceship = 0x3D
 	
 	// ----Functions----
 	function current(enum_releaseRegion) =>
@@ -735,6 +736,11 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
  	IwatoBattleDannoura_SwordOfKusanagi_Use_F = 0x013F // "Kane: The sword of Kusanagi saved me!..."
 	ShimazuDeath_AcquireBall = 0x26 // "Shimazu: I meant to give you this before, but..."
 	ShimazuDeath_AsakaLeaves = 0x2F // "with those words, Asaka disappears!"
+	ArmorBracers_Use_A = [0x1BB, 0x7B] // "The glove on Kane's hand fits the hand imprint" 
+	ArmorBracers_Use_B = [0x1BC, 0x7C] // "Computer: ID confirmation complete"
+	ArmorBracers_Use_C = [0x1BD, 0x7D] // "Kane's mind merges with that of the serpent-god Ooku!"
+	OokuSpeech = [0x1BE, 0x7E] // "Ooku: Long ago the Iwato ruled a highly advanced world..."
+	OokuSpeech_Done = [0x1BF, 0x7F] // "Computer: Throttle up to..." - Just before heading of to pyramid
 
 	function current(enum_releaseRegion) =>
 		word(memory.getAddress("16-bit:AdventureModeDialogueText_ID", enum_releaseRegion))
@@ -812,6 +818,7 @@ class CLASS_MEMLOGIC_Inventory {
 	Ch2_Lute = 5
 	Ch2_SwordOfKusanagi = 7
 	Ch3_BallOfShimazu = 1
+	Ch3_ArmorBracers = 2
 
 	// ----Functions----
 	function current_inventoryFlagState(int_flagIndex, enum_releaseRegion) => 
@@ -1032,6 +1039,8 @@ dict_coreData = {
 			// "id": 608452, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Acquire Sword of Kusanagi at Underwater shrine + then use it to vanquish Iwato family at sea (showcasing it's power)"},
 		// "a_Ch3Shimazu": { // VERIFIED
 			// "id": 608453, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Unearthing the some of true intentions of the Iwato, after Shimazu's death"},
+		// "a_Ch3Ameno": { // VERIFIED
+			// "id": 608595, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Start up spaceship Ameno and be enlightened by Serpent God Ooku"},
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
@@ -1172,7 +1181,7 @@ dict_triggers = {
 					&& dialogueText.is(dialogueText.IwatoBattleDannoura_SwordOfKusanagi_Use_F, enum_releaseRegion))
 				&& dialogueText.on_textBox_hide(enum_releaseRegion))
 		),
-	"a_Ch3Shimazu": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+	"a_Ch3Shimazu": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			never(!gameStateB.is_gameStarted(enum_releaseRegion))
 			&& never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
@@ -1190,6 +1199,30 @@ dict_triggers = {
 			&& trigger_when( // --Trigger--> When Asaka leaves
 				dialogueText.is(dialogueText.ShimazuDeath_AsakaLeaves, enum_releaseRegion)
 				&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch3_ShimazuDeathEnd, enum_releaseRegion))
+			),
+	"a_Ch3Ameno": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			never(!gameStateB.is_gameStarted(enum_releaseRegion))
+			&& never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never(!storyChapter.is(storyChapter.Ch_3_FalseEnemy, enum_releaseRegion))
+			&& never(!adventureScene.is(adventureScene.AmenoSpaceship, enum_releaseRegion))
+			&& never(!item.is_inInventory(item.Ch3_ArmorBracers, enum_releaseRegion))
+
+			&& once( // --CheckIf--[StartCondition]-> Using armorBracers inside spaceship
+				dialogueText.wasPrev(dialogueText.ArmorBracers_Use_A[0], enum_releaseRegion)
+				&& dialogueText.is(dialogueText.ArmorBracers_Use_A[1], enum_releaseRegion))
+
+			&& trigger_when( // --Trigger--> Ooku speech is over				
+				once(
+					dialogueText.wasPrev(dialogueText.ArmorBracers_Use_A[1], enum_releaseRegion)
+					&& dialogueText.is(dialogueText.ArmorBracers_Use_B[0], enum_releaseRegion))
+				&& once(
+					dialogueText.wasPrev(dialogueText.ArmorBracers_Use_C[1], enum_releaseRegion)
+					&& dialogueText.is(dialogueText.OokuSpeech[0], enum_releaseRegion))
+
+				&& dialogueText.wasPrev(dialogueText.OokuSpeech[1], enum_releaseRegion)
+				&& dialogueText.is(dialogueText.OokuSpeech_Done[0], enum_releaseRegion))
 			),
 	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ALLOWED_BOSSES = [bossEnemy.MysteriousEnemy, bossEnemy.Jukak, bossEnemy.Wakahiko]
@@ -1290,6 +1323,7 @@ dict_titles = {
 	"a_Ch1KashimaBoss": 		{"en": "Stopping the Serpent God"},
 	"a_Ch2SwordKusanagi": 		{"en": "The Power of Kusanagi"},
 	"a_Ch3Shimazu":  			{"en": "Friends or Enemies"},
+	"a_Ch3Ameno": 				{"en": "Enlightened by Wisdom"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
@@ -1301,6 +1335,7 @@ dict_descriptions = {
 	"a_Ch1KashimaBoss": 		{"en": "xxxxxxxx"},
 	"a_Ch2SwordKusanagi": 		{"en": "xxxxxxxx"},
 	"a_Ch3Shimazu":  			{"en": "xxxxxxxx"},
+	"a_Ch3Ameno": 				{"en": "xxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
