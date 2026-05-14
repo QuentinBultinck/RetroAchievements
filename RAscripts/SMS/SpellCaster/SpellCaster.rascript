@@ -126,7 +126,7 @@
 // 	--> head to Underworld with spaceship
 // ----Chap5 start---- (Underworld)
 // Underworld guard --> FerryCrossing: ferryman sleepy --> Gaurd: wakeup with nectar --> Chizu Sea: dancing band + Nectar --> Ferryman-Misty crossing -> Yomotsu plains
-// 	--> (defeat Amano/magic creature) --> Inazami Shrine: "Find mirrot and return to me to defeat Evil lord. Go to Yomotsu Shrine"
+// 	--> (defeat Amano/magic creature) --> Inazami Shrine: "Find mirror and return to me to defeat Evil lord. Go to Yomotsu Shrine"
 // 	--> Yomotsu Shrine is gaurded by cerberus --> Amano tips you now: "find music at Toki Field" --> Toki plains: MoveRock (need Oar from Ferryman) --> find harp of Amano
 // 	--> Chizu Sea --> make music --> bad music + learn to make music --> Yomotsu shrine: play music 
 // 				--> Yomotsu: "The 8 swords of fury are needed. One is held by the Thunder God!"
@@ -641,6 +641,7 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	ShimazuDeath = 0x39
 	AmenoSpaceship = 0x3D
 	Pyramid_DarkRoom = 0x45
+	YomotsuShrine = 0x4D
 	
 	// ----Functions----
 	function current(enum_releaseRegion) =>
@@ -673,6 +674,8 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 	Ch3_AcquireBallOfShimazu = 3
 	Ch3_ShimazuDeathEnd = 4
 	Ch4_PyramidDemonDefeated = 6
+	Ch5_LearnedToPlayHarp = 18
+	Ch5_CerberusCalmed = 19
 
 	// ----Functions----
 	function current_flagState(int_flagIndex, enum_releaseRegion) =>
@@ -757,6 +760,10 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
 	PyramidDemonFelled_B = [0x1FC, 0xBC] // "Demon: Impossible! I can not be killed..."
 	PyramidDemonFelled_C = [0x1FD, 0xBD] // "Kane: The pyramid...!! It's collapsing! Run!"
 	PyramidDemonFelled_D = [0x1FE, 0xBE] // "Grabbing Regina, Kane heads for the ship!"
+	MusicForCerberus_A = [0x255, 0x15] // "Kane plays the harp"
+	MusicForCerberus_B = [0x25B, 0x1B] // "Cerberus sits and listens to the music"
+	MusicForCerberus_C = [0x25C, 0x1C] // "The god named Yomotus can be seen in the shrine"
+	MusicForCerberus_D = [0x25D, 0x1D] // "Yomotsu: Wonderful playing! What do you ask of me?"
 
 	function current(enum_releaseRegion) =>
 		word(memory.getAddress("16-bit:AdventureModeDialogueText_ID", enum_releaseRegion))
@@ -836,6 +843,7 @@ class CLASS_MEMLOGIC_Inventory {
 	Ch2_SwordOfKusanagi = 7
 	Ch3_BallOfShimazu = 1
 	Ch3_ArmorBracers = 2
+	Ch5_MysticHarp = 3
 
 	// ----Functions----
 	function current_inventoryFlagState(int_flagIndex, enum_releaseRegion) => 
@@ -1061,11 +1069,14 @@ dict_coreData = {
 		// "a_Ch2SwordKusanagi": { // VERIFIED
 			// "id": 608452, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Acquire Sword of Kusanagi at Underwater shrine + then use it to vanquish Iwato family at sea (showcasing it's power)"},
 		// "a_Ch3Shimazu": { // VERIFIED
-			// "id": 608453, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Unearthing the some of true intentions of the Iwato, after Shimazu's death"},
+			// "id": 608453, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Unearthing some of the true intentions of the Iwato, after Shimazu's death"},
 		// "a_Ch3Ameno": { // VERIFIED
 			// "id": 608595, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Start up spaceship Ameno and be enlightened by Serpent God Ooku"},
 		// "a_Ch4Demon": { // VERIFIED
 			// "id": 608674, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Defeat the pyramid demon"},
+		// "a_Ch5Yomotsu": { // VERIFIED
+			// "id": 608684, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Reach an audience with the God Yomotsu"},
+	
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
@@ -1295,6 +1306,35 @@ dict_triggers = {
 				&& dialogueText.wasPrev(dialogueText.PyramidDemonFelled_B[1], enum_releaseRegion)
 				&& dialogueText.is(dialogueText.PyramidDemonFelled_C[0], enum_releaseRegion))
 		}),	
+	"a_Ch5Yomotsu": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			never(!gameStateB.is_gameStarted(enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
+			&& never(!storyChapter.is(storyChapter.Ch_5_Underworld, enum_releaseRegion))
+			&& never(!adventureScene.is(adventureScene.YomotsuShrine, enum_releaseRegion))
+			&& never(!item.is_inInventory(item.Ch5_MysticHarp, enum_releaseRegion))
+
+			&& once( // --CheckIf--> Correct dialogue text is printed (start)
+				mainQuest.is_eventCompleted(mainQuest.Ch5_LearnedToPlayHarp, enum_releaseRegion)
+				&& dialogueText.wasPrev(dialogueText.MusicForCerberus_A[0], enum_releaseRegion)
+				&& dialogueText.is(dialogueText.MusicForCerberus_A[1], enum_releaseRegion))
+
+			&& trigger_when(
+				once( // --CheckIf--> Correct dialogue text is printed (part 1)
+					dialogueText.wasPrev(dialogueText.MusicForCerberus_A[1], enum_releaseRegion)
+					&& dialogueText.is(dialogueText.MusicForCerberus_B[0], enum_releaseRegion))
+				&& once( // --CheckIf--> Correct dialogue text is printed (part 2)
+					dialogueText.wasPrev(dialogueText.MusicForCerberus_C[1], enum_releaseRegion)
+					&& dialogueText.is(dialogueText.MusicForCerberus_D[0], enum_releaseRegion))
+				&& once( // --CheckIf--> Dialogue finishes
+					dialogueText.is(dialogueText.MusicForCerberus_D[1], enum_releaseRegion)
+					&& dialogueText.on_textBox_hide(enum_releaseRegion))
+				&& once( // --CheckIf--> Main Quest Flag toggles
+					mainQuest.is_priorEventsCompleted(mainQuest.Ch5_CerberusCalmed, enum_releaseRegion)
+					&& mainQuest.on_event_completion(mainQuest.Ch5_CerberusCalmed, enum_releaseRegion))
+				)
+		),
 	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ALLOWED_BOSSES = [bossEnemy.MysteriousEnemy, bossEnemy.Jukak, bossEnemy.Wakahiko]
 		const_FRAMES_ALLOWED_TILL_BOSSDEATH = 40
@@ -1396,6 +1436,7 @@ dict_titles = {
 	"a_Ch3Shimazu":  			{"en": "Friends or Enemies"},
 	"a_Ch3Ameno": 				{"en": "Enlightened by Wisdom"},
 	"a_Ch4Demon": 				{"en": "xxxxxxxxx"},
+	"a_Ch5Yomotsu": 			{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
@@ -1409,6 +1450,7 @@ dict_descriptions = {
 	"a_Ch3Shimazu":  			{"en": "xxxxxxxx"},
 	"a_Ch3Ameno": 				{"en": "xxxxxxxx"},
 	"a_Ch4Demon": 				{"en": "xxxxxxxxx"},
+	"a_Ch5Yomotsu": 			{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
