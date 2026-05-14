@@ -1408,21 +1408,20 @@ dict_triggers = {
 			
 			&& once( // --CheckIf--> Outro starts
 				actionLevel.is(actionLevel.FinalBattle, enum_releaseRegion)
-				&& outroSequenceState.current(enum_releaseRegion) == outroSequenceState.FirstTextParagraph
 				&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.OutroSequence)
 			
 			&& trigger_when( // --Trigger--> When outrosequence reaches ending scene
 				once(
-					outroSequenceState.prev(enum_releaseRegion) == outroSequenceState.FirstTextParagraph
-					&& outroSequenceState.current(enum_releaseRegion) == outroSequenceState.SecondTextParagraph
-					&& gameStateA.is_active(gameStateA.OutroSequence, enum_releaseRegion)
-					&& gameStateB.is_active(gameStateB.OutroSequence, enum_releaseRegion))
+					gameStateA.is_active(gameStateA.OutroSequence, enum_releaseRegion)
+					&& gameStateB.is_active(gameStateB.OutroSequence, enum_releaseRegion)
+					&& outroSequenceState.prev(enum_releaseRegion) == outroSequenceState.FirstTextParagraph
+					&& outroSequenceState.current(enum_releaseRegion) == outroSequenceState.SecondTextParagraph)
 					
-				&& outroSequenceState.prev(enum_releaseRegion) == outroSequenceState.SecondTextParagraph
-				&& outroSequenceState.current(enum_releaseRegion) == outroSequenceState.EndingScene
 				&& gameStateA.is_active(gameStateA.OutroSequence, enum_releaseRegion)
 				&& gameStateB.is_active(gameStateB.OutroSequence, enum_releaseRegion)
+				&& outroSequenceState.prev(enum_releaseRegion) == outroSequenceState.SecondTextParagraph
+				&& outroSequenceState.current(enum_releaseRegion) == outroSequenceState.EndingScene
 				)
 		),	
 	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
