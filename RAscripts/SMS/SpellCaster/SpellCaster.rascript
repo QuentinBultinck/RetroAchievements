@@ -641,6 +641,7 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	ShimazuDeath = 0x39
 	AmenoSpaceship = 0x3D
 	Pyramid_DarkRoom = 0x45
+	IzanamiShrine = 0x4C
 	YomotsuShrine = 0x4D
 	
 	// ----Functions----
@@ -676,6 +677,8 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 	Ch4_PyramidDemonDefeated = 6
 	Ch5_LearnedToPlayHarp = 18
 	Ch5_CerberusCalmed = 19
+	Ch5_AcquiredMirror = 25
+	Ch5_ShowIzanamiMirror = 26
 
 	// ----Functions----
 	function current_flagState(int_flagIndex, enum_releaseRegion) =>
@@ -764,6 +767,12 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
 	MusicForCerberus_B = [0x25B, 0x1B] // "Cerberus sits and listens to the music"
 	MusicForCerberus_C = [0x25C, 0x1C] // "The god named Yomotus can be seen in the shrine"
 	MusicForCerberus_D = [0x25D, 0x1D] // "Yomotsu: Wonderful playing! What do you ask of me?"
+	IzanamiKnowledge_A = [0x273, 0x33] // "Kane: Please tell me how to kill the Dark Lord!"
+	IzanamiKnowledge_B = [0x274, 0x34] // "Izanami: There is only one way to kill the Dark Lord..."
+	IzanamiKnowledge_C = [0x275, 0x35] // "Kane: Huh, Me?"
+	IzanamiKnowledge_D = [0x276, 0x36] // "Izanami: You received a gift of increased power earlier..."
+	IzanamiKnowledge_E = [0x277, 0x37] // "Kane: I go to my destiny!"
+	IzanamiKnowledge_F = [0x278, 0x38] // "Kane mounts the Ameno and heads for Summit Temple"
 
 	function current(enum_releaseRegion) =>
 		word(memory.getAddress("16-bit:AdventureModeDialogueText_ID", enum_releaseRegion))
@@ -844,6 +853,7 @@ class CLASS_MEMLOGIC_Inventory {
 	Ch3_BallOfShimazu = 1
 	Ch3_ArmorBracers = 2
 	Ch5_MysticHarp = 3
+	Ch5_SacredMirror = 6
 
 	// ----Functions----
 	function current_inventoryFlagState(int_flagIndex, enum_releaseRegion) => 
@@ -1076,7 +1086,8 @@ dict_coreData = {
 			// "id": 608674, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Defeat the pyramid demon"},
 		// "a_Ch5Yomotsu": { // VERIFIED
 			// "id": 608684, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Reach an audience with the God Yomotsu"},
-	
+		// "a_Ch5Izanami": { // VERIFIED
+			// "id": 608685, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Acquire all knowledge & power to defeat the evil lord"},
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
@@ -1335,6 +1346,33 @@ dict_triggers = {
 					&& mainQuest.on_event_completion(mainQuest.Ch5_CerberusCalmed, enum_releaseRegion))
 				)
 		),
+	"a_Ch5Izanami": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			never(!gameStateB.is_gameStarted(enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
+			&& never(!storyChapter.is(storyChapter.Ch_5_Underworld, enum_releaseRegion))
+			&& never(!adventureScene.is(adventureScene.IzanamiShrine, enum_releaseRegion))
+			&& never(!item.is_inInventory(item.Ch5_SacredMirror, enum_releaseRegion))
+
+			&& once( // --CheckIf--> Correct dialogue text is printed (start)
+				mainQuest.is_priorEventsCompleted(mainQuest.Ch5_ShowIzanamiMirror, enum_releaseRegion)
+				&& mainQuest.is_eventCompleted(mainQuest.Ch5_ShowIzanamiMirror, enum_releaseRegion)
+				&& dialogueText.wasPrev(dialogueText.IzanamiKnowledge_A[0], enum_releaseRegion)
+				&& dialogueText.is(dialogueText.IzanamiKnowledge_A[1], enum_releaseRegion))
+
+			&& trigger_when(
+				once( // --CheckIf--> Correct dialogue text is printed (part 1)
+					dialogueText.wasPrev(dialogueText.IzanamiKnowledge_A[1], enum_releaseRegion)
+					&& dialogueText.is(dialogueText.IzanamiKnowledge_B[0], enum_releaseRegion))
+				&& once( // --CheckIf--> Correct dialogue text is printed (part 2)
+					dialogueText.wasPrev(dialogueText.IzanamiKnowledge_D[1], enum_releaseRegion)
+					&& dialogueText.is(dialogueText.IzanamiKnowledge_E[0], enum_releaseRegion))
+				&& once( // --CheckIf--> Dialogue finishes
+					dialogueText.wasPrev(dialogueText.IzanamiKnowledge_E[1], enum_releaseRegion)
+					&& dialogueText.is(dialogueText.IzanamiKnowledge_F[0], enum_releaseRegion))
+				)
+		),
 	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ALLOWED_BOSSES = [bossEnemy.MysteriousEnemy, bossEnemy.Jukak, bossEnemy.Wakahiko]
 		const_FRAMES_ALLOWED_TILL_BOSSDEATH = 40
@@ -1437,6 +1475,7 @@ dict_titles = {
 	"a_Ch3Ameno": 				{"en": "Enlightened by Wisdom"},
 	"a_Ch4Demon": 				{"en": "xxxxxxxxx"},
 	"a_Ch5Yomotsu": 			{"en": "xxxxxxxxx"},
+	"a_Ch5Izanami": 			{"en": "Knowledge & Power"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
@@ -1451,6 +1490,7 @@ dict_descriptions = {
 	"a_Ch3Ameno": 				{"en": "xxxxxxxx"},
 	"a_Ch4Demon": 				{"en": "xxxxxxxxx"},
 	"a_Ch5Yomotsu": 			{"en": "xxxxxxxxx"},
+	"a_Ch5Izanami": 			{"en": "xxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
