@@ -315,6 +315,7 @@ class CLASS_MemoryData {
 		"FlagArray:ItemInventoryFlags": {ENUM_ReleaseRegion.USA_EUR: 0x02e0},
 		"FlagArray:MiscEventFlags_A": {ENUM_ReleaseRegion.USA_EUR: 0x02b0},
 
+		"Struct:Entity(boss)_A": {ENUM_ReleaseRegion.USA_EUR: 0x0400},
 		"Struct:Entity(boss)_C": {ENUM_ReleaseRegion.USA_EUR: 0x0460},
 		}
 
@@ -639,6 +640,7 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	IzumoTemple_InsideWithShimazuAsaka = 0x38
 	ShimazuDeath = 0x39
 	AmenoSpaceship = 0x3D
+	Pyramid_DarkRoom = 0x45
 	
 	// ----Functions----
 	function current(enum_releaseRegion) =>
@@ -670,6 +672,7 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 	Ch2_AcquireSwordOfKusanagi = 18
 	Ch3_AcquireBallOfShimazu = 3
 	Ch3_ShimazuDeathEnd = 4
+	Ch4_PyramidDemonDefeated = 6
 
 	// ----Functions----
 	function current_flagState(int_flagIndex, enum_releaseRegion) =>
@@ -689,9 +692,18 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 			array_push(array_eventFlagIndicesToSum, let_index)
 		return sum_of(array_eventFlagIndicesToSum, int_flagIndx => this.current_flagState(int_flagIndx, enum_releaseRegion)) == enum_event}
 
-	function on_eventFlagState_toggleTrue(enum_event, enum_releaseRegion) =>
-		this.is_priorEventsCompleted(enum_event, enum_releaseRegion)
-		&& this.prev_flagState(enum_event, enum_releaseRegion) == this.FLAG_isEventCompleted_false
+	// Identical to is_priorEventsCompleted(), but with "& 0x1" 
+	//		--Reason--> very rarely, some main quest flags toggle true by writing a value != 0x1, but still > 0x0. 
+	//				(eg. "Flag:MainQuestEventFlag_1" toggles true when picking up PyramidPoint (StorySection_4_Pyramid). WARNING: 0x9 is written to this address instead of 0x1)
+	function is_priorEventsCompleted_bis(enum_event, enum_releaseRegion) {
+		if(enum_event < 1) return always_true()
+		array_eventFlagIndicesToSum = []
+		for let_index in range(0, enum_event -1)
+			array_push(array_eventFlagIndicesToSum, let_index)
+		return sum_of(array_eventFlagIndicesToSum, int_flagIndx => this.current_flagState(int_flagIndx, enum_releaseRegion) & 0x1) == enum_event}
+
+	function on_event_completion(enum_event, enum_releaseRegion) =>
+		this.prev_flagState(enum_event, enum_releaseRegion) == this.FLAG_isEventCompleted_false
 		&& this.current_flagState(enum_event, enum_releaseRegion) == this.FLAG_isEventCompleted_true
 } mainQuest = CLASS_MEMLOGIC_MainQuestProgress()
 // #endregion Main Quest Progress
@@ -741,6 +753,10 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
 	ArmorBracers_Use_C = [0x1BD, 0x7D] // "Kane's mind merges with that of the serpent-god Ooku!"
 	OokuSpeech = [0x1BE, 0x7E] // "Ooku: Long ago the Iwato ruled a highly advanced world..."
 	OokuSpeech_Done = [0x1BF, 0x7F] // "Computer: Throttle up to..." - Just before heading of to pyramid
+	PyramidDemonFelled_A = [0x1FB, 0xBB] // "Kane fells demon!"
+	PyramidDemonFelled_B = [0x1FC, 0xBC] // "Demon: Impossible! I can not be killed..."
+	PyramidDemonFelled_C = [0x1FD, 0xBD] // "Kane: The pyramid...!! It's collapsing! Run!"
+	PyramidDemonFelled_D = [0x1FE, 0xBE] // "Grabbing Regina, Kane heads for the ship!"
 
 	function current(enum_releaseRegion) =>
 		word(memory.getAddress("16-bit:AdventureModeDialogueText_ID", enum_releaseRegion))
@@ -775,6 +791,7 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	AttaroShrine_BossArena = 0x0106
 	MtMiwa_BossArena = 0x0208
 	KashimaTemple_BossArena = 0x010a
+	Pyramid_DemonBossArena = 0x0017
 
 	function current(enum_releaseRegion) =>
 		word(memory.getAddress("16-bit:ActionModeLevel_ID", enum_releaseRegion))
@@ -846,9 +863,10 @@ class CLASS_MEMLOGIC_BossEntities {
 	Jukak = 101
 	Wakahiko = 102
 	KashimaFireBoss = 103
+	PyramidDemon = 104
 
 
-	dict_BossData = {
+	dict_BossData = { // TODO put dict_BossData info into codenotes
 		MysteriousEnemy: {
 			"EntityID": 0x5e,
 			"EntityStartHP": 0x32,
@@ -869,6 +887,11 @@ class CLASS_MEMLOGIC_BossEntities {
 			"EntityStartHP": 0x3c,
 			"BossArena_ActionModeLevel_ID": actionLevel.KashimaTemple_BossArena,
 			"StructLocation": "C"},
+		PyramidDemon: {
+			"EntityID": 0x41,
+			"EntityStartHP": 0x64,
+			"BossArena_ActionModeLevel_ID": actionLevel.Pyramid_DemonBossArena,
+			"StructLocation": "A"},
 		}
 	function get_EntityID(enum_boss) => this.dict_BossData[enum_boss]["EntityID"]
 	function get_EntityStartHP(enum_boss) => this.dict_BossData[enum_boss]["EntityStartHP"]
@@ -1041,6 +1064,8 @@ dict_coreData = {
 			// "id": 608453, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Unearthing the some of true intentions of the Iwato, after Shimazu's death"},
 		// "a_Ch3Ameno": { // VERIFIED
 			// "id": 608595, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Start up spaceship Ameno and be enlightened by Serpent God Ooku"},
+		// "a_Ch4Demon": { // VERIFIED
+			// "id": 608674, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Defeat the pyramid demon"},
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
@@ -1113,7 +1138,7 @@ dict_triggers = {
 				adventureScene.is(adventureScene.IzumoShrine_OutsideAfterBossFight, enum_releaseRegion)
 				&& dialogueText.wasPrior(dialogueText.FirstBossFight_A, enum_releaseRegion)
 				&& dialogueText.is(dialogueText.FirstBossFight_B, enum_releaseRegion)
-				&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch1_MysteryManDefeated, enum_releaseRegion))
+				&& mainQuest.on_event_completion(mainQuest.Ch1_MysteryManDefeated, enum_releaseRegion))
 		}),	
 	"a_Ch1KashimaBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_BOSS = bossEnemy.KashimaFireBoss
@@ -1163,7 +1188,7 @@ dict_triggers = {
 			&& once( // --CheckIf--[Startcondition_B]--> Player acquires SwordOfKusanagi at UnderwaterShrine (toggles at same time as [Startcondition_A], but not same frame)
 				adventureScene.is(adventureScene.UnderwaterShrine,enum_releaseRegion) 
 				&& mainQuest.is_priorEventsCompleted(mainQuest.Ch2_AcquireSwordOfKusanagi, enum_releaseRegion)
-				&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch2_AcquireSwordOfKusanagi, enum_releaseRegion))
+				&& mainQuest.on_event_completion(mainQuest.Ch2_AcquireSwordOfKusanagi, enum_releaseRegion))
 
 			&& trigger_when( // --Trigger--> When power of SwordOfKusanagi is showcased
 				once( // --CheckIf--> AdventureScene changes to adventureScene.Dannoura_IwatoBattle from adventureScene.UnderwaterShrine
@@ -1194,11 +1219,11 @@ dict_triggers = {
 				&& item.on_acquire(item.Ch3_BallOfShimazu, enum_releaseRegion))
 			&& once( // --CheckIf--[StartCondition_B]-> Player acquires BallOfShimazu (toggles at same time as [StartCondition_A], but not same frame)
 				dialogueText.is(dialogueText.ShimazuDeath_AcquireBall, enum_releaseRegion)
-				&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch3_AcquireBallOfShimazu, enum_releaseRegion))
+				&& mainQuest.on_event_completion(mainQuest.Ch3_AcquireBallOfShimazu, enum_releaseRegion))
 
 			&& trigger_when( // --Trigger--> When Asaka leaves
 				dialogueText.is(dialogueText.ShimazuDeath_AsakaLeaves, enum_releaseRegion)
-				&& mainQuest.on_eventFlagState_toggleTrue(mainQuest.Ch3_ShimazuDeathEnd, enum_releaseRegion))
+				&& mainQuest.on_event_completion(mainQuest.Ch3_ShimazuDeathEnd, enum_releaseRegion))
 			),
 	"a_Ch3Ameno": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
@@ -1224,6 +1249,52 @@ dict_triggers = {
 				&& dialogueText.wasPrev(dialogueText.OokuSpeech[1], enum_releaseRegion)
 				&& dialogueText.is(dialogueText.OokuSpeech_Done[0], enum_releaseRegion))
 			),
+	"a_Ch4Demon": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_BOSS = bossEnemy.PyramidDemon
+		const_CHAPTER = storyChapter.Ch_4_Pyramid
+
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			never(!gameStateA.is_inGame(enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never( // --ResetIf--> When players dies in ActionMode
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion))
+			&& never( // --ResetIf--> Boss spawns in BossArena
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& bossEnemy.on_spawn(const_BOSS, enum_releaseRegion))
+			&& never(!storyChapter.is(const_CHAPTER, enum_releaseRegion))
+
+			&& player.is_alive(enum_releaseRegion)
+
+			&& once( // --CheckIf--[StartCondition]--> Boss starts at max HP
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& bossEnemy.is_atMaxHP(const_BOSS, enum_releaseRegion))
+
+			&& tally(1, [ // --Tally--OrNext--> CheckIf: Boss dies, there's two death scenarios (see below)
+				once( // --CheckIf--> Boss dies on_HP_hitsZero()
+					bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+					&& bossEnemy.on_HP_hitsZero(const_BOSS, enum_releaseRegion)),
+				once( // --CheckIf--> Boss dies on_HP_negativelyOverflows()
+					bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+					&& bossEnemy.on_HP_negativelyOverflows(const_BOSS, enum_releaseRegion))
+				])
+
+			&& trigger_when(
+				once( 
+					mainQuest.is_priorEventsCompleted_bis(mainQuest.Ch4_PyramidDemonDefeated, enum_releaseRegion)
+					&& mainQuest.on_event_completion(mainQuest.Ch4_PyramidDemonDefeated, enum_releaseRegion))
+				&& once( // --CheckIf--> Correct Dialogue Text is printed (part 1)
+					gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion)
+					&& adventureScene.is(adventureScene.Pyramid_DarkRoom, enum_releaseRegion)
+					&& dialogueText.wasPrev(dialogueText.PyramidDemonFelled_A[1], enum_releaseRegion)
+					&& dialogueText.is(dialogueText.PyramidDemonFelled_B[0], enum_releaseRegion))				
+				
+				&& gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion) // --CheckIf--4_lines--> Correct Dialogue Text is printed (part 2)
+				&& adventureScene.is(adventureScene.Pyramid_DarkRoom, enum_releaseRegion)
+				&& dialogueText.wasPrev(dialogueText.PyramidDemonFelled_B[1], enum_releaseRegion)
+				&& dialogueText.is(dialogueText.PyramidDemonFelled_C[0], enum_releaseRegion))
+		}),	
 	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ALLOWED_BOSSES = [bossEnemy.MysteriousEnemy, bossEnemy.Jukak, bossEnemy.Wakahiko]
 		const_FRAMES_ALLOWED_TILL_BOSSDEATH = 40
@@ -1324,6 +1395,7 @@ dict_titles = {
 	"a_Ch2SwordKusanagi": 		{"en": "The Power of Kusanagi"},
 	"a_Ch3Shimazu":  			{"en": "Friends or Enemies"},
 	"a_Ch3Ameno": 				{"en": "Enlightened by Wisdom"},
+	"a_Ch4Demon": 				{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
@@ -1336,6 +1408,7 @@ dict_descriptions = {
 	"a_Ch2SwordKusanagi": 		{"en": "xxxxxxxx"},
 	"a_Ch3Shimazu":  			{"en": "xxxxxxxx"},
 	"a_Ch3Ameno": 				{"en": "xxxxxxxx"},
+	"a_Ch4Demon": 				{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
