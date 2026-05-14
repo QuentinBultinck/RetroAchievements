@@ -513,6 +513,9 @@ class CLASS_MEMLOGIC_GameStateA {
 	function prev(enum_releaseRegion) =>
 		prev(this.current(enum_releaseRegion))
 
+	function on_change(enum_releaseRegion) =>
+		this.current(enum_releaseRegion) != this.prev(enum_releaseRegion)	
+
 	function is_active(enum_gameStateA, enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == enum_gameStateA
 
@@ -548,7 +551,9 @@ class CLASS_MEMLOGIC_GameStateB {
 	function prev(enum_releaseRegion) =>
 		prev(this.current(enum_releaseRegion))
 
-
+	function on_change(enum_releaseRegion) =>
+		this.current(enum_releaseRegion) != this.prev(enum_releaseRegion)	
+	
 	function is_active(enum_gameStateB, enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == enum_gameStateB
 
@@ -576,14 +581,14 @@ class CLASS_MEMLOGIC_OutroSequenceState {
 	function current(enum_ReleaseRegion) =>
 		byte(memory.getAddress("8-bit:OutroSequenceState", enum_ReleaseRegion))
 	function prev(enum_ReleaseRegion) =>
-		this.current(enum_ReleaseRegion)
+		prev(this.current(enum_ReleaseRegion))
 
 	function is(enum_outroSequenceState, enum_ReleaseRegion) =>
 		current(enum_ReleaseRegion) == enum_outroSequenceState
 	function on_changeTo(enum_outroSequenceState, enum_ReleaseRegion) =>
 		prev(enum_ReleaseRegion) != enum_outroSequenceState
 		&& current(enum_ReleaseRegion) == enum_outroSequenceState	
-} OutroSequenceState = CLASS_MEMLOGIC_OutroSequenceState()
+} outroSequenceState = CLASS_MEMLOGIC_OutroSequenceState()
 
 // #endregion GameStates
 
@@ -627,10 +632,10 @@ class CLASS_MEMLOGIC_StoryChapterIdentification {
 // #region AdventureScene Identification
 class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	// ----AdventureSceneIDs----
+	SummitTemple_OnPlayerDeath = 0x0
 	IzumoShrine_OutsideBeforeBossFight = 0x4
 	IzumoShrine_OutsideAfterBossFight = 0x5
 	KashimaTemple_FirstVisit = 0x11
-	KashimaTemple_PreFinalBattle = 0x59
 	Dannoura_A = 0x18
 	Dannoura_Y = 0x30
 	UnderwaterShrine = 0x33
@@ -643,6 +648,7 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	Pyramid_DarkRoom = 0x45
 	IzanamiShrine = 0x4C
 	YomotsuShrine = 0x4D
+	KashimaTemple_PreFinalBattle = 0x59
 	
 	// ----Functions----
 	function current(enum_releaseRegion) =>
@@ -808,6 +814,7 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	MtMiwa_BossArena = 0x0208
 	KashimaTemple_BossArena = 0x010a
 	Pyramid_DemonBossArena = 0x0017
+	FinalBattle = 0x2F
 
 	function current(enum_releaseRegion) =>
 		word(memory.getAddress("16-bit:ActionModeLevel_ID", enum_releaseRegion))
@@ -1089,6 +1096,10 @@ dict_coreData = {
 		// "a_Ch5Izanami": { // VERIFIED
 			// "id": 608685, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Acquire all knowledge & power to defeat the evil lord"},
 		},
+	"c_WinCondition": { // Win Condition - Finishing the game
+		// "a_SlayEvilLord": { // VERIFIED
+			// "id": 608733, "points": ENUM_AchievementPointClass.Hard_25, "devInfo": "Defeat the evil lord"},		
+		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
 			// "id": 607151, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Defeat a boss with one hit from full HP (earlier bosses using Fudo spell)"},
@@ -1112,6 +1123,7 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 	
 	// "c_Template": 		ENUM_AchievementType.Standard,
 	"c_StoryProgress": 		ENUM_AchievementType.Progression,
+	"c_WinCondition":		ENUM_AchievementType.WinCondition,
 	"c_Bonus":				ENUM_AchievementType.Standard,
 	}
 
@@ -1120,11 +1132,12 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 // #region ACH - Triggers
 dict_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			// __ornext(gameStateA.is_inGame(enum_releaseRegion))
 			// && gameStateB.is_gameStarted(enum_releaseRegion)
 			// && !demo.is_active(enum_releaseRegion)
-			// always_false()),
+			// always_false()
+		// ),
 	"a_Ch1MysteryMan": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_BOSS = bossEnemy.MysteriousEnemy
 		const_CHAPTER = storyChapter.Ch_1_Investigation
@@ -1347,7 +1360,7 @@ dict_triggers = {
 				)
 		),
 	"a_Ch5Izanami": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			never(!gameStateB.is_gameStarted(enum_releaseRegion))
 			&& never(demo.is_active(enum_releaseRegion))
 			&& never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
@@ -1372,16 +1385,55 @@ dict_triggers = {
 					dialogueText.wasPrev(dialogueText.IzanamiKnowledge_E[1], enum_releaseRegion)
 					&& dialogueText.is(dialogueText.IzanamiKnowledge_F[0], enum_releaseRegion))
 				)
-		),
+		),	
+	"a_SlayEvilLord": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			never(repeated(10, // --Repeated--10_frames--> On OutroSequence start, when outrosequence toggles from "SecondTextParagraph" to "EndingScene", gameStateA is temporarily 0x6 as a transitional value (0x86 -> 0x6 -> 0x86). This is also the case when switching from "EndingScene" to "Credits"
+				never(gameStateA.on_change(enum_releaseRegion))
+				&& !gameStateA.is_inGame(enum_releaseRegion)))
+			&& never(repeated(40, // --Repeated--40_frames--> On OutroSequence start, when gameStateB toggles from "gameStateB.Started_MainMenu_InGame"(0x1) ro "gameStateB.OutroSequence"(0xE), gameStateB is "BootingGame_StartMenu_Demo"(0x0) for 20-ish frames as a transitional value (0x1 -> 0x0 -> 0xE)
+				never(gameStateB.on_change(enum_releaseRegion))
+				&& !gameStateB.is_gameStarted(enum_releaseRegion)))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never(!storyChapter.is(storyChapter.Ch_7_FinalBattle, enum_releaseRegion))
+			&& never(player.on_death(enum_releaseRegion))
+
+			&& once( // --CheckIf--[StartCondition]--> Final Battle starts from beginning
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.KashimaTemple_PreFinalBattle, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.FinalBattle, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
+			
+			&& once( // --CheckIf--> Outro starts
+				actionLevel.is(actionLevel.FinalBattle, enum_releaseRegion)
+				&& outroSequenceState.current(enum_releaseRegion) == outroSequenceState.FirstTextParagraph
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.OutroSequence)
+			
+			&& trigger_when( // --Trigger--> When outrosequence reaches ending scene
+				once(
+					outroSequenceState.prev(enum_releaseRegion) == outroSequenceState.FirstTextParagraph
+					&& outroSequenceState.current(enum_releaseRegion) == outroSequenceState.SecondTextParagraph
+					&& gameStateA.is_active(gameStateA.OutroSequence, enum_releaseRegion)
+					&& gameStateB.is_active(gameStateB.OutroSequence, enum_releaseRegion))
+					
+				&& outroSequenceState.prev(enum_releaseRegion) == outroSequenceState.SecondTextParagraph
+				&& outroSequenceState.current(enum_releaseRegion) == outroSequenceState.EndingScene
+				&& gameStateA.is_active(gameStateA.OutroSequence, enum_releaseRegion)
+				&& gameStateB.is_active(gameStateB.OutroSequence, enum_releaseRegion)
+				)
+		),	
 	"a_OneHitHumanBoss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ALLOWED_BOSSES = [bossEnemy.MysteriousEnemy, bossEnemy.Jukak, bossEnemy.Wakahiko]
-		const_FRAMES_ALLOWED_TILL_BOSSDEATH = 40
+		const_FRAMES_ALLOWED_FOR_ONEHIT = 40 // --> "OneHit" = boss needs to die within xx frames from first taking damage
 
 		let_array_requirements_BossBelowMaxHPChecks = []
 		let_array_requirements_BossDeathChecks = []
 		for enum_boss in const_ALLOWED_BOSSES {
 			let_requirement_BossHPBelowMaxHP = 
-				repeated(const_FRAMES_ALLOWED_TILL_BOSSDEATH, // --CheckIf--> Boss is below max HP for xx frames
+				repeated(const_FRAMES_ALLOWED_FOR_ONEHIT, // --CheckIf--> Boss is below max HP for xx frames
 					bossEnemy.is_bossArena_active(enum_boss, enum_releaseRegion)
 					&& bossEnemy.is_belowMaxHP(enum_boss, enum_releaseRegion))
 			array_push(let_array_requirements_BossBelowMaxHPChecks, let_requirement_BossHPBelowMaxHP)
@@ -1401,7 +1453,7 @@ dict_triggers = {
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			unless(demo.is_active(enum_releaseRegion))
-			&& unless(tally(const_FRAMES_ALLOWED_TILL_BOSSDEATH, let_array_requirements_BossBelowMaxHPChecks)) // --PauseIf--> one of the bosses is below max HP for xx frames
+			&& unless(tally(const_FRAMES_ALLOWED_FOR_ONEHIT, let_array_requirements_BossBelowMaxHPChecks)) // --PauseIf--> one of the bosses is below max HP for xx frames
 			&& gameStateB.is_gameStarted(enum_releaseRegion)
 			&& once(player.on_spellCast(spell.Fudo, enum_releaseRegion)) // --> Boss can only be "one hit" by Fudo spell
 			&& tally(1, let_array_requirements_BossDeathChecks) // --TallyOf--OrNext--> CheckIf: one of the bosses has died ==> boss either dies via "bossEnemy.on_HP_hitsZero()" OR "bossEnemy.on_HP_negativelyOverflows()"
@@ -1476,6 +1528,7 @@ dict_titles = {
 	"a_Ch4Demon": 				{"en": "xxxxxxxxx"},
 	"a_Ch5Yomotsu": 			{"en": "xxxxxxxxx"},
 	"a_Ch5Izanami": 			{"en": "Knowledge & Power"},
+	"a_SlayEvilLord": 			{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
@@ -1491,6 +1544,7 @@ dict_descriptions = {
 	"a_Ch4Demon": 				{"en": "xxxxxxxxx"},
 	"a_Ch5Yomotsu": 			{"en": "xxxxxxxxx"},
 	"a_Ch5Izanami": 			{"en": "xxxxxxxx"},
+	"a_SlayEvilLord": 			{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
