@@ -314,6 +314,7 @@ class CLASS_MemoryData {
 		"FlagArray:MainQuestEventFlags": {ENUM_ReleaseRegion.USA_EUR: 0x0281},
 		"FlagArray:ItemInventoryFlags": {ENUM_ReleaseRegion.USA_EUR: 0x02e0},
 		"FlagArray:MiscEventFlags_A": {ENUM_ReleaseRegion.USA_EUR: 0x02b0},
+		"FlagArray:GearAcquiredFlags": {ENUM_ReleaseRegion.USA_EUR: 0x0032},
 
 		"Struct:Entity(boss)_A": {ENUM_ReleaseRegion.USA_EUR: 0x0400},
 		"Struct:Entity(boss)_C": {ENUM_ReleaseRegion.USA_EUR: 0x0460},
@@ -835,22 +836,48 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 // ''''''''''''''''''''
 // #region Inventory & Gear
 class CLASS_MEMLOGIC_Gear {
-	// ----Values/Enums----
+	// ----Variables----
 	FLAG_IsGearAcquired_true = 1
 	FLAG_IsGearAcquired_false = 0
-	Armor_Bracers = "Armor_Bracers"
-	Armor_Helmet = "Armor_Helmet"
-	Armor_Body = "Armor_Body"
-	Armor_Leg = "Armor_Leg"
-	Weapon_Dokko = "Weapon_Dokko"
-	Weapon_Trident = "Weapon_Trident"
-	Weapon_Vajira = "Weapon_Vajira"
-	Weapon_WarHammer = "Weapon_WarHammer"
+
+	// ----Gear Enum (=flagIndex in "FlagArray:GearAcquiredFlags")----
+	Armor_Bracers = 0
+	Armor_Helmet = 1
+	Armor_Body = 2
+	Armor_Leg = 3
+	Weapon_Dokko = 4
+	Weapon_Trident = 5
+	Weapon_Vajira = 6
+	Weapon_WarHammer = 7
 
 	// ----Functions----
-	function is_acquired(enum_gear, enum_releaseRegion) {
-		string_addrKey = format("Flag:IsItemAcquired_{0}", enum_gear)
-		return bit0(memory.getAddress(string_addrKey, enum_releaseRegion))}
+	function current_flagState_IsGearAcquired(int_flagIndx, enum_releaseRegion) =>
+		bit0(memory.getAddress("FlagArray:GearAcquiredFlags", enum_releaseRegion))
+	function prev_flagState_IsGearAcquired(int_flagIndx, enum_releaseRegion) =>
+		prev(this.current_flagState_IsGearAcquired(int_flagIndx, enum_releaseRegion))
+
+	function is_acquired(enum_gear, enum_releaseRegion) =>
+		this.current_flagState_IsGearAcquired(enum_gear, enum_releaseRegion) == FLAG_IsGearAcquired_true
+
+	function on_acquire(enum_gear, enum_releaseRegion) =>
+		this.current_flagState_IsGearAcquired(enum_gear, enum_releaseRegion) > this.prev_flagState_IsGearAcquired(enum_gear, enum_releaseRegion) 
+	
+	function on_allGear_acquired(enum_releaseRegion) {
+		let_array_AllGear = [
+			this.Armor_Bracers, this.Armor_Helmet, this.Armor_Body, 
+			this.Armor_Leg, this.Weapon_Dokko, this.Weapon_Trident, 
+			this.Weapon_Vajira, this.Weapon_WarHammer]
+
+		let_sumOf_currentFlagStates_IsGearAcquired =
+			sum_of(let_array_AllGear, enum_gear =>
+				this.is_acquired(enum_gear, enum_releaseRegion))
+		let_sumOf_prevFlagStates_IsGearAcquired =
+			sum_of(let_array_AllGear, enum_gear =>
+				this.prev_flagState_IsGearAcquired(enum_gear, enum_releaseRegion) == this.FLAG_IsGearAcquired_true)
+		return
+			let_sumOf_prevFlagStates_IsGearAcquired == length(let_array_AllGear) -1
+			let_sumOf_currentFlagStates_IsGearAcquired == length(let_array_AllGear)
+		}
 } gear = CLASS_MEMLOGIC_Gear()
 //---------------------------
 class CLASS_MEMLOGIC_Inventory {
@@ -1108,6 +1135,14 @@ dict_coreData = {
 		// "a_xRaying": { // VERIFIED
 			// "id": 607701, "points": 0000000, "devInfo": "spot a chest with the x-ray glasses at Dannoura (Shimonoseki coast/sea)"},
 		
+		"a_FullyGeared": { // TESTING a_FullyGeared
+			"id": 000000, "points": ENUM_AchievementPointClass.Hard_25, "devInfo": "Acquire all 8 gear items"},
+		"a_Energised": { // CONCEPT a_Energised
+			"id": 000000, "points": 0000000, "devInfo": "Acquire a certain amount of energy, prior to Final Battle"},
+		"a_Strengthened": { // CONCEPT a_Strengthened
+			"id": 000000, "points": 0000000, "devInfo": "Acquire a certain amount of strength, prior to Final Battle"},
+		// "a_Template": { // CONCEPT a_template
+		// 	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 		},
 	}
 
@@ -1131,7 +1166,7 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 
 // #region ACH - Triggers
 dict_triggers = {
-	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
 		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			// __ornext(gameStateA.is_inGame(enum_releaseRegion))
 			// && gameStateB.is_gameStarted(enum_releaseRegion)
@@ -1513,6 +1548,44 @@ dict_triggers = {
 				dialogueText.is(dialogueText.XRayGlasses_Success, enum_releaseRegion)
 				&& dialogueText.on_textBox_hide(enum_releaseRegion)) 
 			),
+	"a_FullyGeared": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			__ornext(gameStateA.is_inGame(enum_releaseRegion))
+			&& gameStateB.is_gameStarted(enum_releaseRegion)
+			&& !demo.is_active(enum_releaseRegion)
+			&& storyChapter.is(storyChapter.Ch_4_Pyramid, enum_releaseRegion) // --> last pieces of gear are acquired during this Chapter
+			&& gear.on_allGear_acquired(enum_releaseRegion)
+		),
+	"a_Energised": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		const_ENERGY_REQUIREMENT = 250 
+
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			__ornext(
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				|| gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion)
+				|| gameStateA.is_active(gameStateA.ActionModeMenu, enum_releaseRegion))
+			&& gameStateB.is_gameStarted(enum_releaseRegion)
+			&& !demo.is_active(enum_releaseRegion)
+			&& !storyChapter.is(storyChapter.Ch_7_FinalBattle, enum_releaseRegion) // --> acquire energy before final battle
+
+			&& player.prev_ENGY(enum_releaseRegion) < const_ENERGY_REQUIREMENT
+			&& player.current_ENGY(enum_releaseRegion) >= const_ENERGY_REQUIREMENT
+		),	
+	"a_Strengthened": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		const_STRENGTH_REQUIREMENT = 80 // TODO Test what max possible STGH would be without Big Blue Ball drops from bosses (only STGH increases from gear + Big Ball pickups within the pyramid) -- Confirm if Big Blue Balls increase max STGH + also ones in Pyramid
+
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			__ornext(
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				|| gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion)
+				|| gameStateA.is_active(gameStateA.ActionModeMenu, enum_releaseRegion))
+			&& gameStateB.is_gameStarted(enum_releaseRegion)
+			&& !demo.is_active(enum_releaseRegion)
+			&& !storyChapter.is(storyChapter.Ch_7_FinalBattle, enum_releaseRegion) // --> acquire energy before final battle
+
+			&& player.prev_STGH(enum_releaseRegion) < const_STRENGTH_REQUIREMENT
+			&& player.current_STGH(enum_releaseRegion) >= const_STRENGTH_REQUIREMENT
+		),	
 	}
 // #endregion ACH - Triggers
 
@@ -1532,6 +1605,9 @@ dict_titles = {
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
 	"a_xRaying": 				{"en": "xxxxxxxxx"},
+	"a_FullyGeared": 			{"en": "Fully Geared"},
+	"a_Energised": 				{"en": "Energised"},
+	"a_Strengthened": 			{"en": "Strengthened"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -1548,6 +1624,9 @@ dict_descriptions = {
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
 	"a_xRaying": 				{"en": "xxxxxxxx"},
+	"a_FullyGeared": 			{"en": "xxxxxxxxx"},
+	"a_Energised": 				{"en": "xxxxxxxxx"},
+	"a_Strengthened": 			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
