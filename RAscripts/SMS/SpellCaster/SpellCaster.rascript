@@ -53,33 +53,22 @@
 // CONCEPT Idea's
 // ==================
 // Achievements:
-// - Progression achievements for each 12 stages/chapters??
 // - Complete game taking only xxx strength/HP damage || do a certain stage taking only xxx damage
 // - Complete game within xxx minutes (maybe just leaderboard for this) --> complete whole game --> needs password protection//hitCounts
 // - complete certain stage without using a basic attack
+// - Challenge using only xx Energy
+// - Challenge using only Charged Attacks
 // - Challenges for each stage???
 // --- without dying, taking only xx hits, taking only xx damage, without healing, using only certain spell
-// - Unlock all items (partial: unlock all armor + unlock all weapons)
 // - Boss Challenges??
-// - Acquire xxx Strength total || Acquire xxx Energy total
-// - Tutorial-isk achievement: 
-// --- cast a certain spell by clicking it in the menu and then pressing [Button_1 + Dpad_Down]
-// --- maybe something about casting charged normal attack??
 // - Secret/funny interactions within AdventureMode??
-// - Pick up orange balls/energy
-// - Pick up blue balls/strength
 // - Acquire certain items --> https://shrines.rpgclassics.com/sms/spellcaster/items.shtml
-// - optional bosses in pyramid
-// - enter all rooms in pyramid // pick up all unique blue orbs in pyramid (they increase STGH)
 //
 // Shimono Chapter
-// --- X-Ray Glasses is an optional item to acquire, (during Shimono Chapter) --> item is used to check ocean floor for treasure OR Use xray glasses to spot treasure??
-// --- Kill all 7 spirits with lute??
 // - Taste each type of food and regain strength at Midori House (Shimono chapter)
-// - acquire armor_bracers here + acquire weapon_vajira here
 // 
 // Eat Spaghetti at stand (Izumo2 confirmed, idk bout first visit)
-// - Acquiring Necklace from Kuma at Izumo (FinalBattle section) (optional item, restores strength if it reaches zero)
+// - Acquiring Necklace from Kuma at Izumo (FinalBattle section) (optional item, restores strength to 200 if it reaches zero)
 
 // Story Script
 // ================
@@ -653,6 +642,7 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	IzanamiShrine = 0x4C
 	YomotsuShrine = 0x4D
 	KashimaTemple_PreFinalBattle = 0x59
+	FinalBattle = 0x2F
 	
 	// ----Functions----
 	function current(enum_releaseRegion) =>
@@ -898,6 +888,7 @@ class CLASS_MEMLOGIC_Inventory {
 	Ch3_ArmorBracers = 2
 	Ch5_MysticHarp = 3
 	Ch5_SacredMirror = 6
+	Ch7_Necklace = 3
 
 	// ----Functions----
 	function current_inventoryFlagState(int_flagIndex, enum_releaseRegion) => 
@@ -1224,8 +1215,7 @@ dict_coreData = {
 		// "a_SeaSpirits": { // VERIFIED
 			// "id": 607698, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeat all 5 sea spirits at Dannoura (Shimonoseki coast/sea)"},
 		// "a_xRaying": { // VERIFIED
-			// "id": 607701, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "spot a chest with the x-ray glasses at Dannoura (Shimonoseki coast/sea)"},
-		
+			// "id": 607701, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "spot a chest with the x-ray glasses at Dannoura (Shimonoseki coast/sea)"},		
 		// "a_FullyGeared": { // VERIFIED
 			// "id": 609106, "points": ENUM_AchievementPointClass.Hard_25, "devInfo": "Acquire all 8 gear items"},
 		// "a_Energised": { // VERIFIED
@@ -1239,6 +1229,8 @@ dict_coreData = {
 		// "a_MiniEye": { // VERIFIED
 			// "id": 609115, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Kill the Eye Mini Boss in the Pyramid"},
 	
+		// "a_Ressurectlace": { // VERIFIED
+			// "id": 609121, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Restore STGH after it reaches 0, during the final battle, by having Kuma's necklace"},
 		},
 	}
 
@@ -1739,6 +1731,23 @@ dict_triggers = {
 			&& once(bossEnemy.on_spawn(const_MINI_BOSS, enum_releaseRegion))
 			&& trigger_when(bossEnemy.on_death(const_MINI_BOSS, enum_releaseRegion))
 		}),
+	"a_Ressurectlace": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MAX_STGH_FINAL_BATTLE = 200
+		
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			__ornext(
+				adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+				|| adventureScene.is(adventureScene.KashimaTemple_PreFinalBattle, enum_releaseRegion))
+			&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+			&& !demo.is_active(enum_releaseRegion)
+			&& storyChapter.is(storyChapter.Ch_7_FinalBattle, enum_releaseRegion)			
+			&& actionLevel.is(actionLevel.FinalBattle, enum_releaseRegion)
+
+			&& item.on_lose(item.Ch7_Necklace, enum_releaseRegion)
+			&& 0 <= player.prev_STGH(enum_releaseRegion) && player.prev_STGH(enum_releaseRegion) <= (const_MAX_STGH_FINAL_BATTLE/5)
+			&& player.current_STGH(enum_releaseRegion) == const_MAX_STGH_FINAL_BATTLE			
+		}),	
 	}
 // #endregion ACH - Triggers
 
@@ -1763,6 +1772,7 @@ dict_titles = {
 	"a_Indy": 					{"en": "xxxxxxxxx"},
 	"a_MiniEye": 				{"en": "xxxxxxxxx"},
 	"a_MiniGoat": 				{"en": "xxxxxxxxx"},
+	"a_Ressurectlace": 			{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -1784,6 +1794,7 @@ dict_descriptions = {
 	"a_Indy": 					{"en": "xxxxxxxxx"},
 	"a_MiniEye": 				{"en": "xxxxxxxxx"},
 	"a_MiniGoat": 				{"en": "xxxxxxxxx"},
+	"a_Ressurectlace": 			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
