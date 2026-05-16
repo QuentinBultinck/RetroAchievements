@@ -318,6 +318,7 @@ class CLASS_MemoryData {
 
 		"Struct:Entity(boss)_A": {ENUM_ReleaseRegion.USA_EUR: 0x0400},
 		"Struct:Entity(boss)_C": {ENUM_ReleaseRegion.USA_EUR: 0x0460},
+		"Struct:Entity(Pyramid_Orb)": {ENUM_ReleaseRegion.USA_EUR: 0x0600},
 		}
 
 	function getAddress(string_addrKey, enum_releaseRegion) {
@@ -646,6 +647,8 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	IzumoTemple_InsideWithShimazuAsaka = 0x38
 	ShimazuDeath = 0x39
 	AmenoSpaceship = 0x3D
+	Pyramid_SouthSide = 0x41
+	Pyramid_EastSide = 0x43
 	Pyramid_DarkRoom = 0x45
 	IzanamiShrine = 0x4C
 	YomotsuShrine = 0x4D
@@ -816,6 +819,13 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	KashimaTemple_BossArena = 0x010a
 	Pyramid_DemonBossArena = 0x0017
 	FinalBattle = 0x2F
+	Pyramid_EyeMiniBossRoom = 0x0124
+	Pyramid_GoatMiniBossRoom = 0x002a 
+	Pyramid_GroundFloor_Room_B = 0x001e
+	Pyramid_GroundFloor_Room_C = 0x0026
+	Pyramid_Floor_minus1_Room_A = 0x0021
+	Pyramid_Floor_1_Room_C = 0x0029
+	Pyramid_Floor_1_Room_E = 0x012c
 
 	function current(enum_releaseRegion) =>
 		word(memory.getAddress("16-bit:ActionModeLevel_ID", enum_releaseRegion))
@@ -852,12 +862,12 @@ class CLASS_MEMLOGIC_Gear {
 
 	// ----Functions----
 	function current_flagState_IsGearAcquired(int_flagIndx, enum_releaseRegion) =>
-		bit0(memory.getAddress("FlagArray:GearAcquiredFlags", enum_releaseRegion))
+		bit0(memory.getAddress("FlagArray:GearAcquiredFlags", enum_releaseRegion) + int_flagIndx)
 	function prev_flagState_IsGearAcquired(int_flagIndx, enum_releaseRegion) =>
 		prev(this.current_flagState_IsGearAcquired(int_flagIndx, enum_releaseRegion))
 
 	function is_acquired(enum_gear, enum_releaseRegion) =>
-		this.current_flagState_IsGearAcquired(enum_gear, enum_releaseRegion) == FLAG_IsGearAcquired_true
+		this.current_flagState_IsGearAcquired(enum_gear, enum_releaseRegion) == this.FLAG_IsGearAcquired_true
 
 	function on_acquire(enum_gear, enum_releaseRegion) =>
 		this.current_flagState_IsGearAcquired(enum_gear, enum_releaseRegion) > this.prev_flagState_IsGearAcquired(enum_gear, enum_releaseRegion) 
@@ -870,13 +880,13 @@ class CLASS_MEMLOGIC_Gear {
 
 		let_sumOf_currentFlagStates_IsGearAcquired =
 			sum_of(let_array_AllGear, enum_gear =>
-				this.is_acquired(enum_gear, enum_releaseRegion))
+				this.current_flagState_IsGearAcquired(enum_gear, enum_releaseRegion))
 		let_sumOf_prevFlagStates_IsGearAcquired =
 			sum_of(let_array_AllGear, enum_gear =>
-				this.prev_flagState_IsGearAcquired(enum_gear, enum_releaseRegion) == this.FLAG_IsGearAcquired_true)
+				this.prev_flagState_IsGearAcquired(enum_gear, enum_releaseRegion))
 		return
 			let_sumOf_prevFlagStates_IsGearAcquired == length(let_array_AllGear) -1
-			let_sumOf_currentFlagStates_IsGearAcquired == length(let_array_AllGear)
+			&& let_sumOf_currentFlagStates_IsGearAcquired == length(let_array_AllGear)
 		}
 } gear = CLASS_MEMLOGIC_Gear()
 //---------------------------
@@ -910,12 +920,63 @@ class CLASS_MEMLOGIC_Inventory {
 // ◦ Entities ◦
 // ''''''''''''
 // #region Entities
+class CLASS_MEMLOGIC_MiscEntities {
+	Orb = 100 // = Entity_ID
+	PyramidOrb = 101
+
+	dict_MiscEntitiesData = {
+		Orb: {
+			"EntityID": 0x5C,
+			},
+		PyramidOrb:  {
+			"EntityID": 0x14,
+			"StructAddressKey": "Struct:Entity(Pyramid_Orb)",
+			},
+		}
+
+	dict_PyramidOrbData = { // Big Blue Orbs documented according to Pyramid Map --> https://gamefaqs.gamespot.com/sms/588147-spellcaster/map/12810-mount-minakami-pyramid-map (J & G on map are boss drops)
+		"Orb_C": {
+			"ActionModeLevel_ID": actionLevel.Pyramid_GroundFloor_Room_B,
+			},
+		"Orb_E": {
+			"ActionModeLevel_ID": actionLevel.Pyramid_GroundFloor_Room_C,
+			},
+		"Orb_F": {
+			"ActionModeLevel_ID": actionLevel.Pyramid_Floor_minus1_Room_A ,
+			},
+		"Orb_H": {
+			"ActionModeLevel_ID": actionLevel.Pyramid_Floor_1_Room_C,
+			},
+		"Orb_K": {
+			"ActionModeLevel_ID": actionLevel.Pyramid_Floor_1_Room_E,
+			},
+	}
+	function get_EntityID(enum_miscEntity) => this.dict_MiscEntitiesData[enum_miscEntity]["EntityID"]
+	function get_StructAddressKey(enum_miscEntity) => this.dict_MiscEntitiesData[enum_miscEntity]["StructAddressKey"]
+	
+	function current_ID(enum_miscEntity, enum_releaseRegion) {
+		let_EntityStructAddr = memory.getAddress(this.get_StructAddressKey(enum_miscEntity), enum_releaseRegion)
+		let_memAddr_MiscEntity_ID = let_EntityStructAddr + memory.getStruct_OffsetToMember("Struct:Entity", "8-bit:Entity_ID")
+		return byte(let_memAddr_MiscEntity_ID)}
+	function prev_ID(enum_miscEntity, enum_releaseRegion) =>
+		prev(this.current_ID(enum_miscEntity, enum_releaseRegion))
+
+	// CheckIf: entity despawns by confirming if the entity struct is zeroed out
+	function on_despawn(enum_miscEntity, enum_releaseRegion) =>
+		this.prev_ID(enum_miscEntity, enum_releaseRegion) == this.get_EntityID(enum_miscEntity)
+		&& this.current_ID(enum_miscEntity, enum_releaseRegion) == 0
+
+} miscEntity = CLASS_MEMLOGIC_MiscEntities()
+
 class CLASS_MEMLOGIC_BossEntities {
 	MysteriousEnemy = 100
 	Jukak = 101
 	Wakahiko = 102
 	KashimaFireBoss = 103
 	PyramidDemon = 104
+	
+	Eye = 301
+	Goat = 302
 
 
 	dict_BossData = { // TODO put dict_BossData info into codenotes
@@ -944,6 +1005,16 @@ class CLASS_MEMLOGIC_BossEntities {
 			"EntityStartHP": 0x64,
 			"BossArena_ActionModeLevel_ID": actionLevel.Pyramid_DemonBossArena,
 			"StructLocation": "A"},
+		Eye: {
+			"EntityID": 0xA3,
+			"EntityStartHP": 0x28,
+			"BossArena_ActionModeLevel_ID": actionLevel.Pyramid_EyeMiniBossRoom,
+			"StructLocation": "C"},
+		Goat: {
+			"EntityID": 0xA1,
+			"EntityStartHP": 0x28,
+			"BossArena_ActionModeLevel_ID": actionLevel.Pyramid_GoatMiniBossRoom,
+			"StructLocation": "C"},
 		}
 	function get_EntityID(enum_boss) => this.dict_BossData[enum_boss]["EntityID"]
 	function get_EntityStartHP(enum_boss) => this.dict_BossData[enum_boss]["EntityStartHP"]
@@ -967,7 +1038,8 @@ class CLASS_MEMLOGIC_BossEntities {
 		this.current_HP(enum_boss, enum_releaseRegion) == this.get_EntityStartHP(enum_boss)
 	function is_belowMaxHP(enum_boss, enum_releaseRegion) =>
 		this.current_HP(enum_boss, enum_releaseRegion) < this.get_EntityStartHP(enum_boss)
-
+	
+	// CheckIf: boss spawns by confirming if EntityID and MaxHP is set (in one frame)
 	function on_spawn(enum_boss, enum_releaseRegion) {
 		let_memAddr_Struct_BossEntity = memory.getAddress(format("Struct:Entity(boss)_{0}", this.get_StructLocation(enum_boss)), enum_releaseRegion) 
 		let_memAddr_BossEntity_ID = let_memAddr_Struct_BossEntity + memory.getStruct_OffsetToMember("Struct:Entity", "8-bit:Entity_ID")
@@ -986,10 +1058,22 @@ class CLASS_MEMLOGIC_BossEntities {
 		0 <= this.prev_HP(enum_boss, enum_releaseRegion) && this.prev_HP(enum_boss, enum_releaseRegion) <= 50
 		&& 200 <= this.current_HP(enum_boss, enum_releaseRegion) && this.current_HP(enum_boss, enum_releaseRegion) <= 255
 
+	// CheckIf: boss dies by confirming if the boss entity struct changes into an orb entity struct
+	function on_death(enum_boss, enum_releaseRegion) =>
+		this.prev_ID(enum_boss, enum_releaseRegion) == this.get_EntityID(enum_boss)
+		&& this.current_ID(enum_boss, enum_releaseRegion) == miscEntity.get_EntityID(miscEntity.Orb)
+				
+	// CheckIf: boss despawns by confirming if boss entity struct is zeroed out
+	function on_despawn(enum_boss, enum_releaseRegion) =>
+		this.prev_ID(enum_boss, enum_releaseRegion) == this.get_EntityID(enum_boss)
+		&& this.current_ID(enum_boss, enum_releaseRegion) == 0
+
 	function is_bossArena_active(enum_boss, enum_releaseRegion) =>
 		actionLevel.is(this.get_BossArena_ActionModeLevel_ID(enum_boss), enum_releaseRegion)
 	function on_bossArena_enter(enum_boss, enum_releaseRegion) =>
 		actionLevel.on_enter(this.get_BossArena_ActionModeLevel_ID(enum_boss), enum_releaseRegion) 
+
+
 } bossEnemy = CLASS_MEMLOGIC_BossEntities()
 // #endregion Entities
 
@@ -1021,6 +1105,13 @@ class CLASS_MEMLOGIC_PlayerCharacterLogic {
 		bcd(word(memory.getAddress("BCD:Player_Energy", enum_releaseRegion)))
 	function prev_ENGY(enum_releaseRegion) =>
 		prev(this.current_ENGY(enum_releaseRegion))		
+	
+	function on_ENGY_refill(enum_releaseRegion) =>
+		this.prev_ENGY(enum_releaseRegion) < this.current_ENGY(enum_releaseRegion)
+	
+	function on_STGH_refill(enum_releaseRegion) =>
+		this.prev_STGH(enum_releaseRegion) < this.current_STGH(enum_releaseRegion)
+	
 	function current_spellSelected(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:SelectedSpell", enum_releaseRegion))
 
@@ -1133,16 +1224,21 @@ dict_coreData = {
 		// "a_SeaSpirits": { // VERIFIED
 			// "id": 607698, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeat all 5 sea spirits at Dannoura (Shimonoseki coast/sea)"},
 		// "a_xRaying": { // VERIFIED
-			// "id": 607701, "points": 0000000, "devInfo": "spot a chest with the x-ray glasses at Dannoura (Shimonoseki coast/sea)"},
+			// "id": 607701, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "spot a chest with the x-ray glasses at Dannoura (Shimonoseki coast/sea)"},
 		
-		"a_FullyGeared": { // TESTING a_FullyGeared
-			"id": 000000, "points": ENUM_AchievementPointClass.Hard_25, "devInfo": "Acquire all 8 gear items"},
-		"a_Energised": { // CONCEPT a_Energised
-			"id": 000000, "points": 0000000, "devInfo": "Acquire a certain amount of energy, prior to Final Battle"},
-		"a_Strengthened": { // CONCEPT a_Strengthened
-			"id": 000000, "points": 0000000, "devInfo": "Acquire a certain amount of strength, prior to Final Battle"},
-		// "a_Template": { // CONCEPT a_template
-		// 	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// "a_FullyGeared": { // VERIFIED
+			// "id": 609106, "points": ENUM_AchievementPointClass.Hard_25, "devInfo": "Acquire all 8 gear items"},
+		// "a_Energised": { // VERIFIED
+			// "id": 609105, "points": 0000000, "devInfo": "Acquire a certain amount of energy, prior to Final Battle"},
+		// "a_Strengthened": { // DISCONTINUED - Max Strength is determined based on MainQuest progress, there's no optional "max HP/STGH increase pick-ups"
+			// "id": 000000, "points": 0000000, "devInfo": "Acquire a certain amount of strength, prior to Final Battle"},
+		// "a_Indy": { // VERIFIED
+			// "id": 609114, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Regen HP with each unique Big Blue Orb inside the pyramid (picking up the orb without restoring any STGH, doesn't count)"},
+		// "a_MiniGoat": { // VERIFIED
+			// "id": 609116, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Kill the Goat Mini Boss in the Pyramid"},
+		// "a_MiniEye": { // VERIFIED
+			// "id": 609115, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Kill the Eye Mini Boss in the Pyramid"},
+	
 		},
 	}
 
@@ -1169,7 +1265,7 @@ dict_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
 		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			// __ornext(gameStateA.is_inGame(enum_releaseRegion))
-			// && gameStateB.is_gameStarted(enum_releaseRegion)
+			// && gameStateB.is_gameStarted(enum_releaseRegion) // WARNING --> going into ActionModeMenu => gameStateB toggles to gameStateB.BootingGame_StartMenu_Demo 
 			// && !demo.is_active(enum_releaseRegion)
 			// always_false()
 		// ),
@@ -1556,9 +1652,10 @@ dict_triggers = {
 			&& storyChapter.is(storyChapter.Ch_4_Pyramid, enum_releaseRegion) // --> last pieces of gear are acquired during this Chapter
 			&& gear.on_allGear_acquired(enum_releaseRegion)
 		),
-	"a_Energised": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+	"a_Energised": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ENERGY_REQUIREMENT = 250 
 
+		return 
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			__ornext(
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
@@ -1570,22 +1667,78 @@ dict_triggers = {
 
 			&& player.prev_ENGY(enum_releaseRegion) < const_ENERGY_REQUIREMENT
 			&& player.current_ENGY(enum_releaseRegion) >= const_ENERGY_REQUIREMENT
-		),	
-	"a_Strengthened": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		const_STRENGTH_REQUIREMENT = 80 // TODO Test what max possible STGH would be without Big Blue Ball drops from bosses (only STGH increases from gear + Big Ball pickups within the pyramid) -- Confirm if Big Blue Balls increase max STGH + also ones in Pyramid
-
+		}),
+	"a_Indy": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_dict_PYRAMID_ORBS = { // Big Blue Orbs documented according to Pyramid Map --> https://gamefaqs.gamespot.com/sms/588147-spellcaster/map/12810-mount-minakami-pyramid-map (J & G on map are boss drops)
+			"Orb_C": {
+				"Location": actionLevel.Pyramid_GroundFloor_Room_B,
+				},
+			"Orb_E": {
+				"Location": actionLevel.Pyramid_GroundFloor_Room_C,
+				},
+			"Orb_F": {
+				"Location": actionLevel.Pyramid_Floor_minus1_Room_A,
+				},
+			"Orb_H": {
+				"Location": actionLevel.Pyramid_Floor_1_Room_C,
+				},
+			"Orb_K": {
+				"Location": actionLevel.Pyramid_Floor_1_Room_E,
+				},
+			}
+		
+		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			__ornext(
-				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
-				|| gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion)
-				|| gameStateA.is_active(gameStateA.ActionModeMenu, enum_releaseRegion))
-			&& gameStateB.is_gameStarted(enum_releaseRegion)
-			&& !demo.is_active(enum_releaseRegion)
-			&& !storyChapter.is(storyChapter.Ch_7_FinalBattle, enum_releaseRegion) // --> acquire energy before final battle
+			never(!gameStateA.is_inGame(enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never(!storyChapter.is(storyChapter.Ch_4_Pyramid, enum_releaseRegion))
+			
+			&& tally_of( // --Tally--(extraCheck)--> Count if all rooms with Big Blue Orbs have been entered once
+				const_dict_PYRAMID_ORBS, length(const_dict_PYRAMID_ORBS), enum_pyramidOrb => 
+					once(actionLevel.on_enter(const_dict_PYRAMID_ORBS[enum_pyramidOrb]["Location"], enum_releaseRegion))
+				)
 
-			&& player.prev_STGH(enum_releaseRegion) < const_STRENGTH_REQUIREMENT
-			&& player.current_STGH(enum_releaseRegion) >= const_STRENGTH_REQUIREMENT
-		),	
+			&& measured( // --Measured--Tally--> Count all unique Big Blue Orb pickups 
+				tally_of(const_dict_PYRAMID_ORBS, length(const_dict_PYRAMID_ORBS), enum_pyramidOrb =>
+					once(
+						actionLevel.is(const_dict_PYRAMID_ORBS[enum_pyramidOrb]["Location"], enum_releaseRegion)
+						&& miscEntity.on_despawn(miscEntity.PyramidOrb, enum_releaseRegion)
+						&& player.on_STGH_refill(enum_releaseRegion))
+				), 
+				when = once( // --CheckIf--[StartCondition]--> Entering Pyramid (via Main Entrance)
+					adventureScene.is(adventureScene.Pyramid_SouthSide, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode 
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
+				)
+		}),
+	"a_MiniEye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MINI_BOSS = bossEnemy.Eye
+		
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			never(!gameStateA.is_inGame(enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never(!storyChapter.is(storyChapter.Ch_4_Pyramid, enum_releaseRegion))
+			&& never(!bossEnemy.is_bossArena_active(const_MINI_BOSS, enum_releaseRegion))
+			&& never(bossEnemy.on_despawn(const_MINI_BOSS, enum_releaseRegion))
+
+			&& once(bossEnemy.on_spawn(const_MINI_BOSS, enum_releaseRegion))
+			&& trigger_when(bossEnemy.on_death(const_MINI_BOSS, enum_releaseRegion))
+		}),
+	"a_MiniGoat": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MINI_BOSS = bossEnemy.Goat
+		
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			never(!gameStateA.is_inGame(enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never(!storyChapter.is(storyChapter.Ch_4_Pyramid, enum_releaseRegion))
+			&& never(!bossEnemy.is_bossArena_active(const_MINI_BOSS, enum_releaseRegion))
+			&& never(bossEnemy.on_despawn(const_MINI_BOSS, enum_releaseRegion))
+
+			&& once(bossEnemy.on_spawn(const_MINI_BOSS, enum_releaseRegion))
+			&& trigger_when(bossEnemy.on_death(const_MINI_BOSS, enum_releaseRegion))
+		}),
 	}
 // #endregion ACH - Triggers
 
@@ -1607,7 +1760,9 @@ dict_titles = {
 	"a_xRaying": 				{"en": "xxxxxxxxx"},
 	"a_FullyGeared": 			{"en": "Fully Geared"},
 	"a_Energised": 				{"en": "Energised"},
-	"a_Strengthened": 			{"en": "Strengthened"},
+	"a_Indy": 					{"en": "xxxxxxxxx"},
+	"a_MiniEye": 				{"en": "xxxxxxxxx"},
+	"a_MiniGoat": 				{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -1626,7 +1781,9 @@ dict_descriptions = {
 	"a_xRaying": 				{"en": "xxxxxxxx"},
 	"a_FullyGeared": 			{"en": "xxxxxxxxx"},
 	"a_Energised": 				{"en": "xxxxxxxxx"},
-	"a_Strengthened": 			{"en": "xxxxxxxxx"},
+	"a_Indy": 					{"en": "xxxxxxxxx"},
+	"a_MiniEye": 				{"en": "xxxxxxxxx"},
+	"a_MiniGoat": 				{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
