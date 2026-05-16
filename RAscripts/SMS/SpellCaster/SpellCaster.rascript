@@ -66,9 +66,6 @@
 //
 // Shimono Chapter
 // - Taste each type of food and regain strength at Midori House (Shimono chapter)
-// 
-// Eat Spaghetti at stand (Izumo2 confirmed, idk bout first visit)
-// - Acquiring Necklace from Kuma at Izumo (FinalBattle section) (optional item, restores strength to 200 if it reaches zero)
 
 // Story Script
 // ================
@@ -501,6 +498,8 @@ class CLASS_MEMLOGIC_GameStateA {
 	// ----Functions----
 	function current(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:GameState_A", enum_releaseRegion))
+	function prior(enum_releaseRegion) =>
+		prior(this.current(enum_releaseRegion))
 	function prev(enum_releaseRegion) =>
 		prev(this.current(enum_releaseRegion))
 
@@ -624,6 +623,9 @@ class CLASS_MEMLOGIC_StoryChapterIdentification {
 class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	// ----AdventureSceneIDs----
 	SummitTemple_OnPlayerDeath = 0x0
+	SummitTemple_GameStart = 0x0
+	IzumoTown_Ch1 = 0x2
+	IzumoShrine_Inside = 0x3
 	IzumoShrine_OutsideBeforeBossFight = 0x4
 	IzumoShrine_OutsideAfterBossFight = 0x5
 	KashimaTemple_FirstVisit = 0x11
@@ -743,6 +745,7 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
 	FLAG_isAdventureModeDialogueTextDisplayed_false = 0
 
 	// ----AdventureModeDialogueText_IDs----
+	EnteringEnrikuTemple_A = 0x6 // "Kane: look at all the destruction!"
 	FirstBossFight_A = 0x31 // "Mysterious Enemy: Kusanagi!!!" - After defeating 1st boss (mysterious man) at IzumoTemple
 	FirstBossFight_B = 0x32 // "with that word, the mysterious enemy disappears!
 	XRayGlasses_Use = 0xDA // "Kane puts on the X-Ray Glasses"
@@ -787,6 +790,11 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
 		this.prior(enum_releaseRegion) == enum_dialogueText
 	function wasPrev(enum_dialogueText, enum_releaseRegion) =>
 		this.prev(enum_releaseRegion) == enum_dialogueText	
+	
+	function on_changeTo(enum_dialogueText, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) != enum_dialogueText	
+		&& this.current(enum_releaseRegion) == enum_dialogueText
+	
 	// ----------------------------
 	function current_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) =>
 		bit0(memory.getAddress("BitFlag:IsAdventureModeDialogueTextDisplayed", enum_releaseRegion))
@@ -803,6 +811,12 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
 
 // #region ActionMode Level Identification
 class CLASS_MEMLOGIC_ActionModeLevelIdentification {
+	PathToEnrikuTemple_Level_1 = 0x0003
+	PathToEnrikuTemple_Level_2 = 0x0103
+	PathToEnrikuTemple_Entrance = 0x0203
+	PathToIzumoShrine_Level_1 = 0x0001
+	PathToIzumoShrine_Level_2 = 0x0101
+	PathToIzumoShrine_Entrance = 0x0201
 	IzumoShrine_BossArena = 0x0202
 	AttaroShrine_BossArena = 0x0106
 	MtMiwa_BossArena = 0x0208
@@ -1042,7 +1056,7 @@ class CLASS_MEMLOGIC_BossEntities {
 			}
 	
 	// Entity dies when: HP hits 0x0 OR when HP overflows negatively (eg. HP at 15, takes 20 damage ===> 0xF(15)-15 = 0x0 ===> 0x0(0)-1 = 0xFF ===> 0xFF(255) - 4 = 251)
-	function on_HP_hitsZero(enum_boss, enum_releaseRegion) =>
+	function on_HP_hitsZero(enum_boss, enum_releaseRegion) => // TODO possible refactor of bossEnemy.on_HP_hitsZero() and bossEnemy.on_HP_negativelyOverflows() with bossEnemy.on_death()
 		1 <= this.prev_HP(enum_boss, enum_releaseRegion) && this.prev_HP(enum_boss, enum_releaseRegion) <= 50
 		&& this.current_HP(enum_boss, enum_releaseRegion) == 0	
 	function on_HP_negativelyOverflows(enum_boss, enum_releaseRegion) =>
@@ -1103,6 +1117,12 @@ class CLASS_MEMLOGIC_PlayerCharacterLogic {
 	function on_STGH_refill(enum_releaseRegion) =>
 		this.prev_STGH(enum_releaseRegion) < this.current_STGH(enum_releaseRegion)
 	
+	function on_STGH_decrement(enum_releaseRegion) =>
+		this.current_STGH(enum_releaseRegion) < this.prev_STGH(enum_releaseRegion)
+	
+	function on_ENGY_decrement(enum_releaseRegion) =>
+		this.current_ENGY(enum_releaseRegion) < this.prev_ENGY(enum_releaseRegion)
+	
 	function current_spellSelected(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:SelectedSpell", enum_releaseRegion))
 
@@ -1120,7 +1140,7 @@ class CLASS_MEMLOGIC_PlayerCharacterLogic {
 
 	function on_spellCast(enum_spell, enum_releaseRegion) =>
 		this.current_spellSelected(enum_releaseRegion) == enum_spell
-		&& this.current_ENGY(enum_releaseRegion) < this.prev_ENGY(enum_releaseRegion)
+		&& this.on_ENGY_decrement(enum_releaseRegion)
 } player = CLASS_MEMLOGIC_PlayerCharacterLogic()
 // #endregion Player Character Logic
 
@@ -1209,6 +1229,15 @@ dict_coreData = {
 		// "a_SlayEvilLord": { // VERIFIED
 			// "id": 608733, "points": ENUM_AchievementPointClass.Hard_25, "devInfo": "Defeat the evil lord"},		
 		},
+	"c_Challenge": { // Challenges
+		// "a_ClgEnrikuTemple": { // VERIFIED
+			// "id": 609158, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "(one session) Reach Enriku Temple without taking any HP damage"},
+		"a_ClgIzumoShrine": { // TEST a_ClgIzumoShrine -> Determine time limit
+			"id": 000000, "points": 0000000, "devInfo": "(one session) Reach Izumo Temple and kill the Mysterious Enemy within xx seconds"},
+		// "a_Template": { // CONCEPT a_template
+			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+	
+		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
 			// "id": 607151, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Defeat a boss with one hit from full HP (earlier bosses using Fudo spell)"},
@@ -1247,6 +1276,7 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 	// "c_Template": 		ENUM_AchievementType.Standard,
 	"c_StoryProgress": 		ENUM_AchievementType.Progression,
 	"c_WinCondition":		ENUM_AchievementType.WinCondition,
+	"c_Challenge":			ENUM_AchievementType.Standard,
 	"c_Bonus":				ENUM_AchievementType.Standard,
 	}
 
@@ -1509,6 +1539,120 @@ dict_triggers = {
 					&& dialogueText.is(dialogueText.IzanamiKnowledge_F[0], enum_releaseRegion))
 				)
 		),	
+	"a_ClgEnrikuTemple": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_PLAYER_START_STGH = 20
+		const_PLAYER_START_ENGY = 20
+		
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			never(!gameStateA.is_inGame(enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never(!storyChapter.is(storyChapter.Ch_0_TroubleAtEnrikuTemple, enum_releaseRegion))
+			&& never(player.on_death(enum_releaseRegion))
+			&& never(player.on_STGH_decrement(enum_releaseRegion))
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
+				player.current_STGH(enum_releaseRegion) == const_PLAYER_START_STGH // --ExtraChecks--2_lines--> game starts off with 20 STGH and 40 ENGY
+				&& player.current_ENGY(enum_releaseRegion) == const_PLAYER_START_ENGY
+
+				// && adventureScene.is(adventureScene.SummitTemple_GameStart, enum_releaseRegion) // DISABLED --> [8-bit:AdventureScene_ID] doesn't change during "StoryChapter.Ch_0_TroubleAtEnrikuTemple"
+				&& actionLevel.is(actionLevel.PathToEnrikuTemple_Level_1, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
+
+			&& trigger_when( // --Trigger--> When reaching Enriku Temple
+				once( // --CheckIf--> ActionLevels have progressed correctly 
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToEnrikuTemple_Level_1
+					&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToEnrikuTemple_Level_2)
+				&& once( // --CheckIf--> ActionLevels have progressed correctly 
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToEnrikuTemple_Level_2
+					&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToEnrikuTemple_Entrance)
+
+				&& once( // --CheckIf--> Reached Enriku Temple with Challenge Complete
+					player.current_STGH(enum_releaseRegion) >= const_PLAYER_START_STGH
+
+					&& actionLevel.is(actionLevel.PathToEnrikuTemple_Entrance, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
+
+				&& gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion) // --CheckIf--2_Lines--> Entering Enriku Temple
+				&& dialogueText.on_changeTo(dialogueText.EnteringEnrikuTemple_A, enum_releaseRegion)
+			)
+		}),	
+	"a_ClgIzumoShrine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_1_Investigation
+		const_BOSS = bossEnemy.MysteriousEnemy
+		const_PLAYER_MAX_START_STGH = 30
+		const_TIME_LIMIT_SECONDS = 180
+		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
+		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgIzumoShrine with a complementary timed leaderboard
+		
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
+				player.current_STGH(enum_releaseRegion) <= const_PLAYER_MAX_START_STGH // --ExtraCheck--> at this point in story, player can't have more than xx STGH
+
+				&& actionLevel.is(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode				
+				&& __ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.IzumoTown_Ch1, enum_releaseRegion))
+				)
+
+			&& trigger_when( // --Trigger--> When Boss dies
+				once( // --CheckIf--> ActionLevels have progressed correctly 
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToIzumoShrine_Level_1
+					&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToIzumoShrine_Level_2)
+				&& once( // --CheckIf--> ActionLevels have progressed correctly 
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToIzumoShrine_Level_2
+					&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToIzumoShrine_Entrance)
+
+				&& once( // --CheckIf--> Reached destination
+					actionLevel.is(actionLevel.PathToIzumoShrine_Entrance, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
+					
+				&& once( // --CheckIf--> Entering Boss Arena
+					adventureScene.is(adventureScene.IzumoShrine_OutsideAfterBossFight, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
+
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) // --CheckIf--[TriggerCondition]--> Boss dies
+				&& bossEnemy.on_death(const_BOSS, enum_releaseRegion)
+				)
+		// [2] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when player dies during any of the actionLevels prior to the boss	
+			|| never_toAlt(
+				__ornext(
+					actionLevel.is(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToIzumoShrine_Level_2, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToIzumoShrine_Entrance, enum_releaseRegion))
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)
+				)
+		// [4] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.IzumoTown_Ch1, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),	
 	"a_SlayEvilLord": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			never(repeated(10, // --Repeated--10_frames--> On OutroSequence start, when outrosequence toggles from "SecondTextParagraph" to "EndingScene", gameStateA is temporarily 0x6 as a transitional value (0x86 -> 0x6 -> 0x86). This is also the case when switching from "EndingScene" to "Credits"
@@ -1763,6 +1907,9 @@ dict_titles = {
 	"a_Ch5Yomotsu": 			{"en": "xxxxxxxxx"},
 	"a_Ch5Izanami": 			{"en": "Knowledge & Power"},
 	"a_SlayEvilLord": 			{"en": "xxxxxxxxx"},
+
+	"a_ClgEnrikuTemple": 		{"en": "xxxxxxxxx"},
+	"a_ClgIzumoShrine": 		{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
@@ -1785,6 +1932,9 @@ dict_descriptions = {
 	"a_Ch5Yomotsu": 			{"en": "xxxxxxxxx"},
 	"a_Ch5Izanami": 			{"en": "xxxxxxxx"},
 	"a_SlayEvilLord": 			{"en": "xxxxxxxxx"},
+
+	"a_ClgEnrikuTemple": 		{"en": "xxxxxxxxx"},
+	"a_ClgIzumoShrine": 		{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
