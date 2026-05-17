@@ -1346,7 +1346,7 @@ dict_coreData = {
 		// "a_ClgAttaroShrine": { // VERIFIED
 			// "id": 609504, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Reach Attaro Shrine using only fully charged ki attacks and with only 3 allowed usages of the Makiri spell"},
 		// "a_ClgMtMiwa": { // CONCEPT a_ClgMtMiwa
-			// "id": 000000, "points": 0000000, "devInfo": "Reach Miwa Temple "},
+			// "id": 000000, "points": 0000000, "devInfo": "Reach Miwa Temple and defeat both bosses, using only xx amount of ENGY"},
 		// "a_ClgKashimaTemple": { // CONCEPT a_ClgKashimaTemple
 			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 		// "a_ClgMtHinokami": { // CONCEPT a_ClgMtHinokami
@@ -1777,7 +1777,6 @@ dict_triggers = {
 		const_ALLOWED_SPELL_USAGES = 3
 		const_ALLOWED_SPELL = spell.Makiri
 		const_END_BOSS = bossEnemy.Jukak
-		const_PLAYER_MAX_START_STGH = 30
 		const_TIME_LIMIT_SECONDS = 105 // = 1m45s (only counts when in ActionMode; Dev_PB: 1m30s~)
 		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
 		
@@ -1805,9 +1804,7 @@ dict_triggers = {
 				&& player.on_spellCast(const_ALLOWED_SPELL, enum_releaseRegion))) 
 
 			&& once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
-				player.current_STGH(enum_releaseRegion) <= const_PLAYER_MAX_START_STGH // --ExtraCheck--> at this point in story, player can't have more than xx STGH
-
-				&& actionLevel.is(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion)
+				actionLevel.is(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion)
 				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 				&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion))
@@ -1863,9 +1860,7 @@ dict_triggers = {
 					repeated(const_ALLOWED_SPELL_USAGES, always_true()),  // --Add(...)--> to fill up count at start
 					deduct(repeated(const_ALLOWED_SPELL_USAGES, player.on_spellCast(const_ALLOWED_SPELL, enum_releaseRegion)))]), // --Deduct(-1)--> when using the spell 
 				when = once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
-					player.current_STGH(enum_releaseRegion) <= const_PLAYER_MAX_START_STGH // --ExtraCheck--> at this point in story, player can't have more than xx STGH
-
-					&& actionLevel.is(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion)
+					actionLevel.is(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion)
 					&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
 					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 					&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion))
