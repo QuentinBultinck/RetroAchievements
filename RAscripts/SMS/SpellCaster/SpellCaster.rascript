@@ -1348,13 +1348,13 @@ dict_coreData = {
 		// "a_ClgMtMiwa": { // CONCEPT a_ClgMtMiwa
 			// "id": 000000, "points": 0000000, "devInfo": "Reach Miwa Temple and defeat both bosses, using only xx amount of ENGY"},
 		// "a_ClgKashimaTemple": { // CONCEPT a_ClgKashimaTemple
-			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+			// "id": 000000, "points": 0000000, "devInfo": "Reach Kashima Temple and defeat boss, using only one spell of choice, with only 2 allowed activations"},
 		// "a_ClgMtHinokami": { // CONCEPT a_ClgMtHinokami
-			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+			// "id": 000000, "points": 0000000, "devInfo": "Reach Mt Hinokami and defeat bosses, without using following spells: Kannon, Fudo & Mars"},
 		// "a_ClgPyramid": { // CONCEPT a_ClgPyramid
-			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+			// "id": 000000, "points": 0000000, "devInfo": "Reach Demon and defeat him, within xx time, using only xx amount of ENGY"},
 		// "a_ClgFinalBattle": { // CONCEPT a_ClgFinalBattle
-			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+			// "id": 000000, "points": 0000000, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, taking only xx HP damage"},
 		// CONCEPT Area/bosses with no challenges: UnderwaterShrine KakogenTemple PrincessAsaka GiantCentipede YomotsuPlain ThunderGod SnakeDemon
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
