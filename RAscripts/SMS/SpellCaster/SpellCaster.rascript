@@ -219,6 +219,12 @@ class CLASS_MemoryData {
 				"8-bit:Entity_HP": 0x15,
 				},
 			},
+		"Struct:Entity(PC_BasicAttack)": {
+			"offsetToMember": {
+				"8-bit:Entity_ID": 0x0,
+				"8-bit:BasicAttack_Charge_State": 0x18,
+				},
+			},
 		}
 	function getStruct_SizeInBytes(string_structKey) =>
 		this.dict_structDefinitions[string_structKey]["sizeInBytes"]
@@ -299,11 +305,18 @@ class CLASS_MemoryData {
 		"16-bit:ActionModeLevel_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0023},
 		"16-bit:AdventureModeDialogueText_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0208},
 
+		"32-bit:NeverTrue": {ENUM_ReleaseRegion.USA_EUR: 0x0280},
+
 		"FlagArray:MainQuestEventFlags": {ENUM_ReleaseRegion.USA_EUR: 0x0281},
 		"FlagArray:ItemInventoryFlags": {ENUM_ReleaseRegion.USA_EUR: 0x02e0},
 		"FlagArray:MiscEventFlags_A": {ENUM_ReleaseRegion.USA_EUR: 0x02b0},
 		"FlagArray:GearAcquiredFlags": {ENUM_ReleaseRegion.USA_EUR: 0x0032},
 
+		"Struct:Entity(Player_Projectile_A)": {ENUM_ReleaseRegion.USA_EUR: 0x0340},
+		"Struct:Entity(Player_Projectile_B)": {ENUM_ReleaseRegion.USA_EUR: 0x0360},
+		"Struct:Entity(Player_Projectile_C)": {ENUM_ReleaseRegion.USA_EUR: 0x0380},
+		"Struct:Entity(Player_Projectile_D)": {ENUM_ReleaseRegion.USA_EUR: 0x03A0},
+		"Struct:Entity(Player_Projectile_E)": {ENUM_ReleaseRegion.USA_EUR: 0x03C0},
 		"Struct:Entity(boss)_A": {ENUM_ReleaseRegion.USA_EUR: 0x0400},
 		"Struct:Entity(boss)_C": {ENUM_ReleaseRegion.USA_EUR: 0x0460},
 		"Struct:Entity(Pyramid_Orb)": {ENUM_ReleaseRegion.USA_EUR: 0x0600},
@@ -450,8 +463,8 @@ class CLASS_MemoryUtility {
 		// let_memAccessor_alwaysNull = high4(memory.getAddress("8-bit:AlwaysNULL_Or_ValueNeverChanges", enum_releaseRegion))
 		// return let_memAccessor_alwaysNull + float_value + let_memAccessor_alwaysNull}
 
-	// function alwaysFalse(enum_releaseRegion) => // Force always_false() as sometime RATools removes it when it is necessary
-		// dword(memory.getAddress("8-bit:AlwaysNULL_Or_ValueNeverChanges", enum_releaseRegion)) == 0xDEADBEEF
+	function alwaysFalse(enum_releaseRegion) => // Force always_false() as sometime RATools removes it when it is necessary
+		dword(memory.getAddress("32-bit:NeverTrue", enum_releaseRegion)) == 0xDEADBEEF
 		
 	function ManualConstruction_PlaceHolderRequirement(int_placeHolderIndex) { // int_placeHolderIndex allowedRange [0x1-0xFFF] // This function can be used to quickyly generate a placeHolder Requirement for easily overwriting/copyPasting MANUAL CONSTRUCTION code
 		let_dummyAddress = (int_placeHolderIndex * 0x10000) + 0xBEEF
@@ -630,6 +643,7 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	IzumoShrine_Inside = 0x3
 	IzumoShrine_OutsideBeforeBossFight = 0x4
 	IzumoShrine_OutsideAfterBossFight = 0x5
+	AttaroShrine = 0xA
 	KashimaTemple_FirstVisit = 0x11
 	Dannoura_A = 0x18
 	Dannoura_Y = 0x30
@@ -818,7 +832,9 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	PathToEnrikuTemple_Entrance = 0x0203
 	PathToIzumoShrine_Level_1 = 0x0001
 	PathToIzumoShrine_Level_2 = 0x0101
-	PathToIzumoShrine_Entrance = 0x0201
+	PathToIzumoShrine_Entrance = 0x0201	
+	PathToAttaroShrine_Level_1 = 0x0004
+	PathToAttaroShrine_Entrance = 0x0104
 	IzumoShrine_BossArena = 0x0202
 	AttaroShrine_BossArena = 0x0106
 	MtMiwa_BossArena = 0x0208
@@ -836,6 +852,8 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	dict_ActionLevelPlayerSpawnCoords = {
 		PathToIzumoShrine_Level_1: {
 			"StartOfActionLevel": [0x36, 0x80]}, // [x,y] --- "StartOfActionLevel" refers to left side of action level
+		PathToAttaroShrine_Level_1: {
+			"StartOfActionLevel": [0x36, 0x80]},
 		}
 	function get_PlayerSpawnCoords_StartOfActionLevel(enum_actionLevel) => this.dict_ActionLevelPlayerSpawnCoords[enum_actionLevel]["StartOfActionLevel"]
 
@@ -934,7 +952,7 @@ class CLASS_MEMLOGIC_Inventory {
 // ''''''''''''
 // #region Entities
 class CLASS_MEMLOGIC_MiscEntities {
-	Orb = 100 // = Entity_ID
+	Orb = 100
 	PyramidOrb = 101
 
 	dict_MiscEntitiesData = {
@@ -981,6 +999,72 @@ class CLASS_MEMLOGIC_MiscEntities {
 
 } miscEntity = CLASS_MEMLOGIC_MiscEntities()
 
+class CLASS_MEMLOGIC_PlayerProjectileEntities {		 
+	BasicAttack = 100
+	Fudo = 110
+
+	BasicAttack_ChargeState_nonCharged = 0x0
+	BasicAttack_ChargeState_semiCharged = 0x1
+	BasicAttack_ChargeState_fullyCharged = 0x2
+
+	array_PlayerProjectileStructLocationIDs = [
+		"A", // Struct:Entity(Player_Projectile_A)]
+		"B", // Struct:Entity(Player_Projectile_B)]
+		"C", // ...
+		"D",
+		"E"]
+	dict_PlayerProjectileData = {
+		BasicAttack: {
+			"EntityID": 0x13,
+			},
+		Fudo: {
+			"EntityID": 0x18,
+			},
+		}
+	function get_EntityID(enum_playerProjectile) => this.dict_PlayerProjectileData[enum_playerProjectile]["EntityID"]
+
+	function current_ID(char_playerProjectileStructLocationID, enum_releaseRegion) {
+		let_memAddr_playerProjectileStruct = memory.getAddress(format("Struct:Entity(Player_Projectile_{0})", char_playerProjectileStructLocationID), enum_releaseRegion)
+		let_offsetToMember_EntityID = memory.getStruct_OffsetToMember("Struct:Entity(PC_BasicAttack)", "8-bit:Entity_ID")
+		return byte(let_memAddr_playerProjectileStruct + let_offsetToMember_EntityID)}
+	function prev_ID(char_playerProjectileStructLocationID, enum_releaseRegion) =>
+		prev(this.current_ID(char_playerProjectileStructLocationID, enum_releaseRegion))
+	function current_ChargeState(char_playerProjectileStructLocationID, enum_releaseRegion) {
+		let_memAddr_playerProjectileStruct = memory.getAddress(format("Struct:Entity(Player_Projectile_{0})", char_playerProjectileStructLocationID), enum_releaseRegion)
+		let_offsetToMember_ChargeState = memory.getStruct_OffsetToMember("Struct:Entity(PC_BasicAttack)", "8-bit:BasicAttack_Charge_State")
+		return byte(let_memAddr_playerProjectileStruct + let_offsetToMember_ChargeState)}
+	function prev_ChargeState(char_playerProjectileStructLocationID, enum_releaseRegion) =>
+		prev(this.current_ChargeState(char_playerProjectileStructLocationID, enum_releaseRegion))
+
+	// WARNING: return a comparison with HitCounts (AnyOf masked within a Tally)
+	// CheckIf: Any of the 5 player projectile entity struct locations is active && is a basic attack && is not charged
+	function on_basicAttack_nonCharged_cast(enum_releaseRegion) =>
+		tally_of(this.array_PlayerProjectileStructLocationIDs, 1, char_playerProjectileStructLocationID =>  
+			this.prev_ID(char_playerProjectileStructLocationID, enum_releaseRegion) == 0
+			&& this.current_ID(char_playerProjectileStructLocationID, enum_releaseRegion) == this.get_EntityID(this.BasicAttack)
+			&& this.current_ChargeState(char_playerProjectileStructLocationID, enum_releaseRegion) == this.BasicAttack_ChargeState_nonCharged
+		)
+	
+	// WARNING: return a comparison with HitCounts (AnyOf masked within a Tally)
+	// CheckIf: Any of the 5 player projectile entity struct locations is active && is a basic attack && is semi charged
+	function on_basicAttack_semiCharged_cast(enum_releaseRegion) =>
+		tally_of(this.array_PlayerProjectileStructLocationIDs, 1, char_playerProjectileStructLocationID =>  
+			this.prev_ID(char_playerProjectileStructLocationID, enum_releaseRegion) == 0
+			&& this.current_ID(char_playerProjectileStructLocationID, enum_releaseRegion) == this.get_EntityID(this.BasicAttack)
+			&& this.current_ChargeState(char_playerProjectileStructLocationID, enum_releaseRegion) == this.BasicAttack_ChargeState_semiCharged
+		)
+
+	// WARNING: return a comparison with HitCounts (AnyOf masked within a Tally)
+	// CheckIf: Any of the 5 player projectile entity struct locations is active && is a basic attack && is fully charged
+	function on_basicAttack_fullyCharged_cast(enum_releaseRegion) =>
+		tally_of(this.array_PlayerProjectileStructLocationIDs, 1, char_playerProjectileStructLocationID =>  
+			this.prev_ID(char_playerProjectileStructLocationID, enum_releaseRegion) == 0
+			&& this.current_ID(char_playerProjectileStructLocationID, enum_releaseRegion) == this.get_EntityID(this.BasicAttack)
+			&& this.current_ChargeState(char_playerProjectileStructLocationID, enum_releaseRegion) == this.BasicAttack_ChargeState_fullyCharged
+		)
+
+} playerProjectile = CLASS_MEMLOGIC_PlayerProjectileEntities()
+
 class CLASS_MEMLOGIC_BossEntities {
 	MysteriousEnemy = 100
 	Jukak = 101
@@ -990,7 +1074,6 @@ class CLASS_MEMLOGIC_BossEntities {
 	
 	Eye = 301
 	Goat = 302
-
 
 	dict_BossData = { // TODO put dict_BossData info into codenotes
 		MysteriousEnemy: {
@@ -1064,7 +1147,7 @@ class CLASS_MEMLOGIC_BossEntities {
 			}
 	
 	// Entity dies when: HP hits 0x0 OR when HP overflows negatively (eg. HP at 15, takes 20 damage ===> 0xF(15)-15 = 0x0 ===> 0x0(0)-1 = 0xFF ===> 0xFF(255) - 4 = 251)
-	function on_HP_hitsZero(enum_boss, enum_releaseRegion) => // TODO possible refactor of bossEnemy.on_HP_hitsZero() and bossEnemy.on_HP_negativelyOverflows() with bossEnemy.on_death()
+	function on_HP_hitsZero(enum_boss, enum_releaseRegion) =>
 		1 <= this.prev_HP(enum_boss, enum_releaseRegion) && this.prev_HP(enum_boss, enum_releaseRegion) <= 50
 		&& this.current_HP(enum_boss, enum_releaseRegion) == 0	
 	function on_HP_negativelyOverflows(enum_boss, enum_releaseRegion) =>
@@ -1138,7 +1221,7 @@ class CLASS_MEMLOGIC_PlayerCharacterLogic {
 		byte(memory.getAddress("8-bit:PC_yLocation", enum_releaseRegion))
 	function prev_yLocation(enum_releaseRegion) =>
 		prev(this.current_yLocation(enum_releaseRegion))
-
+	
 	// CheckIf: Player spawns at the start of an action level, by confirming if delta location == 0 && current location == valid
 	function on_spawn_atStartOfActionLevel(enum_actionLevel, enum_releaseRegion) {
 		let_coords_PlayerSpawn_StartOfActionLevel = actionLevel.get_PlayerSpawnCoords_StartOfActionLevel(enum_actionLevel)
@@ -1260,10 +1343,10 @@ dict_coreData = {
 			// "id": 609158, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "(one session) Reach Enriku Temple without taking any HP damage"},
 		// "a_ClgIzumoShrine": { // VERIFIED
 			// "id": 609448, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "(one session) Reach Izumo Temple and kill the Mysterious Enemy within xx seconds"},
-		// "a_ClgAttaroShrine": { // CONCEPT a_ClgAttaroShrine
-			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// "a_ClgAttaroShrine": { // VERIFIED
+			// "id": 609504, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Reach Attaro Shrine using only fully charged ki attacks and with only 3 allowed usages of the Makiri spell"},
 		// "a_ClgMtMiwa": { // CONCEPT a_ClgMtMiwa
-			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+			// "id": 000000, "points": 0000000, "devInfo": "Reach Miwa Temple "},
 		// "a_ClgKashimaTemple": { // CONCEPT a_ClgKashimaTemple
 			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 		// "a_ClgMtHinokami": { // CONCEPT a_ClgMtHinokami
@@ -1619,7 +1702,7 @@ dict_triggers = {
 		}),	
 	"a_ClgIzumoShrine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_CHAPTER = storyChapter.Ch_1_Investigation
-		const_BOSS = bossEnemy.MysteriousEnemy
+		const_END_BOSS = bossEnemy.MysteriousEnemy
 		const_PLAYER_MAX_START_STGH = 30
 		const_TIME_LIMIT_SECONDS = 105 // = 1m45s (only counts when in ActionMode; Dev_PB: 1m30s~)
 		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
@@ -1627,13 +1710,13 @@ dict_triggers = {
 		
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			unless( // --PauseLock--> When player dies during any of the actionLevels prior to the boss	
+			unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss	
 				__ornext(
 					actionLevel.is(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
 					|| actionLevel.is(actionLevel.PathToIzumoShrine_Level_2, enum_releaseRegion)
 					|| actionLevel.is(actionLevel.PathToIzumoShrine_Entrance, enum_releaseRegion))
 				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
-				&& player.on_death(enum_releaseRegion))
+				&& player.on_death(enum_releaseRegion)))
 			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
 
@@ -1670,8 +1753,8 @@ dict_triggers = {
 					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
 					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
 
-				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) // --CheckIf--[TriggerCondition]--> Boss dies
-				&& bossEnemy.on_death(const_BOSS, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_END_BOSS, enum_releaseRegion) // --CheckIf--[TriggerCondition]--> Boss dies
+				&& bossEnemy.on_death(const_END_BOSS, enum_releaseRegion)
 				)
 		// [2] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
 			|| never_toAlt(
@@ -1689,6 +1772,153 @@ dict_triggers = {
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 				)
 		}),	
+	"a_ClgAttaroShrine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_1_Investigation
+		const_ALLOWED_SPELL_USAGES = 3
+		const_ALLOWED_SPELL = spell.Makiri
+		const_END_BOSS = bossEnemy.Jukak
+		const_PLAYER_MAX_START_STGH = 30
+		const_TIME_LIMIT_SECONDS = 105 // = 1m45s (only counts when in ActionMode; Dev_PB: 1m30s~)
+		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
+		
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss	
+				__ornext(
+					actionLevel.is(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToAttaroShrine_Entrance, enum_releaseRegion))
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(tally_of( // --PauseLock--> When player uses/when game spawns a non fully charged basic attack
+				playerProjectile.array_PlayerProjectileStructLocationIDs, 1, char_playerProjectileStructLocationID =>  
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& playerProjectile.prev_ID(char_playerProjectileStructLocationID, enum_releaseRegion) == 0 // --CheckIf--2_Lines--> spawned a basic attack 
+					&& playerProjectile.current_ID(char_playerProjectileStructLocationID, enum_releaseRegion) == playerProjectile.get_EntityID(playerProjectile.BasicAttack)
+					&& playerProjectile.current_ChargeState(char_playerProjectileStructLocationID, enum_releaseRegion) != playerProjectile.BasicAttack_ChargeState_fullyCharged // --CheckIf--> basic attack is fully charged
+				))
+			&& unless(once( // --PauseLock--> When player uses any spell other than Makiri
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.current_spellSelected(enum_releaseRegion) != const_ALLOWED_SPELL
+				&& player.on_ENGY_decrement(enum_releaseRegion))) 
+			&& unless(repeated(const_ALLOWED_SPELL_USAGES +1, // --PauseLock--> When player used up all his allowed spell usages
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_spellCast(const_ALLOWED_SPELL, enum_releaseRegion))) 
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
+				player.current_STGH(enum_releaseRegion) <= const_PLAYER_MAX_START_STGH // --ExtraCheck--> at this point in story, player can't have more than xx STGH
+
+				&& actionLevel.is(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion))
+
+			&& trigger_when( // --Trigger--> When Boss dies
+				once( // --CheckIf--> ActionLevels have progressed correctly 
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToAttaroShrine_Level_1
+					&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToAttaroShrine_Entrance)
+
+				&& once( // --CheckIf--> Reached destination
+					actionLevel.is(actionLevel.PathToAttaroShrine_Entrance, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
+					
+				&& once( // --CheckIf--> Entering Boss Arena
+					adventureScene.is(adventureScene.AttaroShrine, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
+
+				&& tally(1, [ // --Tally--OrNext--[TriggerCondition]--> CheckIf: Boss dies, there's two death scenarios (see below) 
+					once( // --CheckIf--> Boss dies on_HP_hitsZero()
+						player.is_alive(enum_releaseRegion) // --> without this: when player dies, this block would trigger
+						&& bossEnemy.is_bossArena_active(const_END_BOSS, enum_releaseRegion) 
+						&& bossEnemy.on_HP_hitsZero(const_END_BOSS, enum_releaseRegion)), // WARNING: don't use "bossEnemy.on_death()" for Jukak, as he doesn't "die"
+					once( // --CheckIf--> Boss dies on_HP_negativelyOverflows()
+						player.is_alive(enum_releaseRegion) // --> without this: when player dies, this block would trigger
+						&& bossEnemy.is_bossArena_active(const_END_BOSS, enum_releaseRegion) 
+						&& bossEnemy.on_HP_negativelyOverflows(const_END_BOSS, enum_releaseRegion))
+					])
+				)
+		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much Makiri spell usages left
+			|| unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss	
+				__ornext(
+					actionLevel.is(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToAttaroShrine_Entrance, enum_releaseRegion))
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(tally_of( // --PauseLock--> When player uses/when game spawns a non fully charged basic attack
+				playerProjectile.array_PlayerProjectileStructLocationIDs, 1, char_playerProjectileStructLocationID =>  
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& playerProjectile.prev_ID(char_playerProjectileStructLocationID, enum_releaseRegion) == 0 // --CheckIf--2_Lines--> spawned a basic attack 
+					&& playerProjectile.current_ID(char_playerProjectileStructLocationID, enum_releaseRegion) == playerProjectile.get_EntityID(playerProjectile.BasicAttack)
+					&& playerProjectile.current_ChargeState(char_playerProjectileStructLocationID, enum_releaseRegion) != playerProjectile.BasicAttack_ChargeState_fullyCharged // --CheckIf--> basic attack is fully charged
+				))
+			&& unless(once( // --PauseLock--> When player uses any spell other than Makiri
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.current_spellSelected(enum_releaseRegion) != const_ALLOWED_SPELL
+				&& player.on_ENGY_decrement(enum_releaseRegion))) 
+			
+			&& measured(
+				tally(const_ALLOWED_SPELL_USAGES,  [
+					repeated(const_ALLOWED_SPELL_USAGES, always_true()),  // --Add(...)--> to fill up count at start
+					deduct(repeated(const_ALLOWED_SPELL_USAGES, player.on_spellCast(const_ALLOWED_SPELL, enum_releaseRegion)))]), // --Deduct(-1)--> when using the spell 
+				when = once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
+					player.current_STGH(enum_releaseRegion) <= const_PLAYER_MAX_START_STGH // --ExtraCheck--> at this point in story, player can't have more than xx STGH
+
+					&& actionLevel.is(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion)
+					&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+					&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion))
+				)
+			&& memUtil.alwaysFalse(enum_releaseRegion)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [4] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				actionLevel.is(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),	
+	"a_ClgMtMiwa": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			__ornext(gameStateA.is_inGame(enum_releaseRegion))
+			&& gameStateB.is_gameStarted(enum_releaseRegion) // WARNING --> going into ActionModeMenu => gameStateB toggles to gameStateB.BootingGame_StartMenu_Demo 
+			&& !demo.is_active(enum_releaseRegion)
+			&& always_false()
+		),
+	"a_ClgKashimaTemple": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			__ornext(gameStateA.is_inGame(enum_releaseRegion))
+			&& gameStateB.is_gameStarted(enum_releaseRegion) // WARNING --> going into ActionModeMenu => gameStateB toggles to gameStateB.BootingGame_StartMenu_Demo 
+			&& !demo.is_active(enum_releaseRegion)
+			&& always_false()
+		),
+	"a_ClgMtHinokami": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			__ornext(gameStateA.is_inGame(enum_releaseRegion))
+			&& gameStateB.is_gameStarted(enum_releaseRegion) // WARNING --> going into ActionModeMenu => gameStateB toggles to gameStateB.BootingGame_StartMenu_Demo 
+			&& !demo.is_active(enum_releaseRegion)
+			&& always_false()
+		),
+	"a_ClgPyramid": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			__ornext(gameStateA.is_inGame(enum_releaseRegion))
+			&& gameStateB.is_gameStarted(enum_releaseRegion) // WARNING --> going into ActionModeMenu => gameStateB toggles to gameStateB.BootingGame_StartMenu_Demo 
+			&& !demo.is_active(enum_releaseRegion)
+			&& always_false()
+		),
+	"a_ClgFinalBattle": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			__ornext(gameStateA.is_inGame(enum_releaseRegion))
+			&& gameStateB.is_gameStarted(enum_releaseRegion) // WARNING --> going into ActionModeMenu => gameStateB toggles to gameStateB.BootingGame_StartMenu_Demo 
+			&& !demo.is_active(enum_releaseRegion)
+			&& always_false()
+		),	
 	"a_SlayEvilLord": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			never(repeated(10, // --Repeated--10_frames--> On OutroSequence start, when outrosequence toggles from "SecondTextParagraph" to "EndingScene", gameStateA is temporarily 0x6 as a transitional value (0x86 -> 0x6 -> 0x86). This is also the case when switching from "EndingScene" to "Credits"
@@ -1743,7 +1973,7 @@ dict_triggers = {
 			let_requirement_BossHPHitsZero = 
 				once( // --CheckIf--> Boss dies via "bossEnemy.on_HP_hitsZero()"
 					never(!bossEnemy.is_bossArena_active(enum_boss, enum_releaseRegion))
-					&& bossEnemy.on_HP_hitsZero(enum_boss, enum_releaseRegion))
+					&& bossEnemy.on_HP_hitsZero(enum_boss, enum_releaseRegion)) // WARNING: cannot use "bossEnemy.on_death()" for Jukak, as he doesn't "die"
 			let_requirement_BossHPNegativelyOverflows =
 				once( // --CheckIf--> Boss dies via "bossEnemy.on_HP_negativelyOverflows()"
 					never(!bossEnemy.is_bossArena_active(enum_boss, enum_releaseRegion))
@@ -1757,6 +1987,7 @@ dict_triggers = {
 			unless(demo.is_active(enum_releaseRegion))
 			&& unless(tally(const_FRAMES_ALLOWED_FOR_ONEHIT, let_array_requirements_BossBelowMaxHPChecks)) // --PauseIf--> one of the bosses is below max HP for xx frames
 			&& gameStateB.is_gameStarted(enum_releaseRegion)
+			&& player.is_alive(enum_releaseRegion)
 			&& once(player.on_spellCast(spell.Fudo, enum_releaseRegion)) // --> Boss can only be "one hit" by Fudo spell
 			&& tally(1, let_array_requirements_BossDeathChecks) // --TallyOf--OrNext--> CheckIf: one of the bosses has died ==> boss either dies via "bossEnemy.on_HP_hitsZero()" OR "bossEnemy.on_HP_negativelyOverflows()"
 		// [2] ==== Alt Reset Group ====			-> Reset when one of the bosses has spawned
@@ -1946,6 +2177,12 @@ dict_titles = {
 
 	"a_ClgEnrikuTemple": 		{"en": "xxxxxxxxx"},
 	"a_ClgIzumoShrine": 		{"en": "xxxxxxxxx"},
+	"a_ClgAttaroShrine": 		{"en": "xxxxxxxxx"},
+	"a_ClgMtMiwa": 				{"en": "xxxxxxxxx"},
+	"a_ClgKashimaTemple": 		{"en": "xxxxxxxxx"},
+	"a_ClgMtHinokami": 			{"en": "xxxxxxxxx"},
+	"a_ClgPyramid": 			{"en": "xxxxxxxxx"},
+	"a_ClgFinalBattle": 		{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
@@ -1971,6 +2208,12 @@ dict_descriptions = {
 
 	"a_ClgEnrikuTemple": 		{"en": "xxxxxxxxx"},
 	"a_ClgIzumoShrine": 		{"en": "xxxxxxxxx"},
+	"a_ClgAttaroShrine": 		{"en": "xxxxxxxxx"},
+	"a_ClgMtMiwa": 				{"en": "xxxxxxxxx"},
+	"a_ClgKashimaTemple": 		{"en": "xxxxxxxxx"},
+	"a_ClgMtHinokami": 			{"en": "xxxxxxxxx"},
+	"a_ClgPyramid": 			{"en": "xxxxxxxxx"},
+	"a_ClgFinalBattle": 		{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
