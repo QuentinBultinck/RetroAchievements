@@ -293,6 +293,8 @@ class CLASS_MemoryData {
 		"8-bit:AdventureScene_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0205},
 		"8-bit:StoryChapter_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0022},
 		"8-bit:SelectedSpell": {ENUM_ReleaseRegion.USA_EUR: 0x0029},
+		"8-bit:PC_xLocation": {ENUM_ReleaseRegion.USA_EUR: 0x0302},
+		"8-bit:PC_yLocation": {ENUM_ReleaseRegion.USA_EUR: 0x0304},
 
 		"16-bit:ActionModeLevel_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0023},
 		"16-bit:AdventureModeDialogueText_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0208},
@@ -831,6 +833,12 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	Pyramid_Floor_1_Room_C = 0x0029
 	Pyramid_Floor_1_Room_E = 0x012c
 
+	dict_ActionLevelPlayerSpawnCoords = {
+		PathToIzumoShrine_Level_1: {
+			"StartOfActionLevel": [0x36, 0x80]}, // [x,y] --- "StartOfActionLevel" refers to left side of action level
+		}
+	function get_PlayerSpawnCoords_StartOfActionLevel(enum_actionLevel) => this.dict_ActionLevelPlayerSpawnCoords[enum_actionLevel]["StartOfActionLevel"]
+
 	function current(enum_releaseRegion) =>
 		word(memory.getAddress("16-bit:ActionModeLevel_ID", enum_releaseRegion))
 	function prev(enum_releaseRegion) =>
@@ -1101,7 +1109,6 @@ class CLASS_MEMLOGIC_PlayerCharacterLogic {
 	// FLAG_IsPlayerDead_false: anyOtherValue => false
 	FLAG_IsPlayerDead_true = 0x8F
 
-
 	function current_STGH(enum_releaseRegion) =>
 		bcd(word(memory.getAddress("BCD:Player_Strength", enum_releaseRegion)))
 	function prev_STGH(enum_releaseRegion) =>
@@ -1122,6 +1129,25 @@ class CLASS_MEMLOGIC_PlayerCharacterLogic {
 	
 	function on_ENGY_decrement(enum_releaseRegion) =>
 		this.current_ENGY(enum_releaseRegion) < this.prev_ENGY(enum_releaseRegion)
+	
+	function current_xLocation(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:PC_xLocation", enum_releaseRegion))
+	function prev_xLocation(enum_releaseRegion) =>
+		prev(this.current_xLocation(enum_releaseRegion))
+	function current_yLocation(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:PC_yLocation", enum_releaseRegion))
+	function prev_yLocation(enum_releaseRegion) =>
+		prev(this.current_yLocation(enum_releaseRegion))
+
+	// CheckIf: Player spawns at the start of an action level, by confirming if delta location == 0 && current location == valid
+	function on_spawn_atStartOfActionLevel(enum_actionLevel, enum_releaseRegion) {
+		let_coords_PlayerSpawn_StartOfActionLevel = actionLevel.get_PlayerSpawnCoords_StartOfActionLevel(enum_actionLevel)
+		return
+			this.prev_xLocation(enum_releaseRegion) == 0
+			&& this.current_xLocation(enum_releaseRegion) == let_coords_PlayerSpawn_StartOfActionLevel[0]
+			&& this.prev_yLocation(enum_releaseRegion) == 0
+			&& this.current_yLocation(enum_releaseRegion) == let_coords_PlayerSpawn_StartOfActionLevel[1]
+		}
 	
 	function current_spellSelected(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:SelectedSpell", enum_releaseRegion))
@@ -1232,11 +1258,21 @@ dict_coreData = {
 	"c_Challenge": { // Challenges
 		// "a_ClgEnrikuTemple": { // VERIFIED
 			// "id": 609158, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "(one session) Reach Enriku Temple without taking any HP damage"},
-		"a_ClgIzumoShrine": { // TEST a_ClgIzumoShrine -> Determine time limit
-			"id": 000000, "points": 0000000, "devInfo": "(one session) Reach Izumo Temple and kill the Mysterious Enemy within xx seconds"},
-		// "a_Template": { // CONCEPT a_template
+		// "a_ClgIzumoShrine": { // VERIFIED
+			// "id": 609448, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "(one session) Reach Izumo Temple and kill the Mysterious Enemy within xx seconds"},
+		// "a_ClgAttaroShrine": { // CONCEPT a_ClgAttaroShrine
 			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
-	
+		// "a_ClgMtMiwa": { // CONCEPT a_ClgMtMiwa
+			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// "a_ClgKashimaTemple": { // CONCEPT a_ClgKashimaTemple
+			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// "a_ClgMtHinokami": { // CONCEPT a_ClgMtHinokami
+			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// "a_ClgPyramid": { // CONCEPT a_ClgPyramid
+			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// "a_ClgFinalBattle": { // CONCEPT a_ClgFinalBattle
+			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// CONCEPT Area/bosses with no challenges: UnderwaterShrine KakogenTemple PrincessAsaka GiantCentipede YomotsuPlain ThunderGod SnakeDemon
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
@@ -1585,13 +1621,20 @@ dict_triggers = {
 		const_CHAPTER = storyChapter.Ch_1_Investigation
 		const_BOSS = bossEnemy.MysteriousEnemy
 		const_PLAYER_MAX_START_STGH = 30
-		const_TIME_LIMIT_SECONDS = 180
+		const_TIME_LIMIT_SECONDS = 105 // = 1m45s (only counts when in ActionMode; Dev_PB: 1m30s~)
 		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
 		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgIzumoShrine with a complementary timed leaderboard
 		
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+			unless( // --PauseLock--> When player dies during any of the actionLevels prior to the boss	
+				__ornext(
+					actionLevel.is(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToIzumoShrine_Level_2, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToIzumoShrine_Entrance, enum_releaseRegion))
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
 
 			&& once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
@@ -1599,7 +1642,9 @@ dict_triggers = {
 
 				&& actionLevel.is(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
 				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
-				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode				
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
+
 				&& __ornext(
 					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
 					|| adventureScene.is(adventureScene.IzumoTown_Ch1, enum_releaseRegion))
@@ -1621,9 +1666,9 @@ dict_triggers = {
 					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
 					
 				&& once( // --CheckIf--> Entering Boss Arena
-					adventureScene.is(adventureScene.IzumoShrine_OutsideAfterBossFight, enum_releaseRegion)
-					&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
-					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
+					adventureScene.is(adventureScene.IzumoShrine_OutsideBeforeBossFight, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
 
 				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) // --CheckIf--[TriggerCondition]--> Boss dies
 				&& bossEnemy.on_death(const_BOSS, enum_releaseRegion)
@@ -1634,16 +1679,7 @@ dict_triggers = {
 				|| demo.is_active(enum_releaseRegion)
 				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
 				)
-		// [3] ==== Alt Reset Group ==== 		-> Reset when player dies during any of the actionLevels prior to the boss	
-			|| never_toAlt(
-				__ornext(
-					actionLevel.is(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
-					|| actionLevel.is(actionLevel.PathToIzumoShrine_Level_2, enum_releaseRegion)
-					|| actionLevel.is(actionLevel.PathToIzumoShrine_Entrance, enum_releaseRegion))
-				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
-				&& player.on_death(enum_releaseRegion)
-				)
-		// [4] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+		// [3] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
 			|| never_toAlt(
 				__ornext(
 					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
