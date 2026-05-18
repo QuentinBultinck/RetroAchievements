@@ -291,6 +291,7 @@ class CLASS_MemoryData {
 		"Flag:IsPlayerDead": {ENUM_ReleaseRegion.USA_EUR: 0x00b5},
 		"Flag:IsAdventureModeMainCommandMenuDisplayed": {ENUM_ReleaseRegion.USA_EUR: 0x0360},
 		"Flag:IsAdventureModeSubCommandMenuDisplayed": {ENUM_ReleaseRegion.USA_EUR: 0x03a0},
+		"BitFlags:PlayerInput": {ENUM_ReleaseRegion.USA_EUR: 0x0004},
 
 		"BCD:Player_Strength": {ENUM_ReleaseRegion.USA_EUR: 0x0025},
 		"BCD:Player_Energy": {ENUM_ReleaseRegion.USA_EUR: 0x0027},
@@ -310,13 +311,13 @@ class CLASS_MemoryData {
 		"16-bit:AdventureModeDialogueText_ID": {ENUM_ReleaseRegion.USA_EUR: 0x0208},
 
 		"32-bit:NeverTrue": {ENUM_ReleaseRegion.USA_EUR: 0x0280},
-		"32-bit:AdventureSceneColor_ID": {ENUM_ReleaseRegion.USA_EUR: 0x00e4},
 
 		"FlagArray:MainQuestEventFlags": {ENUM_ReleaseRegion.USA_EUR: 0x0281},
 		"FlagArray:ItemInventoryFlags": {ENUM_ReleaseRegion.USA_EUR: 0x02e0},
 		"FlagArray:MiscEventFlags_A": {ENUM_ReleaseRegion.USA_EUR: 0x02b0},
 		"FlagArray:GearAcquiredFlags": {ENUM_ReleaseRegion.USA_EUR: 0x0032},
 
+		"92-bit:AdventureSceneColor_ID": {ENUM_ReleaseRegion.USA_EUR: 0x00e4},
 		"Struct:Entity(Player_Projectile_A)": {ENUM_ReleaseRegion.USA_EUR: 0x0340},
 		"Struct:Entity(Player_Projectile_B)": {ENUM_ReleaseRegion.USA_EUR: 0x0360},
 		"Struct:Entity(Player_Projectile_C)": {ENUM_ReleaseRegion.USA_EUR: 0x0380},
@@ -474,6 +475,20 @@ class CLASS_MemoryUtility {
 	function ManualConstruction_PlaceHolderRequirement(int_placeHolderIndex) { // int_placeHolderIndex allowedRange [0x1-0xFFF] // This function can be used to quickyly generate a placeHolder Requirement for easily overwriting/copyPasting MANUAL CONSTRUCTION code
 		let_dummyAddress = (int_placeHolderIndex * 0x10000) + 0xBEEF
 		return dword(let_dummyAddress) == 0xBAADF00D}
+	
+	function bitIndexToBitMemoryAccessor(int_bitIndex) {
+		dict_bitIndexToBitMemoryAccessor = {
+			0: bit0,
+			1: bit1,
+			2: bit2,
+			3: bit3,
+			4: bit4,
+			5: bit5,
+			6: bit6,
+			7: bit7}
+		return dict_bitIndexToBitMemoryAccessor[int_bitIndex]
+		}
+
 	// #endregion MemUtil - Main
 } memUtil = CLASS_MemoryUtility()
 
@@ -650,6 +665,7 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	IzumoShrine_OutsideAfterBossFight = 0x5
 	AttaroShrine = 0xA
 	KashimaTemple_FirstVisit = 0x11
+	MidoriHouse = 0x15
 	Dannoura_A = 0x18
 	Dannoura_Y = 0x30
 	UnderwaterShrine = 0x33
@@ -662,6 +678,7 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	Pyramid_SouthSide = 0x41
 	Pyramid_EastSide = 0x43
 	Pyramid_DarkRoom = 0x45
+	ChizuSea = 0x4A
 	IzanamiShrine = 0x4C
 	YomotsuShrine = 0x4D
 	KashimaTemple_PreFinalBattle = 0x59
@@ -685,16 +702,26 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 } adventureScene = CLASS_MEMLOGIC_AdventureSceneIdentification()
 class CLASS_MEMLOGIC_AdventureSceneColorIdentification {
 	// ----AdventureSceneColorIDs----
-	IzumoTown = 0x050A0106
+	IzumoTown = [0x050A0106, 0x1a152a2f, 0x039080424] // --> [AdventurePanelScene_ID_A, AdventurePanelScene_ID_B, AdventurePanelScene_ID_C]
 
 	// ----Functions----
-	function current(enum_releaseRegion) =>
-		dword(memory.getAddress("32-bit:AdventureSceneColor_ID", enum_releaseRegion))
-	function prev(enum_releaseRegion) =>
-		prev(this.current(enum_releaseRegion))
+	function current_ID_A(enum_releaseRegion) =>
+		dword(memory.getAddress("92-bit:AdventureSceneColor_ID", enum_releaseRegion))
+	function prev_ID_A(enum_releaseRegion) =>
+		prev(this.current_ID_A(enum_releaseRegion))
+	function current_ID_B(enum_releaseRegion) =>
+		dword(memory.getAddress("92-bit:AdventureSceneColor_ID", enum_releaseRegion) +0x4)
+	function prev_ID_B(enum_releaseRegion) =>
+		prev(this.current_ID_B(enum_releaseRegion))
+	function current_ID_C(enum_releaseRegion) =>
+		dword(memory.getAddress("92-bit:AdventureSceneColor_ID", enum_releaseRegion) +0x8)
+	function prev_ID_C(enum_releaseRegion) =>
+		prev(this.current_ID_C(enum_releaseRegion))
 
 	function is(enum_adventureSceneColor, enum_releaseRegion) =>
-		this.current(enum_releaseRegion) == enum_adventureSceneColor
+		this.current_ID_A(enum_releaseRegion) == enum_adventureSceneColor[0]
+		&& this.current_ID_B(enum_releaseRegion) == enum_adventureSceneColor[1]
+		&& this.current_ID_C(enum_releaseRegion) == enum_adventureSceneColor[2]
 } adventureSceneColor = CLASS_MEMLOGIC_AdventureSceneColorIdentification()
 // #endregion AdventureScene Identification
 
@@ -763,12 +790,16 @@ class CLASS_MEMLOGIC_MiscEventFlags {
 	Ch2_SeaSpiritVanquished_southOfLute = 8
 	Ch2_SeaSpiritVanquished_middleOfSea = 9
 	Ch2_SeaSpiritVanquished_atHelmet = 10
+	Ch2_LookAtFood_MidoriHouse = 0
 
-	function current_flagState(int_flagIndx, enum_releaseRegion) =>
-		byte(memory.getAddress("FlagArray:MiscEventFlags_A", enum_releaseRegion) + int_flagIndx)
-	function prev_flagState(int_flagIndx, enum_releaseRegion) =>
-		prev(this.current_flagState(int_flagIndx, enum_releaseRegion))
+	function current_flagState(int_flagIndex, enum_releaseRegion) =>
+		byte(memory.getAddress("FlagArray:MiscEventFlags_A", enum_releaseRegion) + int_flagIndex)
+	function prev_flagState(int_flagIndex, enum_releaseRegion) =>
+		prev(this.current_flagState(int_flagIndex, enum_releaseRegion))
 	
+	function is_eventCompleted(int_flagIndex, enum_releaseRegion) =>
+		this.current_flagState(int_flagIndex, enum_releaseRegion) == this.FLAG_isEventCompleted_true
+
 } miscellaneousEvent = CLASS_MEMLOGIC_MiscEventFlags()
 // #endregion Misc Event Flags
 
@@ -787,6 +818,11 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
 	EatSpaghetti_A = 0x3b // "Kane: Thank You!"
 	EatSpaghetti_B = 0x3c // "Kane accepts the item"
 	EatSpaghetti_C = 0x3d // "Kane regains his strength"
+	EatAtMidori_A = 0xb7 // "Kane picks up some chopsticks"
+	EatAtMidori_Seaweed = 0xb8 // "Kane: That was great! You're a good cook!"
+	EatAtMidori_Sushi = 0xb9 // "Kane: That fish looks good! Mm!"
+	EatAtMidori_FriedEgg = 0xba // "Kane: Midori, I hope I marry as good a cook..."
+	EatAtMidori_End = 0xbb // "Kane has recovered his strength"	
 	UnderwaterShrine_TakeSwordOfKusanagi = 0x0130  // "Kane takes the real sword of kusanagi"
 	IwatoBattleDannoura_SwordOfKusanagi_Use_A = 0x13A // "Kane brandishes the sword of Kusanagi" - Using Sword of Kusanagi against Iwato Family on Dannoura
 	IwatoBattleDannoura_SwordOfKusanagi_Use_B = 0x13B // "The sword begins to release its pent-up energy."
@@ -803,6 +839,13 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
 	PyramidDemonFelled_B = [0x1FC, 0xBC] // "Demon: Impossible! I can not be killed..."
 	PyramidDemonFelled_C = [0x1FD, 0xBD] // "Kane: The pyramid...!! It's collapsing! Run!"
 	PyramidDemonFelled_D = [0x1FE, 0xBE] // "Grabbing Regina, Kane heads for the ship!"
+	DrinkNectar_A = [0x217, 0xD7] // "Toyo: Come, come, join us and have some nectar!..." - Drinking nectar at Chizu Sea
+	DrinkNectar_B = [0x218, 0xD8] // "Kane drinks some nectar and feels refreshed"
+	DanceAtChizuSea_A = [0x21E, 0xDE] // "Kane draws his sword..." - Using Sword of Kusanagi at Chizu Sea
+	DanceAtChizuSea_B = [0x21F, 0xDF] // "Others: A sword dance! Great! Come, come, dance!"
+	DanceAtChizuSea_C = [0x220, 0xE0] // "Kane feels trapped and begins to dance reluctantly"
+	DanceAtChizuSea_D = [0x221, 0xE1] // "Others: Ho, ho, ho! Great! Marvelous!"
+	DanceAtChizuSea_E = [0x222, 0xE2] // "The room rings with applause!"
 	MusicForCerberus_A = [0x255, 0x15] // "Kane plays the harp"
 	MusicForCerberus_B = [0x25B, 0x1B] // "Cerberus sits and listens to the music"
 	MusicForCerberus_C = [0x25C, 0x1C] // "The god named Yomotus can be seen in the shrine"
@@ -840,7 +883,7 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
 
 	function is_textBox_displayed(enum_releaseRegion) =>
 		this.current_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) == this.FLAG_isAdventureModeDialogueTextDisplayed_true
-	function on_textBox_render(enum_releaseRegion)
+	function on_textBox_render(enum_releaseRegion) =>
 		this.prev_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) == this.FLAG_isAdventureModeDialogueTextDisplayed_false
 		&& this.current_flagState_isAdventureModeDialogueTextDisplayed(enum_releaseRegion) == this.FLAG_isAdventureModeDialogueTextDisplayed_true
 
@@ -874,13 +917,13 @@ class CLASS_MEMLOGIC_AdventureCommandMenu {
 	function current_SelectedSubMenuItem(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:SelectedSubMenuItem", enum_releaseRegion))
 	function prev_flagState_IsAdventureModeMainCommandMenuDisplayed(enum_releaseRegion) =>
-		prev(this.currenT_flagState_IsAdventureModeMainCommandMenuDisplayed, enum_releaseRegion)
+		prev(this.current_flagState_IsAdventureModeMainCommandMenuDisplayed(enum_releaseRegion))
 	function prev_flagState_IsAdventureModeSubCommandMenuDisplayed(enum_releaseRegion) =>
-		prev(this.currenT_flagState_IsAdventureModeSubCommandMenuDisplayed, enum_releaseRegion)
+		prev(this.current_flagState_IsAdventureModeSubCommandMenuDisplayed(enum_releaseRegion))
 	function prev_SelectedMainCommandMenuItem(enum_releaseRegion) =>
-		prev(this.currenT_SelectedMainCommandMenuItem, enum_releaseRegion)
+		prev(this.current_SelectedMainCommandMenuItem(enum_releaseRegion))
 	function prev_SelectedSubMenuItem(enum_releaseRegion) =>
-		prev(this.currenT_SelectedSubMenuItem, enum_releaseRegion)	
+		prev(this.current_SelectedSubMenuItem(enum_releaseRegion))	
 
 	function is_open(enum_releaseRegion) =>
 		this.current_flagState_IsAdventureModeMainCommandMenuDisplayed(enum_releaseRegion) == this.FLAG_IsAdventureModeMainCommandMenuDisplayed_true
@@ -998,6 +1041,7 @@ class CLASS_MEMLOGIC_Inventory {
 	Ch2_SwordOfKusanagi = 7
 	Ch3_BallOfShimazu = 1
 	Ch3_ArmorBracers = 2
+	Ch5_SwordOfKusanagi = 0
 	Ch5_MysticHarp = 3
 	Ch5_SacredMirror = 6
 	Ch7_Necklace = 3
@@ -1323,6 +1367,25 @@ class CLASS_MEMLOGIC_PlayerCharacterLogic {
 		this.current_spellSelected(enum_releaseRegion) == enum_spell
 		&& this.on_ENGY_decrement(enum_releaseRegion)
 } player = CLASS_MEMLOGIC_PlayerCharacterLogic()
+
+class CLASS_MEMLOGIC_PlayerControllerInput {
+	// ---Variables/Enums---
+	Dpad_Up = 0 // (= bitIndex)
+	Dpad_Down = 1
+	Dpad_Left = 2
+	Dpad_Right = 3
+	Button_Left = 4
+	Button_Right = 5
+	// ---Functions---
+	function current_flagState_playerInput(int_bitIndex, enum_releaseRegion) {
+		let_function_bitMemAccessor = memUtil.bitIndexToBitMemoryAccessor(int_bitIndex)
+		return let_function_bitMemAccessor(memory.getAddress("BitFlags:PlayerInput", enum_releaseRegion))}
+	function prev_flagState_playerInput(int_bitIndex, enum_releaseRegion) =>
+		prev(this.current_flagState_playerInput(int_bitIndex, enum_releaseRegion))
+
+	function on_press(enum_input, enum_releaseRegion) =>
+		this.current_flagState_playerInput(enum_input, enum_releaseRegion) > this.prev_flagState_playerInput(enum_input, enum_releaseRegion)
+} playerInput = CLASS_MEMLOGIC_PlayerControllerInput()
 // #endregion Player Character Logic
 
 // ................
@@ -1451,12 +1514,12 @@ dict_coreData = {
 	
 		// "a_Ressurectlace": { // VERIFIED
 			// "id": 609121, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Restore STGH after it reaches 0, during the final battle, by having Kuma's necklace"},
-		 "a_EatSpaghetti": { // CONCEPT a_EatSpaghetti
-			"id": 000000, "points": 0000000, "devInfo": "Eat some spaghetti made by Kuma at Izumo Town"},
-		 "a_EatMidori": { // CONCEPT a_EatMidori
-			"id": 000000, "points": 0000000, "devInfo": "Eat some food at Midori's House"},
-		//  "a_DrinkNectar": { // CONCEPT a_DrinkNectar
-			// "id": 000000, "points": 0000000, "devInfo": "Have a taste of some Chizu Sea Nectar || do the dance with them??"},
+		//  "a_EatSpaghetti": { // VERIFIED
+			// "id": 609831, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Eat some spaghetti made by Kuma at Izumo Town"},
+		//  "a_EatMidori": { // VERIFIED
+			// "id": 609832, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Eat some food at Midori's House"},
+		//  "a_ChizuParty": { // VERIFIED
+			// "id": 609833, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Have a taste of some Chizu Sea Nectar & perform a sword dance with them"},
 		},
 	}
 
@@ -2232,20 +2295,30 @@ dict_triggers = {
 			&& 0 <= player.prev_STGH(enum_releaseRegion) && player.prev_STGH(enum_releaseRegion) <= (const_MAX_STGH_FINAL_BATTLE/5)
 			&& player.current_STGH(enum_releaseRegion) == const_MAX_STGH_FINAL_BATTLE			
 		}),	
-	"a_EatSpaghetti": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+	"a_EatSpaghetti": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
 			&& never(!gameStateB.is_gameStarted(enum_releaseRegion))
 			&& never(demo.is_active(enum_releaseRegion))			
-			&& never(!adventureSceneColor.is(adventureSceneColor.IzumoTown, enum_releaseRegion))
+			&& never(!adventureSceneColor.is(adventureSceneColor.IzumoTown, enum_releaseRegion)) // --> ID this scene via [92-bit:AdventureSceneColor_ID] as there's too many variations of this scene for [8-bit:AdventureScene_ID]
 			&& never( // --ResetIf--> "Take" sub menu renders
-				adventureCommandMenu.is_open(enum_releaseRegion)
-				&& adventureCommandMenu.on_subMenu_render(adventureCommandMenu.SubMenu_Take, enum_releaseRegion))
+				adventureCommandMenu.on_subMenu_render(adventureCommandMenu.SubMenu_Take, enum_releaseRegion))
 
-			&& once( // --CheckIf--> player pressed RightButton 
-				adventureCommandMenu.is_open(enum_releaseRegion)
-				&& adventureCommandMenu.is_subMenu_open(adventureCommandMenu.SubMenu_Take, enum_releaseRegion)
-				&& playerInput.on_RightButton_press(enum_releaseRegion)) // TODO implement this line
+			&& once( // --CheckIf--(option2)--> The frame the player presses the right button, the command menu also closes in that same frame
+				adventureCommandMenu.prev_flagState_IsAdventureModeSubCommandMenuDisplayed(enum_releaseRegion) == adventureCommandMenu.FLAG_IsAdventureModeSubCommandMenuDisplayed_true
+				&& adventureCommandMenu.prev_SelectedMainCommandMenuItem(enum_releaseRegion) == adventureCommandMenu.SubMenu_Take
+				&& playerInput.on_press(playerInput.Button_Right, enum_releaseRegion))
+
+			// NOTE: Above code block replaces below commented code block 
+			// && tally(1, [ // --Tally--OrNext--> CheckIf: player pressed RightButton on the "Take" Sub Menu of the adventure command menu
+				// 	once( // --CheckIf--(option1)--> Command Menu closes after the player presses the right button
+				// 		adventureCommandMenu.is_subMenu_open(adventureCommandMenu.SubMenu_Take, enum_releaseRegion)
+				// 		&& playerInput.on_press(playerInput.Button_Right, enum_releaseRegion)),
+				// 	once( // --CheckIf--(option2)--> The frame the player presses the right button, the command menu also closes in that same frame
+				// 		adventureCommandMenu.prev_flagState_IsAdventureModeSubCommandMenuDisplayed(enum_releaseRegion) == adventureCommandMenu.FLAG_IsAdventureModeSubCommandMenuDisplayed_true
+				// 		&& adventureCommandMenu.prev_SelectedMainCommandMenuItem(enum_releaseRegion) == adventureCommandMenu.SubMenu_Take
+				// 		&& playerInput.on_press(playerInput.Button_Right, enum_releaseRegion))
+				// 	])
 
 			&& trigger_when( // --Trigger--> When taken/eaten item
 				once( // --CheckIf--> First dialogue line is printed
@@ -2262,14 +2335,63 @@ dict_triggers = {
 					&& dialogueText.on_textBox_hide(enum_releaseRegion)) 
 				)
 		),	
-	"a_EatMidori": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+	"a_EatMidori": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion)
-			&& gameStateB.is_gameStarted(enum_releaseRegion)
-			&& !demo.is_active(enum_releaseRegion)
-			
-			&& adventureScene.is(adventureScene.MidoriHouse, enum_releaseRegion)
-			&& 
+			never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
+			&& never(!gameStateB.is_gameStarted(enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))			
+			&& never(!adventureScene.is(adventureScene.MidoriHouse, enum_releaseRegion))
+
+			&& miscellaneousEvent.is_eventCompleted(miscellaneousEvent.Ch2_LookAtFood_MidoriHouse, enum_releaseRegion)
+			&& measured(tally(3, [ // --Measure--> Track each unique food item eaten
+				once( // --CheckIf--> Eaten food item A
+					dialogueText.wasPrev(dialogueText.EatAtMidori_Seaweed, enum_releaseRegion)
+					&& dialogueText.is(dialogueText.EatAtMidori_End, enum_releaseRegion)),
+				once( // --CheckIf--> Eaten food item B
+					dialogueText.wasPrev(dialogueText.EatAtMidori_Sushi, enum_releaseRegion)
+					&& dialogueText.is(dialogueText.EatAtMidori_End, enum_releaseRegion)),
+				once( // --CheckIf--> Eaten food item C
+					dialogueText.wasPrev(dialogueText.EatAtMidori_FriedEgg, enum_releaseRegion)
+					&& dialogueText.is(dialogueText.EatAtMidori_End, enum_releaseRegion)),
+			]))
+			&& trigger_when( // --Trigger--> When dialogue finishes
+				dialogueText.is(dialogueText.EatAtMidori_End, enum_releaseRegion)
+				&& dialogueText.on_textBox_hide(enum_releaseRegion))			
+		),	
+	"a_ChizuParty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
+			&& never(!gameStateB.is_gameStarted(enum_releaseRegion))
+			&& never(demo.is_active(enum_releaseRegion))			
+			&& never(!adventureScene.is(adventureScene.ChizuSea, enum_releaseRegion))
+
+			&& measured(tally(2, [
+				once( // --CheckIf--> Drunk nectar
+					dialogueText.is(dialogueText.DrinkNectar_B[1], enum_releaseRegion)
+					&& dialogueText.on_textBox_hide(enum_releaseRegion)),
+				once( // --CheckIf--> Danced 
+					item.is_inInventory(item.Ch5_SwordOfKusanagi, enum_releaseRegion)
+					&& dialogueText.is(dialogueText.DanceAtChizuSea_E[1], enum_releaseRegion)
+					&& dialogueText.on_textBox_hide(enum_releaseRegion)) 
+				]))
+			&& trigger_when(tally(5, [ // --Trigger--> When dialogue finishes
+				once( // --CheckIf--> Dialogue start (drinking nectar)
+					dialogueText.wasPrev(dialogueText.DrinkNectar_A[0], enum_releaseRegion)
+					&& dialogueText.is(dialogueText.DrinkNectar_A[1], enum_releaseRegion)),
+				once( // --CheckIf--> Dialogue finishes (drinking nectar)
+					dialogueText.is(dialogueText.DrinkNectar_B[1], enum_releaseRegion)
+					&& dialogueText.on_textBox_hide(enum_releaseRegion)),
+
+				once( // --CheckIf--> Dialogue start (dancing)
+					dialogueText.wasPrev(dialogueText.DanceAtChizuSea_A[0], enum_releaseRegion)
+					&& dialogueText.is(dialogueText.DanceAtChizuSea_A[1], enum_releaseRegion)),
+				once( // --CheckIf--> Dialogue continues (dancing)
+					dialogueText.wasPrev(dialogueText.DanceAtChizuSea_D[1], enum_releaseRegion)
+					&& dialogueText.is(dialogueText.DanceAtChizuSea_E[0], enum_releaseRegion)),
+				once( // --CheckIf--> Dialogue finishes (dancing)
+					dialogueText.is(dialogueText.DanceAtChizuSea_E[1], enum_releaseRegion)
+					&& dialogueText.on_textBox_hide(enum_releaseRegion)) 
+				]))
 		),	
 	}
 // #endregion ACH - Triggers
@@ -2305,6 +2427,9 @@ dict_titles = {
 	"a_MiniEye": 				{"en": "xxxxxxxxx"},
 	"a_MiniGoat": 				{"en": "xxxxxxxxx"},
 	"a_Ressurectlace": 			{"en": "xxxxxxxxx"},
+	"a_EatSpaghetti": 			{"en": "xxxxxxxxx"},
+	"a_EatMidori": 				{"en": "xxxxxxxxx"},
+	"a_ChizuParty": 			{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -2336,6 +2461,9 @@ dict_descriptions = {
 	"a_MiniEye": 				{"en": "xxxxxxxxx"},
 	"a_MiniGoat": 				{"en": "xxxxxxxxx"},
 	"a_Ressurectlace": 			{"en": "xxxxxxxxx"},
+	"a_EatSpaghetti": 			{"en": "xxxxxxxxx"},
+	"a_EatMidori": 				{"en": "xxxxxxxxx"},
+	"a_ChizuParty": 			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
