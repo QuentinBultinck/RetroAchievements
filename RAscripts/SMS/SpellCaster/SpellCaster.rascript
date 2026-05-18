@@ -663,7 +663,9 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	IzumoShrine_Inside = 0x3
 	IzumoShrine_OutsideBeforeBossFight = 0x4
 	IzumoShrine_OutsideAfterBossFight = 0x5
+	MtMiwa_Gate = 0x9
 	AttaroShrine = 0xA
+	MtMiwaTemple = 0x0f
 	KashimaTemple_FirstVisit = 0x11
 	MidoriHouse = 0x15
 	Dannoura_A = 0x18
@@ -733,6 +735,7 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 
 	// ----MainQuestEvents (enum = flagIndex in "FlagArray:MainQuestEventFlags")----
 	Ch1_MysteryManDefeated = 5
+	Ch1_MtMiwaGuardDefeated = 11
 	Ch2_LuteSpiritVanquished = 11
 	Ch2_AcquireSwordOfKusanagi = 18
 	Ch3_AcquireBallOfShimazu = 3
@@ -952,7 +955,11 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	PathToAttaroShrine_Entrance = 0x0104
 	IzumoShrine_BossArena = 0x0202
 	AttaroShrine_BossArena = 0x0106
-	MtMiwa_BossArena = 0x0208
+	MtMiwaGate_BossArena = 0x0007 // Identical to below ID
+	PathToMtMiwaTemple_Level_1 = 0x0007
+	PathToMtMiwaTemple_Level_2 = 0x0107
+	PathToMtMiwaTemple_Entrance = 0x0207
+	MtMiwaTemple_BossArena = 0x0208
 	KashimaTemple_BossArena = 0x010a
 	Pyramid_DemonBossArena = 0x0017
 	FinalBattle = 0x2F
@@ -968,6 +975,8 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 		PathToIzumoShrine_Level_1: {
 			"StartOfActionLevel": [0x36, 0x80]}, // [x,y] --- "StartOfActionLevel" refers to left side of action level
 		PathToAttaroShrine_Level_1: {
+			"StartOfActionLevel": [0x36, 0x80]},
+		MtMiwaGate_BossArena: {
 			"StartOfActionLevel": [0x36, 0x80]},
 		}
 	function get_PlayerSpawnCoords_StartOfActionLevel(enum_actionLevel) => this.dict_ActionLevelPlayerSpawnCoords[enum_actionLevel]["StartOfActionLevel"]
@@ -1187,6 +1196,7 @@ class CLASS_MEMLOGIC_BossEntities {
 	Wakahiko = 102
 	KashimaFireBoss = 103
 	PyramidDemon = 104
+	MtMiwaGuard = 105
 	
 	Eye = 301
 	Goat = 302
@@ -1202,10 +1212,15 @@ class CLASS_MEMLOGIC_BossEntities {
 			"EntityStartHP": 0x32,
 			"BossArena_ActionModeLevel_ID": actionLevel.AttaroShrine_BossArena,
 			"StructLocation": "C"},
+		MtMiwaGuard: {
+			"EntityID": 0x60,
+			"EntityStartHP": 0x30,
+			"BossArena_ActionModeLevel_ID": actionLevel.MtMiwaGate_BossArena,
+			"StructLocation": "C"},
 		Wakahiko: {
 			"EntityID": 0x62,
 			"EntityStartHP": 0x3c,
-			"BossArena_ActionModeLevel_ID": actionLevel.MtMiwa_BossArena,
+			"BossArena_ActionModeLevel_ID": actionLevel.MtMiwaTemple_BossArena,
 			"StructLocation": "C"},
 		KashimaFireBoss: {
 			"EntityID": 0x70,
@@ -1302,6 +1317,36 @@ class CLASS_MEMENUM_Spells {
 	Mars = 0x6
 	Makiri = 0x7
 	Nobota = 0x8
+
+	dict_spellData = {
+		Hakuji: {
+			"ENGY_Cost": 3
+			},
+		Indra: {
+			"ENGY_Cost": 10
+			},
+		Fudo: {
+			"ENGY_Cost": 20
+			},
+		Kannon: {
+			"ENGY_Cost": 5
+			},
+		Hatten: {
+			"ENGY_Cost": 10
+			},
+		Mars: {
+			"ENGY_Cost": 25
+			},
+		Makiri: {
+			"ENGY_Cost": 20
+			},
+		Nobota: {
+			"ENGY_Cost": 30
+			},
+		}
+
+	function get_ENGY_Cost(enum_spell) => 
+		this.dict_spellData[enum_spell]["ENGY_Cost"]
 } spell = CLASS_MEMENUM_Spells()
 class CLASS_MEMLOGIC_PlayerCharacterLogic {
 	// ----Variables----
@@ -1409,12 +1454,41 @@ class CLASS_MEMLOGIC_PlayerControllerInput {
 // ****************************************************************************************************************************************** \\
 // #region ACHIEVEMENTS
 
-// ==================================
-// • ACHIEVEMENT trigger generators •
-// ==================================
-// #region ACH - trigger generators
+// =========================
+// • ACHIEVEMENT sub logic •
+// =========================
+// #region ACH - sub logic
 //	- For achievement logic that's reoccuring across multiple triggers
+class CLASS_AchievementSubLogic {
+	// NOTE: returns a PauseLock, which locks when the player exceeds an energy allowance. Concretely it locks when ENGY use > int_energyAllowance
+	// Function Output (snippet): 
+		// ...
+		// for let_i in range(0, 25 -1) // --> spell.Mars costs 25 ENGY --> addHit 25 times on same frame
+		// 	array_push(let_array_HitCounts, repeated(const_ALLOWED_ENGY_TO_USE, player.on_spellCast(spell.Mars, enum_releaseRegion))) 
+		// for let_i in range(0, 20 -1) // --> spell.Makiri costs 20 ENGY --> addHit 20 times on same frame
+		// 	array_push(let_array_HitCounts, repeated(const_ALLOWED_ENGY_TO_USE, player.on_spellCast(spell.Makiri, enum_releaseRegion)))
+		// ...
+	function PauseLock_playerExceedsEnergyAllowance(int_energyAllowance, enum_releaseRegion) {
+		let_array_HitsToCount = []
+		for enum_spell in spell.dict_spellData {
+			for let_i in range(0, spell.get_ENGY_Cost(enum_spell) -1)
+				array_push(let_array_HitsToCount, repeated(int_energyAllowance, player.on_spellCast(enum_spell, enum_releaseRegion)))
+			}
+		return unless(tally(int_energyAllowance +1, let_array_HitsToCount))}
+	
+	// NOTE: returns a measured, tracking how much ENGY is still allowed to be used, starts at max, deducts when using ENGY
+	function Measured_trackEnergyAllowance(int_energyAllowance, enum_releaseRegion, requirement_when) {
+		if(int_energyAllowance % 2 == 1) memUtil.throwError("Prefer using an even number for int_energyAllowance")
+		let_array_HitsToCount = [
+			repeated(int_energyAllowance/2, always_true()), // --AddHits--> base value for measured
+			repeated(int_energyAllowance/2, always_true())]
 
+		for enum_spell in spell.dict_spellData {
+			for let_i in range(0, spell.get_ENGY_Cost(enum_spell) -1)
+				array_push(let_array_HitsToCount, deduct(repeated(int_energyAllowance, player.on_spellCast(enum_spell, enum_releaseRegion)))) // --DeductHits--> when using spells/ENGY
+			}
+		return measured(tally(int_energyAllowance, let_array_HitsToCount), when = requirement_when)}
+} achievementSubLogic = CLASS_AchievementSubLogic()
 // #endregion ACH - trigger generators
 
 // ====================
@@ -1480,8 +1554,8 @@ dict_coreData = {
 			// "id": 609448, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "(one session) Reach Izumo Temple and kill the Mysterious Enemy within xx seconds"},
 		// "a_ClgAttaroShrine": { // VERIFIED
 			// "id": 609504, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Reach Attaro Shrine using only fully charged ki attacks and with only 3 allowed usages of the Makiri spell"},
-		// "a_ClgMtMiwa": { // CONCEPT a_ClgMtMiwa
-			// "id": 000000, "points": 0000000, "devInfo": "Reach Miwa Temple and defeat both bosses, using only xx amount of ENGY"},
+		// "a_ClgMtMiwa": { // VERIFIED
+			// "id": 609859, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Reach Miwa Temple and defeat both bosses, using only xx amount of ENGY, FUDO spell is disallowed"},
 		// "a_ClgKashimaTemple": { // CONCEPT a_ClgKashimaTemple
 			// "id": 000000, "points": 0000000, "devInfo": "Reach Kashima Temple and defeat boss, using only one spell of choice, with only 2 allowed activations"},
 		// "a_ClgMtHinokami": { // CONCEPT a_ClgMtHinokami
@@ -1946,7 +2020,7 @@ dict_triggers = {
 
 			&& once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
 				actionLevel.is(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion)
-				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 				&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion))
 
@@ -2002,7 +2076,7 @@ dict_triggers = {
 					deduct(repeated(const_ALLOWED_SPELL_USAGES, player.on_spellCast(const_ALLOWED_SPELL, enum_releaseRegion)))]), // --Deduct(-1)--> when using the spell 
 				when = once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
 					actionLevel.is(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion)
-					&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
+					&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
 					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 					&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToAttaroShrine_Level_1, enum_releaseRegion))
 				)
@@ -2020,13 +2094,101 @@ dict_triggers = {
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 				)
 		}),	
-	"a_ClgMtMiwa": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			__ornext(gameStateA.is_inGame(enum_releaseRegion))
-			&& gameStateB.is_gameStarted(enum_releaseRegion) // WARNING --> going into ActionModeMenu => gameStateB toggles to gameStateB.BootingGame_StartMenu_Demo 
-			&& !demo.is_active(enum_releaseRegion)
-			&& always_false()
-		),
+	"a_ClgMtMiwa": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_1_Investigation
+		const_ALLOWED_ENGY_TO_USE = 50
+		const_DISALLOWED_SPELLS = [spell.Fudo, spell.Kannon]
+		const_START_BOSS = bossEnemy.MtMiwaGuard
+		const_END_BOSS = bossEnemy.Wakahiko
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player dies during the start boss	
+				bossEnemy.is_bossArena_active(const_START_BOSS, enum_releaseRegion)
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(tally_of(const_DISALLOWED_SPELLS, 1, enum_spell => // --PauseLock--> When player casts any disallowed spell
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_spellCast(enum_spell, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the first boss arena
+				__ornext(
+					adventureScene.is(adventureScene.MtMiwa_Gate, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion))
+				&& !mainQuest.is_eventCompleted(mainQuest.Ch1_MtMiwaGuardDefeated, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_START_BOSS, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_START_BOSS), enum_releaseRegion))
+
+			&& trigger_when( // --Trigger--> When end boss dies
+				once( // --CheckIf--> Start boss dies
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& bossEnemy.is_bossArena_active(const_START_BOSS, enum_releaseRegion)
+					&& bossEnemy.on_death(const_START_BOSS, enum_releaseRegion))
+				&& once( // --CheckIf--> Entered the first actionLevel of the section
+					actionLevel.is(actionLevel.PathToMtMiwaTemple_Level_1, enum_releaseRegion)
+					&& mainQuest.is_eventCompleted(mainQuest.Ch1_MtMiwaGuardDefeated, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
+				&& once( // --CheckIf--> Progressing through the section
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToMtMiwaTemple_Level_1
+					&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToMtMiwaTemple_Level_2)
+				&& once( // --CheckIf--> Progressing through the section
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToMtMiwaTemple_Level_2
+					&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToMtMiwaTemple_Entrance)
+				&& once( // --CheckIf--> Reached destination
+					actionLevel.is(actionLevel.PathToMtMiwaTemple_Entrance, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)					
+				&& once( // --CheckIf--> Entering Boss Arena
+					adventureScene.is(adventureScene.MtMiwaTemple, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
+
+				 // --CheckIf--[TriggerCondition]--> End boss dies
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_END_BOSS, enum_releaseRegion)
+				&& bossEnemy.on_death(const_END_BOSS, enum_releaseRegion)
+				)
+		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much Makiri spell usages left
+			|| unless(once( // --PauseLock--> When player dies during the start boss	
+				bossEnemy.is_bossArena_active(const_START_BOSS, enum_releaseRegion)
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(tally_of(const_DISALLOWED_SPELLS, 1, enum_spell => // --PauseLock--> When player casts any disallowed spell
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_spellCast(enum_spell, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
+			
+			&& achievementSubLogic.Measured_trackEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion,
+				requirement_when = once( // --CheckIf--[StartCondition]--> Entered the first boss arena
+					__ornext(
+						adventureScene.is(adventureScene.MtMiwa_Gate, enum_releaseRegion)
+						|| adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion))
+					&& !mainQuest.is_eventCompleted(mainQuest.Ch1_MtMiwaGuardDefeated, enum_releaseRegion)
+					&& bossEnemy.is_bossArena_active(const_START_BOSS, enum_releaseRegion)
+					&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+					&& player.on_spawn_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_START_BOSS), enum_releaseRegion)))
+			&& memUtil.alwaysFalse(enum_releaseRegion)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [4] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				bossEnemy.is_bossArena_active(const_START_BOSS, enum_releaseRegion)
+				&& !mainQuest.is_eventCompleted(mainQuest.Ch1_MtMiwaGuardDefeated, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
 	"a_ClgKashimaTemple": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			__ornext(gameStateA.is_inGame(enum_releaseRegion))
