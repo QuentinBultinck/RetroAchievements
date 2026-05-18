@@ -702,7 +702,7 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 } adventureScene = CLASS_MEMLOGIC_AdventureSceneIdentification()
 class CLASS_MEMLOGIC_AdventureSceneColorIdentification {
 	// ----AdventureSceneColorIDs----
-	IzumoTown = [0x050A0106, 0x1a152a2f, 0x039080424] // --> [AdventurePanelScene_ID_A, AdventurePanelScene_ID_B, AdventurePanelScene_ID_C]
+	IzumoTown = [0x050A0106, 0x1a152a2f, 0x039080424] // --> [AdventureSceneColor_ID_A, AdventureSceneColor_ID_B, AdventureSceneColor_ID_C]
 
 	// ----Functions----
 	function current_ID_A(enum_releaseRegion) =>
@@ -1516,10 +1516,10 @@ dict_coreData = {
 			// "id": 609121, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Restore STGH after it reaches 0, during the final battle, by having Kuma's necklace"},
 		//  "a_EatSpaghetti": { // VERIFIED
 			// "id": 609831, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Eat some spaghetti made by Kuma at Izumo Town"},
-		//  "a_EatMidori": { // VERIFIED
-			// "id": 609832, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Eat some food at Midori's House"},
-		//  "a_ChizuParty": { // VERIFIED
-			// "id": 609833, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Have a taste of some Chizu Sea Nectar & perform a sword dance with them"},
+		 "a_EatMidori": { // VERIFIED
+			"id": 609832, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Eat some food at Midori's House"},
+		 "a_ChizuParty": { // VERIFIED
+			"id": 609833, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Have a taste of some Chizu Sea Nectar & perform a sword dance with them"},
 		},
 	}
 
@@ -2339,7 +2339,8 @@ dict_triggers = {
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
 			&& never(!gameStateB.is_gameStarted(enum_releaseRegion))
-			&& never(demo.is_active(enum_releaseRegion))			
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never(!storyChapter.is(storyChapter.Ch_2_SwordOfKusanagi, enum_releaseRegion))
 			&& never(!adventureScene.is(adventureScene.MidoriHouse, enum_releaseRegion))
 
 			&& miscellaneousEvent.is_eventCompleted(miscellaneousEvent.Ch2_LookAtFood_MidoriHouse, enum_releaseRegion)
@@ -2362,7 +2363,8 @@ dict_triggers = {
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			never(!gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion))
 			&& never(!gameStateB.is_gameStarted(enum_releaseRegion))
-			&& never(demo.is_active(enum_releaseRegion))			
+			&& never(demo.is_active(enum_releaseRegion))
+			&& never(!storyChapter.is(storyChapter.Ch_5_Underworld, enum_releaseRegion))
 			&& never(!adventureScene.is(adventureScene.ChizuSea, enum_releaseRegion))
 
 			&& measured(tally(2, [
