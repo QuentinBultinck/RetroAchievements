@@ -319,6 +319,20 @@ class CLASS_MemoryUtility {
 	function ManualConstruction_PlaceHolderRequirement(int_placeHolderIndex) { // int_placeHolderIndex allowedRange [0x1-0xFFF] // This function can be used to quickyly generate a placeHolder Requirement for easily overwriting/copyPasting MANUAL CONSTRUCTION code
 		let_dummyAddress = (int_placeHolderIndex * 0x10000) + 0xBEEF
 		return dword(let_dummyAddress) == 0xBAADF00D}
+	
+	function bitIndexToBitMemoryAccessor(int_bitIndex) {
+		dict_bitIndexToBitMemoryAccessor = {
+			0: bit0,
+			1: bit1,
+			2: bit2,
+			3: bit3,
+			4: bit4,
+			5: bit5,
+			6: bit6,
+			7: bit7}
+		return dict_bitIndexToBitMemoryAccessor[int_bitIndex]
+		}
+	
 	// #endregion MemUtil - Main
 } memUtil = CLASS_MemoryUtility()
 
