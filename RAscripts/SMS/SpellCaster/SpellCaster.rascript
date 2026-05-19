@@ -325,6 +325,7 @@ class CLASS_MemoryData {
 		"Struct:Entity(Player_Projectile_E)": {ENUM_ReleaseRegion.USA_EUR: 0x03C0},
 		"Struct:Entity(boss)_A": {ENUM_ReleaseRegion.USA_EUR: 0x0400},
 		"Struct:Entity(boss)_C": {ENUM_ReleaseRegion.USA_EUR: 0x0460},
+		"Struct:Entity(boss)_D": {ENUM_ReleaseRegion.USA_EUR: 0x0620},
 		"Struct:Entity(Pyramid_Orb)": {ENUM_ReleaseRegion.USA_EUR: 0x0600},
 		}
 
@@ -668,6 +669,7 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	MtMiwaTemple = 0x0f
 	KashimaTemple_FirstVisit = 0x11
 	MidoriHouse = 0x15
+	MtHinokami = 0x3E  
 	Dannoura_A = 0x18
 	Dannoura_Y = 0x30
 	UnderwaterShrine = 0x33
@@ -961,17 +963,23 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	PathToMtMiwaTemple_Entrance = 0x0207
 	PathToKashimaTemple_Level_1 = 0x0009
 	PathToKashimaTemple_Entrance = 0x0109
+	MtHinokami_Level_1 = 0x0012 // (only one action level for this section)
+	MtHinokami_BossArena_A = 0x0013
+	MtHinokami_BossArena_B = 0x0014
 	MtMiwaTemple_BossArena = 0x0208
 	KashimaTemple_BossArena = 0x010a
 	Pyramid_DemonBossArena = 0x0017
 	FinalBattle = 0x2F
 	Pyramid_EyeMiniBossRoom = 0x0124
 	Pyramid_GoatMiniBossRoom = 0x002a 
+	Pyramid_Entrance = 0x0016 
 	Pyramid_GroundFloor_Room_B = 0x001e
 	Pyramid_GroundFloor_Room_C = 0x0026
 	Pyramid_Floor_minus1_Room_A = 0x0021
+	Pyramid_Floor_1_Room_A = 0x0116 
 	Pyramid_Floor_1_Room_C = 0x0029
 	Pyramid_Floor_1_Room_E = 0x012c
+	Pyramid_Floor_1_Room_F = 0x002e
 
 	dict_ActionLevelPlayerSpawnCoords = {
 		PathToIzumoShrine_Level_1: {
@@ -981,6 +989,10 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 		MtMiwaGate_BossArena: {
 			"StartOfActionLevel": [0x36, 0x80]},
 		PathToKashimaTemple_Level_1: {
+			"StartOfActionLevel": [0x36, 0x80]},
+		MtHinokami_Level_1: {
+			"StartOfActionLevel": [0x28, 0x70]},
+		Pyramid_Entrance: {
 			"StartOfActionLevel": [0x36, 0x80]},
 		}
 	function get_PlayerSpawnCoords_StartOfActionLevel(enum_actionLevel) => this.dict_ActionLevelPlayerSpawnCoords[enum_actionLevel]["StartOfActionLevel"]
@@ -1201,6 +1213,8 @@ class CLASS_MEMLOGIC_BossEntities {
 	KashimaFireBoss = 103
 	PyramidDemon = 104
 	MtMiwaGuard = 105
+	Kezeus = 106
+	DaikokRobot = 107
 	
 	Eye = 301
 	Goat = 302
@@ -1231,6 +1245,17 @@ class CLASS_MEMLOGIC_BossEntities {
 			"EntityStartHP": 0x3c,
 			"BossArena_ActionModeLevel_ID": actionLevel.KashimaTemple_BossArena,
 			"StructLocation": "C"},
+		Kezeus: {
+			"EntityID": 0x34, // 0x34 => moving, 0x35 => idle/attacking (spawns with 0x34, can die with 0x35)
+			"EntityID_Alt": 0x35,
+			"EntityStartHP": 0x50,
+			"BossArena_ActionModeLevel_ID": actionLevel.MtHinokami_BossArena_A,
+			"StructLocation": "A"},
+		DaikokRobot: {
+			"EntityID": 0x9B,
+			"EntityStartHP": 0x32,
+			"BossArena_ActionModeLevel_ID": actionLevel.MtHinokami_BossArena_B,
+			"StructLocation": "D"},
 		PyramidDemon: {
 			"EntityID": 0x41,
 			"EntityStartHP": 0x64,
@@ -1248,6 +1273,7 @@ class CLASS_MEMLOGIC_BossEntities {
 			"StructLocation": "C"},
 		}
 	function get_EntityID(enum_boss) => this.dict_BossData[enum_boss]["EntityID"]
+	function get_EntityID_alt(enum_boss) => this.dict_BossData[enum_boss]["EntityID_Alt"]
 	function get_EntityStartHP(enum_boss) => this.dict_BossData[enum_boss]["EntityStartHP"]
 	function get_BossArena_ActionModeLevel_ID(enum_boss) => this.dict_BossData[enum_boss]["BossArena_ActionModeLevel_ID"]
 	function get_StructLocation(enum_boss) => this.dict_BossData[enum_boss]["StructLocation"]
@@ -1292,6 +1318,9 @@ class CLASS_MEMLOGIC_BossEntities {
 	// CheckIf: boss dies by confirming if the boss entity struct changes into an orb entity struct
 	function on_death(enum_boss, enum_releaseRegion) =>
 		this.prev_ID(enum_boss, enum_releaseRegion) == this.get_EntityID(enum_boss)
+		&& this.current_ID(enum_boss, enum_releaseRegion) == miscEntity.get_EntityID(miscEntity.Orb)
+	function on_death_alt(enum_boss, enum_releaseRegion) =>
+		this.prev_ID(enum_boss, enum_releaseRegion) == this.get_EntityID_alt(enum_boss)
 		&& this.current_ID(enum_boss, enum_releaseRegion) == miscEntity.get_EntityID(miscEntity.Orb)
 				
 	// CheckIf: boss despawns by confirming if boss entity struct is zeroed out
@@ -1357,6 +1386,7 @@ class CLASS_MEMLOGIC_PlayerCharacterLogic {
 	// FLAG_IsPlayerDead_false: anyOtherValue => false
 	FLAG_IsPlayerDead_true = 0x8F
 
+	
 	function current_STGH(enum_releaseRegion) =>
 		bcd(word(memory.getAddress("BCD:Player_Strength", enum_releaseRegion)))
 	function prev_STGH(enum_releaseRegion) =>
@@ -1374,6 +1404,23 @@ class CLASS_MEMLOGIC_PlayerCharacterLogic {
 	
 	function on_STGH_decrement(enum_releaseRegion) =>
 		this.current_STGH(enum_releaseRegion) < this.prev_STGH(enum_releaseRegion)
+	
+	function on_STGH_decrementBy(int_decrementAmount, enum_releaseRegion) {
+		// DEV_NOTE: [delta BCD] & [current BCD] value math: 
+			// PROBLEM --> can only easily read [current BCD] via RAIntegration. [delta BCD] cannot work in below code correctly
+			//		 this.prev_STGH(enum_releaseRegion) - this.current_STGH(enum_releaseRegion)  == int_decrementAmount
+			//
+			// SOLUTION --> read each hex number seperately (only necessary for the delta value), refer to solution below
+
+		let_memAddr_16BitBCD = memory.getAddress("BCD:Player_Strength", enum_releaseRegion)
+		return 
+			this.prev_STGH(enum_releaseRegion) > this.current_STGH(enum_releaseRegion)
+			&& prev(high4(let_memAddr_16BitBCD + 0x1))		*1000 	// --> DEV_NOTE - SOLUTION <-- 	Be wary of endianness 
+				+ prev(low4(let_memAddr_16BitBCD + 0x1)) 	*100
+				+ prev(high4(let_memAddr_16BitBCD))			*10
+				+ prev(low4(let_memAddr_16BitBCD))			*1
+				- this.current_STGH(enum_releaseRegion) == int_decrementAmount
+		}
 	
 	function on_ENGY_decrement(enum_releaseRegion) =>
 		this.current_ENGY(enum_releaseRegion) < this.prev_ENGY(enum_releaseRegion)
@@ -1464,7 +1511,7 @@ class CLASS_MEMLOGIC_PlayerControllerInput {
 // #region ACH - sub logic
 //	- For achievement logic that's reoccuring across multiple triggers
 class CLASS_AchievementSubLogic {
-	// NOTE: returns a PauseLock, which locks when the player exceeds an energy allowance. Concretely it locks when ENGY use > int_energyAllowance
+	// NOTE: Returns a PauseLock, which locks when the player exceeds an energy allowance. Concretely it locks when ENGY use > int_energyAllowance
 	// Function Output (snippet): 
 		// ...
 		// for let_i in range(0, 25 -1) // --> spell.Mars costs 25 ENGY --> addHit 25 times on same frame
@@ -1480,17 +1527,85 @@ class CLASS_AchievementSubLogic {
 			}
 		return unless(tally(int_energyAllowance +1, let_array_HitsToCount))}
 	
-	// NOTE: returns a measured, tracking how much ENGY is still allowed to be used, starts at max, deducts when using ENGY
+	
+	// NOTE: Creates a PauseLock that triggers when the player exceeds a defined energy allowance.
+		// Mechanic:
+		// - Each spell cast adds "hits" equal to its ENGY cost.
+		// - These hits accumulate toward the energy allowance limit.
+		// - When the total exceeds the allowance, the PauseLock activates.
+		//
+		// Recovery:
+		// - Taking STGH damage reduces accumulated hits.
+		// - The amount of STGH lost in a single frame determines how many hits are removed.
+		// - This effectively restores available energy capacity.
+		//
+		// Summary:
+		// Spell casting consumes allowance → STGH damage restores allowance.
+		// The PauseLock remains active unless total hits stay within the allowed threshold.
+	function PauseLock_playerExceedsEnergyAllowance_withAllowanceRegainOnHPloss(int_energyAllowance, enum_releaseRegion) {
+		let_int_HighestSingleHitPlayerCanReceive = 15 // within one frame
+		let_array_HitsToCount = []
+		for enum_spell in spell.dict_spellData { // --AddHits--> When player casts a spell --> Spell ENGY cost == Hits Added 
+			for let_i in range(0, spell.get_ENGY_Cost(enum_spell) -1)
+				array_push(let_array_HitsToCount, repeated(999999999, player.on_spellCast(enum_spell, enum_releaseRegion)))
+			}
+		
+		for let_index_1 in range(1, let_int_HighestSingleHitPlayerCanReceive) { // --DeductHits--> When player takes STGH damage --> amount of STGH dmg in single frame == Hits Deducted
+			for let_index_2 in range(1, let_index_1)
+				array_push(let_array_HitsToCount, deduct(repeated(999999999, player.on_STGH_decrementBy(let_index_1, enum_releaseRegion))))
+		}
+		return unless(tally(int_energyAllowance +1, let_array_HitsToCount))}
+
+	// NOTE: Returns a Measured, tracking how much ENGY is still allowed to be used, starts at max, deducts when using ENGY
 	function Measured_trackEnergyAllowance(int_energyAllowance, enum_releaseRegion, requirement_when) {
 		if(int_energyAllowance % 2 == 1) memUtil.throwError("Prefer using an even number for int_energyAllowance")
 		let_array_HitsToCount = [
 			repeated(int_energyAllowance/2, always_true()), // --AddHits--> base value for measured
 			repeated(int_energyAllowance/2, always_true())]
 
-		for enum_spell in spell.dict_spellData {
+		for enum_spell in spell.dict_spellData { // --DeductHits--> When player casts a spell --> Spell ENGY cost == Hits Deducted 
 			for let_i in range(0, spell.get_ENGY_Cost(enum_spell) -1)
-				array_push(let_array_HitsToCount, deduct(repeated(int_energyAllowance, player.on_spellCast(enum_spell, enum_releaseRegion)))) // --DeductHits--> when using spells/ENGY
+				array_push(let_array_HitsToCount, deduct(repeated(int_energyAllowance, player.on_spellCast(enum_spell, enum_releaseRegion))))
 			}
+		return measured(tally(int_energyAllowance, let_array_HitsToCount), when = requirement_when)}
+		
+	// NOTE: // Creates a Measured value that tracks how much energy allowance remains.
+		// Mechanic:
+		// - Starts with a full allowance (int_energyAllowance), split into two equal base contributions.
+		// - This ensures the measured value begins at maximum capacity.
+		//
+		// Consumption:
+		// - Casting spells deducts "hits" equal to their ENGY cost.
+		// - These hits reduce the remaining allowance.
+		//
+		// Recovery:
+		// - Taking STGH damage adds hits back.
+		// - The amount of STGH lost in a single frame determines how many hits are restored.
+		// - This effectively replenishes available energy capacity.
+		//
+		// Constraints:
+		// - int_energyAllowance must be even (used to evenly initialize the base value).
+		//
+		// Summary:
+		// Spell casting reduces remaining allowance → STGH damage restores it.
+		// The Measured output reflects current usable energy under the given condition.
+	function Measured_trackEnergyAllowance_withAllowanceRegainOnHPloss(int_energyAllowance, enum_releaseRegion, requirement_when) {
+		if(int_energyAllowance % 2 == 1) memUtil.throwError("Prefer using an even number for int_energyAllowance")
+		let_int_HighestSingleHitPlayerCanReceive = 15 // within one frame
+
+		let_array_HitsToCount = [
+			repeated(int_energyAllowance/2, always_true()), // --AddHits--> base value for measured
+			repeated(int_energyAllowance/2, always_true())]
+
+		for enum_spell in spell.dict_spellData { // --DeductHits--> When player casts a spell --> Spell ENGY cost == Hits Deducted 
+			for let_i in range(0, spell.get_ENGY_Cost(enum_spell) -1)
+				array_push(let_array_HitsToCount, deduct(repeated(999999999, player.on_spellCast(enum_spell, enum_releaseRegion))))
+			}
+		
+		for let_index_1 in range(1, let_int_HighestSingleHitPlayerCanReceive) { // --AddHits--> When player takes STGH damage --> amount of STGH dmg in single frame == Hits Added
+			for let_index_2 in range(1, let_index_1)
+				array_push(let_array_HitsToCount, repeated(999999999, player.on_STGH_decrementBy(let_index_1, enum_releaseRegion)))
+		}
 		return measured(tally(int_energyAllowance, let_array_HitsToCount), when = requirement_when)}
 } achievementSubLogic = CLASS_AchievementSubLogic()
 // #endregion ACH - trigger generators
@@ -1562,10 +1677,10 @@ dict_coreData = {
 			// "id": 609859, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Reach Miwa Temple and defeat both bosses, using only xx amount of ENGY, FUDO spell is disallowed"},
 		// "a_ClgKashimaTemple": { // VERIFIED
 			// "id": 610381, "points": 0000000, "devInfo": "Reach Kashima Temple and defeat boss, using only one defensive spell of choice, with only 2 allowed activations"},
-		// "a_ClgMtHinokami": { // CONCEPT a_ClgMtHinokami
-			// "id": 000000, "points": 0000000, "devInfo": "Reach Mt Hinokami and defeat bosses, without using following spells: Kannon, Fudo & Mars"},
-		// "a_ClgPyramid": { // CONCEPT a_ClgPyramid
-			// "id": 000000, "points": 0000000, "devInfo": "Reach Demon and defeat him, within xx time, using only xx amount of ENGY"},
+		// "a_ClgMtHinokami": { // VERIFIED
+			// "id": 610416, "points": 0000000, "devInfo": "Reach Mt Hinokami and defeat bosses, don't use more than the allowed ENGY allowance, ENGY allowance is regained when taking damage"},
+		"a_ClgPyramid": { // TEST a_ClgPyramid
+			"id": 000000, "points": 0000000, "devInfo": "Reach Demon and defeat him, within xx time, using only xx amount of ENGY"},
 		// "a_ClgFinalBattle": { // CONCEPT a_ClgFinalBattle
 			// "id": 000000, "points": 0000000, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, taking only xx HP damage"},
 		// CONCEPT Area/bosses with no challenges: UnderwaterShrine KakogenTemple PrincessAsaka GiantCentipede YomotsuPlain ThunderGod SnakeDemon
@@ -2291,20 +2406,187 @@ dict_triggers = {
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 				)
 		}),
-	"a_ClgMtHinokami": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			__ornext(gameStateA.is_inGame(enum_releaseRegion))
-			&& gameStateB.is_gameStarted(enum_releaseRegion) // WARNING --> going into ActionModeMenu => gameStateB toggles to gameStateB.BootingGame_StartMenu_Demo 
-			&& !demo.is_active(enum_releaseRegion)
-			&& always_false()
-		),
-	"a_ClgPyramid": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			__ornext(gameStateA.is_inGame(enum_releaseRegion))
-			&& gameStateB.is_gameStarted(enum_releaseRegion) // WARNING --> going into ActionModeMenu => gameStateB toggles to gameStateB.BootingGame_StartMenu_Demo 
-			&& !demo.is_active(enum_releaseRegion)
-			&& always_false()
-		),
+	"a_ClgMtHinokami": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_3_FalseEnemy
+		const_BOSS_A = bossEnemy.Kezeus
+		const_BOSS_B = bossEnemy.DaikokRobot
+		const_ALLOWED_MARS_SPELL_USES = 1
+		const_MAX_ALLOWED_ENGY_TO_USE = 70
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss
+				actionLevel.is(actionLevel.MtHinokami_Level_1, enum_releaseRegion)
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(repeated(const_ALLOWED_MARS_SPELL_USES +1, // --PauseLock--> When player casts spell Mars too many times
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_spellCast(spell.Mars, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance_withAllowanceRegainOnHPloss(const_MAX_ALLOWED_ENGY_TO_USE, enum_releaseRegion)
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the first action level of the section
+				actionLevel.is(actionLevel.MtHinokami_Level_1, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(actionLevel.MtHinokami_Level_1, enum_releaseRegion))
+
+			&& trigger_when( // --Trigger--> When 2nd boss dies
+				once( // --CheckIf--> Reached destination
+					actionLevel.is(actionLevel.MtHinokami_Level_1, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
+				&& once( // --CheckIf--> Entering 1st Boss Arena
+					adventureScene.is(adventureScene.MtHinokami, enum_releaseRegion)
+					&& bossEnemy.is_bossArena_active(const_BOSS_A, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
+				&& tally(1, [ // --Tally--OrNext--> ChekcIf: First boss dies (this boss can have multiple EntityIDs during the fight)
+					once( // --CheckIf--> EntityID with which boss spawns with
+						gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+						&& bossEnemy.is_bossArena_active(const_BOSS_A, enum_releaseRegion)
+						&& bossEnemy.on_death(const_BOSS_A, enum_releaseRegion)),
+					once( // --CheckIf--> EntityID_alt, can toggle between two EntityIDs throughout fight
+						gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+						&& bossEnemy.is_bossArena_active(const_BOSS_A, enum_releaseRegion)
+						&& bossEnemy.on_death_alt(const_BOSS_A, enum_releaseRegion))
+					])
+				&& once( // --CheckIf--> Entering 2nd Boss Arena
+					adventureScene.is(adventureScene.MtHinokami, enum_releaseRegion)
+					&& bossEnemy.is_bossArena_active(const_BOSS_B, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
+
+				 // --CheckIf--[TriggerCondition]--> 2nd boss dies
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS_B, enum_releaseRegion)
+				&& bossEnemy.on_death(const_BOSS_B, enum_releaseRegion)
+				)
+		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much spell usages left
+			|| unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss
+				actionLevel.is(actionLevel.MtHinokami_Level_1, enum_releaseRegion)
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(repeated(const_ALLOWED_MARS_SPELL_USES +1, // --PauseLock--> When player casts spell Mars too many times
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_spellCast(spell.Mars, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance_withAllowanceRegainOnHPloss(const_MAX_ALLOWED_ENGY_TO_USE, enum_releaseRegion)
+			
+			&& achievementSubLogic.Measured_trackEnergyAllowance_withAllowanceRegainOnHPloss(const_MAX_ALLOWED_ENGY_TO_USE, enum_releaseRegion, 
+				requirement_when = once( // --CheckIf--[StartCondition]--> Entered the first action level of the section
+					actionLevel.is(actionLevel.MtHinokami_Level_1, enum_releaseRegion)
+					&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+					&& player.on_spawn_atStartOfActionLevel(actionLevel.MtHinokami_Level_1, enum_releaseRegion)))
+			&& memUtil.alwaysFalse(enum_releaseRegion)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [4] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				actionLevel.is(actionLevel.MtHinokami_Level_1, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"a_ClgPyramid": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+		const_CHAPTER = storyChapter.Ch_4_Pyramid
+		const_BOSS = bossEnemy.PyramidDemon
+		const_ALLOWED_ENGY_TO_USE = 50
+		const_TIME_LIMIT_SECONDS = 300 // = xxxx (only counts when in ActionMode; Dev_PB: xxxx~)
+		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
+		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgIzumoShrine with a complementary timed leaderboard
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss	
+				!bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
+				actionLevel.is(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+				&& __ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.Pyramid_SouthSide, enum_releaseRegion))
+				)
+
+			&& trigger_when( // --Trigger--> When Boss dies
+				// DISABLED below code - Don't check for acquiring the WarHammer, as this item is retained when dying.
+					// once( // --CheckIf--> ActionLevels have progressed correctly (moved to FlyingDemon MiniBoss room to acquire WarHammer)
+						// gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+						// && actionLevel.prev(enum_releaseRegion) == actionLevel.Pyramid_Entrance
+						// && actionLevel.current(enum_releaseRegion) == actionLevel.Pyramid_Floor_1_Room_A)
+					// && once( // --CheckIf--> Acquired WarHammer
+						// gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+						// && actionLevel.is_active(actionLevel.Pyramid_Floor_1_Room_A, enum_releaseRegion)
+						// && gear.on_acquire(gear.Weapon_WarHammer, enum_releaseRegion))
+				once( // --CheckIf--> Making progress through Pyramid
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.on_enter(actionLevel.Pyramid_EyeMiniBossRoom, enum_releaseRegion))
+				&& once( // --CheckIf--> Making progress through Pyramid
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.on_enter(actionLevel.Pyramid_GoatMiniBossRoom, enum_releaseRegion))
+				&& once( // --CheckIf--> Making progress through Pyramid
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.on_enter(actionLevel.Pyramid_Floor_1_Room_F, enum_releaseRegion))
+				&& once( // --CheckIf--> Reached destination
+					actionLevel.is(actionLevel.Pyramid_Floor_1_Room_F, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)					
+				&& once( // --CheckIf--> Entering Boss Arena
+					adventureScene.is(adventureScene.Pyramid_DarkRoom, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
+
+				&& gear.is_acquired(gear.Weapon_WarHammer, enum_releaseRegion)  // --CheckIf--[TriggerCondition]--> Boss dies
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& bossEnemy.on_death(const_BOSS, enum_releaseRegion)
+				)
+		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much Makiri spell usages left
+			|| unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss	
+				!bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
+			
+			&& achievementSubLogic.Measured_trackEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion,
+				requirement_when =  once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
+					actionLevel.is(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+					&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+					&& player.on_spawn_atStartOfActionLevel(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+					&& __ornext(
+						adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+						|| adventureScene.is(adventureScene.Pyramid_SouthSide, enum_releaseRegion)))
+				)
+			&& memUtil.alwaysFalse(enum_releaseRegion)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [4] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.Pyramid_SouthSide, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),	
 	"a_ClgFinalBattle": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			__ornext(gameStateA.is_inGame(enum_releaseRegion))
