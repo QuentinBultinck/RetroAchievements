@@ -959,6 +959,8 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	PathToMtMiwaTemple_Level_1 = 0x0007
 	PathToMtMiwaTemple_Level_2 = 0x0107
 	PathToMtMiwaTemple_Entrance = 0x0207
+	PathToKashimaTemple_Level_1 = 0x0009
+	PathToKashimaTemple_Entrance = 0x0109
 	MtMiwaTemple_BossArena = 0x0208
 	KashimaTemple_BossArena = 0x010a
 	Pyramid_DemonBossArena = 0x0017
@@ -977,6 +979,8 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 		PathToAttaroShrine_Level_1: {
 			"StartOfActionLevel": [0x36, 0x80]},
 		MtMiwaGate_BossArena: {
+			"StartOfActionLevel": [0x36, 0x80]},
+		PathToKashimaTemple_Level_1: {
 			"StartOfActionLevel": [0x36, 0x80]},
 		}
 	function get_PlayerSpawnCoords_StartOfActionLevel(enum_actionLevel) => this.dict_ActionLevelPlayerSpawnCoords[enum_actionLevel]["StartOfActionLevel"]
@@ -1556,8 +1560,8 @@ dict_coreData = {
 			// "id": 609504, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Reach Attaro Shrine using only fully charged ki attacks and with only 3 allowed usages of the Makiri spell"},
 		// "a_ClgMtMiwa": { // VERIFIED
 			// "id": 609859, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Reach Miwa Temple and defeat both bosses, using only xx amount of ENGY, FUDO spell is disallowed"},
-		// "a_ClgKashimaTemple": { // CONCEPT a_ClgKashimaTemple
-			// "id": 000000, "points": 0000000, "devInfo": "Reach Kashima Temple and defeat boss, using only one spell of choice, with only 2 allowed activations"},
+		// "a_ClgKashimaTemple": { // VERIFIED
+			// "id": 610381, "points": 0000000, "devInfo": "Reach Kashima Temple and defeat boss, using only one defensive spell of choice, with only 2 allowed activations"},
 		// "a_ClgMtHinokami": { // CONCEPT a_ClgMtHinokami
 			// "id": 000000, "points": 0000000, "devInfo": "Reach Mt Hinokami and defeat bosses, without using following spells: Kannon, Fudo & Mars"},
 		// "a_ClgPyramid": { // CONCEPT a_ClgPyramid
@@ -1590,10 +1594,10 @@ dict_coreData = {
 			// "id": 609121, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Restore STGH after it reaches 0, during the final battle, by having Kuma's necklace"},
 		//  "a_EatSpaghetti": { // VERIFIED
 			// "id": 609831, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Eat some spaghetti made by Kuma at Izumo Town"},
-		 "a_EatMidori": { // VERIFIED
-			"id": 609832, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Eat some food at Midori's House"},
-		 "a_ChizuParty": { // VERIFIED
-			"id": 609833, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Have a taste of some Chizu Sea Nectar & perform a sword dance with them"},
+		//  "a_EatMidori": { // VERIFIED
+			// "id": 609832, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Eat some food at Midori's House"},
+		//  "a_ChizuParty": { // VERIFIED
+			// "id": 609833, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Have a taste of some Chizu Sea Nectar & perform a sword dance with them"},
 		},
 	}
 
@@ -2189,13 +2193,104 @@ dict_triggers = {
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 				)
 		}),
-	"a_ClgKashimaTemple": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			__ornext(gameStateA.is_inGame(enum_releaseRegion))
-			&& gameStateB.is_gameStarted(enum_releaseRegion) // WARNING --> going into ActionModeMenu => gameStateB toggles to gameStateB.BootingGame_StartMenu_Demo 
-			&& !demo.is_active(enum_releaseRegion)
-			&& always_false()
-		),
+	"a_ClgKashimaTemple": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_1_Investigation
+		const_DISALLOWED_SPELLS = [spell.Hakuji, spell.Indra, spell.Fudo, spell.Kannon, spell.Hatten]
+		const_ALLOWED_SPELLS = [spell.Mars, spell.Makiri, spell.Nobota]
+		const_ALLOWED_SPELL_USAGES = 2
+		const_ALLOWED_DISTINCT_SPELLS = 1
+		const_BOSS = bossEnemy.KashimaFireBoss
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss
+				__ornext(
+					actionLevel.is(actionLevel.PathToKashimaTemple_Level_1, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToKashimaTemple_Entrance, enum_releaseRegion))
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(tally_of(const_DISALLOWED_SPELLS, 1, enum_spell => // --PauseLock--> When player casts any disallowed spell
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_spellCast(enum_spell, enum_releaseRegion)))
+			&& unless(repeated(const_ALLOWED_SPELL_USAGES +1, // --PauseLock--> When player exceeds allowed spell casts
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_ENGY_decrement(enum_releaseRegion)))
+			&& unless(tally_of(const_ALLOWED_SPELLS, const_ALLOWED_DISTINCT_SPELLS +1, enum_spell => // --PauseLock--> When player uses more than one distinct spell
+				once(
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& player.on_spellCast(enum_spell, enum_releaseRegion))
+				))
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the first action level of the section
+				actionLevel.is(actionLevel.PathToKashimaTemple_Level_1, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToKashimaTemple_Level_1, enum_releaseRegion))
+
+			&& trigger_when( // --Trigger--> When end boss dies
+				once( // --CheckIf--> Progressing through the section
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToKashimaTemple_Level_1
+					&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToKashimaTemple_Entrance)
+				&& once( // --CheckIf--> Reached destination
+					actionLevel.is(actionLevel.PathToKashimaTemple_Entrance, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
+				&& once( // --CheckIf--> Entering Boss Arena
+					adventureScene.is(adventureScene.KashimaTemple_FirstVisit, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
+
+				 // --CheckIf--[TriggerCondition]--> End boss dies
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& bossEnemy.on_death(const_BOSS, enum_releaseRegion)
+				)
+		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much spell usages left
+			|| unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss
+				__ornext(
+					actionLevel.is(actionLevel.PathToKashimaTemple_Level_1, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToKashimaTemple_Entrance, enum_releaseRegion))
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(tally_of(const_DISALLOWED_SPELLS, 1, enum_spell => // --PauseLock--> When player casts any disallowed spell
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_spellCast(enum_spell, enum_releaseRegion)))
+			&& unless(repeated(const_ALLOWED_SPELL_USAGES +1, // --PauseLock--> When player exceeds allowed spell casts
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_ENGY_decrement(enum_releaseRegion)))
+			&& unless(tally_of(const_ALLOWED_SPELLS, const_ALLOWED_DISTINCT_SPELLS +1, enum_spell => // --PauseLock--> When player uses more than one distinct spell
+				once(
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& player.on_spellCast(enum_spell, enum_releaseRegion))
+				))
+			
+			&& measured(tally(const_ALLOWED_SPELL_USAGES, [
+				repeated(const_ALLOWED_SPELL_USAGES, always_true()), // --AddHits--> Base hits
+				deduct(repeated(const_ALLOWED_SPELL_USAGES, // --DeductHits--> when using a spell
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& player.on_ENGY_decrement(enum_releaseRegion)))
+				]), 
+				when = once( // --CheckIf--[StartCondition]--> Entered the first action level of the section
+					actionLevel.is(actionLevel.PathToKashimaTemple_Level_1, enum_releaseRegion)
+					&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+					&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToKashimaTemple_Level_1, enum_releaseRegion))
+				)
+			&& memUtil.alwaysFalse(enum_releaseRegion)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [4] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				actionLevel.is(actionLevel.PathToKashimaTemple_Level_1, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
 	"a_ClgMtHinokami": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			__ornext(gameStateA.is_inGame(enum_releaseRegion))
