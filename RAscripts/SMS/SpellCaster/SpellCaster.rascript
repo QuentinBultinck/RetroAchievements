@@ -980,6 +980,7 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	Pyramid_Floor_1_Room_C = 0x0029
 	Pyramid_Floor_1_Room_E = 0x012c
 	Pyramid_Floor_1_Room_F = 0x002e
+	FinaBattle = 0x002f
 
 	dict_ActionLevelPlayerSpawnCoords = {
 		PathToIzumoShrine_Level_1: {
@@ -994,6 +995,8 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 			"StartOfActionLevel": [0x28, 0x70]},
 		Pyramid_Entrance: {
 			"StartOfActionLevel": [0x36, 0x80]},
+		FinalBattle: {
+			"StartOfActionLevel": [0x68, 0x98]},
 		}
 	function get_PlayerSpawnCoords_StartOfActionLevel(enum_actionLevel) => this.dict_ActionLevelPlayerSpawnCoords[enum_actionLevel]["StartOfActionLevel"]
 
@@ -1215,6 +1218,11 @@ class CLASS_MEMLOGIC_BossEntities {
 	MtMiwaGuard = 105
 	Kezeus = 106
 	DaikokRobot = 107
+	FinalBattleBoss_1 = 201
+	FinalBattleBoss_2 = 202
+	FinalBattleBoss_3 = 203
+	FinalBattleBoss_4 = 204
+	FinalFinalBoss = 205
 	
 	Eye = 301
 	Goat = 302
@@ -1246,8 +1254,8 @@ class CLASS_MEMLOGIC_BossEntities {
 			"BossArena_ActionModeLevel_ID": actionLevel.KashimaTemple_BossArena,
 			"StructLocation": "C"},
 		Kezeus: {
-			"EntityID": 0x34, // 0x34 => moving, 0x35 => idle/attacking (spawns with 0x34, can die with 0x35)
-			"EntityID_Alt": 0x35,
+			"EntityID": 0x34, // --> This ID on spawn, when moving
+			"EntityID_Alt": 0x35, // --> when idle/attacking
 			"EntityStartHP": 0x50,
 			"BossArena_ActionModeLevel_ID": actionLevel.MtHinokami_BossArena_A,
 			"StructLocation": "A"},
@@ -1261,6 +1269,32 @@ class CLASS_MEMLOGIC_BossEntities {
 			"EntityStartHP": 0x64,
 			"BossArena_ActionModeLevel_ID": actionLevel.Pyramid_DemonBossArena,
 			"StructLocation": "A"},
+		FinalBattleBoss_1: {
+			"EntityID": 0x46,
+			"EntityStartHP": 0x64,
+			"BossArena_ActionModeLevel_ID": actionLevel.FinalBattle,
+			"StructLocation": "C"},
+		FinalBattleBoss_2: {
+			"EntityID": 0x47,
+			"EntityStartHP": 0x64,
+			"BossArena_ActionModeLevel_ID": actionLevel.FinalBattle,
+			"StructLocation": "C"},
+		FinalBattleBoss_3: {
+			"EntityID": 0x48,
+			"EntityStartHP": 0x64,
+			"BossArena_ActionModeLevel_ID": actionLevel.FinalBattle,
+			"StructLocation": "C"},
+		FinalBattleBoss_4: {
+			"EntityID": 0x49, // --> This ID on spawn, when stationary and shooting
+			"EntityID_Alt": 0x4A, // --> when teleporting 
+			"EntityStartHP": 0x64,
+			"BossArena_ActionModeLevel_ID": actionLevel.FinalBattle,
+			"StructLocation": "C"},
+		FinalFinalBoss: {
+			"EntityID": 0x3E,
+			"EntityStartHP": 0xFF,
+			"BossArena_ActionModeLevel_ID": actionLevel.FinalBattle,
+			"StructLocation": "C"},
 		Eye: {
 			"EntityID": 0xA3,
 			"EntityStartHP": 0x28,
@@ -1681,8 +1715,8 @@ dict_coreData = {
 			// "id": 610416, "points": 0000000, "devInfo": "Reach Mt Hinokami and defeat bosses, don't use more than the allowed ENGY allowance, ENGY allowance is regained when taking damage"},
 		// "a_ClgPyramid": { // VERIFIED
 			// "id": 610554, "points": 0000000, "devInfo": "Reach Demon and defeat him, within xx time, using only xx amount of ENGY"},
-		// "a_ClgFinalBattle": { // CONCEPT a_ClgFinalBattle
-			// "id": 000000, "points": 0000000, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, taking only xx HP damage"},
+		// "a_ClgFinalBattle": { // VERIFIED
+			// "id": 610555, "points": 0000000, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, witohut going below xx STGH"},
 		// CONCEPT Area/bosses with no challenges: UnderwaterShrine KakogenTemple PrincessAsaka GiantCentipede YomotsuPlain ThunderGod SnakeDemon
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
@@ -2587,13 +2621,129 @@ dict_triggers = {
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 				)
 		}),	
-	"a_ClgFinalBattle": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			__ornext(gameStateA.is_inGame(enum_releaseRegion))
-			&& gameStateB.is_gameStarted(enum_releaseRegion) // WARNING --> going into ActionModeMenu => gameStateB toggles to gameStateB.BootingGame_StartMenu_Demo 
-			&& !demo.is_active(enum_releaseRegion)
-			&& always_false()
-		),	
+	"a_ClgFinalBattle": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_7_FinalBattle
+		const_BOSS_1 = bossEnemy.FinalBattleBoss_1
+		const_BOSS_2 = bossEnemy.FinalBattleBoss_2
+		const_BOSS_3 = bossEnemy.FinalBattleBoss_3
+		const_BOSS_4 = bossEnemy.FinalBattleBoss_4
+		const_BOSS_FINAL = bossEnemy.FinalFinalBoss
+		const_DISALLOWED_SPELL = spell.Mars
+		const_HP_THRESHOLD = 25
+		const_ALLOWED_ENGY_TO_USE = 250
+		const_TIME_LIMIT_SECONDS = 320 // = 5m20s (only counts when in ActionMode; Dev_PB: 4m~)
+		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
+		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgFinalBattle with a complementary timed leaderboard
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player drops below const_HP_THRESHOLD
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.prev_STGH(enum_releaseRegion) >= const_HP_THRESHOLD
+				&& player.current_STGH(enum_releaseRegion) < const_HP_THRESHOLD))
+			&& unless(once( // --PauseLock--> When player casts disallowed spell
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_spellCast(const_DISALLOWED_SPELL, enum_releaseRegion)))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the last actionLevel of the game
+				actionLevel.is(actionLevel.FinalBattle, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(actionLevel.FinalBattle, enum_releaseRegion)
+				&& __ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.KashimaTemple_PreFinalBattle, enum_releaseRegion))
+				)
+
+			&& trigger_when( // --Trigger--> When Final Final Boss dies
+				once( // --CheckIf--> 1st Boss spawns
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& bossEnemy.on_spawn(const_BOSS_1, enum_releaseRegion))
+				&& once( // --CheckIf--> 1st Boss dies
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& bossEnemy.on_death(const_BOSS_1, enum_releaseRegion))
+
+				&&once( // --CheckIf--> 2nd Boss spawns
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& bossEnemy.on_spawn(const_BOSS_2, enum_releaseRegion))
+				&& once( // --CheckIf--> 2nd Boss dies
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& bossEnemy.on_death(const_BOSS_2, enum_releaseRegion))
+
+				&& once( // --CheckIf--> 3rd Boss spawns
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& bossEnemy.on_spawn(const_BOSS_3, enum_releaseRegion))
+				&& once( // --CheckIf--> 3rd Boss dies
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& bossEnemy.on_death(const_BOSS_3, enum_releaseRegion))
+
+				&& once( // --CheckIf--> 4th Boss spawns
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& bossEnemy.on_spawn(const_BOSS_4, enum_releaseRegion))
+				&& tally(1, [ // --Tally--OrNext--> CheckIf: 4th Boss dies 
+					once( // --CheckIf--> 4th Boss dies with Entity ID A
+						gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+						&& bossEnemy.on_death(const_BOSS_4, enum_releaseRegion)),
+					once( // --CheckIf--> 4th Boss dies with Entity ID B
+						gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+						&& bossEnemy.on_death_alt(const_BOSS_4, enum_releaseRegion))
+					])
+
+				&& once( // --CheckIf--> Final Boss spawns
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& bossEnemy.on_spawn(const_BOSS_FINAL, enum_releaseRegion))
+				&& once( // --CheckIf--> Final Boss Phase 2 starts (--> HP resets when heading into 2nd Phase)
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& 0x0 <= bossEnemy.prev_HP(const_BOSS_FINAL, enum_releaseRegion) && bossEnemy.prev_HP(const_BOSS_FINAL, enum_releaseRegion) <= (0xFF/5)
+					&& (0xFF/8)*5 <= bossEnemy.current_HP(const_BOSS_FINAL, enum_releaseRegion) && bossEnemy.current_HP(const_BOSS_FINAL, enum_releaseRegion) <= 0xFF)
+				 // --CheckIf--[TriggerCondition]-->Final Boss dies
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS_FINAL, enum_releaseRegion)
+				&& bossEnemy.on_death(const_BOSS_FINAL, enum_releaseRegion)
+				)
+		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much Makiri spell usages left
+			|| unless(once( // --PauseLock--> When player drops below const_HP_THRESHOLD
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.prev_STGH(enum_releaseRegion) >= const_HP_THRESHOLD
+				&& player.current_STGH(enum_releaseRegion) < const_HP_THRESHOLD))
+			&& unless(once( // --PauseLock--> When player casts disallowed spell
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_spellCast(const_DISALLOWED_SPELL, enum_releaseRegion)))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
+			
+			&& achievementSubLogic.Measured_trackEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion,
+				requirement_when =  once( // --CheckIf--[StartCondition]--> Entered the last actionLevel of the game
+					actionLevel.is(actionLevel.FinalBattle, enum_releaseRegion)
+					&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+					&& player.on_spawn_atStartOfActionLevel(actionLevel.FinalBattle, enum_releaseRegion)
+					&& __ornext(
+						adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+						|| adventureScene.is(adventureScene.KashimaTemple_PreFinalBattle, enum_releaseRegion))
+				)
+				)
+			&& memUtil.alwaysFalse(enum_releaseRegion)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [4] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.KashimaTemple_PreFinalBattle, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.FinaBattle, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),	
 	"a_SlayEvilLord": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			never(repeated(10, // --Repeated--10_frames--> On OutroSequence start, when outrosequence toggles from "SecondTextParagraph" to "EndingScene", gameStateA is temporarily 0x6 as a transitional value (0x86 -> 0x6 -> 0x86). This is also the case when switching from "EndingScene" to "Credits"
