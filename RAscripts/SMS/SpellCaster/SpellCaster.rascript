@@ -1679,8 +1679,8 @@ dict_coreData = {
 			// "id": 610381, "points": 0000000, "devInfo": "Reach Kashima Temple and defeat boss, using only one defensive spell of choice, with only 2 allowed activations"},
 		// "a_ClgMtHinokami": { // VERIFIED
 			// "id": 610416, "points": 0000000, "devInfo": "Reach Mt Hinokami and defeat bosses, don't use more than the allowed ENGY allowance, ENGY allowance is regained when taking damage"},
-		"a_ClgPyramid": { // TEST a_ClgPyramid
-			"id": 000000, "points": 0000000, "devInfo": "Reach Demon and defeat him, within xx time, using only xx amount of ENGY"},
+		// "a_ClgPyramid": { // VERIFIED
+			// "id": 610554, "points": 0000000, "devInfo": "Reach Demon and defeat him, within xx time, using only xx amount of ENGY"},
 		// "a_ClgFinalBattle": { // CONCEPT a_ClgFinalBattle
 			// "id": 000000, "points": 0000000, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, taking only xx HP damage"},
 		// CONCEPT Area/bosses with no challenges: UnderwaterShrine KakogenTemple PrincessAsaka GiantCentipede YomotsuPlain ThunderGod SnakeDemon
@@ -2491,13 +2491,13 @@ dict_triggers = {
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 				)
 		}),
-	"a_ClgPyramid": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+	"a_ClgPyramid": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_CHAPTER = storyChapter.Ch_4_Pyramid
 		const_BOSS = bossEnemy.PyramidDemon
-		const_ALLOWED_ENGY_TO_USE = 50
-		const_TIME_LIMIT_SECONDS = 300 // = xxxx (only counts when in ActionMode; Dev_PB: xxxx~)
+		const_ALLOWED_ENGY_TO_USE = 70
+		const_TIME_LIMIT_SECONDS = 480 // = 8m (only counts when in ActionMode; Dev_PB: 6m~)
 		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
-		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgIzumoShrine with a complementary timed leaderboard
+		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgPyramid with a complementary timed leaderboard
 
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
@@ -2541,7 +2541,7 @@ dict_triggers = {
 				&& once( // --CheckIf--> Reached destination
 					actionLevel.is(actionLevel.Pyramid_Floor_1_Room_F, enum_releaseRegion)
 					&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
-					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)					
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
 				&& once( // --CheckIf--> Entering Boss Arena
 					adventureScene.is(adventureScene.Pyramid_DarkRoom, enum_releaseRegion)
 					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
