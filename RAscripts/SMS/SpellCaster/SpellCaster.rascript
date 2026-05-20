@@ -53,92 +53,78 @@
 // CONCEPT Idea's
 // ==================
 // Achievements:
-// - Complete game taking only xxx strength/HP damage || do a certain stage taking only xxx damage
-// - Complete game within xxx minutes (maybe just leaderboard for this) --> complete whole game --> needs password protection//hitCounts
-// - complete certain stage without using a basic attack
-// - Challenge using only xx Energy
-// - Challenge using only Charged Attacks
-// - Challenges for each stage???
-// --- without dying, taking only xx hits, taking only xx damage, without healing, using only certain spell
-// - Boss Challenges??
 // - Secret/funny interactions within AdventureMode??
-// - Acquire certain items --> https://shrines.rpgclassics.com/sms/spellcaster/items.shtml
-//
-// Shimono Chapter
-// - Taste each type of food and regain strength at Midori House (Shimono chapter)
 
-// Story Script
-// ================
-// ----Chap0 start---- (trouble at enriku temple)
-// Investigate enriku Temple -> discover dead tokak soldiers --> "Izumo" tip from tokak soldier 
-// ----Chap1 start---- (Investigation)
-// 1.investigate Izumo -> Kuma: something going on at Izumo Shrine --> mysterious man: "Kusanagi" + charm from Iwato family 
-// 	- Sword of Kusanagi at attaro shrine --> jukak
-// 	- MtMiwa for Iwato fam investigation: MtMiwaGuard --> Wakahiko: "friends are calling Serpent God"
-// 2. Go to Kashima Shrine to investigate Serpent God calling there --> Kashima Fire Boss --> Sword of branches acquire
-// ----Chap2 start---- (Shimono)
-// Daikak: "Iwato looking for real sword of kusanagi in underwater shrine" --> Shimono to acquire it 
-// 				--> defeat Iwato at sea + learn Iwato still wanna revive Serpent God, now at Izumo Shrine
-// ----Chap3 start---- (FalseEnemy)
-// 1. Izumo Temple: Princess asaka/dragon boss fight --> Shimazu + asaka explain everything --> head outside Izumo temple 
-// 		--> Shimazu + asaka attacked by centipede --> bossFight --> Shimazu dies: "visit kumano shrine + talk with Utsuho"
-// 2. KumanoShrine: show ShimazuBall to Utsuho, becomes friendly: "go to serpent god at Kakogen"
-// 3. Kakogen in well cave --> at KakogenTemple find battleship "Ameno" --> return to Utsuho "An ancient god was <transplanted> into the computer! He has watched over 
-// 		the people of Iwato since then! Daikok only knows how to restore a god, not a machine but he can control us at will."
-// 4. move to Mt Hinokami to face off with Daikok (who's controlled by evil god) --> bossFight Kezeus (alien) --> bossfight Daikok robot --> armorbracers
-// 5. move back to KumanoShrine, Utusho: "That armor was Daikok's special armor! It is likely the key to waking up the serpent!"
-// 6. move back to Kakogen + startup battleship Ameno/serpent god Ooku: 
-// 	"Long ago the Iwato ruled a highly advanced world. In their time 
-// 	they trapped an evil lord which threatened their planet. But in trapping the
-// 	beast they used up their magic force and were ruined. 
-// 	For many years they kept this beast trapped in a pyramid on a distant planet. 
-// 	When your people came, the few remaining Iwato decided not to interfere, 
-// 	choosing instead to fade away, taking the secret of the evil lord with them. 
-// 	This is the truth behind the legends. Kane, evil beings seek to revive the evil lord. 
-// 	He is trapped in the pyramid on Mt.Minakami! This ship is heading for the place. 
-// 	You must stop the forces of evil from taking over the pyramid!"
-// 	--> start spaceship and head to pyramid at Mt Minakami
-// ----Chap4 start---- (Pyramid)
-// 1. find hidden entrance to pyramid --> find pyramid point --> exit pyramid + place point on top of pyramid --> new entrance opens
-// 2. enter pyramid (+ find optional equipment + optional bosses) --> Demon (head of the evil lord's army) + Regina possesses 
-// 		--> save Regina --> demon bossfight --> pyramid collapses --> Kane exits with Regina back to spaceship --> back to SummitTemple
-// Back at SummitTemple: 
-// 	Daikak: "The evil lord's prison was opened?"
-// 	Kane: "Yes. The enemy's forces we did defeat, but... "
-// 	Daikak:" If the dark lord is revived... We have to rely on the gods to help us. 
-// 		Kane, ride the Ameno to the underworld! Find Izanami! Perhaps Izanami will bless you 
-// 		with a gift. The dark lord has been freed, but he is still not awake. We must hurry 
-// 		before he begins to stir!" 
-// 	--> head to Underworld with spaceship
-// ----Chap5 start---- (Underworld)
-// Underworld guard --> FerryCrossing: ferryman sleepy --> Gaurd: wakeup with nectar --> Chizu Sea: dancing band + Nectar --> Ferryman-Misty crossing -> Yomotsu plains
-// 	--> (defeat Amano/magic creature) --> Inazami Shrine: "Find mirror and return to me to defeat Evil lord. Go to Yomotsu Shrine"
-// 	--> Yomotsu Shrine is gaurded by cerberus --> Amano tips you now: "find music at Toki Field" --> Toki plains: MoveRock (need Oar from Ferryman) --> find harp of Amano
-// 	--> Chizu Sea --> make music --> bad music + learn to make music --> Yomotsu shrine: play music 
-// 				--> Yomotsu: "The 8 swords of fury are needed. One is held by the Thunder God!"
-// 	--> Ferryman: takes you to thunder god --> bossfight --> take sword of fury 
-// 	--> Yomotsu: "You got it! You defeated the god of thunder A very powerful god indeed! 
-// 		Now go to the holy bridge to find the sacred mirror! "
-// 	--> Amano tells you where Holy Bridge is --> at Holy Bridge: stick sword of fury in pedestal --> door opens --> SnakeDemon bossfight --> drops sacredMirror
-// 	--> Show Inazami SacredMirror: 
-// 		"only one way to to kill the Dark Lord... You, Kane, must do it yourself. "
-// 		"You received a gift of increased power earlier... But you do not yet know your true capacity for strength! 
-// 		Now face your destiny as a Spellcaster! Awaken the serpent god and call his power unto yourself!
-// 		The serpent hasmuch energy.Concentrate theenergy using thesacred mirror.Use the sword ofKusanagi to drawthe power into yourself! 
-// 		That mystic power...along with everythingyou have learned..will give you the strength to defeat the Dark Lord... 
-//         If your heart remains pure! Kane,everyone is awaiting your victory!"
-// ----Chap6 start---- (FinalBattle prep)
-// Summit Temple --> Kashima Shrine --> Strike stone with SwordOfBranches --> unleach serpent god --> serpent god fills mirror with energy 
-// 			--> sword of kusanagi as catalyst to invoke power of mirror into Kane 
-// ----Chap7 start---- (FinalBattle)
-// ending:	
-// 	"The evil lord and his armies have been defeated. But as long as suffering exists,
-// 	the threat that the Dark Lord will return remains. "
-// 	"You must strive to relieve that suffering. The road ahead of you is long, hard and endless. 
-// 	You must not pause, but journey ever onward. For that is your destiny, Master of Spells"
-
-// WARNING
-// - Using passwords: sends to certain points in the campaign, with all Strength, Energy and Items.
+// #region Story Script
+	// ================
+	// ----Chap0 start---- (trouble at enriku temple)
+	// Investigate enriku Temple -> discover dead tokak soldiers --> "Izumo" tip from tokak soldier 
+	// ----Chap1 start---- (Investigation)
+	// 1.investigate Izumo -> Kuma: something going on at Izumo Shrine --> mysterious man: "Kusanagi" + charm from Iwato family 
+	// 	- Sword of Kusanagi at attaro shrine --> jukak
+	// 	- MtMiwa for Iwato fam investigation: MtMiwaGuard --> Wakahiko: "friends are calling Serpent God"
+	// 2. Go to Kashima Shrine to investigate Serpent God calling there --> Kashima Fire Boss --> Sword of branches acquire
+	// ----Chap2 start---- (Shimono)
+	// Daikak: "Iwato looking for real sword of kusanagi in underwater shrine" --> Shimono to acquire it 
+	// 				--> defeat Iwato at sea + learn Iwato still wanna revive Serpent God, now at Izumo Shrine
+	// ----Chap3 start---- (FalseEnemy)
+	// 1. Izumo Temple: Princess asaka/dragon boss fight --> Shimazu + asaka explain everything --> head outside Izumo temple 
+	// 		--> Shimazu + asaka attacked by centipede --> bossFight --> Shimazu dies: "visit kumano shrine + talk with Utsuho"
+	// 2. KumanoShrine: show ShimazuBall to Utsuho, becomes friendly: "go to serpent god at Kakogen"
+	// 3. Kakogen in well cave --> at KakogenTemple find battleship "Ameno" --> return to Utsuho "An ancient god was <transplanted> into the computer! He has watched over 
+	// 		the people of Iwato since then! Daikok only knows how to restore a god, not a machine but he can control us at will."
+	// 4. move to Mt Hinokami to face off with Daikok (who's controlled by evil god) --> bossFight Kezeus (alien) --> bossfight Daikok robot --> armorbracers
+	// 5. move back to KumanoShrine, Utusho: "That armor was Daikok's special armor! It is likely the key to waking up the serpent!"
+	// 6. move back to Kakogen + startup battleship Ameno/serpent god Ooku: 
+	// 	"Long ago the Iwato ruled a highly advanced world. In their time 
+	// 	they trapped an evil lord which threatened their planet. But in trapping the
+	// 	beast they used up their magic force and were ruined. 
+	// 	For many years they kept this beast trapped in a pyramid on a distant planet. 
+	// 	When your people came, the few remaining Iwato decided not to interfere, 
+	// 	choosing instead to fade away, taking the secret of the evil lord with them. 
+	// 	This is the truth behind the legends. Kane, evil beings seek to revive the evil lord. 
+	// 	He is trapped in the pyramid on Mt.Minakami! This ship is heading for the place. 
+	// 	You must stop the forces of evil from taking over the pyramid!"
+	// 	--> start spaceship and head to pyramid at Mt Minakami
+	// ----Chap4 start---- (Pyramid)
+	// 1. find hidden entrance to pyramid --> find pyramid point --> exit pyramid + place point on top of pyramid --> new entrance opens
+	// 2. enter pyramid (+ find optional equipment + optional bosses) --> Demon (head of the evil lord's army) + Regina possesses 
+	// 		--> save Regina --> demon bossfight --> pyramid collapses --> Kane exits with Regina back to spaceship --> back to SummitTemple
+	// Back at SummitTemple: 
+	// 	Daikak: "The evil lord's prison was opened?"
+	// 	Kane: "Yes. The enemy's forces we did defeat, but... "
+	// 	Daikak:" If the dark lord is revived... We have to rely on the gods to help us. 
+	// 		Kane, ride the Ameno to the underworld! Find Izanami! Perhaps Izanami will bless you 
+	// 		with a gift. The dark lord has been freed, but he is still not awake. We must hurry 
+	// 		before he begins to stir!" 
+	// 	--> head to Underworld with spaceship
+	// ----Chap5 start---- (Underworld)
+	// Underworld guard --> FerryCrossing: ferryman sleepy --> Gaurd: wakeup with nectar --> Chizu Sea: dancing band + Nectar --> Ferryman-Misty crossing -> Yomotsu plains
+	// 	--> (defeat Amano/magic creature) --> Inazami Shrine: "Find mirror and return to me to defeat Evil lord. Go to Yomotsu Shrine"
+	// 	--> Yomotsu Shrine is gaurded by cerberus --> Amano tips you now: "find music at Toki Field" --> Toki plains: MoveRock (need Oar from Ferryman) --> find harp of Amano
+	// 	--> Chizu Sea --> make music --> bad music + learn to make music --> Yomotsu shrine: play music 
+	// 				--> Yomotsu: "The 8 swords of fury are needed. One is held by the Thunder God!"
+	// 	--> Ferryman: takes you to thunder god --> bossfight --> take sword of fury 
+	// 	--> Yomotsu: "You got it! You defeated the god of thunder A very powerful god indeed! 
+	// 		Now go to the holy bridge to find the sacred mirror! "
+	// 	--> Amano tells you where Holy Bridge is --> at Holy Bridge: stick sword of fury in pedestal --> door opens --> SnakeDemon bossfight --> drops sacredMirror
+	// 	--> Show Inazami SacredMirror: 
+	// 		"only one way to to kill the Dark Lord... You, Kane, must do it yourself. "
+	// 		"You received a gift of increased power earlier... But you do not yet know your true capacity for strength! 
+	// 		Now face your destiny as a Spellcaster! Awaken the serpent god and call his power unto yourself!
+	// 		The serpent hasmuch energy.Concentrate theenergy using thesacred mirror.Use the sword ofKusanagi to drawthe power into yourself! 
+	// 		That mystic power...along with everythingyou have learned..will give you the strength to defeat the Dark Lord... 
+	//         If your heart remains pure! Kane,everyone is awaiting your victory!"
+	// ----Chap6 start---- (FinalBattle prep)
+	// Summit Temple --> Kashima Shrine --> Strike stone with SwordOfBranches --> unleach serpent god --> serpent god fills mirror with energy 
+	// 			--> sword of kusanagi as catalyst to invoke power of mirror into Kane 
+	// ----Chap7 start---- (FinalBattle)
+	// ending:	
+	// 	"The evil lord and his armies have been defeated. But as long as suffering exists,
+	// 	the threat that the Dark Lord will return remains. "
+	// 	"You must strive to relieve that suffering. The road ahead of you is long, hard and endless. 
+	// 	You must not pause, but journey ever onward. For that is your destiny, Master of Spells"
+// #endregion Story Script
 
 // #endregion DEVELOPER NOTES
 
@@ -324,6 +310,7 @@ class CLASS_MemoryData {
 		"Struct:Entity(Player_Projectile_D)": {ENUM_ReleaseRegion.USA_EUR: 0x03A0},
 		"Struct:Entity(Player_Projectile_E)": {ENUM_ReleaseRegion.USA_EUR: 0x03C0},
 		"Struct:Entity(boss)_A": {ENUM_ReleaseRegion.USA_EUR: 0x0400},
+		"Struct:Entity(boss)_B": {ENUM_ReleaseRegion.USA_EUR: 0x0420},
 		"Struct:Entity(boss)_C": {ENUM_ReleaseRegion.USA_EUR: 0x0460},
 		"Struct:Entity(boss)_D": {ENUM_ReleaseRegion.USA_EUR: 0x0620},
 		"Struct:Entity(Pyramid_Orb)": {ENUM_ReleaseRegion.USA_EUR: 0x0600},
@@ -671,6 +658,7 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	MidoriHouse = 0x15
 	MtHinokami = 0x3E  
 	Dannoura_A = 0x18
+	Dannoura_X = 0x2E // (entrance to sea cave)
 	Dannoura_Y = 0x30
 	UnderwaterShrine = 0x33
 	Dannoura_IwatoBattle = 0x34
@@ -684,7 +672,9 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 	Pyramid_DarkRoom = 0x45
 	ChizuSea = 0x4A
 	IzanamiShrine = 0x4C
+	MistyCrossing = 0x49
 	YomotsuShrine = 0x4D
+	HolyBridge = 0x4F
 	KashimaTemple_PreFinalBattle = 0x59
 	FinalBattle = 0x2F
 	
@@ -696,6 +686,10 @@ class CLASS_MEMLOGIC_AdventureSceneIdentification {
 
 	function is(enum_adventureSceneID, enum_releaseRegion) => 
 		this.current(enum_releaseRegion) == enum_adventureSceneID
+	
+	function on_change(enum_releaseRegion) =>
+		this.current(enum_releaseRegion) != this.prev(enum_releaseRegion)
+	
 	function on_changeTo(enum_adventureSceneID, enum_releaseRegion) =>
 		this.prev(enum_releaseRegion) != enum_adventureSceneID
 		&& this.current(enum_releaseRegion) == enum_adventureSceneID
@@ -745,6 +739,7 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 	Ch4_PyramidDemonDefeated = 6
 	Ch5_LearnedToPlayHarp = 18
 	Ch5_CerberusCalmed = 19
+	ch5_AmanoShowsHolyBridge = 23
 	Ch5_AcquiredMirror = 25
 	Ch5_ShowIzanamiMirror = 26
 
@@ -944,7 +939,6 @@ class CLASS_MEMLOGIC_AdventureCommandMenu {
 } adventureCommandMenu = CLASS_MEMLOGIC_AdventureCommandMenu()
 // #endregion Adventure Command Menu 
 
-
 // #region ActionMode Level Identification
 class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	PathToEnrikuTemple_Level_1 = 0x0003
@@ -963,6 +957,11 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	PathToMtMiwaTemple_Entrance = 0x0207
 	PathToKashimaTemple_Level_1 = 0x0009
 	PathToKashimaTemple_Entrance = 0x0109
+	PathToUnderwateShrine_Level_1 = 0x020d
+	PathToUnderwateShrine_Level_2 = 0x010d
+	PathToUnderwateShrine_Entrance = 0x000d
+	PathToKakogenTemple_Level_1 = 0x0111 // (going through the well is a transition to another action level)
+	PathToKakogenTemple_Entrance = 0x0011 // (going through the rock tunnel is NOT a transition to another action level)
 	MtHinokami_Level_1 = 0x0012 // (only one action level for this section)
 	MtHinokami_BossArena_A = 0x0013
 	MtHinokami_BossArena_B = 0x0014
@@ -980,6 +979,11 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 	Pyramid_Floor_1_Room_C = 0x0029
 	Pyramid_Floor_1_Room_E = 0x012c
 	Pyramid_Floor_1_Room_F = 0x002e
+	YomotsuPlains = 0x0018
+	BossArena_PrincessAsaka = 0x020e 
+	BossArena_GiantCentipede = 0x0010 
+	BossArena_ThunderGod = 0x001c 
+	BossArena_SnakeDemon = 0x001d 
 	FinaBattle = 0x002f
 
 	dict_ActionLevelPlayerSpawnCoords = {
@@ -991,9 +995,23 @@ class CLASS_MEMLOGIC_ActionModeLevelIdentification {
 			"StartOfActionLevel": [0x36, 0x80]},
 		PathToKashimaTemple_Level_1: {
 			"StartOfActionLevel": [0x36, 0x80]},
+		PathToUnderwateShrine_Level_1: {
+			"StartOfActionLevel": [0x46, 0x00]},
+		PathToKakogenTemple_Level_1: {
+			"StartOfActionLevel": [0x36, 0x80]},
 		MtHinokami_Level_1: {
 			"StartOfActionLevel": [0x28, 0x70]},
 		Pyramid_Entrance: {
+			"StartOfActionLevel": [0x36, 0x80]},
+		YomotsuPlains: {
+			"StartOfActionLevel": [0x26, 0x80]},
+		BossArena_PrincessAsaka: {
+			"StartOfActionLevel": [0x36, 0x80]},
+		BossArena_GiantCentipede: {
+			"StartOfActionLevel": [0x36, 0x80]},
+		BossArena_ThunderGod: {
+			"StartOfActionLevel": [0x36, 0x80]},
+		BossArena_SnakeDemon: {
 			"StartOfActionLevel": [0x36, 0x80]},
 		FinalBattle: {
 			"StartOfActionLevel": [0x68, 0x98]},
@@ -1071,6 +1089,7 @@ class CLASS_MEMLOGIC_Inventory {
 	Ch3_ArmorBracers = 2
 	Ch5_SwordOfKusanagi = 0
 	Ch5_MysticHarp = 3
+	Ch5_SwordOfFury = 5
 	Ch5_SacredMirror = 6
 	Ch7_Necklace = 3
 
@@ -1218,6 +1237,10 @@ class CLASS_MEMLOGIC_BossEntities {
 	MtMiwaGuard = 105
 	Kezeus = 106
 	DaikokRobot = 107
+	PrincessAsaka = 110
+	GiantCentipede = 111
+	ThunderGod = 112
+	SnakeDemon = 113
 	FinalBattleBoss_1 = 201
 	FinalBattleBoss_2 = 202
 	FinalBattleBoss_3 = 203
@@ -1268,7 +1291,27 @@ class CLASS_MEMLOGIC_BossEntities {
 			"EntityID": 0x41,
 			"EntityStartHP": 0x64,
 			"BossArena_ActionModeLevel_ID": actionLevel.Pyramid_DemonBossArena,
-			"StructLocation": "A"},
+			"StructLocation": "A"},	
+		PrincessAsaka: {
+			"EntityID": 0x6D,
+			"EntityStartHP": 0x46,
+			"BossArena_ActionModeLevel_ID": actionLevel.BossArena_PrincessAsaka,
+			"StructLocation": "C"},
+		GiantCentipede: {
+			"EntityID": 0x2E,
+			"EntityStartHP": 0x46,
+			"BossArena_ActionModeLevel_ID": actionLevel.BossArena_GiantCentipede,
+			"StructLocation": "B"},
+		ThunderGod: {
+			"EntityID": 0xA6,
+			"EntityStartHP": 0xF, // (can only be damaged if surounding floating pieces are destroyed),
+			"BossArena_ActionModeLevel_ID": actionLevel.BossArena_ThunderGod,
+			"StructLocation": "C"},
+		SnakeDemon: {
+			"EntityID": 0xA9,
+			"EntityStartHP": 0x64,
+			"BossArena_ActionModeLevel_ID": actionLevel.BossArena_SnakeDemon,
+			"StructLocation": "C"},
 		FinalBattleBoss_1: {
 			"EntityID": 0x46,
 			"EntityStartHP": 0x64,
@@ -1414,6 +1457,8 @@ class CLASS_MEMENUM_Spells {
 
 	function get_ENGY_Cost(enum_spell) => 
 		this.dict_spellData[enum_spell]["ENGY_Cost"]
+	function get_allSpells_inArray() =>
+		[this.Hakuji, this.Indra, this.Fudo, this.Kannon, this.Hatten, this.Mars, this.Makiri, this.Nobota]
 } spell = CLASS_MEMENUM_Spells()
 class CLASS_MEMLOGIC_PlayerCharacterLogic {
 	// ----Variables----
@@ -1711,13 +1756,26 @@ dict_coreData = {
 			// "id": 609859, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Reach Miwa Temple and defeat both bosses, using only xx amount of ENGY, FUDO spell is disallowed"},
 		// "a_ClgKashimaTemple": { // VERIFIED
 			// "id": 610381, "points": 0000000, "devInfo": "Reach Kashima Temple and defeat boss, using only one defensive spell of choice, with only 2 allowed activations"},
+		// "a_ClgUnderwaterShrine": { // VERIFIED
+			// "id": 610557, "points": 0000000, "devInfo": "Reach the underwater shrine in xx time, without taking a hit"},	
+		// "a_ClgKakogenTemple": { // VERIFIED
+			// "id": 610556, "points": 0000000, "devInfo": "Reach Kakogen Temple, taking only one hit to STGH, with only one spell allowed cast"},
 		// "a_ClgMtHinokami": { // VERIFIED
 			// "id": 610416, "points": 0000000, "devInfo": "Reach Mt Hinokami and defeat bosses, don't use more than the allowed ENGY allowance, ENGY allowance is regained when taking damage"},
 		// "a_ClgPyramid": { // VERIFIED
 			// "id": 610554, "points": 0000000, "devInfo": "Reach Demon and defeat him, within xx time, using only xx amount of ENGY"},
+		// "a_ClgYomotsuPlain": { // VERIFIED
+			// "id": 610558, "points": 0000000, "devInfo": "Starting from the Misty Crossing (left side of level), reach the Holy Bridge (right side of level), within xx time, using only xx amount of ENGY, taking only one hit of damage, disallowed spells Makiri & Mars"},
 		// "a_ClgFinalBattle": { // VERIFIED
 			// "id": 610555, "points": 0000000, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, witohut going below xx STGH"},
-		// CONCEPT Area/bosses with no challenges: UnderwaterShrine KakogenTemple PrincessAsaka GiantCentipede YomotsuPlain ThunderGod SnakeDemon
+		// "a_ClgAsaka": { // VERIFIED
+			// "id": 610573, "points": 0000000, "devInfo": "Defeat using only xx amount of ENGY, within xx time"},	
+		// "a_ClgCentipede": { // VERIFIED
+			// "id": 610575, "points": 0000000, "devInfo": "Defeat casting only one distinct spell, only xx amount of ENGY, within xx time, taking no damage"},	
+		// "a_ClgThunderGod": { // VERIFIED
+			// "id": 610571, "points": 0000000, "devInfo": "Defeat boss and acquire the Sword of Kusanagi in xx time (using Kannon spam)"},	
+		// "a_ClgMedusa": { // VERIFIED
+			// "id": 610572, "points": 0000000, "devInfo": "Defeat boss and acquire the Sared Mirror in xx time, without taking damage, casting only Makiri"},	
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
@@ -1741,16 +1799,16 @@ dict_coreData = {
 	
 		// "a_Ressurectlace": { // VERIFIED
 			// "id": 609121, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Restore STGH after it reaches 0, during the final battle, by having Kuma's necklace"},
-		//  "a_EatSpaghetti": { // VERIFIED
+		// "a_EatSpaghetti": { // VERIFIED
 			// "id": 609831, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Eat some spaghetti made by Kuma at Izumo Town"},
-		//  "a_EatMidori": { // VERIFIED
+		// "a_EatMidori": { // VERIFIED
 			// "id": 609832, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Eat some food at Midori's House"},
-		//  "a_ChizuParty": { // VERIFIED
+		// "a_ChizuParty": { // VERIFIED
 			// "id": 609833, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Have a taste of some Chizu Sea Nectar & perform a sword dance with them"},
 		},
 	}
 
-dict_achievementCategoryToAchievementType = { // TODO set achievement types
+dict_achievementCategoryToAchievementType = { // TODO mark missables
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
 	//	- util.sNULL => when it's not necessarily a missable achievement --> will result in type: "standard"
@@ -2440,6 +2498,118 @@ dict_triggers = {
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 				)
 		}),
+	"a_ClgUnderwaterShrine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_2_SwordOfKusanagi
+		const_TIME_LIMIT_SECONDS = 105 // = 1m45s (only counts when in ActionMode; Dev_PB: 1m15s~)
+		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
+		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgUnderwaterShrine with a complementary timed leaderboard
+		
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player dies during any of the actionLevels
+				__ornext(
+					actionLevel.is(actionLevel.PathToUnderwateShrine_Level_1, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToUnderwateShrine_Level_2, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToUnderwateShrine_Entrance, enum_releaseRegion))
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When player takes a hit
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_STGH_decrement(enum_releaseRegion)))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
+				actionLevel.is(actionLevel.PathToUnderwateShrine_Level_1, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToUnderwateShrine_Level_1, enum_releaseRegion)
+
+				&& __ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.Dannoura_X, enum_releaseRegion)) // --> Entrance to sea cave
+				)
+
+			&& trigger_when( // --Trigger--> When Boss dies
+				once( // --CheckIf--> ActionLevels have progressed correctly 
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToUnderwateShrine_Level_1
+					&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToUnderwateShrine_Level_2)
+				&& once( // --CheckIf--> ActionLevels have progressed correctly 
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToUnderwateShrine_Level_2
+					&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToUnderwateShrine_Entrance)
+
+				// // --CheckIf--[TriggerCondition]--> Reached destination
+				&& actionLevel.is(actionLevel.PathToUnderwateShrine_Entrance, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode
+				)
+		// [2] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.Dannoura_X, enum_releaseRegion)) // --> Entrance to sea cave
+				&& actionLevel.is(actionLevel.PathToUnderwateShrine_Level_1, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),	
+	"a_ClgKakogenTemple": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_3_FalseEnemy
+		const_ALLOWED_HITS_TAKEN = 1
+		const_ALLOWED_SPELL_USAGES = 1
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player dies during any of the actionLevels
+				__ornext(
+					actionLevel.is(actionLevel.PathToKakogenTemple_Level_1, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToKakogenTemple_Entrance, enum_releaseRegion))
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(repeated(const_ALLOWED_HITS_TAKEN +1, // --PauseLock--> When player takes too many hits to STGH
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_STGH_decrement(enum_releaseRegion)))
+			&& unless(repeated(const_ALLOWED_SPELL_USAGES +1, // --PauseLock--> When player exceeds spell cast count
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_ENGY_decrement(enum_releaseRegion)))
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the first action level of the section
+				actionLevel.is(actionLevel.PathToKakogenTemple_Level_1, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToKakogenTemple_Level_1, enum_releaseRegion))
+
+			&& trigger_when( // --Trigger--> When end boss dies
+				once( // --CheckIf--> Progressing through the section
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToKakogenTemple_Level_1
+					&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToKakogenTemple_Entrance)
+				 // --CheckIf--> Reached destination
+				&& actionLevel.is(actionLevel.PathToKakogenTemple_Entrance, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode
+				)
+		// [2] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				actionLevel.is(actionLevel.PathToKakogenTemple_Level_1, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),	
 	"a_ClgMtHinokami": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_CHAPTER = storyChapter.Ch_3_FalseEnemy
 		const_BOSS_A = bossEnemy.Kezeus
@@ -2474,7 +2644,7 @@ dict_triggers = {
 					&& bossEnemy.is_bossArena_active(const_BOSS_A, enum_releaseRegion)
 					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
 					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
-				&& tally(1, [ // --Tally--OrNext--> ChekcIf: First boss dies (this boss can have multiple EntityIDs during the fight)
+				&& tally(1, [ // --Tally--OrNext--> CheckIf: First boss dies (this boss can have multiple EntityIDs during the fight)
 					once( // --CheckIf--> EntityID with which boss spawns with
 						gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
 						&& bossEnemy.is_bossArena_active(const_BOSS_A, enum_releaseRegion)
@@ -2621,6 +2791,104 @@ dict_triggers = {
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 				)
 		}),	
+	"a_ClgYomotsuPlain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_5_Underworld
+		const_MAX_STGH = 100 // --> actually it's 80 at this stage in story, but may be higher??
+		const_ALLOWED_HITS_TAKEN = 1
+		const_DISALLOWED_SPELLS = [spell.Mars, spell.Makiri]
+		const_ALLOWED_ENGY_TO_USE = 40
+		const_TIME_LIMIT_SECONDS = 120 // = 2m (only counts when in ActionMode; Dev_PB: 1m40s~)
+		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
+		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgYomotsuPlain with a complementary timed leaderboard
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player dies
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(repeated(const_ALLOWED_HITS_TAKEN +1, // --PauseLock--> When player takes xx damage hits
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_STGH_decrement(enum_releaseRegion)))
+			&& unless(tally_of(const_DISALLOWED_SPELLS, 1, enmu_spell => // --PauseLock--> When player cast any disallowed spell
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_spellCast(enmu_spell, enum_releaseRegion)))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the actionLevel (left side of level)
+				actionLevel.is(actionLevel.YomotsuPlains, enum_releaseRegion)
+				&& player.current_STGH(enum_releaseRegion) <= const_MAX_STGH
+				&& mainQuest.is_priorEventsCompleted(mainQuest.ch5_AmanoShowsHolyBridge, enum_releaseRegion) // --> Holy Bridge can only be accessed when this event is complete
+				&& mainQuest.is_eventCompleted(mainQuest.ch5_AmanoShowsHolyBridge, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(actionLevel.YomotsuPlains, enum_releaseRegion)
+				&& __ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.MistyCrossing, enum_releaseRegion))
+				)
+
+			&& trigger_when( // --Trigger--> When entering Holy Bridge (right side of level)
+				once(
+					actionLevel.is(actionLevel.YomotsuPlains, enum_releaseRegion)
+					&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)				
+				&& gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion)
+				&& adventureScene.on_changeTo(adventureScene.HolyBridge, enum_releaseRegion)
+				)
+		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much Makiri spell usages left
+			|| unless(once( // --PauseLock--> When player dies
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(repeated(const_ALLOWED_HITS_TAKEN +1, // --PauseLock--> When player takes xx damage hits
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_STGH_decrement(enum_releaseRegion)))
+			&& unless(tally_of(const_DISALLOWED_SPELLS, 1, enmu_spell => // --PauseLock--> When player cast any disallowed spell
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_spellCast(enmu_spell, enum_releaseRegion)))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
+			
+			&& achievementSubLogic.Measured_trackEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion,
+				requirement_when = once( // --CheckIf--[StartCondition]--> Entered the actionLevel (left side of level)
+					actionLevel.is(actionLevel.YomotsuPlains, enum_releaseRegion)
+					&& player.current_STGH(enum_releaseRegion) <= const_MAX_STGH
+					&& mainQuest.is_priorEventsCompleted(mainQuest.ch5_AmanoShowsHolyBridge, enum_releaseRegion) // --> Holy Bridge can only be accessed when this event is complete
+					&& mainQuest.is_eventCompleted(mainQuest.ch5_AmanoShowsHolyBridge, enum_releaseRegion)
+					&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+					&& player.on_spawn_atStartOfActionLevel(actionLevel.YomotsuPlains, enum_releaseRegion)
+					&& __ornext(
+						adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+						|| adventureScene.is(adventureScene.MistyCrossing, enum_releaseRegion)))
+				)
+			&& memUtil.alwaysFalse(enum_releaseRegion)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [4] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.Pyramid_SouthSide, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		// [5] ==== Alt Reset Group ==== 		-> Reset when in adventure mode, but not at HolyBridge
+			|| never_toAlt(repeated(150, // --> Repeated, because gameStateA toggles to "gameStateA.AdventureMode" before adventureScene toggles to "adventureScene.HolyBridge", thus preventing resets when entering HolyBridge
+				never( // --ResetNextIf--> in ActionMode || on adventure scene change
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					|| adventureScene.on_change(enum_releaseRegion))
+				&& gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion)
+				&& !adventureScene.is(adventureScene.HolyBridge, enum_releaseRegion))
+				)
+		}),	
 	"a_ClgFinalBattle": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_CHAPTER = storyChapter.Ch_7_FinalBattle
 		const_BOSS_1 = bossEnemy.FinalBattleBoss_1
@@ -2740,6 +3008,243 @@ dict_triggers = {
 					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
 					|| adventureScene.is(adventureScene.KashimaTemple_PreFinalBattle, enum_releaseRegion))
 				&& actionLevel.is(actionLevel.FinaBattle, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),	
+	"a_ClgAsaka": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_3_FalseEnemy
+		const_BOSS = bossEnemy.PrincessAsaka
+		const_ALLOWED_ENGY_TO_USE = 50
+		const_TIME_LIMIT_SECONDS = 80 // = 1m20s (only counts when in ActionMode; Dev_PB: 30s~ (with Fudo), 45~ (with Hatten))
+		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
+		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgAsaka with a complementary timed leaderboard
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player dies
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the boss arena
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_BOSS), enum_releaseRegion))
+
+			&& trigger_when( // --Trigger--> When boss dies	
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+				&& bossEnemy.on_death(const_BOSS, enum_releaseRegion))
+		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much Makiri spell usages left
+			|| unless(once( // --PauseLock--> When player dies
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
+			
+			&& achievementSubLogic.Measured_trackEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion,
+				requirement_when = once( // --CheckIf--[StartCondition]--> Entered the boss arena
+					bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+					&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+					&& player.on_spawn_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_BOSS), enum_releaseRegion)))
+			&& memUtil.alwaysFalse(enum_releaseRegion)				
+		// [3] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [4] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),	
+	"a_ClgCentipede": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_3_FalseEnemy
+		const_BOSS = bossEnemy.GiantCentipede
+		const_ALLOWED_DISTINCT_SPELLS = 1
+		const_ALLOWED_ENGY_TO_USE = 50
+		const_TIME_LIMIT_SECONDS = 75 // = 1m15s (only counts when in ActionMode; Dev_PB: 40s~ (with Makiri))
+		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
+		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgCentipede with a complementary timed leaderboard
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player dies
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When player takes STGH damage
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& player.on_STGH_decrement(enum_releaseRegion)))
+			&& unless( // --PauseLock--> When player casts more than const_ALLOWED_DISTINCT_SPELLS 
+				tally_of(spell.get_allSpells_inArray(), const_ALLOWED_DISTINCT_SPELLS +1, enum_spell =>
+					once(
+						gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+						&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+						&& player.on_spellCast(enum_spell, enum_releaseRegion))
+				))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the boss arena
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_BOSS), enum_releaseRegion))
+
+			&& trigger_when( // --Trigger--> When boss dies	
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+				&& bossEnemy.on_death(const_BOSS, enum_releaseRegion))
+		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much Makiri spell usages left
+			|| unless(once( // --PauseLock--> When player dies
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When player takes STGH damage
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& player.on_STGH_decrement(enum_releaseRegion)))
+			&& unless( // --PauseLock--> When player casts more than const_ALLOWED_DISTINCT_SPELLS 
+				tally_of(spell.get_allSpells_inArray(), const_ALLOWED_DISTINCT_SPELLS +1, enum_spell =>
+					once(
+						gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+						&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+						&& player.on_spellCast(enum_spell, enum_releaseRegion))
+				))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
+			
+			&& achievementSubLogic.Measured_trackEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion,
+				requirement_when = once( // --CheckIf--[StartCondition]--> Entered the boss arena
+					bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+					&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[4] 
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+					&& player.on_spawn_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_BOSS), enum_releaseRegion)))
+			&& memUtil.alwaysFalse(enum_releaseRegion)		
+		// [3] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [4] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),	
+	"a_ClgThunderGod": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_5_Underworld
+		const_BOSS = bossEnemy.ThunderGod
+		const_TIME_LIMIT_SECONDS = 10 // = 10s (only counts when in ActionMode; Dev_PB: 5s~ (by spamming Kannon))
+		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player dies0
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the boss arena
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_BOSS), enum_releaseRegion))
+
+			&& trigger_when( // --Trigger--> When acquiring the item
+				tally(1, [ // --Tally--OrNext--> CheckIf: Boss dies, there's two death scenarios (see below) // WARNING: Don't use bossEnemy.on_death() for Thunder God
+					once( // --CheckIf--> Boss dies on_HP_hitsZero()
+						bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+						&& bossEnemy.on_HP_hitsZero(const_BOSS, enum_releaseRegion)),
+					once( // --CheckIf--> Boss dies on_HP_negativelyOverflows()
+						bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+						&& bossEnemy.on_HP_negativelyOverflows(const_BOSS, enum_releaseRegion))
+					])
+				
+				// --CheckIf--[TriggerCondition]--> Item is acquired --> this is a bugfix, for when the boss flies off-screen and dies out-of-bounds
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+				&& item.on_acquire(item.Ch5_SwordOfFury, enum_releaseRegion)
+				)
+		// [2] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),		
+	"a_ClgMedusa": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_5_Underworld
+		const_BOSS = bossEnemy.SnakeDemon
+		const_ALLOWED_SPELL = spell.Makiri
+		const_TIME_LIMIT_SECONDS = 45 // = 45s (only counts when in ActionMode; Dev_PB: 23s~)
+		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
+		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgMedusa with a complementary timed leaderboard
+
+		return
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(once( // --PauseLock--> When player dies
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When player casts a disallowed spell
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.current_spellSelected(enum_releaseRegion) != const_ALLOWED_SPELL
+				&& player.on_ENGY_decrement(enum_releaseRegion)))
+			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
+
+			&& once( // --CheckIf--[StartCondition]--> Entered the boss arena
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_BOSS), enum_releaseRegion))
+
+			&& trigger_when( // --Trigger--> When acquiring the item
+				tally(1, [ // --Tally--OrNext--> CheckIf: Boss dies, there's two death scenarios (see below) // WARNING: Don't use bossEnemy.on_death() for Snake Demon
+					once( // --CheckIf--> Boss dies on_HP_hitsZero()
+						bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+						&& bossEnemy.on_HP_hitsZero(const_BOSS, enum_releaseRegion)),
+					once( // --CheckIf--> Boss dies on_HP_negativelyOverflows()
+						bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+						&& bossEnemy.on_HP_negativelyOverflows(const_BOSS, enum_releaseRegion))
+					])
+				
+				// --CheckIf--[TriggerCondition]--> Item is acquired --> this is a bugfix, for when the boss flies off-screen and dies out-of-bounds
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+				&& item.on_acquire(item.Ch5_SacredMirror, enum_releaseRegion)
+				)				
+		// [2] ==== Alt Reset Group ==== 		-> Reset when not InGame || demo is active || incorrect StoryChapter
+			|| never_toAlt(
+				!gameStateA.is_inGame(enum_releaseRegion)
+				|| demo.is_active(enum_releaseRegion)
+				|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
 				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 				)
@@ -3105,10 +3610,17 @@ dict_titles = {
 	"a_ClgAttaroShrine": 		{"en": "xxxxxxxxx"},
 	"a_ClgMtMiwa": 				{"en": "xxxxxxxxx"},
 	"a_ClgKashimaTemple": 		{"en": "xxxxxxxxx"},
+	"a_ClgUnderwaterShrine": 	{"en": "xxxxxxxxx"},
+	"a_ClgKakogenTemple": 		{"en": "xxxxxxxxx"},
 	"a_ClgMtHinokami": 			{"en": "xxxxxxxxx"},
 	"a_ClgPyramid": 			{"en": "xxxxxxxxx"},
-	"a_ClgFinalBattle": 		{"en": "xxxxxxxxx"},
-	
+	"a_ClgYomotsuPlain": 		{"en": "xxxxxxxxx"},
+	"a_ClgFinalBattle": 		{"en": "xxxxxxxxx"},	
+	"a_ClgAsaka": 				{"en": "xxxxxxxxx"},
+	"a_ClgCentipede": 			{"en": "xxxxxxxxx"},
+	"a_ClgThunderGod": 			{"en": "xxxxxxxxx"},
+	"a_ClgMedusa": 				{"en": "xxxxxxxxx"},
+
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
 	"a_xRaying": 				{"en": "xxxxxxxxx"},
@@ -3139,9 +3651,16 @@ dict_descriptions = {
 	"a_ClgAttaroShrine": 		{"en": "xxxxxxxxx"},
 	"a_ClgMtMiwa": 				{"en": "xxxxxxxxx"},
 	"a_ClgKashimaTemple": 		{"en": "xxxxxxxxx"},
+	"a_ClgUnderwaterShrine": 	{"en": "xxxxxxxxx"},
+	"a_ClgKakogenTemple": 		{"en": "xxxxxxxxx"},
 	"a_ClgMtHinokami": 			{"en": "xxxxxxxxx"},
 	"a_ClgPyramid": 			{"en": "xxxxxxxxx"},
-	"a_ClgFinalBattle": 		{"en": "xxxxxxxxx"},
+	"a_ClgYomotsuPlain": 		{"en": "xxxxxxxxx"},
+	"a_ClgFinalBattle": 		{"en": "xxxxxxxxx"},	
+	"a_ClgAsaka": 				{"en": "xxxxxxxxx"},
+	"a_ClgCentipede": 			{"en": "xxxxxxxxx"},
+	"a_ClgThunderGod": 			{"en": "xxxxxxxxx"},
+	"a_ClgMedusa": 				{"en": "xxxxxxxxx"},
 	
 	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
 	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
