@@ -1770,7 +1770,7 @@ dict_coreData = {
 		// "a_ClgMedusa": { // VERIFIED
 			// "id": 610572, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Defeat boss and acquire the Sared Mirror in xx time, without taking damage, casting only Makiri"},	
 		},
-	"c_Bonus": { // Bonus - Misc bonus achievements
+	"c_mBonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
 			// "id": 607151, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeat a boss with one hit from full HP (earlier bosses using Fudo spell)"},
 		// "a_SeaSpirits": { // VERIFIED
@@ -1794,7 +1794,7 @@ dict_coreData = {
 		// "a_ChizuParty": { // VERIFIED
 			// "id": 609833, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Have a taste of some Chizu Sea Nectar & perform a sword dance with them"},
 		},
-	"c_mBonus": { // Bonus - Missable bonus achievements
+	"c_Bonus": { // Bonus - Missable bonus achievements
 		// "a_Energised": { // VERIFIED
 			// "id": 609105, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Acquire a certain amount of energy, prior to Final Battle"},
 		// "a_Strengthened": { // DISCONTINUED - Max Strength is determined based on MainQuest progress, there's no optional "max HP/STGH increase pick-ups"
@@ -1802,7 +1802,7 @@ dict_coreData = {
 		},
 	}
 
-dict_achievementCategoryToAchievementType = { // TODO mark missables
+dict_achievementCategoryToAchievementType = {
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
 	//	- util.sNULL => when it's not necessarily a missable achievement --> will result in type: "standard"
@@ -3592,7 +3592,7 @@ dict_titles = {
 	"a_Ch1KashimaBoss": 		{"en": "Silencing the Serpent's Call"},
 	"a_Ch2SwordKusanagi": 		{"en": "The Power of Kusanagi"},
 	"a_Ch3Shimazu":  			{"en": "Friends or Enemies"},
-	"a_Ch3Ameno": 				{"en": "Englightend Coalescence"},
+	"a_Ch3Ameno": 				{"en": "Enlightened Coalescence"},
 	"a_Ch4Demon": 				{"en": "Pyramid of the Foul"},
 	"a_Ch5Yomotsu": 			{"en": "Audience for a God"},
 	"a_Ch5Izanami": 			{"en": "Knowledge & Power"},
@@ -3617,7 +3617,7 @@ dict_titles = {
 	"a_OneHitHumanBoss": 		{"en": "Scorched"},
 	"a_SeaSpirits": 			{"en": "Spirits of Dannoura"},
 	"a_xRaying": 				{"en": "Beyond Sight"},
-	"a_FullyGeared": 			{"en": "Fully Geared"},
+	"a_FullyGeared": 			{"en": "Armed to the Teeth"},
 	"a_Energised": 				{"en": "Vivacious"},
 	"a_Indy": 					{"en": "Raider of the Lost Orbs"},
 	"a_MiniEye": 				{"en": "Remnant of the Beholder"},
@@ -3634,9 +3634,9 @@ dict_descriptions = {
 	"a_Ch2SwordKusanagi": 		{"en": "Claim the legendary Sword of Kusanagi and unleash its might against your foes"},
 	"a_Ch3Shimazu":  			{"en": "Uncover the true intentions of the Iwato family's actions"},
 	"a_Ch3Ameno": 				{"en": "Activate the machine at Kakogen and receive the revelation of the Serpent God Ooku"},
-	"a_Ch4Demon": 				{"en": "Vanquish the general of the evil lord's army within the pyramid's depths"},
+	"a_Ch4Demon": 				{"en": "Vanquish the general of the Evil Lord's army within the Pyramid's depths"},
 	"a_Ch5Yomotsu": 			{"en": "Journey to the realm beyond and stand before the mighty God Yomotsu"},
-	"a_Ch5Izanami": 			{"en": "Gather the wisdom and strength needed to challenge the evil lord's reign"},
+	"a_Ch5Izanami": 			{"en": "Gather the wisdom and strength needed to challenge the Evil Lord's reign"},
 	"a_SlayEvilLord": 			{"en": "Defeat the Evil Lord and seal your fate as a Spellcaster"},
 
 	"a_ClgEnrikuTemple": 		{"en": "Reach Enriku Temple without taking damage"},
@@ -3646,7 +3646,7 @@ dict_descriptions = {
 	"a_ClgKashimaTemple": 		{"en": "Reach Kashima Temple and defeat the fiery warrior using a single defensive spell of choice, with only 2 activations allowed"},
 	"a_ClgUnderwaterShrine": 	{"en": "Reach the Underwater Shrine within 1 minute 45 seconds without taking a single hit"},
 	"a_ClgKakogenTemple": 		{"en": "Reach Kakogen Temple using only 1 spell cast and suffering no more than 1 hit of damage"},
-	"a_ClgMtHinokami": 			{"en": "Reach the top of Mt. Hinokami and defeat the villians with only 1 allowed spell cast of 'Mars', and without exceeding the ENGY limit. Taking damage restores your allowance"},
+	"a_ClgMtHinokami": 			{"en": "Reach the top of Mt. Hinokami and defeat the villians with only 1 allowed spell cast of 'Mars', and without exceeding the ENGY limit of 70. Taking damage restores your allowance"},
 	"a_ClgPyramid": 			{"en": "Reach and defeat the Pyramid Demon within 8 minutes whilst using no more than 70 ENGY"},
 	"a_ClgYomotsuPlain": 		{"en": "Travel from the Misty Crossing to the Holy Bridge within 2 minutes, using no more than 40 ENGY, taking only 1 hit, and without the spells 'Makiri' or 'Mars'"},
 	"a_ClgFinalBattle": 		{"en": "Defeat the Evil Lord within 5 minutes 20 seconds, using no more than 250 ENGY, and never falling below 25 STGH"},	
@@ -3655,7 +3655,7 @@ dict_descriptions = {
 	"a_ClgThunderGod": 			{"en": "Defeat the Thunder God and claim the Sword of Kusanagi within 10 seconds"},
 	"a_ClgMedusa": 				{"en": "Defeat Medusa and obtain the Sacred Mirror within 45 seconds, without taking damage, and using only 'Makiri'"},
 	
-	"a_OneHitHumanBoss": 		{"en": "A Spellcaster doesn't duel, only judgement. Topple a human boss in a single decisive strike"},
+	"a_OneHitHumanBoss": 		{"en": "A Spellcaster does not duel, he delivers judgement. Topple a human boss in a single decisive strike"},
 	"a_SeaSpirits": 			{"en": "The sea does not forgive trespassers. Purify the waters of Dannoura by vanquishing all sea spirits"},
 	"a_xRaying": 				{"en": "Not all secrets are visible to the naked eye. Use the X-Ray Glasses to uncover hidden treasure at Dannoura"},
 	"a_FullyGeared": 			{"en": "A warrior forged in complete armament. Acquire every weapon and armor piece"},
