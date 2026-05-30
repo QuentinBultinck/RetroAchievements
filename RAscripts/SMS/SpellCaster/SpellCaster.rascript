@@ -134,7 +134,7 @@
 // #region GENERAL UTILITY
 
 class CLASS_Utility {
-    isDebugModeActive = true // if true => extra information may be displayed on achievement titles & descriptions
+    isDebugModeActive = false // if true => extra information may be displayed on achievement titles & descriptions
     language = "en"	// ISO 639-1 language codes
 
 	iNULL = -1		// Two types are necessary because RAtools can't compare integers to strings
@@ -1250,7 +1250,7 @@ class CLASS_MEMLOGIC_BossEntities {
 	Eye = 301
 	Goat = 302
 
-	dict_BossData = { // TODO put dict_BossData info into codenotes
+	dict_BossData = {
 		MysteriousEnemy: {
 			"EntityID": 0x5e,
 			"EntityStartHP": 0x32,
@@ -1563,13 +1563,6 @@ class CLASS_MEMLOGIC_PlayerControllerInput {
 } playerInput = CLASS_MEMLOGIC_PlayerControllerInput()
 // #endregion Player Character Logic
 
-// ................
-// ◦ Sub_Header_2 ◦
-// ''''''''''''''''
-// #region Sub_Header_2
-
-// #endregion Sub_Header_2
-
 // #endregion MEMORY
 
 // ****************************************************************************************************************************************** \\
@@ -1723,21 +1716,21 @@ dict_coreData = {
 	// "a_Template": { // CONCEPT a_template
 		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
-	"c_StoryProgress": { // Story Progression
+	"c_StoryProgress": { // Story Progression 
 		// "a_Ch1MysteryMan": { // VERIFIED
-			// "id": 606009, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeating Mysterious Man at IzumoTemple (StoryChapter_1)"},
+			// "id": 606009, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Defeating Mysterious Man at IzumoTemple (StoryChapter_1)"},
 		// "a_Ch1KashimaBoss": { // VERIFIED
-			// "id": 608244, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Stop the Serpent God calling at Kashima (after defeating Kashima Fire Boss) (StoryChapter_1)"},
+			// "id": 608244, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Stop the Serpent God calling at Kashima (after defeating Kashima Fire Boss) (StoryChapter_1)"},
 		// "a_Ch2SwordKusanagi": { // VERIFIED
-			// "id": 608452, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Acquire Sword of Kusanagi at Underwater shrine + then use it to vanquish Iwato family at sea (showcasing it's power)"},
+			// "id": 608452, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Acquire Sword of Kusanagi at Underwater shrine + then use it to vanquish Iwato family at sea (showcasing it's power)"},
 		// "a_Ch3Shimazu": { // VERIFIED
-			// "id": 608453, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Unearthing some of the true intentions of the Iwato, after Shimazu's death"},
+			// "id": 608453, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Unearthing some of the true intentions of the Iwato, after Shimazu's death"},
 		// "a_Ch3Ameno": { // VERIFIED
-			// "id": 608595, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Start up spaceship Ameno and be enlightened by Serpent God Ooku"},
+			// "id": 608595, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Start up spaceship Ameno and be enlightened by Serpent God Ooku"},
 		// "a_Ch4Demon": { // VERIFIED
 			// "id": 608674, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Defeat the pyramid demon"},
 		// "a_Ch5Yomotsu": { // VERIFIED
-			// "id": 608684, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Reach an audience with the God Yomotsu"},
+			// "id": 608684, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Reach an audience with the God Yomotsu"},
 		// "a_Ch5Izanami": { // VERIFIED
 			// "id": 608685, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Acquire all knowledge & power to defeat the evil lord"},
 		},
@@ -1747,7 +1740,7 @@ dict_coreData = {
 		},
 	"c_Challenge": { // Challenges
 		// "a_ClgEnrikuTemple": { // VERIFIED
-			// "id": 609158, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "(one session) Reach Enriku Temple without taking any HP damage"},
+			// "id": 609158, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "(one session) Reach Enriku Temple without taking any HP damage"},
 		// "a_ClgIzumoShrine": { // VERIFIED
 			// "id": 609448, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "(one session) Reach Izumo Temple and kill the Mysterious Enemy within xx seconds"},
 		// "a_ClgAttaroShrine": { // VERIFIED
@@ -1755,56 +1748,57 @@ dict_coreData = {
 		// "a_ClgMtMiwa": { // VERIFIED
 			// "id": 609859, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Reach Miwa Temple and defeat both bosses, using only xx amount of ENGY, FUDO spell is disallowed"},
 		// "a_ClgKashimaTemple": { // VERIFIED
-			// "id": 610381, "points": 0000000, "devInfo": "Reach Kashima Temple and defeat boss, using only one defensive spell of choice, with only 2 allowed activations"},
+			// "id": 610381, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Reach Kashima Temple and defeat boss, using only one defensive spell of choice, with only 2 allowed activations"},
 		// "a_ClgUnderwaterShrine": { // VERIFIED
-			// "id": 610557, "points": 0000000, "devInfo": "Reach the underwater shrine in xx time, without taking a hit"},	
+			// "id": 610557, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Reach the underwater shrine in xx time, without taking a hit"},	
 		// "a_ClgKakogenTemple": { // VERIFIED
-			// "id": 610556, "points": 0000000, "devInfo": "Reach Kakogen Temple, taking only one hit to STGH, with only one spell allowed cast"},
+			// "id": 610556, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Reach Kakogen Temple, taking only one hit to STGH, with only one spell allowed cast"},
 		// "a_ClgMtHinokami": { // VERIFIED
-			// "id": 610416, "points": 0000000, "devInfo": "Reach Mt Hinokami and defeat bosses, don't use more than the allowed ENGY allowance, ENGY allowance is regained when taking damage"},
+			// "id": 610416, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Reach Mt Hinokami and defeat bosses, don't use more than the allowed ENGY allowance, ENGY allowance is regained when taking damage"},
 		// "a_ClgPyramid": { // VERIFIED
-			// "id": 610554, "points": 0000000, "devInfo": "Reach Demon and defeat him, within xx time, using only xx amount of ENGY"},
+			// "id": 610554, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Reach Demon and defeat him, within xx time, using only xx amount of ENGY"},
 		// "a_ClgYomotsuPlain": { // VERIFIED
-			// "id": 610558, "points": 0000000, "devInfo": "Starting from the Misty Crossing (left side of level), reach the Holy Bridge (right side of level), within xx time, using only xx amount of ENGY, taking only one hit of damage, disallowed spells Makiri & Mars"},
+			// "id": 610558, "points": ENUM_Ach:ievementPointClass.Advanced_5, "devInfo": "Starting from the Misty Crossing (left side of level), reach the Holy Bridge (right side of level), within xx time, using only xx amount of ENGY, taking only one hit of damage, disallowed spells Makiri & Mars"},
 		// "a_ClgFinalBattle": { // VERIFIED
-			// "id": 610555, "points": 0000000, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, witohut going below xx STGH"},
+			// "id": 610555, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, witohut going below xx STGH"},
 		// "a_ClgAsaka": { // VERIFIED
-			// "id": 610573, "points": 0000000, "devInfo": "Defeat using only xx amount of ENGY, within xx time"},	
+			// "id": 610573, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Defeat using only xx amount of ENGY, within xx time"},	
 		// "a_ClgCentipede": { // VERIFIED
-			// "id": 610575, "points": 0000000, "devInfo": "Defeat casting only one distinct spell, only xx amount of ENGY, within xx time, taking no damage"},	
+			// "id": 610575, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Defeat casting only one distinct spell, only xx amount of ENGY, within xx time, taking no damage"},	
 		// "a_ClgThunderGod": { // VERIFIED
-			// "id": 610571, "points": 0000000, "devInfo": "Defeat boss and acquire the Sword of Kusanagi in xx time (using Kannon spam)"},	
+			// "id": 610571, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Defeat boss and acquire the Sword of Kusanagi in xx time (using Kannon spam)"},	
 		// "a_ClgMedusa": { // VERIFIED
-			// "id": 610572, "points": 0000000, "devInfo": "Defeat boss and acquire the Sared Mirror in xx time, without taking damage, casting only Makiri"},	
+			// "id": 610572, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Defeat boss and acquire the Sared Mirror in xx time, without taking damage, casting only Makiri"},	
 		},
 	"c_Bonus": { // Bonus - Misc bonus achievements
 		// "a_OneHitHumanBoss": { // VERIFIED
-			// "id": 607151, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Defeat a boss with one hit from full HP (earlier bosses using Fudo spell)"},
+			// "id": 607151, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeat a boss with one hit from full HP (earlier bosses using Fudo spell)"},
 		// "a_SeaSpirits": { // VERIFIED
-			// "id": 607698, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Defeat all 5 sea spirits at Dannoura (Shimonoseki coast/sea)"},
+			// "id": 607698, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Defeat all 6 sea spirits at Dannoura (Shimonoseki coast/sea)"},
 		// "a_xRaying": { // VERIFIED
 			// "id": 607701, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "spot a chest with the x-ray glasses at Dannoura (Shimonoseki coast/sea)"},		
 		// "a_FullyGeared": { // VERIFIED
 			// "id": 609106, "points": ENUM_AchievementPointClass.Hard_25, "devInfo": "Acquire all 8 gear items"},
-		// "a_Energised": { // VERIFIED
-			// "id": 609105, "points": 0000000, "devInfo": "Acquire a certain amount of energy, prior to Final Battle"},
-		// "a_Strengthened": { // DISCONTINUED - Max Strength is determined based on MainQuest progress, there's no optional "max HP/STGH increase pick-ups"
-			// "id": 000000, "points": 0000000, "devInfo": "Acquire a certain amount of strength, prior to Final Battle"},
 		// "a_Indy": { // VERIFIED
-			// "id": 609114, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Regen HP with each unique Big Blue Orb inside the pyramid (picking up the orb without restoring any STGH, doesn't count)"},
+			// "id": 609114, "points": ENUM_AchievementPointClass.Hard_25, "devInfo": "Regen HP with each unique Big Blue Orb inside the pyramid (picking up the orb without restoring any STGH, doesn't count)"},
 		// "a_MiniGoat": { // VERIFIED
 			// "id": 609116, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Kill the Goat Mini Boss in the Pyramid"},
 		// "a_MiniEye": { // VERIFIED
-			// "id": 609115, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Kill the Eye Mini Boss in the Pyramid"},
-	
+			// "id": 609115, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Kill the Eye Mini Boss in the Pyramid"},	
 		// "a_Ressurectlace": { // VERIFIED
-			// "id": 609121, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Restore STGH after it reaches 0, during the final battle, by having Kuma's necklace"},
+			// "id": 609121, "points": ENUM_AchievementPointClass.Easy_3, "devInfo": "Restore STGH after it reaches 0, during the final battle, by having Kuma's necklace"},
 		// "a_EatSpaghetti": { // VERIFIED
 			// "id": 609831, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Eat some spaghetti made by Kuma at Izumo Town"},
 		// "a_EatMidori": { // VERIFIED
 			// "id": 609832, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Eat some food at Midori's House"},
 		// "a_ChizuParty": { // VERIFIED
-			// "id": 609833, "points": ENUM_AchievementPointClass.Minor_1, "devInfo": "Have a taste of some Chizu Sea Nectar & perform a sword dance with them"},
+			// "id": 609833, "points": ENUM_AchievementPointClass.Basic_2, "devInfo": "Have a taste of some Chizu Sea Nectar & perform a sword dance with them"},
+		},
+	"c_mBonus": { // Bonus - Missable bonus achievements
+		// "a_Energised": { // VERIFIED
+			// "id": 609105, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Acquire a certain amount of energy, prior to Final Battle"},
+		// "a_Strengthened": { // DISCONTINUED - Max Strength is determined based on MainQuest progress, there's no optional "max HP/STGH increase pick-ups"
+			// "id": 000000, "points": 0000000, "devInfo": "Acquire a certain amount of strength, prior to Final Battle"},
 		},
 	}
 
@@ -1823,6 +1817,7 @@ dict_achievementCategoryToAchievementType = { // TODO mark missables
 	"c_WinCondition":		ENUM_AchievementType.WinCondition,
 	"c_Challenge":			ENUM_AchievementType.Standard,
 	"c_Bonus":				ENUM_AchievementType.Standard,
+	"c_mBonus":				ENUM_AchievementType.Missable,
 	}
 
 // #endregion ACH - Core Data
@@ -2203,8 +2198,6 @@ dict_triggers = {
 		const_ALLOWED_SPELL_USAGES = 3
 		const_ALLOWED_SPELL = spell.Makiri
 		const_END_BOSS = bossEnemy.Jukak
-		const_TIME_LIMIT_SECONDS = 105 // = 1m45s (only counts when in ActionMode; Dev_PB: 1m30s~)
-		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
 		
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
@@ -3595,85 +3588,85 @@ dict_triggers = {
 // #region ACH - Text
 dict_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
-	"a_Ch1MysteryMan": 			{"en": "xxxxxxxxx"},
-	"a_Ch1KashimaBoss": 		{"en": "Stopping the Serpent God"},
+	"a_Ch1MysteryMan": 			{"en": "Vengeance for the Tokak"},
+	"a_Ch1KashimaBoss": 		{"en": "Silencing the Serpent's Call"},
 	"a_Ch2SwordKusanagi": 		{"en": "The Power of Kusanagi"},
 	"a_Ch3Shimazu":  			{"en": "Friends or Enemies"},
-	"a_Ch3Ameno": 				{"en": "Enlightened by Wisdom"},
-	"a_Ch4Demon": 				{"en": "xxxxxxxxx"},
-	"a_Ch5Yomotsu": 			{"en": "xxxxxxxxx"},
+	"a_Ch3Ameno": 				{"en": "Englightend Coalescence"},
+	"a_Ch4Demon": 				{"en": "Pyramid of the Foul"},
+	"a_Ch5Yomotsu": 			{"en": "Audience for a God"},
 	"a_Ch5Izanami": 			{"en": "Knowledge & Power"},
-	"a_SlayEvilLord": 			{"en": "xxxxxxxxx"},
+	"a_SlayEvilLord": 			{"en": "Kane's Destiny"},
 
-	"a_ClgEnrikuTemple": 		{"en": "xxxxxxxxx"},
-	"a_ClgIzumoShrine": 		{"en": "xxxxxxxxx"},
-	"a_ClgAttaroShrine": 		{"en": "xxxxxxxxx"},
-	"a_ClgMtMiwa": 				{"en": "xxxxxxxxx"},
-	"a_ClgKashimaTemple": 		{"en": "xxxxxxxxx"},
-	"a_ClgUnderwaterShrine": 	{"en": "xxxxxxxxx"},
-	"a_ClgKakogenTemple": 		{"en": "xxxxxxxxx"},
-	"a_ClgMtHinokami": 			{"en": "xxxxxxxxx"},
-	"a_ClgPyramid": 			{"en": "xxxxxxxxx"},
-	"a_ClgYomotsuPlain": 		{"en": "xxxxxxxxx"},
-	"a_ClgFinalBattle": 		{"en": "xxxxxxxxx"},	
-	"a_ClgAsaka": 				{"en": "xxxxxxxxx"},
-	"a_ClgCentipede": 			{"en": "xxxxxxxxx"},
-	"a_ClgThunderGod": 			{"en": "xxxxxxxxx"},
-	"a_ClgMedusa": 				{"en": "xxxxxxxxx"},
+	"a_ClgEnrikuTemple": 		{"en": "Just a Stroll"},
+	"a_ClgIzumoShrine": 		{"en": "Swift Revelation"},
+	"a_ClgAttaroShrine": 		{"en": "Way of the Spirit"},
+	"a_ClgMtMiwa": 				{"en": "Ascetic's Trial"},
+	"a_ClgKashimaTemple": 		{"en": "The Last Barrier"},
+	"a_ClgUnderwaterShrine": 	{"en": "Breathless Descent"},
+	"a_ClgKakogenTemple": 		{"en": "Mechanical Menace"},
+	"a_ClgMtHinokami": 			{"en": "Spirited Dynamism"},
+	"a_ClgPyramid": 			{"en": "The Pyramid's Dash"},
+	"a_ClgYomotsuPlain": 		{"en": "The Underworld's Scramble"},
+	"a_ClgFinalBattle": 		{"en": "The Spellcaster's Destiny"},	
+	"a_ClgAsaka": 				{"en": "Mercy for the Princess"},
+	"a_ClgCentipede": 			{"en": "A Little Off the Legs"},
+	"a_ClgThunderGod": 			{"en": "Stormbreaker"},
+	"a_ClgMedusa": 				{"en": "Incessant Gaze"},
 
-	"a_OneHitHumanBoss": 		{"en": "xxxxxxxxx"},
-	"a_SeaSpirits": 			{"en": "xxxxxxxxx"},
-	"a_xRaying": 				{"en": "xxxxxxxxx"},
+	"a_OneHitHumanBoss": 		{"en": "Scorched"},
+	"a_SeaSpirits": 			{"en": "Spirits of Dannoura"},
+	"a_xRaying": 				{"en": "Beyond Sight"},
 	"a_FullyGeared": 			{"en": "Fully Geared"},
-	"a_Energised": 				{"en": "Energised"},
-	"a_Indy": 					{"en": "xxxxxxxxx"},
-	"a_MiniEye": 				{"en": "xxxxxxxxx"},
-	"a_MiniGoat": 				{"en": "xxxxxxxxx"},
-	"a_Ressurectlace": 			{"en": "xxxxxxxxx"},
-	"a_EatSpaghetti": 			{"en": "xxxxxxxxx"},
-	"a_EatMidori": 				{"en": "xxxxxxxxx"},
-	"a_ChizuParty": 			{"en": "xxxxxxxxx"},
+	"a_Energised": 				{"en": "Vivacious"},
+	"a_Indy": 					{"en": "Raider of the Lost Orbs"},
+	"a_MiniEye": 				{"en": "Remnant of the Beholder"},
+	"a_MiniGoat": 				{"en": "Horns of the Abyss"},
+	"a_Ressurectlace": 			{"en": "The Resurrectlace"},
+	"a_EatSpaghetti": 			{"en": "Al Dente and Proud"},
+	"a_EatMidori": 				{"en": "Rice and Shine"},
+	"a_ChizuParty": 			{"en": "Festival at Chizu"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_Ch1MysteryMan": 			{"en": "xxxxxxxx"},
-	"a_Ch1KashimaBoss": 		{"en": "xxxxxxxx"},
-	"a_Ch2SwordKusanagi": 		{"en": "xxxxxxxx"},
-	"a_Ch3Shimazu":  			{"en": "xxxxxxxx"},
-	"a_Ch3Ameno": 				{"en": "xxxxxxxx"},
-	"a_Ch4Demon": 				{"en": "xxxxxxxxx"},
-	"a_Ch5Yomotsu": 			{"en": "xxxxxxxxx"},
-	"a_Ch5Izanami": 			{"en": "xxxxxxxx"},
-	"a_SlayEvilLord": 			{"en": "xxxxxxxxx"},
+	"a_Ch1MysteryMan": 			{"en": "Defeat the mysterious man at Izumo Temple and take your first step toward uncovering the truth"},
+	"a_Ch1KashimaBoss": 		{"en": "Stop the Serpent God's summoning at Kashima by overcoming the warrior of flame"},
+	"a_Ch2SwordKusanagi": 		{"en": "Claim the legendary Sword of Kusanagi and unleash its might against your foes"},
+	"a_Ch3Shimazu":  			{"en": "Uncover the true intentions of the Iwato family's actions"},
+	"a_Ch3Ameno": 				{"en": "Activate the machine at Kakogen and receive the revelation of the Serpent God Ooku"},
+	"a_Ch4Demon": 				{"en": "Vanquish the general of the evil lord's army within the pyramid's depths"},
+	"a_Ch5Yomotsu": 			{"en": "Journey to the realm beyond and stand before the mighty God Yomotsu"},
+	"a_Ch5Izanami": 			{"en": "Gather the wisdom and strength needed to challenge the evil lord's reign"},
+	"a_SlayEvilLord": 			{"en": "Defeat the Evil Lord and seal your fate as a Spellcaster"},
 
-	"a_ClgEnrikuTemple": 		{"en": "xxxxxxxxx"},
-	"a_ClgIzumoShrine": 		{"en": "xxxxxxxxx"},
-	"a_ClgAttaroShrine": 		{"en": "xxxxxxxxx"},
-	"a_ClgMtMiwa": 				{"en": "xxxxxxxxx"},
-	"a_ClgKashimaTemple": 		{"en": "xxxxxxxxx"},
-	"a_ClgUnderwaterShrine": 	{"en": "xxxxxxxxx"},
-	"a_ClgKakogenTemple": 		{"en": "xxxxxxxxx"},
-	"a_ClgMtHinokami": 			{"en": "xxxxxxxxx"},
-	"a_ClgPyramid": 			{"en": "xxxxxxxxx"},
-	"a_ClgYomotsuPlain": 		{"en": "xxxxxxxxx"},
-	"a_ClgFinalBattle": 		{"en": "xxxxxxxxx"},	
-	"a_ClgAsaka": 				{"en": "xxxxxxxxx"},
-	"a_ClgCentipede": 			{"en": "xxxxxxxxx"},
-	"a_ClgThunderGod": 			{"en": "xxxxxxxxx"},
-	"a_ClgMedusa": 				{"en": "xxxxxxxxx"},
+	"a_ClgEnrikuTemple": 		{"en": "Reach Enriku Temple without taking damage"},
+	"a_ClgIzumoShrine": 		{"en": "Reach Izumo Temple and defeat the mysterious man within 1 minute 45 seconds"},
+	"a_ClgAttaroShrine": 		{"en": "Reach Attaro Shrine using only fully charged Ki attacks and no more than 3 'Makiri' casts"},
+	"a_ClgMtMiwa": 				{"en": "Reach the top of Mt. Miwa and defeat both guardians using no more than 50 ENGY. The 'Fudo' and 'Kannon' spells are disallowed"},
+	"a_ClgKashimaTemple": 		{"en": "Reach Kashima Temple and defeat the fiery warrior using a single defensive spell of choice, with only 2 activations allowed"},
+	"a_ClgUnderwaterShrine": 	{"en": "Reach the Underwater Shrine within 1 minute 45 seconds without taking a single hit"},
+	"a_ClgKakogenTemple": 		{"en": "Reach Kakogen Temple using only 1 spell cast and suffering no more than 1 hit of damage"},
+	"a_ClgMtHinokami": 			{"en": "Reach the top of Mt. Hinokami and defeat the villians with only 1 allowed spell cast of 'Mars', and without exceeding the ENGY limit. Taking damage restores your allowance"},
+	"a_ClgPyramid": 			{"en": "Reach and defeat the Pyramid Demon within 8 minutes whilst using no more than 70 ENGY"},
+	"a_ClgYomotsuPlain": 		{"en": "Travel from the Misty Crossing to the Holy Bridge within 2 minutes, using no more than 40 ENGY, taking only 1 hit, and without the spells 'Makiri' or 'Mars'"},
+	"a_ClgFinalBattle": 		{"en": "Defeat the Evil Lord within 5 minutes 20 seconds, using no more than 250 ENGY, and never falling below 25 STGH"},	
+	"a_ClgAsaka": 				{"en": "Defeat Princess Asaka within 1 minute 20 seconds time whilst using no more than 50 ENGY"},
+	"a_ClgCentipede": 			{"en": "Defeat the Giant Centipede using only 1 spell of choice, within 1 minute 15 seconds, using no more than 50 ENGY, and without taking damage"},
+	"a_ClgThunderGod": 			{"en": "Defeat the Thunder God and claim the Sword of Kusanagi within 10 seconds"},
+	"a_ClgMedusa": 				{"en": "Defeat Medusa and obtain the Sacred Mirror within 45 seconds, without taking damage, and using only 'Makiri'"},
 	
-	"a_OneHitHumanBoss": 		{"en": "xxxxxxxx"},
-	"a_SeaSpirits": 			{"en": "xxxxxxxx"},
-	"a_xRaying": 				{"en": "xxxxxxxx"},
-	"a_FullyGeared": 			{"en": "xxxxxxxxx"},
-	"a_Energised": 				{"en": "xxxxxxxxx"},
-	"a_Indy": 					{"en": "xxxxxxxxx"},
-	"a_MiniEye": 				{"en": "xxxxxxxxx"},
-	"a_MiniGoat": 				{"en": "xxxxxxxxx"},
-	"a_Ressurectlace": 			{"en": "xxxxxxxxx"},
-	"a_EatSpaghetti": 			{"en": "xxxxxxxxx"},
-	"a_EatMidori": 				{"en": "xxxxxxxxx"},
-	"a_ChizuParty": 			{"en": "xxxxxxxxx"},
+	"a_OneHitHumanBoss": 		{"en": "A Spellcaster doesn't duel, only judgement. Topple a human boss in a single decisive strike"},
+	"a_SeaSpirits": 			{"en": "The sea does not forgive trespassers. Purify the waters of Dannoura by vanquishing all sea spirits"},
+	"a_xRaying": 				{"en": "Not all secrets are visible to the naked eye. Use the X-Ray Glasses to uncover hidden treasure at Dannoura"},
+	"a_FullyGeared": 			{"en": "A warrior forged in complete armament. Acquire every weapon and armor piece"},
+	"a_Energised": 				{"en": "Only those fully charged may challenge fate. Accumulate 250 ENGY before the final confrontation"},
+	"a_Indy": 					{"en": "The deeper you go, the more the Pyramid gives… and takes. Recover STGH from each unique Big Blue Orb within the Pyramid"},
+	"a_MiniEye": 				{"en": "It sees all, until it is blinded by defeat. Eliminate the Eye Sentinel guarding the Pyramid's depths"},
+	"a_MiniGoat": 				{"en": "Stubborn, relentless, and finally restrained. Defeat the Goat Guardian lurking within the Pyramid"},
+	"a_Ressurectlace": 			{"en": "Twisted like spaghetti, but woven with the power to refuse death. During the final battle restore your STGH with a divine necklace"},
+	"a_EatSpaghetti": 			{"en": "A rare moment of peace between battles. Enjoy a hearty bowl of pasta"},
+	"a_EatMidori": 				{"en": "Even heroes need comfort. Taste Midori's signature cuisine"},
+	"a_ChizuParty": 			{"en": "For one moment, even warriors forget the world is ending. Celebrate with drink and dance during the Chizu festivities"},
 	}
 // #endregion ACH - Text
 
