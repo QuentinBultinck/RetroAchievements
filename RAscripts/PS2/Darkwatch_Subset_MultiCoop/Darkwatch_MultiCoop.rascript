@@ -3,7 +3,7 @@
 //	 █▄▀ █▀█ █▀▄ █░█ ▀▄▀▄▀ █▀█ ░█░ █▄▄ █▀█	MULTIPLAYER COOPERATIVE \\
 // **************************************************************** \\
 // #ID = 19111
-// Set = 28799
+// #SET = 28799
 // md5: 8E6C817041ADC5B20F3011CD0F945F9D (PAL) - 9CE6383CB5260E300CACDE569EA5916D (NTSC-U)
 // RA Hash: https://retroachievements.org/game/19111/hashes?set=28799
 // Platform: PlayStation 2
@@ -2787,9 +2787,9 @@ achievements_coreData = {
 			// "id": 513482, "points": achievement_POINTS_5, "devInfo": "CHAPTER_16_Deadfall Completion"},
 		},
 	"c_StoryEnd": { // Category - Story Win Condition Achievements
-		// "a_CurseWestGood": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_CurseWestGood": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 513484, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
-		// "a_CurseWestEvil": { // QA // DISABLED - MANUAL_CONSTRUCTION
+		// "a_CurseWestEvil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 513483, "points": achievement_POINTS_25, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
 		},
 	"c_Challenge": { // Category - info_here
@@ -3870,7 +3870,7 @@ achievements_triggers = {
 				*/	
 			|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 		}),
-	"a_ClgDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (4x) MANUAL_CONSTRUCTION (AltGroups[1+2+9+10])
+	"a_ClgDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION (AltGroups[1+10+11])
 		const_CHAPTER = CHAPTER_4_DevilMine
 		const_CHAPTER_ENDING_FMV = FMV_TheHaunting
 		const_WEAPONS_SMALL_ARMS = [
@@ -3885,27 +3885,12 @@ achievements_triggers = {
 		PARTICIPATION_TRACKING_MinRequiredAccuracyPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredAccuracyPercent(const_CHAPTER)
 		PARTICIPATION_TRACKING_MinRequiredKillsPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredKillsPercent(const_CHAPTER)
 		return
-		// [1/11] ==== Alt Logic + Trigger Group (PLAYER_1:SmallArms - PLAYER_2:LongArms) ==== 		-> Group is responsible for unlocking the achievement + Display Trigger Indicator whilst Participation Tracking is OK && Challenge OK
+		// [1/12] ==== Alt Logic + Trigger Group ==== 		-> Group is responsible for unlocking the achievement + Display Trigger Indicator whilst Participation Tracking is OK && Challenge OK
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 
 			// -------- Core Logic --------
 			&& once( // --CheckIf--[StartCondition]--> Chapter has started from the beginning (StoryChapterSection_1) + Difficulty Deadeye
-				never(tally_of(CONST_WEAPON_DATA, 1, (enum_weapon) {  // --ResetNextIf--OrNext--> PLAYER_1 shoots a LongArm || PLAYER_2 shoots a SmallArm
-					if (WEAPON_DATA_IsSmallArm(enum_weapon) && array_contains(const_WEAPONS_SMALL_ARMS, enum_weapon)) // ResetNextIf: PLAYER_2 shoots a SmallArm
-						return once(
-							is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
-							&& is_EquippedWeapon(PLAYER_2, enum_weapon, enum_releaseRegion)
-							&& !on_HUDcontrolGear_weaponSwap(PLAYER_2, enum_releaseRegion)
-							&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_2, enum_releaseRegion))							
-					else if (!WEAPON_DATA_IsSmallArm(enum_weapon) && array_contains(const_WEAPONS_LONG_ARMS, enum_weapon))  // ResetNextIf: PLAYER_1 shoots a LongArm
-						return once(
-							is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
-							&& is_EquippedWeapon(PLAYER_1, enum_weapon, enum_releaseRegion)
-							&& !on_HUDcontrolGear_weaponSwap(PLAYER_1, enum_releaseRegion)
-							&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_1, enum_releaseRegion))
-					else return always_false()
-					}))
-				&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
 				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
 
 			// -------- Trigger Indicator --------		
@@ -3973,95 +3958,61 @@ achievements_triggers = {
 					&& on_FMV_end(const_CHAPTER_ENDING_FMV, enum_releaseRegion))
 				&& on_Loading_start(enum_releaseRegion)
 				)
-		// [2/12] ==== Alt Logic + Trigger Group (PLAYER_1:LongArms - PLAYER_2:SmallArms) ==== 		-> Group is responsible for unlocking the achievement + Display Trigger Indicator whilst Participation Tracking is OK && Challenge OK
-			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-
-			// -------- Core Logic --------
-			&& once( // --CheckIf--[StartCondition]--> Chapter has started from the beginning (StoryChapterSection_1) + Difficulty Deadeye
-				never(tally_of(CONST_WEAPON_DATA, 1, (enum_weapon) {  // --ResetNextIf--OrNext--> PLAYER_2 shoots a LongArm || PLAYER_1 shoots a SmallArm
-					if (WEAPON_DATA_IsSmallArm(enum_weapon) && array_contains(const_WEAPONS_SMALL_ARMS, enum_weapon)) // ResetNextIf: PLAYER_1 shoots a SmallArm
-						return once(
-							is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
-							&& is_EquippedWeapon(PLAYER_1, enum_weapon, enum_releaseRegion)
-							&& !on_HUDcontrolGear_weaponSwap(PLAYER_1, enum_releaseRegion)
-							&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_1, enum_releaseRegion))
-					else if (!WEAPON_DATA_IsSmallArm(enum_weapon) && array_contains(const_WEAPONS_LONG_ARMS, enum_weapon))  // ResetNextIf: PLAYER_2 shoots a LongArm
-						return once(
-							is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
-							&& is_EquippedWeapon(PLAYER_2, enum_weapon, enum_releaseRegion)
-							&& !on_HUDcontrolGear_weaponSwap(PLAYER_2, enum_releaseRegion)
-							&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_2, enum_releaseRegion))
-					else return always_false()
-					}))
-				&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
-				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-
-			// -------- Trigger Indicator --------		
-			&& trigger_when(
-				once( // --CheckIf--> The last StoryChapterSection of the Level has started
-					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-				&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended + Participation Tracking (Accuracy+Shots+Kills)
-					never(is_flagState_InGame_true(enum_releaseRegion))
-
-					&& current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredShotsHit
-					&& current_ShotsHit_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredShotsHit
-
-					/* MANUAL_CONSTRUCTION[AC1-AC2]:ParticipationTrackingAccuracyAndKills
-						// WARNING: Edit in PARTICIPATION_TRACKING values
-						PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.07_K:0xX00965d80/f1.0_K:0xX00965d84/{recall}_N:{recall}>=f0.07_K:0xX00965c50+0xX00965d7c_K:{recall}/f1.0_A:0xX00965c50/{recall}_N:f0.0>=f0.07_A:0xX00965d7c/{recall}_N:f0.0>=f0.07
-						NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.07_K:0xX00953da0/f1.0_K:0xX00953da4/{recall}_N:{recall}>=f0.07_K:0xX00953c70+0xX00953d9c_K:{recall}/f1.0_A:0xX00953c70/{recall}_N:f0.0>=f0.07_A:0xX00953d9c/{recall}_N:f0.0>=f0.07
-						----------
-							---------Participation Tracking (Accuracy)---------
-							Remember	[ShotsFired_ChapterTotal(PLAYER_1)] / 1.0	--> Force 32-bit to Float
-							Remember	[ShotsHit_ChapterTotal(PLAYER_1)] / Recall
-							AndNext		Recall >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent
-
-							Remember	[ShotsFired_ChapterTotal(PLAYER_2)] / 1.0	--> Force 32-bit to Float
-							Remember	[ShotsHit_ChapterTotal(PLAYER_2)] / Recall
-							AndNext		Recall >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent
-
-							---------Participation Tracking (Kills)---------
-							Remember	[Kills_ChapterTotal(PLAYER_1)] + [Kills_ChapterTotal(PLAYER_2)]
-							Remember	Recall / 1.0								--> Force 32-bit to Float
-							AddSource	[Kills_ChapterTotal(PLAYER_1)] / Recall
-							AndNext		0.0 >= PARTICIPATION_TRACKING_MinRequiredKillsPercent
-							AddSource	[Kills_ChapterTotal(PLAYER_2)] / Recall
-							AndNext		0.0 >= PARTICIPATION_TRACKING_MinRequiredKillsPercent
-							*/
-					&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAC1)
-					&& current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) / current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent * 100
-					&& current_ShotsHit_ChapterTotal(PLAYER_2, enum_releaseRegion) / current_ShotsFired_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent * 100
-					&& current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredKillsPercent * 100
-					&& current_Kills_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredKillsPercent * 100
-					&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAC2)					
-
-					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
-				&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
-					never(is_flagState_InGame_true(enum_releaseRegion))
-					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-					&& is_flagState_InGame_false(enum_releaseRegion))
-
-				// -------- Participation Tracking (Inputs) --------
-				&& repeated(PARTICIPATION_TRACKING_MinRequiredInputs, // --CheckIf--> PLAYER_1 has executed enough inputs while in-game (eg. firing gun, movement, using powers) 
-					!is_AnyCinematic_active(enum_releaseRegion)
-					&& !is_AnyInGameMenu_active(enum_releaseRegion)
-					&& is_flagState_InGame_true(enum_releaseRegion)
-					&& on_PlayerInput_anyGameplayInputUse(PLAYER_1, enum_releaseRegion))
-				&& repeated(PARTICIPATION_TRACKING_MinRequiredInputs, // --CheckIf--> PLAYER_2 has executed enough inputs while in-game (eg. firing gun, movement, using powers) 
-					!is_AnyCinematic_active(enum_releaseRegion)
-					&& !is_AnyInGameMenu_active(enum_releaseRegion)
-					&& is_flagState_InGame_true(enum_releaseRegion)
-					&& on_PlayerInput_anyGameplayInputUse(PLAYER_2, enum_releaseRegion))
-
-				// -------- (Last) Requirements for Unlock --------
-				&& once(
-					never(on_FMV_start(const_CHAPTER_ENDING_FMV, enum_releaseRegion))
-					&& on_FMV_end(const_CHAPTER_ENDING_FMV, enum_releaseRegion))
-				&& on_Loading_start(enum_releaseRegion)
-				)
-		// [3/13] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player uses a throwable || when any player uses a power, by Resetting HitCount on [StartCondition]
+		// [2/13] ==== Alt Lockout Group ==== 		-> Lockout achievement when both players fired a shot with a smallArm || when both players fired a shot with a longArm, by Resetting HitCount on [StartCondition]
+			|| unless(!is_ReleaseRegion(enum_releaseRegion)) 
+			&& never(tally(2, [ // --Lockout--> when both players fired a shot with a smallArm
+				once( // -- AddHitIf--> PLAYER_1 shot a smallArm
+					any_of(const_WEAPONS_SMALL_ARMS, enum_weapon => is_EquippedWeapon(PLAYER_1, enum_weapon, enum_releaseRegion))
+					&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& !on_HUDcontrolGear_weaponSwap(PLAYER_1, enum_releaseRegion)
+					&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_1, enum_releaseRegion)),
+				once( // -- AddHitIf--> PLAYER_2 shot a smallArm
+					any_of(const_WEAPONS_SMALL_ARMS, enum_weapon => is_EquippedWeapon(PLAYER_2, enum_weapon, enum_releaseRegion))
+					&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& !on_HUDcontrolGear_weaponSwap(PLAYER_2, enum_releaseRegion)
+					&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_2, enum_releaseRegion))
+				]))
+			&& never(tally(2, [ // --Lockout--> when both players fired a shot with a longArm
+				once( // -- AddHitIf--> PLAYER_1 fires a shot with a smallArm
+					any_of(const_WEAPONS_LONG_ARMS, enum_weapon => is_EquippedWeapon(PLAYER_1, enum_weapon, enum_releaseRegion))
+					&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& !on_HUDcontrolGear_weaponSwap(PLAYER_1, enum_releaseRegion)
+					&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_1, enum_releaseRegion)),
+				once( // -- AddHitIf--> PLAYER_2 fires a shot with a smallArm
+					any_of(const_WEAPONS_LONG_ARMS, enum_weapon => is_EquippedWeapon(PLAYER_2, enum_weapon, enum_releaseRegion))
+					&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& !on_HUDcontrolGear_weaponSwap(PLAYER_2, enum_releaseRegion)
+					&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_2, enum_releaseRegion))
+				]))
+			&& always_false()
+		// [3/14] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player shoots with both a smallArm AND longArm, by Resetting HitCount on [StartCondition]
+			|| unless(!is_ReleaseRegion(enum_releaseRegion)) 
+			&& never(tally(2, [ // --Lockout--> when PLAYER_1 shoots with both a smallArm AND longArm
+				once( // -- AddHitIf--> PLAYER_1 fires a shot with a longArm
+					any_of(const_WEAPONS_LONG_ARMS, enum_weapon => is_EquippedWeapon(PLAYER_1, enum_weapon, enum_releaseRegion))
+					&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& !on_HUDcontrolGear_weaponSwap(PLAYER_1, enum_releaseRegion)
+					&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_1, enum_releaseRegion)),
+				once( // -- AddHitIf--> PLAYER_1 fires a shot with a smallArm
+					any_of(const_WEAPONS_SMALL_ARMS, enum_weapon => is_EquippedWeapon(PLAYER_1, enum_weapon, enum_releaseRegion))
+					&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& !on_HUDcontrolGear_weaponSwap(PLAYER_1, enum_releaseRegion)
+					&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_1, enum_releaseRegion))
+				]))
+			&& never(tally(2, [ // --Lockout--> when PLAYER_2 shoots with both a smallArm AND longArm
+				once( // -- AddHitIf--> PLAYER_2 fires a shot with a longArm
+					any_of(const_WEAPONS_LONG_ARMS, enum_weapon => is_EquippedWeapon(PLAYER_2, enum_weapon, enum_releaseRegion))
+					&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& !on_HUDcontrolGear_weaponSwap(PLAYER_2, enum_releaseRegion)
+					&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_2, enum_releaseRegion)),
+				once( // -- AddHitIf--> PLAYER_2 fires a shot with a smallArm
+					any_of(const_WEAPONS_SMALL_ARMS, enum_weapon => is_EquippedWeapon(PLAYER_2, enum_weapon, enum_releaseRegion))
+					&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
+					&& !on_HUDcontrolGear_weaponSwap(PLAYER_2, enum_releaseRegion)
+					&& on_HUDcontrolGear_LoadedBullets_decrement(PLAYER_2, enum_releaseRegion))
+				]))
+			&& always_false()
+		// [4/15] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player uses a throwable || when any player uses a power, by Resetting HitCount on [StartCondition]
 			|| never( // --Lockout--> When PLAYER_1 uses a throwable explosive  
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
@@ -4081,12 +4032,12 @@ achievements_triggers = {
 				&& is_flagStates_BothPlayers_InGame_true(enum_releaseRegion)
 				&& on_Player_Power_use(PLAYER_2, enum_releaseRegion))
 			&& always_false()
-		// [4/14] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player dies, by Resetting HitCount on [StartCondition]
+		// [5/16] ==== Alt Lockout Group ==== 		-> Lockout achievement when any player dies, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_PlayerDeath(enum_releaseRegion)
-		// [5/15] ==== Alt Lockout Group ==== 		-> Lockout achievement when one player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
+		// [6/17] ==== Alt Lockout Group ==== 		-> Lockout achievement when one player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
 			|| achGenerate_LockoutGroup_ParticipationTrackingInactivity(const_CHAPTER, enum_releaseRegion)
-		// [6+..+9+10/16+..+19+20] ==== 5x Alt Reset Groups ==== 	-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Restart || on PauseMenu->Quit
-			/* MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart (AltGroup[9/19])
+		// [7+..+10+11/18+..+21+22] ==== 5x Alt Reset Groups ==== 	-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Restart || on PauseMenu->Quit
+			/* MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart (AltGroup[10/21])
 				- NOTE: MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart must reset not only for ChapterSection_1 but during all ChapterSections (for this Achievement; because of MeasuredKillCount)
 				
 				PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM0000000f>d0xM0000000f.1._I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3._0=1
