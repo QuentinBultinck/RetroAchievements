@@ -49,12 +49,6 @@
 //		-- Enable: Markdown Enhanced Preview => Install extension: 'Markdown Preview Enhanced' by 'Yiyi Wang'
 //  - VScode extension list: Region Viewer Extension - Todo Tree - Markdown Preview Enhanced
 
-
-// CONCEPT Idea's
-// ==================
-// Achievements:
-// - Secret/funny interactions within AdventureMode??
-
 // #region Story Script
 	// ================
 	// ----Chap0 start---- (trouble at enriku temple)
@@ -1522,6 +1516,13 @@ class CLASS_MEMLOGIC_PlayerCharacterLogic {
 			&& this.prev_yLocation(enum_releaseRegion) == 0
 			&& this.current_yLocation(enum_releaseRegion) == let_coords_PlayerSpawn_StartOfActionLevel[1]
 		}
+
+	function is_spawned_atStartOfActionLevel(enum_actionLevel, enum_releaseRegion) {
+		let_coords_PlayerSpawn_StartOfActionLevel = actionLevel.get_PlayerSpawnCoords_StartOfActionLevel(enum_actionLevel)
+		return
+			this.current_xLocation(enum_releaseRegion) == let_coords_PlayerSpawn_StartOfActionLevel[0]
+			&& this.current_yLocation(enum_releaseRegion) == let_coords_PlayerSpawn_StartOfActionLevel[1]
+		}
 	
 	function current_spellSelected(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:SelectedSpell", enum_releaseRegion))
@@ -1598,6 +1599,14 @@ class CLASS_AchievementSubLogic {
 				array_push(let_array_HitsToCount, repeated(int_energyAllowance, player.on_spellCast(enum_spell, enum_releaseRegion)))
 			}
 		return unless(tally(int_energyAllowance +1, let_array_HitsToCount))}
+
+	function LbCancelGroup_playerExceedsEnergyAllowance(int_energyAllowance, enum_releaseRegion) {
+		let_array_HitsToCount = []
+		for enum_spell in spell.dict_spellData {
+			for let_i in range(0, spell.get_ENGY_Cost(enum_spell) -1)
+				array_push(let_array_HitsToCount, repeated(int_energyAllowance, player.on_spellCast(enum_spell, enum_releaseRegion)))
+			}
+		return tally(int_energyAllowance +1, let_array_HitsToCount)}
 	
 	
 	// NOTE: Creates a PauseLock that triggers when the player exceeds a defined energy allowance.
@@ -1758,7 +1767,7 @@ dict_coreData = {
 		// "a_ClgPyramid": { // VERIFIED
 			// "id": 610554, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Reach Demon and defeat him, within xx time, using only xx amount of ENGY"},
 		// "a_ClgYomotsuPlain": { // VERIFIED
-			// "id": 610558, "points": ENUM_Ach:ievementPointClass.Advanced_5, "devInfo": "Starting from the Misty Crossing (left side of level), reach the Holy Bridge (right side of level), within xx time, using only xx amount of ENGY, taking only one hit of damage, disallowed spells Makiri & Mars"},
+			// "id": 610558, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Starting from the Misty Crossing (left side of level), reach the Holy Bridge (right side of level), within xx time, using only xx amount of ENGY, taking only one hit of damage, disallowed spells Makiri & Mars"},
 		// "a_ClgFinalBattle": { // VERIFIED
 			// "id": 610555, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, witohut going below xx STGH"},
 		// "a_ClgAsaka": { // VERIFIED
@@ -2127,7 +2136,6 @@ dict_triggers = {
 		const_PLAYER_MAX_START_STGH = 30
 		const_TIME_LIMIT_SECONDS = 105 // = 1m45s (only counts when in ActionMode; Dev_PB: 1m30s~)
 		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
-		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgIzumoShrine with a complementary timed leaderboard
 		
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
@@ -2495,7 +2503,6 @@ dict_triggers = {
 		const_CHAPTER = storyChapter.Ch_2_SwordOfKusanagi
 		const_TIME_LIMIT_SECONDS = 105 // = 1m45s (only counts when in ActionMode; Dev_PB: 1m15s~)
 		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
-		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgUnderwaterShrine with a complementary timed leaderboard
 		
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
@@ -2523,7 +2530,7 @@ dict_triggers = {
 					|| adventureScene.is(adventureScene.Dannoura_X, enum_releaseRegion)) // --> Entrance to sea cave
 				)
 
-			&& trigger_when( // --Trigger--> When Boss dies
+			&& trigger_when( // --Trigger--> When reached destination
 				once( // --CheckIf--> ActionLevels have progressed correctly 
 					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
 					&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToUnderwateShrine_Level_1
@@ -2694,11 +2701,10 @@ dict_triggers = {
 		const_ALLOWED_ENGY_TO_USE = 70
 		const_TIME_LIMIT_SECONDS = 480 // = 8m (only counts when in ActionMode; Dev_PB: 6m~)
 		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
-		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgPyramid with a complementary timed leaderboard
 
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss	
+			unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss
 				!bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
 				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
 				&& player.on_death(enum_releaseRegion)))
@@ -2792,7 +2798,6 @@ dict_triggers = {
 		const_ALLOWED_ENGY_TO_USE = 40
 		const_TIME_LIMIT_SECONDS = 120 // = 2m (only counts when in ActionMode; Dev_PB: 1m40s~)
 		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
-		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgYomotsuPlain with a complementary timed leaderboard
 
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
@@ -2802,9 +2807,9 @@ dict_triggers = {
 			&& unless(repeated(const_ALLOWED_HITS_TAKEN +1, // --PauseLock--> When player takes xx damage hits
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
 				&& player.on_STGH_decrement(enum_releaseRegion)))
-			&& unless(tally_of(const_DISALLOWED_SPELLS, 1, enmu_spell => // --PauseLock--> When player cast any disallowed spell
+			&& unless(tally_of(const_DISALLOWED_SPELLS, 1, enum_spell => // --PauseLock--> When player cast any disallowed spell
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
-				&& player.on_spellCast(enmu_spell, enum_releaseRegion)))
+				&& player.on_spellCast(enum_spell, enum_releaseRegion)))
 			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
 			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
@@ -2826,7 +2831,7 @@ dict_triggers = {
 				once(
 					actionLevel.is(actionLevel.YomotsuPlains, enum_releaseRegion)
 					&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
-					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)				
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
 				&& gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion)
 				&& adventureScene.on_changeTo(adventureScene.HolyBridge, enum_releaseRegion)
 				)
@@ -2868,8 +2873,8 @@ dict_triggers = {
 			|| never_toAlt(
 				__ornext(
 					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
-					|| adventureScene.is(adventureScene.Pyramid_SouthSide, enum_releaseRegion))
-				&& actionLevel.is(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.MistyCrossing, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.YomotsuPlains, enum_releaseRegion)
 				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
 				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
 				)
@@ -2894,11 +2899,13 @@ dict_triggers = {
 		const_ALLOWED_ENGY_TO_USE = 250
 		const_TIME_LIMIT_SECONDS = 320 // = 5m20s (only counts when in ActionMode; Dev_PB: 4m~)
 		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
-		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgFinalBattle with a complementary timed leaderboard
 
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			unless(once( // --PauseLock--> When player drops below const_HP_THRESHOLD
+			unless(once( // --PauseLock--> When player dies (in case necklace is in inventory and take a damage hit larger than 25)
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When player drops below const_HP_THRESHOLD
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
 				&& player.prev_STGH(enum_releaseRegion) >= const_HP_THRESHOLD
 				&& player.current_STGH(enum_releaseRegion) < const_HP_THRESHOLD))
@@ -3009,9 +3016,8 @@ dict_triggers = {
 		const_CHAPTER = storyChapter.Ch_3_FalseEnemy
 		const_BOSS = bossEnemy.PrincessAsaka
 		const_ALLOWED_ENGY_TO_USE = 50
-		const_TIME_LIMIT_SECONDS = 80 // = 1m20s (only counts when in ActionMode; Dev_PB: 30s~ (with Fudo), 45~ (with Hatten))
+		const_TIME_LIMIT_SECONDS = 60 // = 1m (only counts when in ActionMode; Dev_PB: 30s~ (with Fudo), 45~ (with Hatten))
 		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
-		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgAsaka with a complementary timed leaderboard
 
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
@@ -3068,7 +3074,6 @@ dict_triggers = {
 		const_ALLOWED_ENGY_TO_USE = 50
 		const_TIME_LIMIT_SECONDS = 75 // = 1m15s (only counts when in ActionMode; Dev_PB: 40s~ (with Makiri))
 		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
-		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgCentipede with a complementary timed leaderboard
 
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
@@ -3194,7 +3199,6 @@ dict_triggers = {
 		const_ALLOWED_SPELL = spell.Makiri
 		const_TIME_LIMIT_SECONDS = 45 // = 45s (only counts when in ActionMode; Dev_PB: 23s~)
 		const_TIME_LIMIT_FRAMES = const_TIME_LIMIT_SECONDS *60 // at 60 FPS
-		// NOTE: Can't implement a MeasuredIndicator which functions as a countdown, because there's no in-game timer --> // TODO implement a_ClgMedusa with a complementary timed leaderboard
 
 		return
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
@@ -3650,7 +3654,7 @@ dict_descriptions = {
 	"a_ClgPyramid": 			{"en": "Reach and defeat the Pyramid Demon within 8 minutes whilst using no more than 70 ENGY"},
 	"a_ClgYomotsuPlain": 		{"en": "Travel from the Misty Crossing to the Holy Bridge within 2 minutes, using no more than 40 ENGY, taking only 1 hit, and without the spells 'Makiri' or 'Mars'"},
 	"a_ClgFinalBattle": 		{"en": "Defeat the Evil Lord within 5 minutes 20 seconds, using no more than 250 ENGY, and never falling below 25 STGH"},	
-	"a_ClgAsaka": 				{"en": "Defeat Princess Asaka within 1 minute 20 seconds time whilst using no more than 50 ENGY"},
+	"a_ClgAsaka": 				{"en": "Defeat Princess Asaka within 1 minute whilst using no more than 50 ENGY"},
 	"a_ClgCentipede": 			{"en": "Defeat the Giant Centipede using only 1 spell of choice, within 1 minute 15 seconds, using no more than 50 ENGY, and without taking damage"},
 	"a_ClgThunderGod": 			{"en": "Defeat the Thunder God and claim the Sword of Kusanagi within 10 seconds"},
 	"a_ClgMedusa": 				{"en": "Defeat Medusa and obtain the Sacred Mirror within 45 seconds, without taking damage, and using only 'Makiri'"},
@@ -3941,7 +3945,7 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		rp_DefaultPlus(enum_releaseRegion) // CONCEPT rp_DefaultPlus
+		rp_DefaultPlus(enum_releaseRegion)
 		rp_InGame(enum_releaseRegion)
 	}} 
 // #endregion RP - Display Script
@@ -4086,7 +4090,7 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
-// TODO implement leaderboards
+// CONCEPT more leaderboards ??
 
 // ==================================
 // • LEADERBOARD trigger generators •
@@ -4106,6 +4110,14 @@ function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
 		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
 	return max_of(let_array_valueMeasures)}
+function lb_ValueMeasure_TimeSpentInActionMode() {
+	function valueMeasure(enum_releaseRegion) => 
+		measured(tally(0, gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion))) // --> only time when in ActionMode
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED 
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
 // #endregion LB - Value Measures
 // #endregion LB - Trigger Generators
 
@@ -4113,6 +4125,7 @@ function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
 // • LEADERBOARD logic •
 // =====================
 class CLASS_LeaderboardLogic {
+
 // #region LB - Core Data
 dict_coreData = {
 	// DEV_NOTE: Leaderboards
@@ -4120,9 +4133,25 @@ dict_coreData = {
 	//	- RATools documentation => https://github.com/Jamiras/RATools/wiki/Leaderboard-Functions
 	//	- RADocs => https://docs.retroachievements.org/Leaderboards/
 	//	- Example leaderboards => https://retroachievements.org/game/3152
-
+	
 	// "lb_Template": { // CONCEPT lb_template
 		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
+	// "lb_ClgIzumoShrine": {
+		// "id": 163773, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "Complementary timed leaderboard for the challenge achievement (a_ClgIzumoShrine)"},
+	// "lb_ClgUnderwaterShrine": {
+		// "id": 163774, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "Complementary timed leaderboard for the challenge achievement (a_ClgUnderwaterShrine)"},
+	// "lb_ClgPyramid": {
+		// "id": 163775, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "Complementary timed leaderboard for the challenge achievement (a_ClgPyramid)"},
+	// "lb_ClgYomotsuPlain": {
+		// "id": 163777, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "Complementary timed leaderboard for the challenge achievement (a_ClgYomotsuPlain)"},
+	// "lb_ClgFinalBattle": {
+		// "id": 163802, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "Complementary timed leaderboard for the challenge achievement (a_ClgFinalBattle)"},
+	// "lb_ClgAsaka": {
+		// "id": 163803, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "Complementary timed leaderboard for the challenge achievement (a_ClgAsaka)"},
+	// "lb_ClgCentipede": {
+		// "id": 163804, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "Complementary timed leaderboard for the challenge achievement (a_ClgCentipede)"},
+	// "lb_ClgMedusa": {
+		// "id": 163805, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "Complementary timed leaderboard for the challenge achievement (a_ClgMedusa)"},
 	}
 // #endregion LB - Core Data
 
@@ -4139,6 +4168,124 @@ dict_startTriggers = {
 		//  || is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
+	"lb_ClgIzumoShrine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_1_Investigation
+		const_PLAYER_MAX_START_STGH = 30
+
+		return
+		// [0] ==== Core Start Group ====		-> Start when entering the first actionLevel of the section
+			storyChapter.is(const_CHAPTER, enum_releaseRegion)
+			&& player.current_STGH(enum_releaseRegion) <= const_PLAYER_MAX_START_STGH // --ExtraCheck--> at this point in story, player can't have more than xx STGH
+
+			&& actionLevel.is(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
+			&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+			&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+			&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
+
+			&& __ornext(
+				adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+				|| adventureScene.is(adventureScene.IzumoTown_Ch1, enum_releaseRegion))
+		}),
+	"lb_ClgUnderwaterShrine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_2_SwordOfKusanagi
+
+		return
+		// [0] ==== Core Start Group ====		-> Start when entering the first actionLevel of the section
+			storyChapter.is(const_CHAPTER, enum_releaseRegion)
+
+			&& actionLevel.is(actionLevel.PathToUnderwateShrine_Level_1, enum_releaseRegion)
+			&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+			&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+			&& player.on_spawn_atStartOfActionLevel(actionLevel.PathToUnderwateShrine_Level_1, enum_releaseRegion)
+
+			&& __ornext(
+				adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+				|| adventureScene.is(adventureScene.Dannoura_X, enum_releaseRegion)) // --> Entrance to sea cave
+		}),
+	"lb_ClgPyramid": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_4_Pyramid
+
+		return
+		// [0] ==== Core Start Group ====		-> Start when entering the first actionLevel of the section
+			storyChapter.is(const_CHAPTER, enum_releaseRegion)
+
+			&& actionLevel.is(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+			&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+			&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+			&& player.on_spawn_atStartOfActionLevel(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+			&& __ornext(
+				adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+				|| adventureScene.is(adventureScene.Pyramid_SouthSide, enum_releaseRegion))
+		}),
+	"lb_ClgYomotsuPlain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_5_Underworld
+		const_MAX_STGH = 100 // --> actually it's 80 at this stage in story, but may be higher??
+
+		return
+		// [0] ==== Core Start Group ====		-> Start when entering the first actionLevel of the section
+			storyChapter.is(const_CHAPTER, enum_releaseRegion)
+
+			&& actionLevel.is(actionLevel.YomotsuPlains, enum_releaseRegion)
+			&& player.current_STGH(enum_releaseRegion) <= const_MAX_STGH
+			&& mainQuest.is_priorEventsCompleted(mainQuest.ch5_AmanoShowsHolyBridge, enum_releaseRegion) // --> Holy Bridge can only be accessed when this event is complete
+			&& mainQuest.is_eventCompleted(mainQuest.ch5_AmanoShowsHolyBridge, enum_releaseRegion)
+			&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+			&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+			&& player.on_spawn_atStartOfActionLevel(actionLevel.YomotsuPlains, enum_releaseRegion)
+			&& __ornext(
+				adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+				|| adventureScene.is(adventureScene.MistyCrossing, enum_releaseRegion))
+		}),
+	"lb_ClgFinalBattle": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_7_FinalBattle
+
+		return
+		// [0] ==== Core Start Group ====		-> Start when entering the last actionLevel of the game
+			storyChapter.is(const_CHAPTER, enum_releaseRegion)			
+			&& actionLevel.is(actionLevel.FinalBattle, enum_releaseRegion)
+			&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+			&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+			&& player.on_spawn_atStartOfActionLevel(actionLevel.FinalBattle, enum_releaseRegion)
+			&& __ornext(
+				adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+				|| adventureScene.is(adventureScene.KashimaTemple_PreFinalBattle, enum_releaseRegion))
+		}),
+	"lb_ClgAsaka": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_3_FalseEnemy
+		const_BOSS = bossEnemy.PrincessAsaka
+
+		return
+		// [0] ==== Core Start Group ====		-> Start when entering the boss arena
+			storyChapter.is(const_CHAPTER, enum_releaseRegion)			
+			&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+			&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+			&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+			&& player.on_spawn_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_BOSS), enum_releaseRegion)
+		}),
+	"lb_ClgCentipede": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_3_FalseEnemy
+		const_BOSS = bossEnemy.GiantCentipede
+
+		return
+		// [0] ==== Core Start Group ====		-> Start when entering the boss arena
+			storyChapter.is(const_CHAPTER, enum_releaseRegion)			
+			&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+			&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+			&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+			&& player.on_spawn_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_BOSS), enum_releaseRegion)
+		}),
+	"lb_ClgMedusa": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_5_Underworld
+		const_BOSS = bossEnemy.SnakeDemon
+
+		return
+		// [0] ==== Core Start Group ====		-> Start when entering the boss arena
+			storyChapter.is(const_CHAPTER, enum_releaseRegion)			
+			&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+			&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+			&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+			&& player.on_spawn_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_BOSS), enum_releaseRegion)
+		}),
 	}
 dict_cancelTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -4152,6 +4299,324 @@ dict_cancelTriggers = {
 		// 	|| is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
+	"lb_ClgIzumoShrine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_1_Investigation
+
+		return
+		// [1+2+3] ==== Alt Cancel Groups ====		-> Cancel when not InGame || demo is active || incorrect StoryChapter
+			!gameStateA.is_inGame(enum_releaseRegion)
+			|| demo.is_active(enum_releaseRegion)
+			|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+				
+		// [4] ==== Alt Cancel Group ====		-> Cancel when restarting the challenge from the beginning
+			|| (
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.IzumoTown_Ch1, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+			)
+		// [5] ==== Alt Cancel Group ====		-> Cancel when player dies during any of the actionLevels prior to the boss
+			|| (
+				__ornext(
+					actionLevel.is(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToIzumoShrine_Level_2, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToIzumoShrine_Entrance, enum_releaseRegion))
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)
+			)			
+		}),
+	"lb_ClgUnderwaterShrine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_2_SwordOfKusanagi
+
+		return
+		// [1+2+3] ==== Alt Cancel Groups ====		-> Cancel when not InGame || demo is active || incorrect StoryChapter
+			!gameStateA.is_inGame(enum_releaseRegion)
+			|| demo.is_active(enum_releaseRegion)
+			|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)				
+		// [4] ==== Alt Cancel Group ====		-> Cancel when restarting the challenge from the beginning
+			|| (
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.Dannoura_X, enum_releaseRegion)) // --> Entrance to sea cave
+				&& actionLevel.is(actionLevel.PathToUnderwateShrine_Level_1, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+			)
+		// [5] ==== Alt Cancel Group ====		-> Cancel when player dies during any of the actionLevels
+			|| (
+				__ornext(
+					actionLevel.is(actionLevel.PathToUnderwateShrine_Level_1, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToUnderwateShrine_Level_2, enum_releaseRegion)
+					|| actionLevel.is(actionLevel.PathToUnderwateShrine_Entrance, enum_releaseRegion))
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)
+			)
+		// [6] ==== Alt Cancel Group ====		-> Cancel when player takes a hit
+			|| (
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_STGH_decrement(enum_releaseRegion)
+			)
+		}),
+	"lb_ClgPyramid": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_4_Pyramid
+		const_BOSS = bossEnemy.PyramidDemon
+		const_ALLOWED_ENGY_TO_USE = 70
+
+		return
+		// [1+2+3] ==== Alt Cancel Groups ====		-> Cancel when not InGame || demo is active || incorrect StoryChapter
+			!gameStateA.is_inGame(enum_releaseRegion)
+			|| demo.is_active(enum_releaseRegion)
+			|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+		// [4] ==== Alt Cancel Group ====		-> Cancel when restarting the challenge from the beginning
+			|| (
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.Pyramid_SouthSide, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+			)	
+		// [5] ==== Alt Cancel Group ====		-> Cancel when player dies during any of the actionLevels prior to the boss	
+			|| (
+				!bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)
+			)
+		// [6] ==== Alt Cancel Group ====		-> Cancel when player used too much ENGY
+			|| achievementSubLogic.LbCancelGroup_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion)
+		// [7] ==== Alt Reset Group ====		-> Reset when restarting the challenge from the beginning (to remove hitcounts in other groups)
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.Pyramid_SouthSide, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"lb_ClgYomotsuPlain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_5_Underworld
+		const_ALLOWED_HITS_TAKEN = 1
+		const_DISALLOWED_SPELLS = [spell.Mars, spell.Makiri]
+		const_ALLOWED_ENGY_TO_USE = 40
+
+		return
+		// [1+2+3] ==== Alt Cancel Groups ====		-> Cancel when not InGame || demo is active || incorrect StoryChapter
+			!gameStateA.is_inGame(enum_releaseRegion)
+			|| demo.is_active(enum_releaseRegion)
+			|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+		// [4] ==== Alt Cancel Group ====		-> Cancel when restarting the challenge from the beginning
+			|| (
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.MistyCrossing, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.YomotsuPlains, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		// [5] ==== Alt Cancel Group ==== 		-> Cancel when in adventure mode, but not at HolyBridge
+			|| (
+				repeated(150, // --> Repeated, because gameStateA toggles to "gameStateA.AdventureMode" before adventureScene toggles to "adventureScene.HolyBridge", thus preventing resets when entering HolyBridge
+					never( // --ResetNextIf--> in ActionMode || on adventure scene change
+						gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+						|| adventureScene.on_change(enum_releaseRegion))
+					&& gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion)
+					&& !adventureScene.is(adventureScene.HolyBridge, enum_releaseRegion))
+				)
+		// [6] ==== Alt Cancel Group ====		-> Cancel when player dies
+			|| (
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)
+				)
+		// [7] ==== Alt Cancel Group ====		-> Cancel when player takes xx damage hits
+			|| (
+				repeated(const_ALLOWED_HITS_TAKEN +1,
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& player.on_STGH_decrement(enum_releaseRegion))
+				)
+		// [8] ==== Alt Cancel Group ====		-> Cancel when player cast any disallowed spell
+			|| (
+				tally_of(const_DISALLOWED_SPELLS, 1, enum_spell =>
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& player.on_spellCast(enum_spell, enum_releaseRegion))
+				)
+		// [9] ==== Alt Cancel Group ====		-> Cancel when player used too much ENGY
+			|| (
+				achievementSubLogic.LbCancelGroup_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion)
+				)
+		// [10] ==== Alt Reset Group ====		-> Reset when restarting the challenge from the beginning (to remove hitcounts in other groups)
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.MistyCrossing, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.YomotsuPlains, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"lb_ClgFinalBattle": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_7_FinalBattle
+		const_DISALLOWED_SPELL = spell.Mars
+		const_HP_THRESHOLD = 25
+		const_ALLOWED_ENGY_TO_USE = 250
+
+		return
+		// [1+2+3] ==== Alt Cancel Groups ====		-> Cancel when not InGame || demo is active || incorrect StoryChapter
+			!gameStateA.is_inGame(enum_releaseRegion)
+			|| demo.is_active(enum_releaseRegion)
+			|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+		// [4] ==== Alt Cancel Group ====		-> Cancel when restarting the challenge from the beginning
+			|| (
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.KashimaTemple_PreFinalBattle, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.FinaBattle, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		// [5] ==== Alt Cancel Group ====		-> Cancel when player dies
+			|| (
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)
+				)
+		// [6] ==== Alt Cancel Group ====		-> Cancel when player drops below const_HP_THRESHOLD
+			|| (
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.prev_STGH(enum_releaseRegion) >= const_HP_THRESHOLD
+				&& player.current_STGH(enum_releaseRegion) < const_HP_THRESHOLD
+				)
+		// [7] ==== Alt Cancel Group ====		-> Cancel when player casts disallowed spell
+			|| (
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_spellCast(const_DISALLOWED_SPELL, enum_releaseRegion)
+				)
+		// [8] ==== Alt Cancel Group ====		-> Cancel when player used too much ENGY
+			|| (
+				achievementSubLogic.LbCancelGroup_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion)
+				)
+		// [9] ==== Alt Reset Group ====		-> Reset when restarting the challenge from the beginning (to remove hitcounts in other groups)
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.KashimaTemple_PreFinalBattle, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.FinaBattle, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"lb_ClgAsaka": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_3_FalseEnemy
+		const_BOSS = bossEnemy.PrincessAsaka
+		const_ALLOWED_ENGY_TO_USE = 50
+
+		return
+		// [1+2+3] ==== Alt Cancel Groups ====		-> Cancel when not InGame || demo is active || incorrect StoryChapter
+			!gameStateA.is_inGame(enum_releaseRegion)
+			|| demo.is_active(enum_releaseRegion)
+			|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+		// [4] ==== Alt Cancel Group ====		-> Cancel when restarting the challenge from the beginning
+			|| (
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		// [5] ==== Alt Cancel Group ====		-> Cancel when player dies
+			|| (
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)
+				)
+		// [6] ==== Alt Cancel Group ====		-> Cancel when player used too much ENGY
+			|| (
+				achievementSubLogic.LbCancelGroup_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion)
+				)
+		// [7] ==== Alt Reset Group ====		-> Reset when restarting the challenge from the beginning (to remove hitcounts in other groups)
+			|| never_toAlt(
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"lb_ClgCentipede": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_3_FalseEnemy
+		const_BOSS = bossEnemy.GiantCentipede
+		const_ALLOWED_DISTINCT_SPELLS = 1
+		const_ALLOWED_ENGY_TO_USE = 50
+
+		return
+		// [1+2+3] ==== Alt Cancel Groups ====		-> Cancel when not InGame || demo is active || incorrect StoryChapter
+			!gameStateA.is_inGame(enum_releaseRegion)
+			|| demo.is_active(enum_releaseRegion)
+			|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+		// [4] ==== Alt Cancel Group ====		-> Cancel when restarting the challenge from the beginning
+			|| (
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		// [5] ==== Alt Cancel Group ====		-> Cancel when player takes STGH damage
+			|| (
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& player.on_STGH_decrement(enum_releaseRegion)				
+				)
+		// [6] ==== Alt Cancel Group ====		-> Cancel when player dies
+			|| (
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)
+				)
+		// [7] ==== Alt Cancel Group ====		-> Cancel when player casts more than const_ALLOWED_DISTINCT_SPELLS 
+			|| (
+				tally_of(spell.get_allSpells_inArray(), const_ALLOWED_DISTINCT_SPELLS +1, enum_spell =>
+					once(
+						gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+						&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+						&& player.on_spellCast(enum_spell, enum_releaseRegion))
+					)			
+				)
+		// [8] ==== Alt Cancel Group ====		-> Cancel when player used too much ENGY
+			|| (
+				achievementSubLogic.LbCancelGroup_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion)
+				)
+		// [9] ==== Alt Reset Group ====		-> Reset when restarting the challenge from the beginning (to remove hitcounts in other groups)
+			|| never_toAlt(
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"lb_ClgMedusa": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_5_Underworld
+		const_BOSS = bossEnemy.SnakeDemon
+		const_ALLOWED_SPELL = spell.Makiri
+
+		return
+		// [1+2+3] ==== Alt Cancel Groups ====		-> Cancel when not InGame || demo is active || incorrect StoryChapter
+			!gameStateA.is_inGame(enum_releaseRegion)
+			|| demo.is_active(enum_releaseRegion)
+			|| !storyChapter.is(const_CHAPTER, enum_releaseRegion)
+		// [4] ==== Alt Cancel Group ====		-> Cancel when restarting the challenge from the beginning
+			|| (
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		// [5] ==== Alt Cancel Group ====		-> Cancel when player dies
+			|| (
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& player.on_death(enum_releaseRegion)
+				)
+		// [6] ==== Alt Cancel Group ====		-> Cancel when player casts a disallowed spell
+			|| (
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.current_spellSelected(enum_releaseRegion) != const_ALLOWED_SPELL
+				&& player.on_ENGY_decrement(enum_releaseRegion)		
+				)
+		}),
 	}
 dict_submitTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -4162,18 +4627,357 @@ dict_submitTriggers = {
 		// 	|| is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
+	"lb_ClgIzumoShrine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_1_Investigation
+		const_END_BOSS = bossEnemy.MysteriousEnemy
+		const_PLAYER_MAX_START_STGH = 30
+
+		return
+		// [1] ==== Alt Submit Group ====			-> Submit when Boss dies + Check Progression
+			once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
+				player.current_STGH(enum_releaseRegion) <= const_PLAYER_MAX_START_STGH // --ExtraCheck--> at this point in story, player can't have more than xx STGH
+
+				&& actionLevel.is(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.is_spawned_atStartOfActionLevel(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
+
+				&& __ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.IzumoTown_Ch1, enum_releaseRegion))
+				)
+
+			&& once( // --CheckIf--> ActionLevels have progressed correctly 
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToIzumoShrine_Level_1
+				&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToIzumoShrine_Level_2)
+			&& once( // --CheckIf--> ActionLevels have progressed correctly 
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToIzumoShrine_Level_2
+				&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToIzumoShrine_Entrance)
+
+			&& once( // --CheckIf--> Reached destination
+				actionLevel.is(actionLevel.PathToIzumoShrine_Entrance, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
+				
+			&& once( // --CheckIf--> Entering Boss Arena
+				adventureScene.is(adventureScene.IzumoShrine_OutsideBeforeBossFight, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
+
+			&& bossEnemy.is_bossArena_active(const_END_BOSS, enum_releaseRegion) // --CheckIf--> Boss dies
+			&& bossEnemy.on_death(const_END_BOSS, enum_releaseRegion)
+		// [2] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.IzumoTown_Ch1, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.PathToIzumoShrine_Level_1, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"lb_ClgUnderwaterShrine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CHAPTER = storyChapter.Ch_2_SwordOfKusanagi
+
+		return
+		// [1] ==== Alt Submit Group ====			-> Submit when reached destination + Check Progression
+			once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
+				actionLevel.is(actionLevel.PathToUnderwateShrine_Level_1, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.is_spawned_atStartOfActionLevel(actionLevel.PathToUnderwateShrine_Level_1, enum_releaseRegion)
+
+				&& __ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.Dannoura_X, enum_releaseRegion)) // --> Entrance to sea cave
+				)
+
+			&& once( // --CheckIf--> ActionLevels have progressed correctly 
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToUnderwateShrine_Level_1
+				&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToUnderwateShrine_Level_2)
+			&& once( // --CheckIf--> ActionLevels have progressed correctly 
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& actionLevel.prev(enum_releaseRegion) == actionLevel.PathToUnderwateShrine_Level_2
+				&& actionLevel.current(enum_releaseRegion) == actionLevel.PathToUnderwateShrine_Entrance)
+
+			// // --CheckIf--> Reached destination
+			&& actionLevel.is(actionLevel.PathToUnderwateShrine_Entrance, enum_releaseRegion)
+			&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+			&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode
+		// [3] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.Dannoura_X, enum_releaseRegion)) // --> Entrance to sea cave
+				&& actionLevel.is(actionLevel.PathToUnderwateShrine_Level_1, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"lb_ClgPyramid": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_BOSS = bossEnemy.PyramidDemon
+
+		return
+		// [1] ==== Alt Submit Group ====			-> Submit when boss dies + Check Progression
+			once( // --CheckIf--[StartCondition]--> Entered the first actionLevel of the section
+				actionLevel.is(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.is_spawned_atStartOfActionLevel(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+				&& __ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.Pyramid_SouthSide, enum_releaseRegion))
+				)
+
+			&& once( // --CheckIf--> Making progress through Pyramid
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& actionLevel.on_enter(actionLevel.Pyramid_EyeMiniBossRoom, enum_releaseRegion))
+			&& once( // --CheckIf--> Making progress through Pyramid
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& actionLevel.on_enter(actionLevel.Pyramid_GoatMiniBossRoom, enum_releaseRegion))
+			&& once( // --CheckIf--> Making progress through Pyramid
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& actionLevel.on_enter(actionLevel.Pyramid_Floor_1_Room_F, enum_releaseRegion))
+			&& once( // --CheckIf--> Reached destination
+				actionLevel.is(actionLevel.Pyramid_Floor_1_Room_F, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
+			&& once( // --CheckIf--> Entering Boss Arena
+				adventureScene.is(adventureScene.Pyramid_DarkRoom, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
+
+			&& gear.is_acquired(gear.Weapon_WarHammer, enum_releaseRegion)  // --CheckIf--> Boss dies
+			&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+			&& bossEnemy.on_death(const_BOSS, enum_releaseRegion)
+
+		// [2] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning (to remove hitcounts in other groups)
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.Pyramid_SouthSide, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.Pyramid_Entrance, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"lb_ClgYomotsuPlain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MAX_STGH = 100 // --> actually it's 80 at this stage in story, but may be higher??
+
+		return
+		// [1] ==== Alt Submit Group ====			-> Submit when reached destination + Check Progression
+			once( // --CheckIf--[StartCondition]--> Entered the actionLevel (left side of level)
+				actionLevel.is(actionLevel.YomotsuPlains, enum_releaseRegion)
+				&& player.current_STGH(enum_releaseRegion) <= const_MAX_STGH
+				&& mainQuest.is_priorEventsCompleted(mainQuest.ch5_AmanoShowsHolyBridge, enum_releaseRegion) // --> Holy Bridge can only be accessed when this event is complete
+				&& mainQuest.is_eventCompleted(mainQuest.ch5_AmanoShowsHolyBridge, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.is_spawned_atStartOfActionLevel(actionLevel.YomotsuPlains, enum_releaseRegion)
+				&& __ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.MistyCrossing, enum_releaseRegion))
+				)
+
+			// --CheckIf--> Entering Holy Bridge (right side of level)
+			&& once(
+				actionLevel.is(actionLevel.YomotsuPlains, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.ActionMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode)
+			&& gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion)
+			&& adventureScene.on_changeTo(adventureScene.HolyBridge, enum_releaseRegion)
+		// [2] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning (to remove hitcounts in other groups)
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.MistyCrossing, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.YomotsuPlains, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"lb_ClgFinalBattle": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_BOSS_1 = bossEnemy.FinalBattleBoss_1
+		const_BOSS_2 = bossEnemy.FinalBattleBoss_2
+		const_BOSS_3 = bossEnemy.FinalBattleBoss_3
+		const_BOSS_4 = bossEnemy.FinalBattleBoss_4
+		const_BOSS_FINAL = bossEnemy.FinalFinalBoss
+
+		return
+		// [1] ==== Alt Submit Group ====			-> Submit when final final boss dies + Check Progression
+			once( // --CheckIf--[StartCondition]--> Entered the last actionLevel of the game
+				actionLevel.is(actionLevel.FinalBattle, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.on_spawn_atStartOfActionLevel(actionLevel.FinalBattle, enum_releaseRegion)
+				&& __ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.KashimaTemple_PreFinalBattle, enum_releaseRegion))
+				)
+
+			&& once( // --CheckIf--> 1st Boss spawns
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.on_spawn(const_BOSS_1, enum_releaseRegion))
+			&& once( // --CheckIf--> 1st Boss dies
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.on_death(const_BOSS_1, enum_releaseRegion))
+
+			&&once( // --CheckIf--> 2nd Boss spawns
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.on_spawn(const_BOSS_2, enum_releaseRegion))
+			&& once( // --CheckIf--> 2nd Boss dies
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.on_death(const_BOSS_2, enum_releaseRegion))
+
+			&& once( // --CheckIf--> 3rd Boss spawns
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.on_spawn(const_BOSS_3, enum_releaseRegion))
+			&& once( // --CheckIf--> 3rd Boss dies
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.on_death(const_BOSS_3, enum_releaseRegion))
+
+			&& once( // --CheckIf--> 4th Boss spawns
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.on_spawn(const_BOSS_4, enum_releaseRegion))
+			&& tally(1, [ // --Tally--OrNext--> CheckIf: 4th Boss dies 
+				once( // --CheckIf--> 4th Boss dies with Entity ID A
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& bossEnemy.on_death(const_BOSS_4, enum_releaseRegion)),
+				once( // --CheckIf--> 4th Boss dies with Entity ID B
+					gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+					&& bossEnemy.on_death_alt(const_BOSS_4, enum_releaseRegion))
+				])
+
+			&& once( // --CheckIf--> Final Boss spawns
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& bossEnemy.on_spawn(const_BOSS_FINAL, enum_releaseRegion))
+			&& once( // --CheckIf--> Final Boss Phase 2 starts (--> HP resets when heading into 2nd Phase)
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& 0x0 <= bossEnemy.prev_HP(const_BOSS_FINAL, enum_releaseRegion) && bossEnemy.prev_HP(const_BOSS_FINAL, enum_releaseRegion) <= (0xFF/5)
+				&& (0xFF/8)*5 <= bossEnemy.current_HP(const_BOSS_FINAL, enum_releaseRegion) && bossEnemy.current_HP(const_BOSS_FINAL, enum_releaseRegion) <= 0xFF)
+				// --CheckIf--[TriggerCondition]-->Final Boss dies
+			&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+			&& bossEnemy.is_bossArena_active(const_BOSS_FINAL, enum_releaseRegion)
+			&& bossEnemy.on_death(const_BOSS_FINAL, enum_releaseRegion)
+		// [2] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning (to remove hitcounts in other groups)
+			|| never_toAlt(
+				__ornext(
+					adventureScene.is(adventureScene.SummitTemple_OnPlayerDeath, enum_releaseRegion)
+					|| adventureScene.is(adventureScene.MistyCrossing, enum_releaseRegion))
+				&& actionLevel.is(actionLevel.YomotsuPlains, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"lb_ClgAsaka": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_BOSS = bossEnemy.PrincessAsaka
+
+		return
+		// [1] ==== Alt Submit Group ====			-> Submit when boss dies
+			once( // --CheckIf--[StartCondition]--> Entered the boss arena
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.is_spawned_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_BOSS), enum_releaseRegion))
+
+			&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) // --CheckIf--> boss dies
+			&& bossEnemy.on_death(const_BOSS, enum_releaseRegion)
+		// [2] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning (to remove hitcounts in other groups)
+			|| never_toAlt(
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"lb_ClgCentipede": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_BOSS = bossEnemy.GiantCentipede
+
+		return
+		// [1] ==== Alt Submit Group ====			-> Submit when boss dies
+			once( // --CheckIf--[StartCondition]--> Entered the boss arena
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.is_spawned_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_BOSS), enum_releaseRegion))
+
+			&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)  // --CheckIf--> boss dies
+			&& bossEnemy.on_death(const_BOSS, enum_releaseRegion)
+		// [2] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning (to remove hitcounts in other groups)
+			|| never_toAlt(
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
+	"lb_ClgMedusa": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_BOSS = bossEnemy.SnakeDemon
+
+		return
+		// [1] ==== Alt Submit Group ====			-> Submit when boss dies
+			once( // --CheckIf--[StartCondition]--> Entered the boss arena
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prior(enum_releaseRegion) == gameStateA.AdventureMode // --> prior so this [StartCondition] can track together with AltResetGroup[3] 
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				&& player.is_spawned_atStartOfActionLevel(bossEnemy.get_BossArena_ActionModeLevel_ID(const_BOSS), enum_releaseRegion))
+
+			&& tally(1, [ // --Tally--OrNext--> CheckIf: Boss dies, there's two death scenarios (see below) // WARNING: Don't use bossEnemy.on_death() for Snake Demon
+				once( // --CheckIf--> Boss dies on_HP_hitsZero()
+					bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+					&& bossEnemy.on_HP_hitsZero(const_BOSS, enum_releaseRegion)),
+				once( // --CheckIf--> Boss dies on_HP_negativelyOverflows()
+					bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+					&& bossEnemy.on_HP_negativelyOverflows(const_BOSS, enum_releaseRegion))
+				])
+				
+			// --CheckIf--> Item is acquired --> this is a bugfix, for when the boss flies off-screen and dies out-of-bounds
+			&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
+			&& item.on_acquire(item.Ch5_SacredMirror, enum_releaseRegion)
+		// [2] ==== Alt Reset Group ==== 		-> Reset when restarting the challenge from the beginning (to remove hitcounts in other groups)
+			|| never_toAlt(
+				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
+				&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
+				&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode
+				)
+		}),
 	}
 dict_valueMeasures = {
 	// "lb_template": lb_ValueMeasure_Template(),
+	"lb_ClgIzumoShrine": lb_ValueMeasure_TimeSpentInActionMode(),
+	"lb_ClgUnderwaterShrine": lb_ValueMeasure_TimeSpentInActionMode(),
+	"lb_ClgPyramid": lb_ValueMeasure_TimeSpentInActionMode(),
+	"lb_ClgYomotsuPlain": lb_ValueMeasure_TimeSpentInActionMode(),
+	"lb_ClgFinalBattle": lb_ValueMeasure_TimeSpentInActionMode(),
+	"lb_ClgAsaka": lb_ValueMeasure_TimeSpentInActionMode(),
+	"lb_ClgCentipede": lb_ValueMeasure_TimeSpentInActionMode(),
+	"lb_ClgMedusa": lb_ValueMeasure_TimeSpentInActionMode(),
 	}
 // #endregion LB - Triggers
 
 // #region LB - Text
 dict_titles = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
+	"lb_ClgIzumoShrine": 					{"en": "Swift Revelation: Time Records"},
+	"lb_ClgUnderwaterShrine": 				{"en": "Breathless Descent: Time Records"},
+	"lb_ClgPyramid": 						{"en": "The Pyramid's Dash: Time Records"},
+	"lb_ClgYomotsuPlain": 					{"en": "The Underworld's Scramble: Time Records"},
+	"lb_ClgFinalBattle": 					{"en": "The Spellcaster's Destiny: Time Records"},
+	"lb_ClgAsaka": 							{"en": "Mercy for the Princess: Time Records"},
+	"lb_ClgCentipede": 						{"en": "A Little Off the Legs: Time Records"},
+	"lb_ClgMedusa": 						{"en": "Incessant Gaze: Time Records"},
 	}
 dict_descriptions = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
+	"lb_ClgIzumoShrine": 					{"en": "Reach Izumo Temple and defeat the Mysterious Main as quickly as possible"},
+	"lb_ClgUnderwaterShrine": 				{"en": "Reach the Underwater Shrine without taking a single hit and set the fastest time"},
+	"lb_ClgPyramid": 						{"en": "Reach and defeat the Pyramid Demon without using no more than 70 ENGY as quickly as possible"},
+	"lb_ClgYomotsuPlain": 					{"en": "Travel from the Misty Crossing to the Holy Bridge as fast as possible, using no more than 40 ENGY, taking only 1 hit, and without the spells 'Makiri' or 'Mars'"},
+	"lb_ClgFinalBattle": 					{"en": "Defeat the Evil Lord as quickly as possible, using no more than 250 ENGY, and never falling below 25 STGH"},
+	"lb_ClgAsaka": 							{"en": "Defeat Princess Asaka whilst using no more than 50 ENGY and set the fastest time"},
+	"lb_ClgCentipede": 						{"en": "Defeat the Giant Centipede as swift as possible, using only 1 spell of choice, without taking damage, and using no more than 50 ENGY"},
+	"lb_ClgMedusa": 						{"en": "Defeat Medusa and obtain the Sacred Mirror in record time, without taking damage, and using only 'Makiri'"},
 	}
 // #endregion LB - Text
 
