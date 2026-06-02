@@ -371,7 +371,20 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 // ◦ Sub_Header_2 ◦
 // ''''''''''''''''
 // #region Sub_Header_2
-
+class CLASS_MEMLOGIC_xxxx {
+	// --------Variables/Enums--------
+	// --------Functions--------
+	function current(enum_releaseRegion) =>
+		byte(memory.getAddress("xxxxxxxxxx", enum_releaseRegion))
+	function prev(enum_releaseRegion) =>
+		prev(this.current(enum_releaseRegion))
+	
+	function is(enum_xxxxxx, enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == enum_xxxxxx
+	function on_changeFromTo(enum_xxxxxPrev, enum_xxxxCurrent, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) == enum_xxxxxPrev
+		&& this.current(enum_releaseRegion) == enum_xxxxCurrent
+} xxxxxx = CLASS_MEMLOGIC_xxxx()
 // #endregion Sub_Header_2
 
 // #endregion MEMORY
