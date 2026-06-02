@@ -95,8 +95,7 @@ class CLASS_ENUM_ReleaseRegions {
 	USA = "NTSC-U"
 	JPN = "NTSC-J"
 	EUR = "PAL"
-	}
-ENUM_ReleaseRegion = CLASS_ENUM_ReleaseRegions()
+} ReleaseRegion = CLASS_ENUM_ReleaseRegions()
 RELEASE_REGIONS_SUPPORTED = [] // TODO add regions
 
 // #endregion GENERAL UTILITY
@@ -169,7 +168,7 @@ class CLASS_MemoryData {
 	// #endregion MEM - Struct Definitions
 	// #region MEM - Address Storage
 	dict_addresses = {
-		// "memAddrKey": {ENUM_ReleaseRegion.USA: util.sNULL, ENUM_ReleaseRegion.EUR: util.sNULL, ENUM_ReleaseRegion.JPN: util.sNULL},
+		// "memAddrKey": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: util.sNULL},
 		}
 
 	function getAddress(string_addrKey, enum_releaseRegion) {
@@ -339,9 +338,9 @@ class CLASS_MemoryUtility {
 class CLASS_MEMLOGIC_ReleaseRegion { // TODO implement is_ReleaseRegion()
 	function is(enum_releaseRegion) {	
 		let_string_GameID = util.sNULL
-		if(enum_releaseRegion == ENUM_ReleaseRegion.USA) let_string_GameID = util.sNULL // FullString: "xxxxx"
-		else if(enum_releaseRegion == ENUM_ReleaseRegion.JPN) let_string_GameID = util.sNULL // FullString: "xxxxx"
-		else if(enum_releaseRegion == ENUM_ReleaseRegion.EUR) let_string_GameID = util.sNULL // FullString: "xxxxx"
+		if(enum_releaseRegion == ReleaseRegion.USA) let_string_GameID = util.sNULL // FullString: "xxxxx"
+		else if(enum_releaseRegion == ReleaseRegion.JPN) let_string_GameID = util.sNULL // FullString: "xxxxx"
+		else if(enum_releaseRegion == ReleaseRegion.EUR) let_string_GameID = util.sNULL // FullString: "xxxxx"
 		
 		if (let_string_GameID == util.sNULL) util.throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
 		return memUtil.is_ASCII_EqualTo(memory.getAddress("ASCII:GameID", enum_releaseRegion), let_string_GameID)
@@ -389,13 +388,15 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 // ****************************************************************************************************************************************** \\
 // #region ACHIEVEMENTS
 
-// ==================================
-// • ACHIEVEMENT trigger generators •
-// ==================================
-// #region ACH - trigger generators
+// =========================
+// • ACHIEVEMENT sub logic •
+// =========================
+// #region ACH - sub logic
 //	- For achievement logic that's reoccuring across multiple triggers
+class CLASS_AchievementSubLogic {
 
-// #endregion ACH - trigger generators
+} achievementSubLogic = CLASS_AchievementSubLogic()
+// #endregion ACH - sub logic
 
 // ====================
 // • ACHIEVEMENT logic •
@@ -412,15 +413,14 @@ class CLASS_ENUM_AchievementPointClasses {
 	Hard_25			= 25 	// Hard - Completing the game 
 	VeryHard_50		= 50 	// VeryHard - Achieving 100% completion
 	Impossible_100	= 100 	// Impossible - Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets)
-} ENUM_AchievementPointClass = CLASS_ENUM_AchievementPointClasses()
+} AchievementPointClass = CLASS_ENUM_AchievementPointClasses()
 
 class CLASS_ENUM_AchievementTypes {
 	Progression = "progression"
 	WinCondition = "win_condition"
 	Missable = "missable"
 	Standard = ""
-	}
-ENUM_AchievementType = CLASS_ENUM_AchievementTypes()
+} AchievementType = CLASS_ENUM_AchievementTypes()
 
 class CLASS_AchievementLogic {
 // #region ACH - Core Data
@@ -434,11 +434,11 @@ dict_coreData = {
 	
 	"c_Template": { // Category - info_here
 		// "a_Template": {
-		// 	"id": 000000, "points": ENUM_AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
+		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
 		},
 	"c_Template2": { // Category - info_here
 		// "a_Template2": {
-		// 	"id": 000000, "points": ENUM_AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
+		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
 		},
 	}
 
@@ -452,8 +452,8 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 	//	- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
 	
-	// "c_Template": 	ENUM_AchievementType.Standard,
-	"c_Template": 		ENUM_AchievementType.Standard
+	// "c_Template": 	AchievementType.Standard,
+	"c_Template": 		AchievementType.Standard
 	}
 
 // #endregion ACH - Core Data
@@ -571,9 +571,9 @@ richPresence_LookupTablesText = {
 	}
 richPresence_ReleaseRegion_toSuperScript = {
 	// NOTE: Text to superscript --> https://lingojam.com/SuperscriptGenerator
-	ENUM_ReleaseRegion.USA: "ᵘˢ",
-	ENUM_ReleaseRegion.EUR: "ᵉᵘ",
-	ENUM_ReleaseRegion.JPN: "ʲᵖ",
+	ReleaseRegion.USA: "ᵘˢ",
+	ReleaseRegion.EUR: "ᵉᵘ",
+	ReleaseRegion.JPN: "ʲᵖ",
 	}
 	
 function richPresence_getText(string_textKey) =>
@@ -699,7 +699,7 @@ class CLASS_ENUM_RichPresenceParameterTypes {
 	LOOKUP_HEX = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
 	LOOKUP_STRING = 3	// rich_presence_ascii_string_lookup(name, memAddr_ASCII, dictionary, [fallback])
 	MACRO = 4			// rich_presence_macro(macro, expression)
-} ENUM_RichPresenceParameterType = CLASS_ENUM_RichPresenceParameterTypes()
+} RichPresenceParameterType = CLASS_ENUM_RichPresenceParameterTypes()
 // -------------------------------------
 richPresence_parameterData = {
 	// DEV_NOTE: rich presence
@@ -711,37 +711,37 @@ richPresence_parameterData = {
 	// ------------------------------------------------------
 	
 	// "rpp_ValueTemplate": {
-		// "RPtype": ENUM_RichPresenceParameterType.VALUE,
+		// "RPtype": RichPresenceParameterType.VALUE,
 		// "Expression": {
-		// 	ENUM_ReleaseRegion.USA: always_false(), 
-		// 	ENUM_ReleaseRegion.EUR: always_false(),
-		// 	ENUM_ReleaseRegion.JPN: always_false()},
+		// 	ReleaseRegion.USA: always_false(), 
+		// 	ReleaseRegion.EUR: always_false(),
+		// 	ReleaseRegion.JPN: always_false()},
 		// "ValueFormat": "VALUE"},
 
 	// "rpp_LookupHexTemplate": {
-		// "RPtype": ENUM_RichPresenceParameterType.LOOKUP_HEX,
+		// "RPtype": RichPresenceParameterType.LOOKUP_HEX,
 		// "Expression": {
-		// 	ENUM_ReleaseRegion.USA: always_false(), 
-		// 	ENUM_ReleaseRegion.EUR: always_false(),
-		// 	ENUM_ReleaseRegion.JPN: always_false()},
+		// 	ReleaseRegion.USA: always_false(), 
+		// 	ReleaseRegion.EUR: always_false(),
+		// 	ReleaseRegion.JPN: always_false()},
 		// "LookupTableID": "lup_LookupTableKey",
 		// "LookupFallback": richPresence_getLookupTableText("lupText_LookupTableKey", "LOOKUP_FALLBACK")},
 
 	// "rpp_LookupStringTemplate": {
-		// "RPtype": ENUM_RichPresenceParameterType.LOOKUP_STRING,
+		// "RPtype": RichPresenceParameterType.LOOKUP_STRING,
 		// "MemoryAddressToASCII": {
-		// 	ENUM_ReleaseRegion.USA: memory.getAddress(), 
-		// 	ENUM_ReleaseRegion.EUR: memory.getAddress(),
-		// 	ENUM_ReleaseRegion.JPN: memory.getAddress()},
+		// 	ReleaseRegion.USA: memory.getAddress(), 
+		// 	ReleaseRegion.EUR: memory.getAddress(),
+		// 	ReleaseRegion.JPN: memory.getAddress()},
 		// "LookupTableID": "lup_LookupTableKey",
 		// "LookupFallback": richPresence_getLookupTableText("lupText_LookupTableKey", "LOOKUP_FALLBACK")},
 
 	// "rpp_MacroTemplate": {
-		// "RPtype": ENUM_RichPresenceParameterType.MACRO,
+		// "RPtype": RichPresenceParameterType.MACRO,
 		// "Expression": {
-		// 	ENUM_ReleaseRegion.USA: always_false(), 
-		// 	ENUM_ReleaseRegion.EUR: always_false(),
-		// 	ENUM_ReleaseRegion.JPN: always_false()},
+		// 	ReleaseRegion.USA: always_false(), 
+		// 	ReleaseRegion.EUR: always_false(),
+		// 	ReleaseRegion.JPN: always_false()},
 		// "MacroFormat": "Number"},
 	
 	
@@ -779,10 +779,10 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 
 	let_parameterData = richPresence_parameterData[string_parameterKey]
 	let_RPtype = let_parameterData["RPtype"]
-	if (let_RPtype == ENUM_RichPresenceParameterType.VALUE) return richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == ENUM_RichPresenceParameterType.LOOKUP_HEX) return richPresence_callLookupHexFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == ENUM_RichPresenceParameterType.LOOKUP_STRING) return richPresence_callLookupStringFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == ENUM_RichPresenceParameterType.MACRO) return richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
+	if (let_RPtype == RichPresenceParameterType.VALUE) return richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == RichPresenceParameterType.LOOKUP_HEX) return richPresence_callLookupHexFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == RichPresenceParameterType.LOOKUP_STRING) return richPresence_callLookupStringFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == RichPresenceParameterType.MACRO) return richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
 	else util.throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))}
 // #endregion RP - Parameters
 
@@ -820,26 +820,30 @@ function richPresence_initialize() {
 // #region LEADERBOARDS
 // TODO implement leaderboards
 
-// ==================================
-// • LEADERBOARD trigger generators •
-// ==================================
-// #region LB - Trigger Generators
-//	- For leaderboard logic that's reoccuring across multiple triggers
+// ==========================================
+// • LEADERBOARD sub logic & value measures •
+// ==========================================
+// #region LB - sub logic
+//	- For achievement logic that's reoccuring across multiple triggers
+class CLASS_LeaderboardSubLogic {
 
+} leaderboardSubLogic = CLASS_LeaderboardSubLogic()
+// #endregion LB - sub logic
 // #region LB - Value Measures
 // NOTE: ValueMeasures need to be in seperate function like below, as it requires usage of max_of()
-function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
-	function valueMeasure(enum_releaseRegion) => 
-		measured(
-			current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion),
-			when = is_ReleaseRegion(enum_releaseRegion))
+class CLASS_LeaderboardValuesMeasures {
+	function Template_TimeSpentInLevel() {
+		function valueMeasure(enum_releaseRegion) => 
+			measured(
+				current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion),
+				when = is_ReleaseRegion(enum_releaseRegion))
 
-	let_array_valueMeasures = []
-	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
-		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
-	return max_of(let_array_valueMeasures)}
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+			array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+		return max_of(let_array_valueMeasures)}
+} leaderboardValueMeasure = CLASS_LeaderboardValuesMeasures()
 // #endregion LB - Value Measures
-// #endregion LB - Trigger Generators
 
 // =====================
 // • LEADERBOARD logic •
@@ -896,7 +900,7 @@ dict_submitTriggers = {
 		// ),
 	}
 dict_valueMeasures = {
-	// "lb_template": lb_ValueMeasure_Template(),
+	// "lb_template": leaderboardValueMeasure.Template_TimeSpentInLevel(),
 	}
 // #endregion LB - Triggers
 
