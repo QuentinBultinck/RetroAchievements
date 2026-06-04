@@ -420,10 +420,10 @@ class CLASS_MEMLOGIC_GameState {
 
 class CLASS_MEMLOGIC_OutroSequenceState {
 	// --------Variables/Enums--------
-	One = 1
-	Two = 2
-	Three = 3
-	Four = 4
+	One = 0
+	Two = 1
+	Three = 2
+	Four = 3
 
 	// --------Functions--------
 	function current(enum_releaseRegion) =>
@@ -612,19 +612,25 @@ class CLASS_MEMLOGIC_BossData {
 
 	dict_BossData = {
 		Boss_1: {
-			"Entity_ID_spawn": 0x11,
+			"Entity_ID_BeforeSpawn": 0x0,
+			"Entity_ID_OnSpawn": 0x11,
 			"MaxHP": 0x27},
 		Boss_2: {
-			"Entity_ID_spawn": 0x8, // TODO --> test this, by ENTERING boss room, not via current savestate
+			"Entity_ID_BeforeSpawn": 0x18,
+			"Entity_ID_OnSpawn": 0x8,
+			"Entity_ID_OnDeath": 0x1A,
 			"MaxHP": 0x2F},
 		Boss_3: {
-			"Entity_ID_spawn": 0x2C,
+			"Entity_ID_BeforeSpawn": 0x0,
+			"Entity_ID_OnSpawn": 0x2C,
 			"MaxHP": 0x37},
 		Boss_Final: {
-			"Entity_ID_spawn": 0x25,
+			"Entity_ID_BeforeSpawn": 0x0,
+			"Entity_ID_OnSpawn": 0x25,
 			"MaxHP": 0x3F},
 	}
-	function get_Entity_ID_spawn(enum_boss) => this.dict_BossData[enum_boss]["Entity_ID_spawn"]
+	function get_Entity_ID_OnSpawn(enum_boss) => this.dict_BossData[enum_boss]["Entity_ID_OnSpawn"]
+	function get_Entity_ID_BeforeSpawn(enum_boss) => this.dict_BossData[enum_boss]["Entity_ID_BeforeSpawn"]
 	function get_MaxHP(enum_boss) => this.dict_BossData[enum_boss]["MaxHP"]
 
 	// --------Functions--------
@@ -637,20 +643,15 @@ class CLASS_MEMLOGIC_BossData {
 	function prev_ID(enum_releaseRegion) =>
 		prev(this.current_ID(enum_releaseRegion)) 
 
-	function on_spawn(enum_boss, enum_releaseRegion) => 
+	function is_atMaxHP(enum_boss, enum_releaseRegion) =>
 		this.current_HP(enum_releaseRegion) == this.get_MaxHP(enum_boss)
-		&& this.prev_ID(enum_releaseRegion) == 0
-		&& this.current_ID(enum_releaseRegion) == this.get_Entity_ID_spawn(enum_boss)
-	function on_death(enum_boss, enum_releaseRegion) {
-		if(enum_boss == this.Boss_1) return // --> Exception as this boss consists of multiple entities
-			this.prev_HP(enum_releaseRegion) > 0
-			&& this.current_HP(enum_releaseRegion) == 0
-		return 
-			this.prev_HP(enum_releaseRegion) > 0
-			&& this.current_HP(enum_releaseRegion) == 0
-			&& this.prev_ID(enum_releaseRegion) != 0
-			&& this.current_ID(enum_releaseRegion) == 0
-		}		
+	
+	function on_spawn(enum_boss, enum_releaseRegion) =>
+		this.prev_ID(enum_releaseRegion) == this.get_Entity_ID_BeforeSpawn(enum_boss)
+		&& this.current_ID(enum_releaseRegion) == this.get_Entity_ID_OnSpawn(enum_boss)
+	function on_death(enum_boss, enum_releaseRegion) =>
+		this.prev_HP(enum_releaseRegion) > 0
+		&& this.current_HP(enum_releaseRegion) == 0
 } BossEntity = CLASS_MEMLOGIC_BossData()
 // #endregion Entities
 
@@ -767,6 +768,10 @@ class CLASS_AchievementSubLogic {
 			&& once( // --CheckIf--> Entering Boss Arena
 				stage.is(enum_stageTocomplete, enum_releaseRegion)
 				&& gameState.on_changeFromTo(gameState.InGame, gameState.BossFight, enum_releaseRegion))
+			&& once( // --CheckIf--> Boss at max HP // --> seperate from below CheckIf, because some bosses initialize in differing delta frames
+				stage.is(enum_stageTocomplete, enum_releaseRegion)
+				&& gameState.is(gameState.BossFight, enum_releaseRegion)
+				&& BossEntity.is_atMaxHP(enum_bossToDefeat, enum_releaseRegion))
 			&& once( // --CheckIf--> Boss spawns
 				stage.is(enum_stageTocomplete, enum_releaseRegion)
 				&& gameState.is(gameState.BossFight, enum_releaseRegion)
@@ -822,18 +827,18 @@ dict_coreData = {
 			// "id": 614058, "points": AchievementPointClass.Easy_3, "devInfo": "Complete Stage 2"},
 		// "a_Stage3": { // VERIFIED
 			// "id": 614055, "points": AchievementPointClass.Intermediate_4, "devInfo": "Complete Stage 3"},
-		// "a_Stage4": { // TEST a_Stage4: test boss + entering stage
+		// "a_Stage4": { // VERIFIED
 			// "id": 614059, "points": AchievementPointClass.Intermediate_4, "devInfo": "Complete Stage 4"},
 		// "a_Stage5": { // VERIFIED
 			// "id": 614056, "points": AchievementPointClass.Advanced_5, "devInfo": "Complete Stage 5"},
-		// "a_Stage6": { // TEST a_Stage6: test boss + entering stage
+		// "a_Stage6": { // VERIFIED
 			// "id": 614060, "points": AchievementPointClass.Advanced_5, "devInfo": "Complete Stage 6"},
 		// "a_Stage7": { // VERIFIED
 			// "id": 614057, "points": AchievementPointClass.Challenging_10, "devInfo": "Complete Stage 7"},
 		},
 	"c_WinCondition": { // Win Condition - Game Completed
-		// "a_Stage8": { // TEST a_Stage8: test boss + outro + entering stage
-			// "id": 61461, "points": AchievementPointClass.Hard_25, "devInfo": "Complete Stage 8 + Finish Outro"}
+		// "a_Stage8": { // VERIFIED
+			// "id": 614061, "points": AchievementPointClass.Hard_25, "devInfo": "Complete Stage 8 + Finish Outro"}
 		},
 	"c_Bonus": { // Bonus - Miscellaneous achievements
 		// CONCEPT c_Bonus
@@ -867,7 +872,7 @@ dict_coreData = {
 		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"},
 		},
 	}
-dict_achievementCategoryToAchievementType = { // TODO set achievement types
+dict_achievementCategoryToAchievementType = {
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
 	//	- util.sNULL => when it's not necessarily a missable achievement --> will result in type: "standard"
