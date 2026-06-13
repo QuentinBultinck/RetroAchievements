@@ -176,11 +176,12 @@ class CLASS_MemoryData {
 	// #region MEM - Address Storage
 	dict_addresses = {
 		// "memAddrKey": {ReleaseRegion.World: util.sNULL},
-		"BitFlag:IsArmoratorActive(non-functional)": {ReleaseRegion.World: 0x001d},
 		"BitFlag:IsArmoraterPowerUpAcquired": {ReleaseRegion.World: 0x00bd},
 		"BitFlag:IsPistolFullyCharged": {ReleaseRegion.World: 0x0077},
 		"BitFlag:IsAppleAvailable": {ReleaseRegion.World: 0x009d},
 		"BitFlag:IsChampAvailable": {ReleaseRegion.World: 0x009e},
+
+		"Flag:IsArmoraterActive": {ReleaseRegion.World: 0x0301},
 
 		"8-bit:OutroSequence_Section_ID": {ReleaseRegion.World: 0x0133},
 		"8-bit:ContinueUseCount": {ReleaseRegion.World: 0x0002},
@@ -524,6 +525,8 @@ class CLASS_MEMLOGIC_StageData {
 	function get_PlayerLocation_End(enum_stageID) => this.dict_StageData[enum_stageID]["PlayerLocation_End"]
 	function get_Z_PowerUp_Count(enum_stageID) => this.dict_StageData[enum_stageID]["Z_PowerUp_Count"]
 	function is_StageType_OnRails(enum_stageID) => this.dict_StageData[enum_stageID]["StageType"] == "OnRails"
+	function get_Array_AllOnRailsStage() => array_filter(this.dict_StageData, enum_stageID => 
+		this.is_StageType_OnRails(enum_stageID))
 
 	// --------Functions--------
 	function current(enum_releaseRegion) =>
@@ -554,6 +557,10 @@ class CLASS_MEMLOGIC_StageLocationData {
 		let_sectionStart_nextStage = stage.get_StageSection_Start(enum_stageCurrent +1)
 		let_sectionEnd_previousStage = stage.get_StageSection_End(enum_stageCurrent)
 		return this.on_changeFromTo(let_sectionEnd_previousStage, let_sectionStart_nextStage, enum_releaseRegion)}
+		
+	function on_LastSection_enter(enum_stage, enum_releaseRegion) {
+		let_lastSection = stage.get_StageSection_End(enum_stage)
+		return this.on_changeFromTo(let_lastSection -1, let_lastSection, enum_releaseRegion)}
 } stageSection = CLASS_MEMLOGIC_StageLocationData()
 // #endregion Stage Identification
 
@@ -588,6 +595,25 @@ class CLASS_MEMLOGIC_PlayerLogic {
 	function prev_yLocation(enum_releaseRegion) =>
 		prev(this.current_yLocation(enum_releaseRegion))
 
+	function current_flagState_IsArmoraterPowerUpAcquired(enum_releaseRegion) =>
+		bit0(memory.getAddress("BitFlag:IsArmoraterPowerUpAcquired", enum_releaseRegion))
+	function prev_flagState_IsArmoraterPowerUpAcquired(enum_releaseRegion) =>
+		prev(this.current_flagState_IsArmoraterPowerUpAcquired(enum_releaseRegion))
+	function current_flagState_IsArmoratorActive(enum_releaseRegion) =>
+		byte(memory.getAddress("Flag:IsArmoraterActive", enum_releaseRegion))
+	function prev_flagState_IsArmoratorActive(enum_releaseRegion) =>
+		prev(this.current_flagState_IsArmoratorActive(enum_releaseRegion))
+	
+	function is_armoraterPowerUpAcquired(enum_releaseRegion) =>
+		this.current_flagState_IsArmoraterPowerUpAcquired(enum_releaseRegion) == 1
+	function is_armoratorActive(enum_releaseRegion) =>
+		this.current_flagState_IsArmoratorActive(enum_releaseRegion) != 0x0
+	function on_transformToArmorator(enum_releaseRegion) =>
+		this.prev_flagState_IsArmoratorActive(enum_releaseRegion) == 0x0
+		&& this.current_flagState_IsArmoratorActive(enum_releaseRegion) != 0x0
+	function on_transformToMotorcycle(enum_releaseRegion) =>
+		this.prev_flagState_IsArmoratorActive(enum_releaseRegion) != 0x0
+		&& this.current_flagState_IsArmoratorActive(enum_releaseRegion) == 0x0
 	function is_atStageStartCoords(enum_stageID, enum_releaseRegion) {
 		let_coords_stageStartLocation = stage.get_PlayerLocation_Start(enum_stageID)
 		return
@@ -972,6 +998,8 @@ dict_coreData = {
 			// "id": 616733, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
 		// "a_Stg7PowerUp": { // VERIFIED
 			// "id": 616734, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
+		// "a_TriCharged": { // VERIFIED
+			// "id": 616747, "points": AchievementPointClass.Free_0, "devInfo": "Complete an On-Rails Stage using only the Armorator and without dying. Transform near the beginning of the Stage"},
 		},
 	"c_mBonus": { // Missable Bonus - Missable achievements
 		// CONCEPT c_mBonus
@@ -1073,6 +1101,51 @@ dict_triggers = {
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			achievementSubLogic.CoreGroup_PowerCollector(const_STAGE, const_AZ_POWERS_TO_COLLECT, enum_releaseRegion)
 		}),
+	"a_TriCharged": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ALLOWED_STAGES = stage.get_Array_AllOnRailsStage()
+		const_STAGE_SECTION_START_A = 0 
+		const_STAGE_SECTION_START_B = 1
+		const_BEGINNING_OF_STAGE_THRESHOLD = 5 
+
+		return 
+		// [1,2,3,4] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			never(repeated(2, // --ResetIf--> Not InGame for 2 frames (this to allow TriggerCondition to pop)
+				never(gameState.on_change(enum_releaseRegion))
+				&& !gameState.is(gameState.InGame, enum_releaseRegion)))
+			&& never(repeated(2, // --ResetIf--> Not in correct Stage for 2 frames (this to allow TriggerCondition to pop)
+				never(stage.on_change(enum_releaseRegion))
+				&& all_of(const_ALLOWED_STAGES, enum_stage => 
+					!stage.is(enum_stage, enum_releaseRegion))))
+			&& never( // --ResetIf--> player dies (loses a life)
+				player.on_Life_lose(enum_releaseRegion))
+
+			&& once( // --CheckIf--[StartCondition]--> Player start from beginning of stage (not via checkpoint, after death)
+				gameState.is(gameState.InGame, enum_releaseRegion)
+				&& stageSection.on_changeFromTo(const_STAGE_SECTION_START_A, const_STAGE_SECTION_START_B, enum_releaseRegion))
+
+			&& once( // --CheckIf--> Player transforms into Armorator near beginning of Stage
+				gameState.is(gameState.InGame, enum_releaseRegion)
+				&& stageSection.current(enum_releaseRegion) <= const_BEGINNING_OF_STAGE_THRESHOLD
+				&& player.is_armoraterPowerUpAcquired(enum_releaseRegion)
+				&& player.on_transformToArmorator(enum_releaseRegion))
+
+			&& trigger_when(
+				tally_of(const_ALLOWED_STAGES, 1, enum_stage => // --Tally--OrNext--> CheckIf: Player enters last StageSection of any Stage with Armorator active)	
+					gameState.is(gameState.InGame, enum_releaseRegion)
+					&& player.is_armoraterPowerUpAcquired(enum_releaseRegion)
+					&& player.is_armoratorActive(enum_releaseRegion)
+					&& stageSection.on_LastSection_enter(enum_stage, enum_releaseRegion))
+				&& tally_of(const_ALLOWED_STAGES, 1, enum_stage => // --Tally--OrNext--> CheckIf: Player enters door into next stage with Armorator active
+					gameState.is(gameState.InGame, enum_releaseRegion)
+					&& player.is_atOnRailsStageEndCoords(enum_stage, enum_releaseRegion)
+					&& player.on_transformToMotorcycle(enum_releaseRegion))
+				&& tally_of(const_ALLOWED_STAGES, 1, enum_stage => // --Tally--OrNext--> CheckIf: Any On-Rails Stage continues to next Stage
+					player.is_atOnRailsStageEndCoords(enum_stage, enum_releaseRegion)
+					&& gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
+					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion)
+					&& stageSection.on_Stage_end(enum_stage, enum_releaseRegion))
+			)
+		}),
 	}
 // #endregion ACH - Triggers
 
@@ -1092,6 +1165,7 @@ dict_titles = {
 	"a_Stg3PowerUp": 			{"en": "xxxxxxxxx"},
 	"a_Stg5PowerUp": 			{"en": "xxxxxxxxx"},
 	"a_Stg7PowerUp": 			{"en": "xxxxxxxxx"},
+	"a_TriCharged": 			{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -1108,6 +1182,7 @@ dict_descriptions = {
 	"a_Stg3PowerUp": 			{"en": "xxxxxxxxx"},
 	"a_Stg5PowerUp": 			{"en": "xxxxxxxxx"},
 	"a_Stg7PowerUp": 			{"en": "xxxxxxxxx"},
+	"a_TriCharged": 			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
