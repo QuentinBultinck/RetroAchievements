@@ -396,7 +396,7 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 // ............................
 // ◦ Game State & Information ◦
 // ''''''''''''''''''''''''''''
-// #region Game State & Information}
+// #region Game State & Information
 class CLASS_MEMLOGIC_GameState {
 	// --------Variables/Enums--------
 	MainMenu = 0x1
@@ -602,7 +602,18 @@ class CLASS_MEMLOGIC_PlayerLogic {
 	function current_flagState_IsArmoratorActive(enum_releaseRegion) =>
 		byte(memory.getAddress("Flag:IsArmoraterActive", enum_releaseRegion))
 	function prev_flagState_IsArmoratorActive(enum_releaseRegion) =>
-		prev(this.current_flagState_IsArmoratorActive(enum_releaseRegion))
+		prev(this.current_flagState_IsArmoratorActive(enum_releaseRegion))	
+	function current_Score(enum_releaseRegion) =>
+		bcd(tbyte(memory.getAddress("24-bit BCD:Score", enum_releaseRegion))) * 10
+	function prev_Score(enum_releaseRegion) {
+		let_memAddr_Score = memory.getAddress("24-bit BCD:Score", enum_releaseRegion)
+		return 
+			(prev(high4(let_memAddr_Score + 0x2)) * 1000000)
+			+ (prev(low4(let_memAddr_Score + 0x2)) * 100000)
+			+ (prev(high4(let_memAddr_Score + 0x1)) * 10000)
+			+ (prev(low4(let_memAddr_Score + 0x1)) * 1000)
+			+ (prev(high4(let_memAddr_Score + 0x0)) * 100)
+			+ (prev(low4(let_memAddr_Score + 0x0)) * 10)}
 	
 	function is_armoraterPowerUpAcquired(enum_releaseRegion) =>
 		this.current_flagState_IsArmoraterPowerUpAcquired(enum_releaseRegion) == 1
@@ -924,7 +935,7 @@ class CLASS_AchievementSubLogic {
 				&& gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
 				&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion)
 				&& stageSection.on_Stage_end(enum_stage, enum_releaseRegion))
-	}
+		}
 
 } achievementSubLogic = CLASS_AchievementSubLogic()
 // #endregion ACH - sub logic
@@ -985,8 +996,6 @@ dict_coreData = {
 		},
 	"c_Bonus": { // Bonus - Miscellaneous achievements
 		// CONCEPT c_Bonus
-			// - Transform into the Armorator || kill xx enemies as Armorater
-			// - Acquire max charged pistol || kill xx enemies with fully charged pistol ("Zillion" is name of gun)
 			// - Acquire cerain amount of score (maybe for unlocking extra lives at 30 000, 70 000 and 120 000 score)
 		// "a_Template2": {
 		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"},
@@ -1000,6 +1009,8 @@ dict_coreData = {
 			// "id": 616734, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
 		// "a_TriCharged": { // VERIFIED
 			// "id": 616747, "points": AchievementPointClass.Free_0, "devInfo": "Complete an On-Rails Stage using only the Armorator and without dying. Transform near the beginning of the Stage"},
+		// "a_MaxLives": {
+			// "id": 616784, "points": AchievementPointClass.Free_0, "devInfo": "Acquire a total of 6 lives (extra lives unlocked at 30k, 70k and 120k score + start at 3)"},
 		},
 	"c_mBonus": { // Missable Bonus - Missable achievements
 		// CONCEPT c_mBonus
@@ -1108,7 +1119,7 @@ dict_triggers = {
 		const_BEGINNING_OF_STAGE_THRESHOLD = 5 
 
 		return 
-		// [1,2,3,4] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			never(repeated(2, // --ResetIf--> Not InGame for 2 frames (this to allow TriggerCondition to pop)
 				never(gameState.on_change(enum_releaseRegion))
 				&& !gameState.is(gameState.InGame, enum_releaseRegion)))
@@ -1146,6 +1157,18 @@ dict_triggers = {
 					&& stageSection.on_Stage_end(enum_stage, enum_releaseRegion))
 			)
 		}),
+	"a_MaxLives": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MAX_LIVES = 6 +1 // = Max attainable lives (plus one, because that's how the game stores lives)
+		const_THIRD_LIFE_SCORE_REQUIREMENT = 120000 // = 120k (unlocks a third extra life)
+
+		return 
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			gameState.is(gameState.InGame, enum_releaseRegion)
+			&& player.prev_Score(enum_releaseRegion) < const_THIRD_LIFE_SCORE_REQUIREMENT
+			&& player.current_Score(enum_releaseRegion) >= const_THIRD_LIFE_SCORE_REQUIREMENT
+			&& player.prev_Lives(enum_releaseRegion) == const_MAX_LIVES -1
+			&& player.current_Lives(enum_releaseRegion) == const_MAX_LIVES
+		}),
 	}
 // #endregion ACH - Triggers
 
@@ -1166,6 +1189,7 @@ dict_titles = {
 	"a_Stg5PowerUp": 			{"en": "xxxxxxxxx"},
 	"a_Stg7PowerUp": 			{"en": "xxxxxxxxx"},
 	"a_TriCharged": 			{"en": "xxxxxxxxx"},
+	"a_MaxLives": 				{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -1183,6 +1207,7 @@ dict_descriptions = {
 	"a_Stg5PowerUp": 			{"en": "xxxxxxxxx"},
 	"a_Stg7PowerUp": 			{"en": "xxxxxxxxx"},
 	"a_TriCharged": 			{"en": "xxxxxxxxx"},
+	"a_MaxLives": 				{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
