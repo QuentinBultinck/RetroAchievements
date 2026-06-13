@@ -865,7 +865,40 @@ class CLASS_AchievementSubLogic {
 			&& let_LastRequirements
 		}
 
-	// function CoreGroup_LaserPowerCollector(enum_stage, enum_releaseRegion)
+	function CoreGroup_PowerCollector(enum_stage, int_AZpowersToCollect, enum_releaseRegion) {
+		if(!stage.is_StageType_OnRails(enum_stage)) util.throwError(format("Stage {0} is not On-Rails", enum_stage))
+		const_STAGE_SECTION_START_A = 0
+		const_STAGE_SECTION_START_B = 1
+
+		return
+			never(repeated(2, // --ResetIf--> Not InGame for 2 frames (this to allow TriggerCondition to pop)
+				never(gameState.on_change(enum_releaseRegion))
+				&& !gameState.is(gameState.InGame, enum_releaseRegion)))
+			&& never(repeated(2, // --ResetIf--> Not in correct Stage for 2 frames (this to allow TriggerCondition to pop)
+				never(stage.on_change(enum_releaseRegion))
+				&& !stage.is(enum_stage, enum_releaseRegion)))
+			&& never( // --ResetIf--> player dies (loses a life)
+				player.on_Life_lose(enum_releaseRegion))
+
+			&& once( // --CheckIf--[StartCondition]--> Player start from beginning of stage (not via checkpoint, after death)
+				stageSection.on_changeFromTo(const_STAGE_SECTION_START_A, const_STAGE_SECTION_START_B, enum_releaseRegion))
+
+			&& measured(tally_of(entity.array_indices_VariedEntities, int_AZpowersToCollect, int_index =>
+				// --> For each entity location => CheckIf: entity removed was xLoc > 0 (maybe xloc > 10~) AND was entityId = AnyPowerUp AND was sprite z-PowerUp OR A-PowerUp
+				repeated(int_AZpowersToCollect,
+					__ornext( // --OrNext--> is PowerUp_Z OR PowerUp_A
+						entity.wasPrev_Sprite(entity.PowerUp_Z, int_index, enum_releaseRegion)
+						|| entity.wasPrev_Sprite(entity.PowerUp_A, int_index, enum_releaseRegion))
+					&& 5 < entity.prev_xLocation(int_index, enum_releaseRegion) && entity.prev_xLocation(int_index, enum_releaseRegion) < 242 // --> PowerUps removed before reaching xLocation 0, means they're picked up by player.		When any Entity reaches xLocation 0 (in onRailsStages, it's removed). Be wary coords may overflow
+					&& entity.on_remove(entity.PowerUp_Z, int_index, enum_releaseRegion))
+			))
+
+			&& trigger_when( // --Trigger--> When On-Rails Stage continues to next Stage
+				player.is_atOnRailsStageEndCoords(enum_stage, enum_releaseRegion)
+				&& gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
+				&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion)
+				&& stageSection.on_Stage_end(enum_stage, enum_releaseRegion))
+	}
 
 } achievementSubLogic = CLASS_AchievementSubLogic()
 // #endregion ACH - sub logic
@@ -928,19 +961,17 @@ dict_coreData = {
 		// CONCEPT c_Bonus
 			// - Transform into the Armorator || kill xx enemies as Armorater
 			// - Acquire max charged pistol || kill xx enemies with fully charged pistol ("Zillion" is name of gun)
-			// - Pick up all Z-power ups in a stage (one achievement for each on-rails stage)
-			// - Pick up all A-power ups in one session (2 in stage 1 + 1 in stage 3)
 			// - Acquire cerain amount of score (maybe for unlocking extra lives at 30 000, 70 000 and 120 000 score)
 		// "a_Template2": {
 		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"},
 		// "a_Stg1PowerUp": { // VERIFIED
-			// "id": 614328, "points": AchievementPointClass.Free_0, "devInfo": "Collect all a total of 10 A or Z Power-Ups in this stage"},
-		// "a_Stg3ZuluUp": { // TODO implement + test how many power ups can be picked up in stage
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Collect all Z-Power-Ups in this stage"},
-		// "a_Stg5ZuluUp": { // TODO implement + test how many power ups can be picked up in stage
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Collect all Z-Power-Ups in this stage"},
-		// "a_Stg7ZuluUp": { // TODO implement + test how many power ups can be picked up in stage
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Collect all Z-Power-Ups in this stage"},
+			// "id": 614328, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
+		// "a_Stg3PowerUp": { // VERIFIED
+			// "id": 616732, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
+		// "a_Stg5PowerUp": { // VERIFIED
+			// "id": 616733, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
+		// "a_Stg7PowerUp": { // VERIFIED
+			// "id": 616734, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
 		},
 	"c_mBonus": { // Missable Bonus - Missable achievements
 		// CONCEPT c_mBonus
@@ -1016,47 +1047,39 @@ dict_triggers = {
 			achievementSubLogic.CoreGroup_OnFootStageCompletion(stage.Eight, BossEntity.Boss_Final, enum_releaseRegion)),
 	"a_Stg1PowerUp": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.One
-		const_AZ_POWER_UPS_TO_COLLECT = 10 // [9 Z-PowerUps] + [2 A-PowerUps]; minus one, because one A-PowerUp is parallel with a Z-PowerUp (can't pick up both at same time)
-		const_STAGE_SECTION_START_A = 0
-		const_STAGE_SECTION_START_B = 1
-
-		return
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			never(repeated(2, // --ResetIf--> Not InGame for 2 frames (this to allow TriggerCondition to pop)
-				never(gameState.on_change(enum_releaseRegion))
-				&& !gameState.is(gameState.InGame, enum_releaseRegion)))
-			&& never(repeated(2, // --ResetIf--> Not in correct Stage for 2 frames (this to allow TriggerCondition to pop)
-				never(stage.on_change(enum_releaseRegion))
-				&& !stage.is(const_STAGE, enum_releaseRegion)))
-			&& never( // --ResetIf--> player dies (loses a life)
-				player.on_Life_lose(enum_releaseRegion))
-
-			&& once( // --CheckIf--[StartCondition]--> Player start from beginning of stage (not via checkpoint, after death)
-				stageSection.on_changeFromTo(const_STAGE_SECTION_START_A, const_STAGE_SECTION_START_B, enum_releaseRegion))
-
-			&& measured(tally_of(entity.array_indices_VariedEntities, const_AZ_POWER_UPS_TO_COLLECT, int_index =>
-				// --> For each entity location => CheckIf: entity removed was xLoc > 0 (maybe xloc > 10~) AND was entityId = AnyPowerUp AND was sprite z-PowerUp OR A-PowerUp
-				repeated(const_AZ_POWER_UPS_TO_COLLECT,
-					__ornext( // --OrNext--> is PowerUp_Z OR PowerUp_A
-						entity.wasPrev_Sprite(entity.PowerUp_Z, int_index, enum_releaseRegion)
-						|| entity.wasPrev_Sprite(entity.PowerUp_A, int_index, enum_releaseRegion))
-					&& 5 < entity.prev_xLocation(int_index, enum_releaseRegion) && entity.prev_xLocation(int_index, enum_releaseRegion) < 242 // --> PowerUps removed before reaching xLocation 0, means they're picked up by player.		When any Entity reaches xLocation 0 (in onRailsStages, it's removed). Be wary coords may overflow
-					&& entity.on_remove(entity.PowerUp_Z, int_index, enum_releaseRegion))
-			))
-
-			&& trigger_when( // --Trigger--> When On-Rails Stage continues to next Stage
-				player.is_atOnRailsStageEndCoords(const_STAGE, enum_releaseRegion)
-				&& gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
-				&& stage.on_changeFromTo(const_STAGE, const_STAGE +1, enum_releaseRegion)
-				&& stageSection.on_Stage_end(const_STAGE, enum_releaseRegion))
-		}),	
+		const_AZ_POWERS_TO_COLLECT = 10 // --> Stage 1: [9 Z-PowerUps] + [2 A-PowerUps]; minus one, because one A-PowerUp is parallel with a Z-PowerUp (can't pick up both at same time)
+		return 
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			achievementSubLogic.CoreGroup_PowerCollector(const_STAGE, const_AZ_POWERS_TO_COLLECT, enum_releaseRegion)
+		}),
+	"a_Stg3PowerUp": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.Three
+		const_AZ_POWERS_TO_COLLECT = 9 -1 // --> Stage 3: [8 Z-PowerUps] + [1 A-PowerUps]; minus one, to allow for some breathing room
+		return 
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			achievementSubLogic.CoreGroup_PowerCollector(const_STAGE, const_AZ_POWERS_TO_COLLECT, enum_releaseRegion)
+		}),
+	"a_Stg5PowerUp": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.Five
+		const_AZ_POWERS_TO_COLLECT = 9 -1 // --> Stage 5: [9 Z-PowerUps]; minus one, to allow for some breathing room
+		return 
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			achievementSubLogic.CoreGroup_PowerCollector(const_STAGE, const_AZ_POWERS_TO_COLLECT, enum_releaseRegion)
+		}),
+	"a_Stg7PowerUp": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.Seven
+		const_AZ_POWERS_TO_COLLECT = 10 -1 // --> Stage 7: [9 Z-PowerUps]; minus one, to allow for some breathing room
+		return 
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			achievementSubLogic.CoreGroup_PowerCollector(const_STAGE, const_AZ_POWERS_TO_COLLECT, enum_releaseRegion)
+		}),
 	}
 // #endregion ACH - Triggers
 
 // #region ACH - Text
 dict_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
-	"a_Stage1": 			{"en": "Mission Begins"},
+	"a_Stage1": 			{"en": "Mission Commenced"},
 	"a_Stage2": 			{"en": "Out of Phase"},
 	"a_Stage3": 			{"en": "Enemy Stronghold"},
 	"a_Stage4": 			{"en": "Grounded"},
@@ -1066,6 +1089,9 @@ dict_titles = {
 	"a_Stage8": 			{"en": "For Maris!"},
 	
 	"a_Stg1PowerUp": 			{"en": "xxxxxxxxx"},
+	"a_Stg3PowerUp": 			{"en": "xxxxxxxxx"},
+	"a_Stg5PowerUp": 			{"en": "xxxxxxxxx"},
+	"a_Stg7PowerUp": 			{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -1079,6 +1105,9 @@ dict_descriptions = {
 	"a_Stage8": 			{"en": "Defeat Baron Ricks, thwarting the latest Nohza invasion"},
 
 	"a_Stg1PowerUp": 			{"en": "xxxxxxxxx"},
+	"a_Stg3PowerUp": 			{"en": "xxxxxxxxx"},
+	"a_Stg5PowerUp": 			{"en": "xxxxxxxxx"},
+	"a_Stg7PowerUp": 			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
