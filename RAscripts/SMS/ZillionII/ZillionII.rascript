@@ -407,9 +407,12 @@ class CLASS_MEMLOGIC_GameState {
 	TheEnd = 0x6
 	InGame = 0x7
 	BossFight = 0x8
+	RescueRoom = 0x8
 	// --------Functions--------
 	function current(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:GameState", enum_releaseRegion))
+	function prior(enum_releaseRegion) =>
+		prior(this.current(enum_releaseRegion))
 	function prev(enum_releaseRegion) =>
 		prev(this.current(enum_releaseRegion))
 	
@@ -603,6 +606,23 @@ class CLASS_MEMLOGIC_PlayerLogic {
 		byte(memory.getAddress("Flag:IsArmoraterActive", enum_releaseRegion))
 	function prev_flagState_IsArmoratorActive(enum_releaseRegion) =>
 		prev(this.current_flagState_IsArmoratorActive(enum_releaseRegion))	
+	
+	function current_flagState_IsAppleAvailable(enum_releaseRegion) =>
+		bit0(memory.getAddress("BitFlag:IsAppleAvailable", enum_releaseRegion))
+	function prev_flagState_IsAppleAvailable(enum_releaseRegion) =>
+		prev(this.current_flagState_IsAppleAvailable(enum_releaseRegion))
+	function current_flagState_IsChampAvailable(enum_releaseRegion) =>
+		byte(memory.getAddress("BitFlag:IsChampAvailable", enum_releaseRegion))
+	function prev_flagState_IsChampAvailable(enum_releaseRegion) =>
+		prev(this.current_flagState_IsChampAvailable(enum_releaseRegion))	
+	
+	function on_Apple_rescue(enum_releaseRegion) =>
+		this.prev_flagState_IsAppleAvailable(enum_releaseRegion) == 0
+		&& this.current_flagState_IsAppleAvailable(enum_releaseRegion) == 1
+	function on_Champ_rescue(enum_releaseRegion) =>
+		this.prev_flagState_IsChampAvailable(enum_releaseRegion) == 0
+		&& this.current_flagState_IsChampAvailable(enum_releaseRegion) == 1
+
 	function current_Score(enum_releaseRegion) =>
 		bcd(tbyte(memory.getAddress("24-bit BCD:Score", enum_releaseRegion))) * 10
 	function prev_Score(enum_releaseRegion) {
@@ -1009,19 +1029,22 @@ dict_coreData = {
 			// "id": 616734, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
 		// "a_TriCharged": { // VERIFIED
 			// "id": 616747, "points": AchievementPointClass.Free_0, "devInfo": "Complete an On-Rails Stage using only the Armorator and without dying. Transform near the beginning of the Stage"},
-		// "a_MaxLives": {
+		// "a_MaxLives": { // VERIFIED
 			// "id": 616784, "points": AchievementPointClass.Free_0, "devInfo": "Acquire a total of 6 lives (extra lives unlocked at 30k, 70k and 120k score + start at 3)"},
 		},
 	"c_mBonus": { // Missable Bonus - Missable achievements
 		// CONCEPT c_mBonus
 			// - Rescue both characters || Finish an on-rails stage from start to finish with a rescued character
 			// - https://web.archive.org/web/20200928101143/https://www.engadget.com/2009-03-04-man-holds-woman-hostage-for-10-hours-with-a-sega-light-gun.html
-		// "a_Template2": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"},
+		"a_RescueApple": {
+			"id": 616785, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Apple in Stage 2"},
+		"a_RescueChamp": {
+			"id": 616786, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Champ in Stage 4"},
 		},
 	"c_Challenges": { // Challenges
 		// CONCEPT c_Challenges
 			// - Complete an on-rails stage without dying
+			// - Complete on-foot stage shooting limited amount of times (Zillion ammo is limited)
 			// - Complete an on-rails stage without healing (health pickups + summoning)
 			// - Complete an on-foot stage without taking a hit || without dying
 			// - Complete a stage earning specific score...
@@ -1168,7 +1191,27 @@ dict_triggers = {
 			&& player.current_Score(enum_releaseRegion) >= const_THIRD_LIFE_SCORE_REQUIREMENT
 			&& player.prev_Lives(enum_releaseRegion) == const_MAX_LIVES -1
 			&& player.current_Lives(enum_releaseRegion) == const_MAX_LIVES
-		}),
+		}),	
+	"a_RescueChamp": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.Four
+
+		return 
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			gameState.prior(enum_releaseRegion) == gameState.InGame
+			&& gameState.current(enum_releaseRegion) == gameState.RescueRoom
+			&& stage.is(const_STAGE, enum_releaseRegion)
+			&& player.on_Champ_rescue(enum_releaseRegion)
+		}),	
+	"a_RescueApple": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.Two
+
+		return 
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			gameState.prior(enum_releaseRegion) == gameState.InGame
+			&& gameState.current(enum_releaseRegion) == gameState.RescueRoom
+			&& stage.is(const_STAGE, enum_releaseRegion)
+			&& player.on_Apple_rescue(enum_releaseRegion)
+		}),	
 	}
 // #endregion ACH - Triggers
 
@@ -1190,6 +1233,8 @@ dict_titles = {
 	"a_Stg7PowerUp": 			{"en": "xxxxxxxxx"},
 	"a_TriCharged": 			{"en": "xxxxxxxxx"},
 	"a_MaxLives": 				{"en": "xxxxxxxxx"},
+	"a_RescueChamp": 			{"en": "xxxxxxxxx"},
+	"a_RescueApple": 			{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -1208,6 +1253,8 @@ dict_descriptions = {
 	"a_Stg7PowerUp": 			{"en": "xxxxxxxxx"},
 	"a_TriCharged": 			{"en": "xxxxxxxxx"},
 	"a_MaxLives": 				{"en": "xxxxxxxxx"},
+	"a_RescueChamp": 			{"en": "xxxxxxxxx"},
+	"a_RescueApple": 			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
