@@ -183,8 +183,8 @@ class CLASS_MemoryData {
 
 		"Flag:IsArmoraterActive": {ReleaseRegion.World: 0x0301},
 
-		"8-bit:OutroSequence_Section_ID": {ReleaseRegion.World: 0x0133},
 		"8-bit:ContinueUseCount": {ReleaseRegion.World: 0x0002},
+		"8-bit:OutroSequence_Section_ID": {ReleaseRegion.World: 0x0133},
 		"8-bit:GameState": {ReleaseRegion.World: 0x0010},
 		"8-bit:Stage_ID(functional)": {ReleaseRegion.World: 0x0015},
 		"8-bit:Player_Life": {ReleaseRegion.World: 0x0018},
@@ -419,6 +419,9 @@ class CLASS_MEMLOGIC_GameState {
 	function is(enum_gameState, enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == enum_gameState
 
+	function is_valid(enum_releaseRegion) =>
+		0x1 <= this.current(enum_releaseRegion) && this.current(enum_releaseRegion) <= 0x8
+	
 	function on_change(enum_releaseRegion) =>
 		this.current(enum_releaseRegion) != this.prev(enum_releaseRegion)
 
@@ -440,12 +443,15 @@ class CLASS_MEMLOGIC_OutroSequenceState {
 	function prev(enum_releaseRegion) =>
 		prev(this.current(enum_releaseRegion))
 	
+	function is_valid(enum_releaseRegion) =>
+		this.One <= this.current(enum_releaseRegion) && this.current(enum_releaseRegion) <= this.Four
+
 	function is(enum_outroSequenceSection, enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == enum_outroSequenceSection
 	function on_changeFromTo(enum_outroSequenceSectionPrev, enum_outroSequenceSectionCurrent, enum_releaseRegion) =>
 		this.prev(enum_releaseRegion) == enum_outroSequenceSectionPrev
 		&& this.current(enum_releaseRegion) == enum_outroSequenceSectionCurrent
-} OutroSequenceSection = CLASS_MEMLOGIC_OutroSequenceState()
+} outroSequenceSection = CLASS_MEMLOGIC_OutroSequenceState()
 // #endregion Game State & Information
 
 // ........................
@@ -573,6 +579,10 @@ class CLASS_MEMLOGIC_StageLocationData {
 // #region Player Information
 class CLASS_MEMLOGIC_PlayerLogic {
 	// --------Variables/Enums--------
+	CHARACTER_JJ = 0x0
+	CHARACTER_Apple = 0x1
+	CHARACTER_Champ = 0x2
+
 	// --------Functions--------
 	function current_Lives(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:Player_Lives", enum_releaseRegion))
@@ -616,6 +626,12 @@ class CLASS_MEMLOGIC_PlayerLogic {
 	function prev_flagState_IsChampAvailable(enum_releaseRegion) =>
 		prev(this.current_flagState_IsChampAvailable(enum_releaseRegion))	
 	
+	function current_ContinuesUsed(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:ContinueUseCount", enum_releaseRegion))
+
+	function current_Character(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:PlayerCharacter_ID", enum_releaseRegion))		
+	
 	function on_Apple_rescue(enum_releaseRegion) =>
 		this.prev_flagState_IsAppleAvailable(enum_releaseRegion) == 0
 		&& this.current_flagState_IsAppleAvailable(enum_releaseRegion) == 1
@@ -623,6 +639,10 @@ class CLASS_MEMLOGIC_PlayerLogic {
 		this.prev_flagState_IsChampAvailable(enum_releaseRegion) == 0
 		&& this.current_flagState_IsChampAvailable(enum_releaseRegion) == 1
 
+	function current_HighScore_bis(enum_releaseRegion) =>
+		bcd(tbyte(memory.getAddress("24-bit BCD:HighScore", enum_releaseRegion)))	
+	function current_Score_bis(enum_releaseRegion) =>
+		bcd(tbyte(memory.getAddress("24-bit BCD:Score", enum_releaseRegion)))
 	function current_Score(enum_releaseRegion) =>
 		bcd(tbyte(memory.getAddress("24-bit BCD:Score", enum_releaseRegion))) * 10
 	function prev_Score(enum_releaseRegion) {
@@ -875,10 +895,10 @@ class CLASS_AchievementSubLogic {
 				gameState.on_changeFromTo(gameState.BossFight, gameState.OutroSequence, enum_releaseRegion))
 			&& once( // --CheckIf--> OutroSequence progresses
 				gameState.is(gameState.OutroSequence, enum_releaseRegion)
-				&& OutroSequenceSection.on_changeFromTo(OutroSequenceSection.One, OutroSequenceSection.Two, enum_releaseRegion))
+				&& outroSequenceSection.on_changeFromTo(outroSequenceSection.One, outroSequenceSection.Two, enum_releaseRegion))
 			// --CheckIf--> OutroSequence progresses
 			&& gameState.is(gameState.OutroSequence, enum_releaseRegion)
-			&& OutroSequenceSection.on_changeFromTo(OutroSequenceSection.Three, OutroSequenceSection.Four, enum_releaseRegion)
+			&& outroSequenceSection.on_changeFromTo(outroSequenceSection.Three, outroSequenceSection.Four, enum_releaseRegion)
 		else let_LastRequirements = 
 			// --CheckIf--> On-Foot Stage continues to next Stage
 			gameState.on_changeFromTo(gameState.BossFight, gameState.PreStageScreen, enum_releaseRegion)
@@ -1034,15 +1054,15 @@ dict_coreData = {
 		},
 	"c_mBonus": { // Missable Bonus - Missable achievements
 		// CONCEPT c_mBonus
-			// - Rescue both characters || Finish an on-rails stage from start to finish with a rescued character
 			// - https://web.archive.org/web/20200928101143/https://www.engadget.com/2009-03-04-man-holds-woman-hostage-for-10-hours-with-a-sega-light-gun.html
-		"a_RescueApple": {
-			"id": 616785, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Apple in Stage 2"},
-		"a_RescueChamp": {
-			"id": 616786, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Champ in Stage 4"},
+		// "a_RescueApple": { // VERIFIED
+			// "id": 616785, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Apple in Stage 2 and complete Stage 3 as them. Switch to other character near beginning of Stage 3"},
+		// "a_RescueChamp": { // VERIFIED
+			// "id": 616786, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Champ in Stage 4 and complete Stage 5 as them. Switch to other character near beginning of Stage 5"},
 		},
 	"c_Challenges": { // Challenges
 		// CONCEPT c_Challenges
+			// - At least one challenge as Champ AND one as Apple
 			// - Complete an on-rails stage without dying
 			// - Complete on-foot stage shooting limited amount of times (Zillion ammo is limited)
 			// - Complete an on-rails stage without healing (health pickups + summoning)
@@ -1050,7 +1070,7 @@ dict_coreData = {
 			// - Complete a stage earning specific score...
 			// - Complete an on-foot stage within time limit
 			// - Finish game having rescued both character, but without having summoned them in battle. "Stay back I got this"
-			// - Finish game with max lives (extra lives at 30 000, 70 000 and 120 000 score)
+			// - Finish game with max lives (extra lives at 30 000, 70 000 and 120 000 score) --> somehow double with a_MaxLives
 			// - Finish game without using continues (OR only using one)
 			// - Finish game with certain score || time limit || lives left
 		// "a_Template2": {
@@ -1341,8 +1361,14 @@ function initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = {
 	// "rp_Template": 				{"en": "xxxxxxxx"},
-	"rp_DefaultPlus":				{"en": "xxxxxxxx"},
-	"rp_Default":					{"en": "xxxxxxxx"}}
+	"rp_Outro":						{"en": "Playing Zillion II: The Tri Formation ⚡ The White Nuts have defeated Baron Ricks and his Nozha Invasion ⚡ Score {0}0 ⚡ Lives {1} ⚡ Continues {2}/3"},
+	"rp_InGame":					{"en": "Playing Zillion II: The Tri Formation ⚡ {0} in combat with Nozha Forces, in Stage {1} ⚡ Score {2}0 ⚡ Lives {3} ⚡ Continues {4}/3"},
+	"rp_Demo": 						{"en": "Playing Zillion II: The Tri Formation ⚡ Demo"},
+	"rp_MainMenu": 					{"en": "Playing Zillion II: The Tri Formation ⚡ Main Menu"},
+	"rp_Demo_Scored": 				{"en": "Playing Zillion II: The Tri Formation ⚡ Demo ⚡ High Score {0}0"},
+	"rp_MainMenu_Scored": 			{"en": "Playing Zillion II: The Tri Formation ⚡ Main Menu ⚡ High Score {0}0"},
+	"rp_DefaultPlus":				{"en": "Playing Zillion II: The Tri Formation ⚡ High Score {0}0"},
+	"rp_Default":					{"en": "Playing Zillion II: The Tri Formation"}}
 richPresence_LookupTablesText = {
 	// "lupText_Template": {
 		// "LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
@@ -1350,6 +1376,12 @@ richPresence_LookupTablesText = {
 		// "LookupTextKey_B":				{"en": "xxxxxxxx"},
 		// "LookupTextKey_C":				{"en": "xxxxxxxx"},
 		// },
+	"lupText_CharacterName": {
+		"LOOKUP_FALLBACK":	{"en": "The White Nuts are"},
+		"JJ":				{"en": "JJ is"},
+		"Apple":			{"en": "Apple is"},
+		"Champ":			{"en": "Champ is"},
+		},		
 	}
 // richPresence_ReleaseRegion_toSuperScript = { // DISABLED: Only 1 region supported
 // 	// NOTE: Text to superscript --> https://lingojam.com/SuperscriptGenerator
@@ -1376,6 +1408,14 @@ richPresence_lookupTables = {
 		// 	enum_XXX_C:					"LookupTextKey_C",
 		// 	},
 		// },
+	"lup_CharacterName": {
+		"LookupTableText_Key": "lupText_CharacterName",
+		"LookUpTable": {
+			player.CHARACTER_JJ: 		"JJ",
+			player.CHARACTER_Apple: 	"Apple",
+			player.CHARACTER_Champ: 	"Champ",
+			},
+		},
 	}
 function richPresence_getLookupTable(string_lookupTableKey) =>
 	richPresence_lookupTables[string_lookupTableKey]["LookUpTable"]
@@ -1453,12 +1493,73 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion) // 2
 	// )}
 
-function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+function rp_MainMenu_Scored(enum_releaseRegion) {
 	function condition(enum_releaseRegion) =>
-		releaseRegion.is(enum_releaseRegion)
+		gameState.is(gameState.MainMenu, enum_releaseRegion)
+		&& player.current_HighScore_bis(enum_releaseRegion) > 0
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
-		richPresence_getText_withRegionSuperScript("rp_DefaultPlus", enum_releaseRegion)
+		richPresence_getText("rp_MainMenu_Scored"),
+		richPresence_callParameterFunction("rpp_HighScore", enum_releaseRegion)
+	)}
+function rp_Demo_Scored(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		gameState.is(gameState.MainMenu, enum_releaseRegion)
+		&& player.current_HighScore_bis(enum_releaseRegion) > 0
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_Demo_Scored"),
+		richPresence_callParameterFunction("rpp_HighScore", enum_releaseRegion)
+	)}
+function rp_MainMenu(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		gameState.is(gameState.MainMenu, enum_releaseRegion)
+		&& player.current_HighScore_bis(enum_releaseRegion) == 0
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_MainMenu")
+	)}
+function rp_Demo(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		gameState.is(gameState.Demo, enum_releaseRegion)
+		&& player.current_HighScore_bis(enum_releaseRegion) == 0
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_Demo")
+	)}
+function rp_Outro(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		any_of([gameState.TheEnd, gameState.OutroSequence], enum_gameState =>
+			gameState.is(enum_gameState, enum_releaseRegion))
+		&& outroSequenceSection.is_valid(enum_releaseRegion)
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_Outro"),
+		richPresence_callParameterFunction("rpp_Score", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_LivesLeft", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_ContinuesLeft", enum_releaseRegion)
+	)}
+function rp_InGame(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		any_of([gameState.InGame, gameState.PlayerDeath, gameState.PreStageScreen, gameState.BossFight], enum_gameState =>
+			gameState.is(enum_gameState, enum_releaseRegion))		
+
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_InGame"),
+		richPresence_callParameterFunction("rpp_CharacterName", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_StageNumber", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_Score", enum_releaseRegion), 
+		richPresence_callParameterFunction("rpp_LivesLeft", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_ContinuesLeft", enum_releaseRegion)
+	)}
+function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+	function condition(enum_releaseRegion) =>
+		!gameState.is_valid(enum_releaseRegion)
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_DefaultPlus"),
+		richPresence_callParameterFunction("rpp_HighScore", enum_releaseRegion)
 	)}
 function rp_Default() {
 	return rich_presence_display(
@@ -1466,9 +1567,15 @@ function rp_Default() {
 	)}
 // -------------------------------------
 function richPresence_initializeDisplays() {
-	rp_Default() // TODO rp_Default
+	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		// rp_DefaultPlus(enum_releaseRegion) // CONCEPT rp_DefaultPlus
+		rp_DefaultPlus(enum_releaseRegion)
+		rp_MainMenu_Scored(enum_releaseRegion)
+		rp_Demo_Scored(enum_releaseRegion)
+		rp_MainMenu(enum_releaseRegion)
+		rp_Demo(enum_releaseRegion)
+		rp_InGame(enum_releaseRegion)
+		rp_Outro(enum_releaseRegion)
 	}} 
 // #endregion RP - Display Script
 
@@ -1525,9 +1632,43 @@ richPresence_parameterData = {
 		// 	ReleaseRegion.EUR: always_false(),
 		// 	ReleaseRegion.JPN: always_false()},
 		// "MacroFormat": "Number"},
-	
-	
 
+	"rpp_HighScore": {
+		"RPtype": RichPresenceParameterType.MACRO,
+		"Expression": {
+			ReleaseRegion.World: player.current_HighScore_bis(ReleaseRegion.World)},
+		"MacroFormat": "Score"},
+
+	"rpp_Score": {
+		"RPtype": RichPresenceParameterType.MACRO,
+		"Expression": {
+			ReleaseRegion.World: player.current_Score_bis(ReleaseRegion.World)},
+		"MacroFormat": "Score"},
+	
+	"rpp_ContinuesLeft": {
+		"RPtype": RichPresenceParameterType.VALUE,
+		"Expression": {
+			ReleaseRegion.World: 3 - player.current_ContinuesUsed(ReleaseRegion.World)},
+		"ValueFormat": "VALUE"},
+	
+	"rpp_LivesLeft": {
+		"RPtype": RichPresenceParameterType.VALUE,
+		"Expression": {
+			ReleaseRegion.World: player.current_Lives(ReleaseRegion.World) -1},
+		"ValueFormat": "VALUE"},
+
+	"rpp_StageNumber": {
+		"RPtype": RichPresenceParameterType.VALUE,
+		"Expression": {
+			ReleaseRegion.World: stage.current(ReleaseRegion.World)},
+		"ValueFormat": "VALUE"},
+
+	"rpp_CharacterName": {
+		"RPtype": RichPresenceParameterType.LOOKUP_HEX,
+		"Expression": {
+			ReleaseRegion.World: player.current_Character(ReleaseRegion.World)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lupText_CharacterName", "LOOKUP_FALLBACK")},	
 	}
 // -------------------------------------
 function richPresence_createParameterName(string_parameterKey) => // Removes rpp_ 
