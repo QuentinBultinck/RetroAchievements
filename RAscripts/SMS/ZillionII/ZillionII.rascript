@@ -1035,10 +1035,6 @@ dict_coreData = {
 			// "id": 614061, "points": AchievementPointClass.Hard_25, "devInfo": "Complete Stage 8 + Finish Outro"}
 		},
 	"c_Bonus": { // Bonus - Miscellaneous achievements
-		// CONCEPT c_Bonus
-			// - Acquire cerain amount of score (maybe for unlocking extra lives at 30 000, 70 000 and 120 000 score)
-		// "a_Template2": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"},
 		// "a_Stg1PowerUp": { // VERIFIED
 			// "id": 614328, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
 		// "a_Stg3PowerUp": { // VERIFIED
@@ -1056,25 +1052,37 @@ dict_coreData = {
 		// CONCEPT c_mBonus
 			// - https://web.archive.org/web/20200928101143/https://www.engadget.com/2009-03-04-man-holds-woman-hostage-for-10-hours-with-a-sega-light-gun.html
 		// "a_RescueApple": { // VERIFIED
-			// "id": 616785, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Apple in Stage 2 and complete Stage 3 as them. Switch to other character near beginning of Stage 3"},
+			// "id": 616785, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Apple in Stage 2"},
 		// "a_RescueChamp": { // VERIFIED
-			// "id": 616786, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Champ in Stage 4 and complete Stage 5 as them. Switch to other character near beginning of Stage 5"},
+			// "id": 616786, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Champ in Stage 4"},
 		},
 	"c_Challenges": { // Challenges
-		// CONCEPT c_Challenges
-			// - At least one challenge as Champ AND one as Apple
-			// - Complete an on-rails stage without dying
-			// - Complete on-foot stage shooting limited amount of times (Zillion ammo is limited)
-			// - Complete an on-rails stage without healing (health pickups + summoning)
-			// - Complete an on-foot stage without taking a hit || without dying
-			// - Complete a stage earning specific score...
-			// - Complete an on-foot stage within time limit
-			// - Finish game having rescued both character, but without having summoned them in battle. "Stay back I got this"
-			// - Finish game with max lives (extra lives at 30 000, 70 000 and 120 000 score) --> somehow double with a_MaxLives
-			// - Finish game without using continues (OR only using one)
-			// - Finish game with certain score || time limit || lives left
-		// "a_Template2": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"},
+		// "a_Stg1Deathless": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 1 without dying"},
+		// "a_Stg2Deathless": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 2 without dying"},
+		// "a_Stg3Deathless": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3 as Apple without dying. Summon Apple near beginning of Stage "},
+		// "a_Stg4Deathless": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4 without dying"},
+		// "a_Stg5Deathless": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 5 as Champ without dying. Summon Champ near beginning of Stage"},
+		// "a_Stg6Deathless": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 6 without dying"},
+		// "a_Stg7Deathless": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 7 without dying"},
+		// "a_Stg8Deathless": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 8 without dying"},
+		// "a_WinNoSummon": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without summoning Champ or Apple"},
+		// "a_WinNoContinue": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without using a continue"},
+		// "a_WinScore": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game with xx score"},
+		// "a_NoHeals": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete any On-Rails Stage without dying and without picking up any healing items (L-Power-Up)"},
+		// "a_MinHits": { // TODO c_Challenge
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete any On-Foot Stage without dying and taking only a max of 3 hits"},
 		},
 	}
 dict_achievementCategoryToAchievementType = {
@@ -1232,6 +1240,58 @@ dict_triggers = {
 			&& stage.is(const_STAGE, enum_releaseRegion)
 			&& player.on_Apple_rescue(enum_releaseRegion)
 		}),	
+	"a_Stg1Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
+	"a_Stg2Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
+	"a_Stg3Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
+	"a_Stg4Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
+	"a_Stg5Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
+	"a_Stg6Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
+	"a_Stg7Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
+	"a_Stg8Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
+	"a_WinNoSummon": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
+	"a_WinNoContinue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
+	"a_WinScore": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
+	"a_NoHeals": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
+	"a_MinHits": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_true()
+			&& always_false()),
 	}
 // #endregion ACH - Triggers
 
@@ -1255,6 +1315,20 @@ dict_titles = {
 	"a_MaxLives": 				{"en": "xxxxxxxxx"},
 	"a_RescueChamp": 			{"en": "xxxxxxxxx"},
 	"a_RescueApple": 			{"en": "xxxxxxxxx"},
+
+	"a_Stg1Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg2Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg3Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg4Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg5Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg6Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg7Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg8Deathless":		{"en": "xxxxxxxxx"},
+	"a_WinNoSummon":		{"en": "xxxxxxxxx"},
+	"a_WinNoContinue":		{"en": "xxxxxxxxx"},
+	"a_WinScore":			{"en": "xxxxxxxxx"},
+	"a_NoHeals":			{"en": "xxxxxxxxx"},
+	"a_MinHits":			{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -1275,6 +1349,20 @@ dict_descriptions = {
 	"a_MaxLives": 				{"en": "xxxxxxxxx"},
 	"a_RescueChamp": 			{"en": "xxxxxxxxx"},
 	"a_RescueApple": 			{"en": "xxxxxxxxx"},
+	
+	"a_Stg1Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg2Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg3Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg4Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg5Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg6Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg7Deathless":		{"en": "xxxxxxxxx"},
+	"a_Stg8Deathless":		{"en": "xxxxxxxxx"},
+	"a_WinNoSummon":		{"en": "xxxxxxxxx"},
+	"a_WinNoContinue":		{"en": "xxxxxxxxx"},
+	"a_WinScore":			{"en": "xxxxxxxxx"},
+	"a_NoHeals":			{"en": "xxxxxxxxx"},
+	"a_MinHits":			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
@@ -1352,7 +1440,6 @@ function initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region RICH PRESENCE
-// TODO implement Rich Presence
 
 // ======================
 // • RICH PRESENCE text •
@@ -1741,7 +1828,9 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
-// TODO implement leaderboards
+// CONCEPT leaderboards
+// - Timed leaderboard for whole game (start-finish)? (with optional timer-overlay, otherwise start-submit at game End)
+// - Leaderboard for each stage --> Score (Start-Submit at Stage End)
 
 // ==========================================
 // • LEADERBOARD sub logic & value measures •
