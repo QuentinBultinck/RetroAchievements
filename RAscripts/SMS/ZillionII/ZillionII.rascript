@@ -540,8 +540,10 @@ class CLASS_MEMLOGIC_StageData {
 	function get_PlayerLocation_End(enum_stageID) => this.dict_StageData[enum_stageID]["PlayerLocation_End"]
 	function get_Z_PowerUp_Count(enum_stageID) => this.dict_StageData[enum_stageID]["Z_PowerUp_Count"]
 	function is_StageType_OnRails(enum_stageID) => this.dict_StageData[enum_stageID]["StageType"] == "OnRails"
-	function get_Array_AllOnRailsStage() => array_filter(this.dict_StageData, enum_stageID => 
+	function get_Array_AllOnRailsStages() => array_filter(this.dict_StageData, enum_stageID => 
 		this.is_StageType_OnRails(enum_stageID))
+	function get_Array_AllOnFootStages() => array_filter(this.dict_StageData, enum_stageID => 
+		!this.is_StageType_OnRails(enum_stageID))
 
 	// --------Functions--------
 	function current(enum_releaseRegion) =>
@@ -612,6 +614,17 @@ class CLASS_MEMLOGIC_PlayerLogic {
 	
 	function on_Life_increment(enum_releaseRegion) =>
 		this.current_Lives(enum_releaseRegion) > this.prev_Lives(enum_releaseRegion)
+
+	function current_HP(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:Player_Life", enum_releaseRegion))
+	function prev_HP(enum_releaseRegion) =>
+		prev(this.current_HP(enum_releaseRegion))
+	
+	function on_Heal(enum_releaseRegion) =>
+		this.current_HP(enum_releaseRegion) > this.prev_HP(enum_releaseRegion)
+
+	function on_HP_decrement(enum_releaseRegion) =>
+		this.current_HP(enum_releaseRegion) < this.prev_HP(enum_releaseRegion)
 
 	function current_xLocation(enum_releaseRegion) {
 		let_memAddr_PlayerEntityStruct = memory.getAddress("Struct(Entity):Player", enum_releaseRegion)
@@ -1206,10 +1219,10 @@ dict_coreData = {
 			// "id": 618543, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without using a continue"},
 		// "a_WinScore": { // TODO c_Challenge
 			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game with xx score"},
-		// "a_NoHeals": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete any On-Rails Stage without dying and without picking up any healing items (L-Power-Up)"},
-		// "a_MinHits": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete any On-Foot Stage without dying and taking only a max of 3 hits"},
+		// "a_NoHeals": { // VERIFIED
+			// "id": 618565, "points": AchievementPointClass.Free_0, "devInfo": "Complete any On-Rails Stage without dying and without HP healing (from L-Power-Up and Summon)"},
+		// "a_MinHits": { // VERIFIED
+			// "id": 618584, "points": AchievementPointClass.Free_0, "devInfo": "Complete any On-Foot Stage without dying and taking only a max of 3 hits"},
 		},
 	}
 dict_achievementCategoryToAchievementType = {
@@ -1291,13 +1304,13 @@ dict_triggers = {
 			achievementSubLogic.CoreGroup_PowerCollector(const_STAGE, const_AZ_POWERS_TO_COLLECT, enum_releaseRegion)
 		}),
 	"a_TriCharged": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_ALLOWED_STAGES = stage.get_Array_AllOnRailsStage()
+		const_ALLOWED_STAGES = stage.get_Array_AllOnRailsStages()
 		const_STAGE_SECTION_START_A = 0
 		const_STAGE_SECTION_START_B = 1
 		const_BEGINNING_OF_STAGE_THRESHOLD = 5
 
 		return 
-		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			never(repeated(2, // --ResetIf--> Not InGame for 2 frames (this to allow TriggerCondition to pop)
 				never(gameState.on_change(enum_releaseRegion))
 				&& !gameState.is(gameState.InGame, enum_releaseRegion)))
@@ -1509,14 +1522,90 @@ dict_triggers = {
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			always_true()
 			&& always_false()),
-	"a_NoHeals": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+	"a_NoHeals": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ALLOWED_STAGES = stage.get_Array_AllOnRailsStages()
+		const_STAGE_SECTION_START_A = 0
+		const_STAGE_SECTION_START_B = 1
+
+		return 
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
-	"a_MinHits": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+			never(repeated(2, // --ResetIf--> Not InGame for 2 frames (this to allow TriggerCondition to pop)
+				never(gameState.on_change(enum_releaseRegion))
+				&& !gameState.is(gameState.InGame, enum_releaseRegion)))
+			&& never(repeated(2, // --ResetIf--> Not in correct Stage for 2 frames (this to allow TriggerCondition to pop)
+				never(stage.on_change(enum_releaseRegion))
+				&& all_of(const_ALLOWED_STAGES, enum_stage => 
+					!stage.is(enum_stage, enum_releaseRegion))))
+			&& never( // --ResetIf--> player dies (loses a life)
+				player.on_Life_lose(enum_releaseRegion))
+			&& never( // --ResetIf--> player picks up a healing item (L-Power-Up)
+				gameState.is(gameState.InGame, enum_releaseRegion)
+				&& player.on_Heal(enum_releaseRegion))
+
+			&& once( // --CheckIf--[StartCondition]--> Player start from beginning of stage (not via checkpoint, after death)
+				gameState.is(gameState.InGame, enum_releaseRegion)
+				&& stageSection.on_changeFromTo(const_STAGE_SECTION_START_A, const_STAGE_SECTION_START_B, enum_releaseRegion))
+
+			&& trigger_when(
+				tally_of(const_ALLOWED_STAGES, 1, enum_stage => // --Tally--OrNext--> CheckIf: Player enters last StageSection of any Stage)	
+					gameState.is(gameState.InGame, enum_releaseRegion)
+					&& stageSection.on_LastSection_enter(enum_stage, enum_releaseRegion))
+				&& tally_of(const_ALLOWED_STAGES, 1, enum_stage => // --Tally--OrNext--> CheckIf: Player enters door into next stage
+					gameState.is(gameState.InGame, enum_releaseRegion)
+					&& player.is_atOnRailsStageEndCoords(enum_stage, enum_releaseRegion))
+				&& tally_of(const_ALLOWED_STAGES, 1, enum_stage => // --Tally--OrNext--> CheckIf: Any On-Rails Stage continues to next Stage
+					player.is_atOnRailsStageEndCoords(enum_stage, enum_releaseRegion)
+					&& gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
+					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion)
+					&& stageSection.on_Stage_end(enum_stage, enum_releaseRegion))
+			)
+		}),
+	"a_MinHits": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ALLOWED_STAGES = stage.get_Array_AllOnFootStages()
+		const_ALLOWED_HITS_TAKEN = 3
+
+		let_array_StartRequirements = [] 
+		for enum_stage in const_ALLOWED_STAGES {
+			let_requiremnt_A = once( // --CheckIf--> Player loads into level one from gameState.PreStageScreen
+				stage.is(enum_stage, enum_releaseRegion)
+				&& stage.is_Level_Start(enum_stage, enum_releaseRegion)
+				&& gameState.on_changeFromTo(gameState.PreStageScreen, gameState.InGame, enum_releaseRegion))
+			let_requiremnt_B = once( // --CheckIf--> Player loads into level one from gameState.PlayerDeath
+				stage.is(enum_stage, enum_releaseRegion)
+				&& stage.is_Level_Start(enum_stage, enum_releaseRegion)
+				&& gameState.on_changeFromTo(gameState.PlayerDeath, gameState.InGame, enum_releaseRegion))
+			array_push(let_array_StartRequirements, let_requiremnt_A)
+			array_push(let_array_StartRequirements, let_requiremnt_B)
+			}
+
+		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
+			never(repeated(2, // --ResetIf--> Not InGame for 2 frames (this to allow TriggerCondition to pop)
+				never(gameState.on_change(enum_releaseRegion))
+				&& !gameState.is(gameState.InGame, enum_releaseRegion)
+				&& !gameState.is(gameState.BossFight, enum_releaseRegion)))
+			&& never(repeated(2, // --ResetIf--> Not in correct Stage for 2 frames (this to allow TriggerCondition to pop)
+				never(stage.on_change(enum_releaseRegion))
+				&& all_of(const_ALLOWED_STAGES, enum_stage => 
+					!stage.is(enum_stage, enum_releaseRegion))))
+			&& never( // --ResetIf--> player dies (loses a life)
+				// player.on_Life_lose(enum_releaseRegion) // DISABLED --> BugFix: otherwise "--CheckIf--> Player loads into level one from gameState.PlayerDeath" can never hit
+				gameState.on_changeFromTo(gameState.InGame, gameState.PlayerDeath, enum_releaseRegion))
+			&& never(repeated(const_ALLOWED_HITS_TAKEN +1, // --ResetIf--> Player takes too many HP hits
+				gameState.is(gameState.InGame, enum_releaseRegion)
+				&& player.on_HP_decrement(enum_releaseRegion)))
+
+			&& tally(1, let_array_StartRequirements) // --Tally--OrNext--[StartCondition]--> CheckIf: Player starts On-Foot Stage from level one 
+
+			&& trigger_when(tally_of(const_ALLOWED_STAGES, 1, (enum_stage) { // --Trigger--> When any On-Foot Stage finishes 
+				if(enum_stage == stage.Eight) return once( // --CheckIf--> Last Stage moves into OutroSequence
+					gameState.on_changeFromTo(gameState.BossFight, gameState.OutroSequence, enum_releaseRegion))
+				return once( // --CheckIf--> On-Foot Stage continues to next Stage
+					gameState.on_changeFromTo(gameState.BossFight, gameState.PreStageScreen, enum_releaseRegion)
+					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion)
+					&& stageSection.on_Stage_end(enum_stage, enum_releaseRegion))
+				}))
+		}),
 	}
 // #endregion ACH - Triggers
 
