@@ -1217,8 +1217,8 @@ dict_coreData = {
 			// "id": 618544, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without summoning Champ or Apple"},
 		// "a_WinNoContinue": { // VERIFIED
 			// "id": 618543, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without using a continue"},
-		// "a_WinScore": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game with xx score"},
+		// "a_WinScore": { // VERIFIED
+			// "id": 618586, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game with xx score"},
 		// "a_NoHeals": { // VERIFIED
 			// "id": 618565, "points": AchievementPointClass.Free_0, "devInfo": "Complete any On-Rails Stage without dying and without HP healing (from L-Power-Up and Summon)"},
 		// "a_MinHits": { // VERIFIED
@@ -1518,10 +1518,38 @@ dict_triggers = {
 				&& gameState.is(gameState.OutroSequence, enum_releaseRegion)
 				&& outroSequenceSection.on_changeFromTo(outroSequenceSection.Three, outroSequenceSection.Four, enum_releaseRegion))
 			}),
-	"a_WinScore": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+	"a_WinScore": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ALL_STAGES = [stage.One, stage.Two, stage.Three, stage.Four, stage.Five, stage.Six, stage.Seven, stage.Eight]
+		const_SCORE_REQUIREMENT = 150000 // = 150k
+
+		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
+			never( // --ResetIf--> back at MainMenu
+				gameState.is(gameState.MainMenu, enum_releaseRegion))
+
+			&& tally_of(const_ALL_STAGES, length(const_ALL_STAGES), enum_stage => // --Tally--[StartCondition]--> CheckIf: All Stages were started from beginning 
+				once(
+					stage.is(enum_stage, enum_releaseRegion)
+					&& gameState.on_changeFromTo(gameState.PreStageScreen, gameState.InGame, enum_releaseRegion)))
+			&& tally_of(const_ALL_STAGES, length(const_ALL_STAGES), (enum_stage) { // --Tally--> CheckIf: All Stages were finished
+				if(enum_stage == stage.Eight) return once(
+					stage.is(stage.Eight, enum_releaseRegion)
+					&& gameState.on_changeFromTo(gameState.BossFight, gameState.OutroSequence, enum_releaseRegion))
+				return once(
+					gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
+					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion))
+				})
+			
+			&& player.current_Score(enum_releaseRegion) >= const_SCORE_REQUIREMENT
+
+			&& trigger_when( // --Trigger--> When Outro finishes
+				once( // --CheckIf--> OutroSequence progresses
+					gameState.is(gameState.OutroSequence, enum_releaseRegion)
+					&& outroSequenceSection.on_changeFromTo(outroSequenceSection.One, outroSequenceSection.Two, enum_releaseRegion))
+				// --CheckIf--> OutroSequence progresses
+				&& gameState.is(gameState.OutroSequence, enum_releaseRegion)
+				&& outroSequenceSection.on_changeFromTo(outroSequenceSection.Three, outroSequenceSection.Four, enum_releaseRegion))
+		}),
 	"a_NoHeals": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ALLOWED_STAGES = stage.get_Array_AllOnRailsStages()
 		const_STAGE_SECTION_START_A = 0
@@ -2145,6 +2173,7 @@ function richPresence_initialize() {
 // CONCEPT leaderboards
 // - Timed leaderboard for whole game (start-finish)? (with optional timer-overlay, otherwise start-submit at game End)
 // - Leaderboard for each stage --> Score (Start-Submit at Stage End)
+// - One Leaderboard for game completion  --> Score weighted by LivesLeft
 
 // ==========================================
 // • LEADERBOARD sub logic & value measures •
