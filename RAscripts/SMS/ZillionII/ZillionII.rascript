@@ -193,6 +193,7 @@ class CLASS_MemoryData {
 		"8-bit:Player_Lives": {ReleaseRegion.World: 0x001f},
 		"8-bit:PlayerCharacter_ID": {ReleaseRegion.World: 0x0095},
 		"8-bit:Stage_Section_ID": {ReleaseRegion.World: 0x0028},
+		"8-bit:Stage_Level_ID": {ReleaseRegion.World: 0x0016},
 		
 		"24-bit BCD:HighScore": {ReleaseRegion.World: 0x000d},
 		"24-bit BCD:Score": {ReleaseRegion.World: 0x0012},
@@ -479,6 +480,7 @@ class CLASS_MEMLOGIC_StageData {
 			},
 		Two: {
 			"StageType": "OnFoot",
+			"StageLevel_Start": 0x2,
 			"StageSection_Start": 0x0,
 			"StageSection_End": 0x0,
 			"PlayerLocation_Start": [128, 136],
@@ -493,6 +495,7 @@ class CLASS_MEMLOGIC_StageData {
 			},
 		Four: {
 			"StageType": "OnFoot",
+			"StageLevel_Start": 0x3,
 			"StageSection_Start": 0x0,
 			"StageSection_End": 0x0,
 			"PlayerLocation_Start": [128, 136],
@@ -507,6 +510,7 @@ class CLASS_MEMLOGIC_StageData {
 			},
 		Six: {
 			"StageType": "OnFoot",
+			"StageLevel_Start": 0x4,
 			"StageSection_Start": 0x7,
 			"StageSection_End": 0x0,
 			"PlayerLocation_Start": [200, 136],
@@ -521,6 +525,7 @@ class CLASS_MEMLOGIC_StageData {
 			},
 		Eight: {
 			"StageType": "OnFoot",
+			"StageLevel_Start": 0x5,
 			"StageSection_Start": 0x7,
 			"StageSection_End": 0x0,
 			"PlayerLocation_Start": [200, 136],
@@ -528,6 +533,7 @@ class CLASS_MEMLOGIC_StageData {
 			},
 	}
 	function get_StageType(enum_stageID) => this.dict_StageData[enum_stageID]["StageType"]
+	function get_StageLevel_Start(enum_stageID) => this.dict_StageData[enum_stageID]["StageLevel_Start"]
 	function get_StageSection_Start(enum_stageID) => this.dict_StageData[enum_stageID]["StageSection_Start"]
 	function get_StageSection_End(enum_stageID) => this.dict_StageData[enum_stageID]["StageSection_End"]
 	function get_PlayerLocation_Start(enum_stageID) => this.dict_StageData[enum_stageID]["PlayerLocation_Start"]
@@ -551,6 +557,18 @@ class CLASS_MEMLOGIC_StageData {
 
 	function on_change(enum_releaseRegion) =>
 		this.prev(enum_releaseRegion) != this.current(enum_releaseRegion)
+
+	function current_LevelID(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:Stage_Level_ID", enum_releaseRegion))
+	function prior_LevelID(enum_releaseRegion) =>
+		prior(this.current_LevelID(enum_releaseRegion))
+	function prev_LevelID(enum_releaseRegion) =>
+		prev(this.current_LevelID(enum_releaseRegion))
+	function is_Level_Start(enum_stage, enum_releaseRegion) =>
+		this.current_LevelID(enum_releaseRegion) == this.get_StageLevel_Start(enum_stage)
+	function is_Level(enum_LevelID, enum_releaseRegion) =>
+		this.current_LevelID(enum_releaseRegion) == enum_LevelID
+
 } stage = CLASS_MEMLOGIC_StageData()
 class CLASS_MEMLOGIC_StageLocationData {
 	// --------Variables/Enums--------
@@ -630,7 +648,9 @@ class CLASS_MEMLOGIC_PlayerLogic {
 		byte(memory.getAddress("8-bit:ContinueUseCount", enum_releaseRegion))
 
 	function current_Character(enum_releaseRegion) =>
-		byte(memory.getAddress("8-bit:PlayerCharacter_ID", enum_releaseRegion))		
+		byte(memory.getAddress("8-bit:PlayerCharacter_ID", enum_releaseRegion))	
+	function prev_Character(enum_releaseRegion) =>
+		prev(this.current_Character(enum_releaseRegion))		
 	
 	function on_Apple_rescue(enum_releaseRegion) =>
 		this.prev_flagState_IsAppleAvailable(enum_releaseRegion) == 0
@@ -638,6 +658,22 @@ class CLASS_MEMLOGIC_PlayerLogic {
 	function on_Champ_rescue(enum_releaseRegion) =>
 		this.prev_flagState_IsChampAvailable(enum_releaseRegion) == 0
 		&& this.current_flagState_IsChampAvailable(enum_releaseRegion) == 1
+
+	function on_Summon_Apple(enum_releaseRegion) => 
+		this.prev_flagState_IsAppleAvailable(enum_releaseRegion) == 1
+		&& this.current_flagState_IsAppleAvailable(enum_releaseRegion) == 0
+		&& this.prev_Character(enum_releaseRegion) != this.CHARACTER_Apple
+		&& this.current_Character(enum_releaseRegion) == this.CHARACTER_Apple
+
+	function on_Summon_Champ(enum_releaseRegion) => 
+		this.prev_flagState_IsChampAvailable(enum_releaseRegion) == 1
+		&& this.current_flagState_IsChampAvailable(enum_releaseRegion) == 0
+		&& this.prev_Character(enum_releaseRegion) != this.CHARACTER_Champ
+		&& this.current_Character(enum_releaseRegion) == this.CHARACTER_Champ
+
+	function on_Summon_character(enum_playerCharacter, enum_releaseRegion) {
+		if(enum_playerCharacter == this.CHARACTER_Apple) return this.on_Summon_Apple(enum_releaseRegion)
+		return this.on_Summon_Champ(enum_releaseRegion)}
 
 	function current_HighScore_bis(enum_releaseRegion) =>
 		bcd(tbyte(memory.getAddress("24-bit BCD:HighScore", enum_releaseRegion)))	
@@ -977,6 +1013,94 @@ class CLASS_AchievementSubLogic {
 				&& stageSection.on_Stage_end(enum_stage, enum_releaseRegion))
 		}
 
+	function CoreGroup_OnRailsStageDeathlessCompletion(enum_stage, enum_releaseRegion) {
+		const_STAGE_SECTION_START_A = 0
+		const_STAGE_SECTION_START_B = 1
+
+		return  
+			never(repeated(2, // --ResetIf--> Not InGame for 2 frames (this to allow TriggerCondition to pop)
+				never(gameState.on_change(enum_releaseRegion))
+				&& !gameState.is(gameState.InGame, enum_releaseRegion)))
+			&& never(repeated(2, // --ResetIf--> Not in correct Stage for 2 frames (this to allow TriggerCondition to pop)
+				never(stage.on_change(enum_releaseRegion))
+				&& !stage.is(enum_stage, enum_releaseRegion)))
+			&& never( // --ResetIf--> player dies (loses a life)
+				player.on_Life_lose(enum_releaseRegion))
+
+			&& once( // --CheckIf--[StartCondition]--> Player start from beginning of stage (not via checkpoint, after death)
+				stage.is(enum_stage, enum_releaseRegion)
+				&& stageSection.on_changeFromTo(const_STAGE_SECTION_START_A, const_STAGE_SECTION_START_B, enum_releaseRegion))			
+
+			&& trigger_when( // --CheckIf--> On-Rails Stage continues to next Stage
+				player.is_atOnRailsStageEndCoords(enum_stage, enum_releaseRegion)
+				&& gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
+				&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion)
+				&& stageSection.on_Stage_end(enum_stage, enum_releaseRegion))
+		}
+
+	function CoreGroup_OnRailsStageDeathlessCompletion_asCharacter(enum_stage, enum_playerCharacter,  enum_releaseRegion) {
+		const_STAGE_SECTION_START_A = 0
+		const_STAGE_SECTION_START_B = 1
+		const_BEGINNING_OF_STAGE_THRESHOLD = 5 
+
+		return  
+			never(repeated(2, // --ResetIf--> Not InGame for 2 frames (this to allow TriggerCondition to pop)
+				never(gameState.on_change(enum_releaseRegion))
+				&& !gameState.is(gameState.InGame, enum_releaseRegion)))
+			&& never(repeated(2, // --ResetIf--> Not in correct Stage for 2 frames (this to allow TriggerCondition to pop)
+				never(stage.on_change(enum_releaseRegion))
+				&& !stage.is(enum_stage, enum_releaseRegion)))
+			&& never( // --ResetIf--> player dies (loses a life)
+				player.on_Life_lose(enum_releaseRegion))
+
+			&& once( // --CheckIf--[StartCondition_A]--> Player start from beginning of stage (not via checkpoint, after death)
+				stage.is(enum_stage, enum_releaseRegion)
+				&& stageSection.on_changeFromTo(const_STAGE_SECTION_START_A, const_STAGE_SECTION_START_B, enum_releaseRegion))		
+
+			&& once( // --CheckIf--[StartCondition_B]--> Player summons character near beginning of Stage
+				gameState.is(gameState.InGame, enum_releaseRegion)
+				&& stageSection.current(enum_releaseRegion) <= const_BEGINNING_OF_STAGE_THRESHOLD
+				&& player.on_Summon_character(enum_playerCharacter, enum_releaseRegion))
+
+			&& trigger_when( // --CheckIf--> On-Rails Stage continues to next Stage
+				player.is_atOnRailsStageEndCoords(enum_stage, enum_releaseRegion)
+				&& gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
+				&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion)
+				&& stageSection.on_Stage_end(enum_stage, enum_releaseRegion))
+		}
+
+	function CoreGroup_OnFootStageDeathlessCompletion(enum_stage, enum_releaseRegion) {
+		if(enum_stage == stage.Eight) let_TriggerRequirements =  // --CheckIf--> Last Stage moves into OutroSequence
+			gameState.on_changeFromTo(gameState.BossFight, gameState.OutroSequence, enum_releaseRegion)
+		else let_TriggerRequirements =  // --CheckIf--> On-Foot Stage continues to next Stage
+			gameState.on_changeFromTo(gameState.BossFight, gameState.PreStageScreen, enum_releaseRegion)
+			&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion)
+			&& stageSection.on_Stage_end(enum_stage, enum_releaseRegion)
+
+		return  
+			never(repeated(2, // --ResetIf--> Not InGame for 2 frames (this to allow TriggerCondition to pop)
+				never(gameState.on_change(enum_releaseRegion))
+				&& !gameState.is(gameState.InGame, enum_releaseRegion)
+				&& !gameState.is(gameState.BossFight, enum_releaseRegion)))
+			&& never(repeated(2, // --ResetIf--> Not in correct Stage for 2 frames (this to allow TriggerCondition to pop)
+				never(stage.on_change(enum_releaseRegion))
+				&& !stage.is(enum_stage, enum_releaseRegion)))
+			&& never( // --ResetIf--> player dies (loses a life)
+				// player.on_Life_lose(enum_releaseRegion) // DISABLED --> BugFix: otherwise "--CheckIf--> Player loads into level one from gameState.PlayerDeath" can never hit
+				gameState.on_changeFromTo(gameState.InGame, gameState.PlayerDeath, enum_releaseRegion))
+
+			&& tally(1, [ // --Tally--OrNext--> CheckIf: Player starts On-Foot Stage from level one  
+				once( // --CheckIf--> Player loads into level one from gameState.PreStageScreen
+					stage.is(enum_stage, enum_releaseRegion)
+					&& stage.is_Level_Start(enum_stage, enum_releaseRegion)
+					&& gameState.on_changeFromTo(gameState.PreStageScreen, gameState.InGame, enum_releaseRegion)),
+				once( // --CheckIf--> Player loads into level one from gameState.PlayerDeath
+					stage.is(enum_stage, enum_releaseRegion)
+					&& stage.is_Level_Start(enum_stage, enum_releaseRegion)
+					&& gameState.on_changeFromTo(gameState.PlayerDeath, gameState.InGame, enum_releaseRegion))])
+
+			&& trigger_when(let_TriggerRequirements)
+		}
 } achievementSubLogic = CLASS_AchievementSubLogic()
 // #endregion ACH - sub logic
 
@@ -1049,30 +1173,28 @@ dict_coreData = {
 			// "id": 616784, "points": AchievementPointClass.Free_0, "devInfo": "Acquire a total of 6 lives (extra lives unlocked at 30k, 70k and 120k score + start at 3)"},
 		},
 	"c_mBonus": { // Missable Bonus - Missable achievements
-		// CONCEPT c_mBonus
-			// - https://web.archive.org/web/20200928101143/https://www.engadget.com/2009-03-04-man-holds-woman-hostage-for-10-hours-with-a-sega-light-gun.html
 		// "a_RescueApple": { // VERIFIED
 			// "id": 616785, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Apple in Stage 2"},
 		// "a_RescueChamp": { // VERIFIED
 			// "id": 616786, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Champ in Stage 4"},
 		},
 	"c_Challenges": { // Challenges
-		// "a_Stg1Deathless": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 1 without dying"},
-		// "a_Stg2Deathless": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 2 without dying"},
-		// "a_Stg3Deathless": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3 as Apple without dying. Summon Apple near beginning of Stage "},
-		// "a_Stg4Deathless": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4 without dying"},
-		// "a_Stg5Deathless": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 5 as Champ without dying. Summon Champ near beginning of Stage"},
-		// "a_Stg6Deathless": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 6 without dying"},
-		// "a_Stg7Deathless": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 7 without dying"},
-		// "a_Stg8Deathless": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 8 without dying"},
+		// "a_Stg1Deathless": { // VERIFIED
+			// "id": 618518, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 1 without dying"},
+		// "a_Stg2Deathless": { // VERIFIED
+			// "id": 618517, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 2 without dying"},
+		// "a_Stg3Deathless": { // VERIFIED
+			// "id": 618516, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3 as Apple without dying. Summon Apple near beginning of Stage "},
+		// "a_Stg4Deathless": { // VERIFIED
+			// "id": 618515, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4 without dying"},
+		// "a_Stg5Deathless": { // VERIFIED
+			// "id": 618514, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 5 as Champ without dying. Summon Champ near beginning of Stage"},
+		// "a_Stg6Deathless": { // VERIFIED
+			// "id": 618513, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 6 without dying"},
+		// "a_Stg7Deathless": { // VERIFIED
+			// "id": 618512, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 7 without dying"},
+		// "a_Stg8Deathless": { // VERIFIED
+			// "id": 618511, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 8 without dying"},
 		// "a_WinNoSummon": { // TODO c_Challenge
 			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without summoning Champ or Apple"},
 		// "a_WinNoContinue": { // TODO c_Challenge
@@ -1165,9 +1287,9 @@ dict_triggers = {
 		}),
 	"a_TriCharged": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ALLOWED_STAGES = stage.get_Array_AllOnRailsStage()
-		const_STAGE_SECTION_START_A = 0 
+		const_STAGE_SECTION_START_A = 0
 		const_STAGE_SECTION_START_B = 1
-		const_BEGINNING_OF_STAGE_THRESHOLD = 5 
+		const_BEGINNING_OF_STAGE_THRESHOLD = 5
 
 		return 
 		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
@@ -1180,6 +1302,10 @@ dict_triggers = {
 					!stage.is(enum_stage, enum_releaseRegion))))
 			&& never( // --ResetIf--> player dies (loses a life)
 				player.on_Life_lose(enum_releaseRegion))
+			&& never( // --ResetIf--> player isn't in Armorator while not at beginning of stage
+				gameState.is(gameState.InGame, enum_releaseRegion)
+				&& stageSection.current(enum_releaseRegion) > const_BEGINNING_OF_STAGE_THRESHOLD
+				&& !player.is_armoratorActive(enum_releaseRegion))
 
 			&& once( // --CheckIf--[StartCondition]--> Player start from beginning of stage (not via checkpoint, after death)
 				gameState.is(gameState.InGame, enum_releaseRegion)
@@ -1214,7 +1340,9 @@ dict_triggers = {
 
 		return 
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			gameState.is(gameState.InGame, enum_releaseRegion)
+			__ornext(
+				gameState.is(gameState.InGame, enum_releaseRegion)
+				|| gameState.is(gameState.BossFight, enum_releaseRegion))
 			&& player.prev_Score(enum_releaseRegion) < const_THIRD_LIFE_SCORE_REQUIREMENT
 			&& player.current_Score(enum_releaseRegion) >= const_THIRD_LIFE_SCORE_REQUIREMENT
 			&& player.prev_Lives(enum_releaseRegion) == const_MAX_LIVES -1
@@ -1222,56 +1350,88 @@ dict_triggers = {
 		}),	
 	"a_RescueChamp": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.Four
+		const_STAGE_LEVEL_A_ADJECENT_TO_RESCUE_ROOM = 0x2
+		const_STAGE_LEVEL_B_ADJECENT_TO_RESCUE_ROOM = 0x1
+		const_STAGE_LEVEL_RESCUE_ROOM = 0x0
 
 		return 
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			gameState.prior(enum_releaseRegion) == gameState.InGame
-			&& gameState.current(enum_releaseRegion) == gameState.RescueRoom
+			__ornext(
+				stage.prior_LevelID(enum_releaseRegion) == const_STAGE_LEVEL_A_ADJECENT_TO_RESCUE_ROOM
+				|| stage.prior_LevelID(enum_releaseRegion) == const_STAGE_LEVEL_B_ADJECENT_TO_RESCUE_ROOM)
+			&& stage.current_LevelID(enum_releaseRegion) == const_STAGE_LEVEL_RESCUE_ROOM
 			&& stage.is(const_STAGE, enum_releaseRegion)
+			&& gameState.prior(enum_releaseRegion) == gameState.InGame
+			&& gameState.current(enum_releaseRegion) == gameState.RescueRoom
 			&& player.on_Champ_rescue(enum_releaseRegion)
 		}),	
 	"a_RescueApple": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.Two
+		const_STAGE_LEVEL_A_ADJECENT_TO_RESCUE_ROOM = 0x2
+		const_STAGE_LEVEL_B_ADJECENT_TO_RESCUE_ROOM = 0x1
+		const_STAGE_LEVEL_RESCUE_ROOM = 0x0
 
 		return 
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			gameState.prior(enum_releaseRegion) == gameState.InGame
-			&& gameState.current(enum_releaseRegion) == gameState.RescueRoom
+			__ornext(
+				stage.prior_LevelID(enum_releaseRegion) == const_STAGE_LEVEL_A_ADJECENT_TO_RESCUE_ROOM
+				|| stage.prior_LevelID(enum_releaseRegion) == const_STAGE_LEVEL_B_ADJECENT_TO_RESCUE_ROOM)
+			&& stage.current_LevelID(enum_releaseRegion) == const_STAGE_LEVEL_RESCUE_ROOM
 			&& stage.is(const_STAGE, enum_releaseRegion)
+			&& gameState.prior(enum_releaseRegion) == gameState.InGame
+			&& gameState.current(enum_releaseRegion) == gameState.RescueRoom
 			&& player.on_Apple_rescue(enum_releaseRegion)
 		}),	
-	"a_Stg1Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+	"a_Stg1Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+		const_STAGE = stage.One
+		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
-	"a_Stg2Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+			achievementSubLogic.CoreGroup_OnRailsStageDeathlessCompletion(const_STAGE, enum_releaseRegion)
+		}),
+	"a_Stg2Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+		const_STAGE = stage.Two
+		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
-	"a_Stg3Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+			achievementSubLogic.CoreGroup_OnFootStageDeathlessCompletion(const_STAGE, enum_releaseRegion)
+		}),
+	"a_Stg3Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+		const_STAGE = stage.Three
+		const_PLAYER_CHARACTER = player.CHARACTER_Apple
+		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
-	"a_Stg4Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+			achievementSubLogic.CoreGroup_OnRailsStageDeathlessCompletion_asCharacter(const_STAGE, const_PLAYER_CHARACTER, enum_releaseRegion)
+		}),
+	"a_Stg4Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+		const_STAGE = stage.Four
+		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
-	"a_Stg5Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+			achievementSubLogic.CoreGroup_OnFootStageDeathlessCompletion(const_STAGE, enum_releaseRegion)
+		}),
+	"a_Stg5Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+		const_STAGE = stage.Five
+		const_PLAYER_CHARACTER = player.CHARACTER_Champ
+		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
-	"a_Stg6Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+			achievementSubLogic.CoreGroup_OnRailsStageDeathlessCompletion_asCharacter(const_STAGE, const_PLAYER_CHARACTER, enum_releaseRegion)
+		}),
+	"a_Stg6Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+		const_STAGE = stage.Six
+		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
-	"a_Stg7Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+			achievementSubLogic.CoreGroup_OnFootStageDeathlessCompletion(const_STAGE, enum_releaseRegion)
+		}),
+	"a_Stg7Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+		const_STAGE = stage.Seven
+		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
-	"a_Stg8Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+			achievementSubLogic.CoreGroup_OnRailsStageDeathlessCompletion(const_STAGE, enum_releaseRegion)
+		}),
+	"a_Stg8Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+		const_STAGE = stage.Eight
+		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
+			achievementSubLogic.CoreGroup_OnFootStageDeathlessCompletion(const_STAGE, enum_releaseRegion)
+		}),
 	"a_WinNoSummon": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			always_true()
@@ -1324,9 +1484,9 @@ dict_titles = {
 	"a_Stg6Deathless":		{"en": "xxxxxxxxx"},
 	"a_Stg7Deathless":		{"en": "xxxxxxxxx"},
 	"a_Stg8Deathless":		{"en": "xxxxxxxxx"},
-	"a_WinNoSummon":		{"en": "xxxxxxxxx"},
+	"a_WinNoSummon":		{"en": "Stay back I got this!"},
 	"a_WinNoContinue":		{"en": "xxxxxxxxx"},
-	"a_WinScore":			{"en": "xxxxxxxxx"},
+	"a_WinScore":			{"en": "Not a Toy Gun"},
 	"a_NoHeals":			{"en": "xxxxxxxxx"},
 	"a_MinHits":			{"en": "xxxxxxxxx"},
 	}
