@@ -646,6 +646,11 @@ class CLASS_MEMLOGIC_PlayerLogic {
 	
 	function current_ContinuesUsed(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:ContinueUseCount", enum_releaseRegion))
+	function prev_ContinuesUsed(enum_releaseRegion) =>
+		prev(this.current_ContinuesUsed(enum_releaseRegion))
+
+	function on_continue(enum_releaseRegion) =>
+		this.current_ContinuesUsed(enum_releaseRegion) < this.prev_ContinuesUsed(enum_releaseRegion)
 
 	function current_Character(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:PlayerCharacter_ID", enum_releaseRegion))	
@@ -1195,10 +1200,10 @@ dict_coreData = {
 			// "id": 618512, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 7 without dying"},
 		// "a_Stg8Deathless": { // VERIFIED
 			// "id": 618511, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 8 without dying"},
-		// "a_WinNoSummon": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without summoning Champ or Apple"},
-		// "a_WinNoContinue": { // TODO c_Challenge
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without using a continue"},
+		// "a_WinNoSummon": { // VERIFIED
+			// "id": 618544, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without summoning Champ or Apple"},
+		// "a_WinNoContinue": { // VERIFIED
+			// "id": 618543, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without using a continue"},
 		// "a_WinScore": { // TODO c_Challenge
 			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game with xx score"},
 		// "a_NoHeals": { // TODO c_Challenge
@@ -1382,64 +1387,124 @@ dict_triggers = {
 			&& gameState.current(enum_releaseRegion) == gameState.RescueRoom
 			&& player.on_Apple_rescue(enum_releaseRegion)
 		}),	
-	"a_Stg1Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+	"a_Stg1Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.One
 		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			achievementSubLogic.CoreGroup_OnRailsStageDeathlessCompletion(const_STAGE, enum_releaseRegion)
 		}),
-	"a_Stg2Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+	"a_Stg2Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.Two
 		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			achievementSubLogic.CoreGroup_OnFootStageDeathlessCompletion(const_STAGE, enum_releaseRegion)
 		}),
-	"a_Stg3Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+	"a_Stg3Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.Three
 		const_PLAYER_CHARACTER = player.CHARACTER_Apple
 		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			achievementSubLogic.CoreGroup_OnRailsStageDeathlessCompletion_asCharacter(const_STAGE, const_PLAYER_CHARACTER, enum_releaseRegion)
 		}),
-	"a_Stg4Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+	"a_Stg4Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.Four
 		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			achievementSubLogic.CoreGroup_OnFootStageDeathlessCompletion(const_STAGE, enum_releaseRegion)
 		}),
-	"a_Stg5Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+	"a_Stg5Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.Five
 		const_PLAYER_CHARACTER = player.CHARACTER_Champ
 		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			achievementSubLogic.CoreGroup_OnRailsStageDeathlessCompletion_asCharacter(const_STAGE, const_PLAYER_CHARACTER, enum_releaseRegion)
 		}),
-	"a_Stg6Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+	"a_Stg6Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.Six
 		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			achievementSubLogic.CoreGroup_OnFootStageDeathlessCompletion(const_STAGE, enum_releaseRegion)
 		}),
-	"a_Stg7Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+	"a_Stg7Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.Seven
 		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			achievementSubLogic.CoreGroup_OnRailsStageDeathlessCompletion(const_STAGE, enum_releaseRegion)
 		}),
-	"a_Stg8Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+	"a_Stg8Deathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.Eight
 		return  
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			achievementSubLogic.CoreGroup_OnFootStageDeathlessCompletion(const_STAGE, enum_releaseRegion)
 		}),
-	"a_WinNoSummon": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+	"a_WinNoSummon": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ALL_STAGES = [stage.One, stage.Two, stage.Three, stage.Four, stage.Five, stage.Six, stage.Seven, stage.Eight]
+		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
-	"a_WinNoContinue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+			never( // --ResetIf--> back at MainMenu
+				gameState.is(gameState.MainMenu, enum_releaseRegion))
+			&& never( // --ResetIf--> summon Apple
+				gameState.is(gameState.InGame, enum_releaseRegion)
+				&& player.on_Summon_Apple(enum_releaseRegion))
+			&& never( // --ResetIf--> summon Champ
+				gameState.is(gameState.InGame, enum_releaseRegion)
+				&& player.on_Summon_Champ(enum_releaseRegion))
+
+			&& tally_of(const_ALL_STAGES, length(const_ALL_STAGES), enum_stage => // --Tally--[StartCondition]--> CheckIf: All Stages were started from beginning 
+				once(
+					stage.is(enum_stage, enum_releaseRegion)
+					&& gameState.on_changeFromTo(gameState.PreStageScreen, gameState.InGame, enum_releaseRegion)))
+			&& tally_of(const_ALL_STAGES, length(const_ALL_STAGES), (enum_stage) { // --Tally--> CheckIf: All Stages were finished
+				if(enum_stage == stage.Eight) return once(
+					stage.is(stage.Eight, enum_releaseRegion)
+					&& gameState.on_changeFromTo(gameState.BossFight, gameState.OutroSequence, enum_releaseRegion))
+				return once(
+					gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
+					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion))
+				})
+			
+			&& trigger_when( // --Trigger--> When Outro finishes
+				once( // --CheckIf--> OutroSequence progresses
+					gameState.is(gameState.OutroSequence, enum_releaseRegion)
+					&& outroSequenceSection.on_changeFromTo(outroSequenceSection.One, outroSequenceSection.Two, enum_releaseRegion))
+				// --CheckIf--> OutroSequence progresses
+				&& gameState.is(gameState.OutroSequence, enum_releaseRegion)
+				&& outroSequenceSection.on_changeFromTo(outroSequenceSection.Three, outroSequenceSection.Four, enum_releaseRegion))
+			}),
+	"a_WinNoContinue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion)  {
+		const_ALL_STAGES = [stage.One, stage.Two, stage.Three, stage.Four, stage.Five, stage.Six, stage.Seven, stage.Eight]
+		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_true()
-			&& always_false()),
+			never( // --ResetIf--> back at MainMenu
+				gameState.is(gameState.MainMenu, enum_releaseRegion))
+			&& never( //--ResetIf--> GameOver
+				gameState.is(gameState.PlayerDeath, enum_releaseRegion)
+				&& player.prev_Lives(enum_releaseRegion) == 1 // = no lives left
+				&& player.current_Lives(enum_releaseRegion) == 0) // = Game Over
+
+			&& tally_of(const_ALL_STAGES, length(const_ALL_STAGES), enum_stage => // --Tally--[StartCondition]--> CheckIf: All Stages were started from beginning 
+				once(
+					stage.is(enum_stage, enum_releaseRegion)
+					&& gameState.on_changeFromTo(gameState.PreStageScreen, gameState.InGame, enum_releaseRegion)))
+			&& tally_of(const_ALL_STAGES, length(const_ALL_STAGES), (enum_stage) { // --Tally--> CheckIf: All Stages were finished
+				if(enum_stage == stage.Eight) return once(
+					stage.is(stage.Eight, enum_releaseRegion)
+					&& gameState.on_changeFromTo(gameState.BossFight, gameState.OutroSequence, enum_releaseRegion))
+				return once(
+					gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
+					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion))
+				})
+
+			&& player.current_ContinuesUsed(enum_releaseRegion) == 0
+			
+			&& trigger_when( // --Trigger--> When Outro finishes
+				once( // --CheckIf--> OutroSequence progresses
+					gameState.is(gameState.OutroSequence, enum_releaseRegion)
+					&& outroSequenceSection.on_changeFromTo(outroSequenceSection.One, outroSequenceSection.Two, enum_releaseRegion))
+				// --CheckIf--> OutroSequence progresses
+				&& gameState.is(gameState.OutroSequence, enum_releaseRegion)
+				&& outroSequenceSection.on_changeFromTo(outroSequenceSection.Three, outroSequenceSection.Four, enum_releaseRegion))
+			}),
 	"a_WinScore": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			always_true()
