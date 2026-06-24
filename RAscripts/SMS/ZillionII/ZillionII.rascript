@@ -1178,13 +1178,13 @@ dict_coreData = {
 		},
 	"c_Bonus": { // Bonus - Miscellaneous achievements
 		// "a_Stg1PowerUp": { // VERIFIED
-			// "id": 614328, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
+			// "id": 614328, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of 10 A or Z Power-Ups in this stage, without dying"},
 		// "a_Stg3PowerUp": { // VERIFIED
-			// "id": 616732, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
+			// "id": 616732, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of 8 A or Z Power-Ups in this stage, without dying"},
 		// "a_Stg5PowerUp": { // VERIFIED
-			// "id": 616733, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
+			// "id": 616733, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of 8 Z Power-Ups in this stage, without dying"},
 		// "a_Stg7PowerUp": { // VERIFIED
-			// "id": 616734, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of xxx A or Z Power-Ups in this stage, without dying"},
+			// "id": 616734, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of 9 Z Power-Ups in this stage, without dying"},
 		// "a_TriCharged": { // VERIFIED
 			// "id": 616747, "points": AchievementPointClass.Free_0, "devInfo": "Complete an On-Rails Stage using only the Armorator and without dying. Transform near the beginning of the Stage"},
 		// "a_MaxLives": { // VERIFIED
@@ -1218,7 +1218,7 @@ dict_coreData = {
 		// "a_WinNoContinue": { // VERIFIED
 			// "id": 618543, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without using a continue"},
 		// "a_WinScore": { // VERIFIED
-			// "id": 618586, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game with xx score"},
+			// "id": 618586, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game with 150k score"},
 		// "a_NoHeals": { // VERIFIED
 			// "id": 618565, "points": AchievementPointClass.Free_0, "devInfo": "Complete any On-Rails Stage without dying and without HP healing (from L-Power-Up and Summon)"},
 		// "a_MinHits": { // VERIFIED
@@ -1277,7 +1277,7 @@ dict_triggers = {
 			achievementSubLogic.CoreGroup_OnFootStageCompletion(stage.Eight, BossEntity.Boss_Final, enum_releaseRegion)),
 	"a_Stg1PowerUp": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.One
-		const_AZ_POWERS_TO_COLLECT = 10 // --> Stage 1: [9 Z-PowerUps] + [2 A-PowerUps]; minus one, because one A-PowerUp is parallel with a Z-PowerUp (can't pick up both at same time)
+		const_AZ_POWERS_TO_COLLECT = 11 -1 // --> Stage 1: [9 Z-PowerUps] + [2 A-PowerUps]; minus one, because one A-PowerUp is parallel with a Z-PowerUp (can't pick up both at same time)
 		return 
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			achievementSubLogic.CoreGroup_PowerCollector(const_STAGE, const_AZ_POWERS_TO_COLLECT, enum_releaseRegion)
