@@ -878,14 +878,14 @@ dict_coreData = {
 // #region LB - Triggers
 dict_startTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// // [0] ==== Alt Start Group ====		-> Start when ...
+		// // [1] ==== Alt Start Group ====		-> Start when ...
 		// 	is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
-		// // [1] ==== Alt Start Group ====		-> Start when ...
-		//  || is_ReleaseRegion(enum_releaseRegion)
-		// 	&& always_false()
 		// // [2] ==== Alt Start Group ====		-> Start when ...
-		//  || is_ReleaseRegion(enum_releaseRegion)
+		//  	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [3] ==== Alt Reset Group ====		-> Reset when ...
+		//  	|| is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
 	}
@@ -897,7 +897,7 @@ dict_cancelTriggers = {
 		// // [2] ==== Alt Cancel Group ====		-> Cancel when ...
 		// 	|| is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
-		// // [3] ==== Alt Cancel Group ====		-> Cancel when ...
+		// // [3] ==== Alt Reset Group ====			-> Reset when ...
 		// 	|| is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
