@@ -192,6 +192,7 @@ class CLASS_MemoryData {
 		"8-bit:LaserUpgrades": {ReleaseRegion.World: 0x001e},
 		"8-bit:Player_Lives": {ReleaseRegion.World: 0x001f},
 		"8-bit:PlayerCharacter_ID": {ReleaseRegion.World: 0x0095},
+		"8-bit:PlayerInput_Controller1": {ReleaseRegion.World: 0x0006},
 		"8-bit:Stage_Section_ID": {ReleaseRegion.World: 0x0028},
 		"8-bit:Stage_Level_ID": {ReleaseRegion.World: 0x0016},
 		
@@ -426,6 +427,10 @@ class CLASS_MEMLOGIC_GameState {
 	function on_change(enum_releaseRegion) =>
 		this.current(enum_releaseRegion) != this.prev(enum_releaseRegion)
 
+	function on_changeTo(enum_gameState, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) != enum_gameState
+		&& this.current(enum_releaseRegion) == enum_gameState
+	
 	function on_changeFromTo(enum_gameStatePrev, enum_gameStateCurrent, enum_releaseRegion) =>
 		this.prev(enum_releaseRegion) == enum_gameStatePrev
 		&& this.current(enum_releaseRegion) == enum_gameStateCurrent
@@ -453,6 +458,26 @@ class CLASS_MEMLOGIC_OutroSequenceState {
 		this.prev(enum_releaseRegion) == enum_outroSequenceSectionPrev
 		&& this.current(enum_releaseRegion) == enum_outroSequenceSectionCurrent
 } outroSequenceSection = CLASS_MEMLOGIC_OutroSequenceState()
+
+class CLASS_MEMLOGIC_playerInput {
+	// --------Variables/Enums--------
+	DpadUp = 0 // --> refers to bitIndex in [8-bit:PlayerInput_Controller1]
+	DpadDown = 1
+	DpadLeft = 2
+	DpadRight = 3
+	ButtonA = 4
+	ButtonB = 5
+	// --------Functions--------
+	function current_flagState_IsPlayerInputPressed(enum_playerInput, enum_releaseRegion) {
+		let_memAccessor_toBit = memUtil.bitIndexToBitMemoryAccessor(enum_playerInput)
+		return let_memAccessor_toBit(memory.getAddress("8-bit:PlayerInput_Controller1", enum_releaseRegion))}
+	function prev_flagState_IsPlayerInputPressed(enum_playerInput, enum_releaseRegion) =>
+		prev(this.current_flagState_IsPlayerInputPressed(enum_playerInput, enum_releaseRegion))
+
+	function is_pressed(enum_playerInput, enum_releaseRegion) =>
+		this.current_flagState_IsPlayerInputPressed(enum_playerInput, enum_releaseRegion) == 1
+} playerInput = CLASS_MEMLOGIC_playerInput()
+
 // #endregion Game State & Information
 
 // ........................
@@ -1471,6 +1496,9 @@ dict_triggers = {
 				if(enum_stage == stage.Eight) return once(
 					stage.is(stage.Eight, enum_releaseRegion)
 					&& gameState.on_changeFromTo(gameState.BossFight, gameState.OutroSequence, enum_releaseRegion))
+				else if(!stage.is_StageType_OnRails(enum_stage)) return once(
+					gameState.on_changeFromTo(gameState.BossFight, gameState.PreStageScreen, enum_releaseRegion)
+					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion))
 				return once(
 					gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
 					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion))
@@ -1503,6 +1531,9 @@ dict_triggers = {
 				if(enum_stage == stage.Eight) return once(
 					stage.is(stage.Eight, enum_releaseRegion)
 					&& gameState.on_changeFromTo(gameState.BossFight, gameState.OutroSequence, enum_releaseRegion))
+				else if(!stage.is_StageType_OnRails(enum_stage)) return once(
+					gameState.on_changeFromTo(gameState.BossFight, gameState.PreStageScreen, enum_releaseRegion)
+					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion))
 				return once(
 					gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
 					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion))
@@ -1535,6 +1566,9 @@ dict_triggers = {
 				if(enum_stage == stage.Eight) return once(
 					stage.is(stage.Eight, enum_releaseRegion)
 					&& gameState.on_changeFromTo(gameState.BossFight, gameState.OutroSequence, enum_releaseRegion))
+				else if(!stage.is_StageType_OnRails(enum_stage)) return once(
+					gameState.on_changeFromTo(gameState.BossFight, gameState.PreStageScreen, enum_releaseRegion)
+					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion))
 				return once(
 					gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
 					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion))
@@ -2170,10 +2204,6 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
-// CONCEPT leaderboards
-// - Timed leaderboard for whole game (start-finish)? (with optional timer-overlay, otherwise start-submit at game End)
-// - Leaderboard for each stage --> Score (Start-Submit at Stage End)
-// - One Leaderboard for game completion  --> Score weighted by LivesLeft
 
 // ==========================================
 // • LEADERBOARD sub logic & value measures •
@@ -2197,6 +2227,27 @@ class CLASS_LeaderboardValuesMeasures {
 		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
 			array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
 		return max_of(let_array_valueMeasures)}
+	function TimeSpentInGame() {
+		function valueMeasure(enum_releaseRegion) => 
+			measured(tally(0, [
+				repeated(0, gameState.is(gameState.PlayerDeath, enum_releaseRegion)),
+				repeated(0, gameState.is(gameState.InGame, enum_releaseRegion)),
+				repeated(0, gameState.is(gameState.PreStageScreen, enum_releaseRegion)),
+				repeated(0, gameState.is(gameState.BossFight, enum_releaseRegion)),
+			]))
+
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED 
+			array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+		return max_of(let_array_valueMeasures)}
+	function Score() {
+		function valueMeasure(enum_releaseRegion) => 
+			measured(player.current_Score(enum_releaseRegion))
+
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+			array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+		return max_of(let_array_valueMeasures)}
 } leaderboardValueMeasure = CLASS_LeaderboardValuesMeasures()
 // #endregion LB - Value Measures
 
@@ -2212,8 +2263,26 @@ dict_coreData = {
 	//	- RADocs => https://docs.retroachievements.org/Leaderboards/
 	//	- Example leaderboards => https://retroachievements.org/game/3152
 
-	// "lb_Template": { // CONCEPT lb_template
-		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
+	// "lb_GameFinTime": { // VERIFIED
+		// "id": 165834, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "Time: Game Completion (from start-finish)"},
+	// "lb_GameFinScoreWeighted": { // CONCEPT
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score: Game Completion (from start-finish), weighted by LivesLeft and ContinuesUsed"},
+	// "lb_Stg1Score": { // CONCEPT
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score: Stage 1 Completion"},
+	// "lb_Stg2Score": { // CONCEPT
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score: Stage 2 Completion"},
+	// "lb_Stg3Score": { // CONCEPT
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score: Stage 3 Completion"},
+	// "lb_Stg4Score": { // CONCEPT
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score: Stage 4 Completion"},
+	// "lb_Stg5Score": { // CONCEPT
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score: Stage 5 Completion"},
+	// "lb_Stg6Score": { // CONCEPT
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score: Stage 6 Completion"},
+	// "lb_Stg7Score": { // CONCEPT
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score: Stage 7 Completion"},
+	// "lb_Stg8Score": { // CONCEPT
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score: Stage 8 Completion"},
 	}
 // #endregion LB - Core Data
 
@@ -2230,6 +2299,90 @@ dict_startTriggers = {
 		//  || is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
+	"lb_GameFinTime": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ALL_STAGES = [stage.One, stage.Two, stage.Three, stage.Four, stage.Five, stage.Six, stage.Seven, stage.Eight]
+		return
+		// [1] ==== Alt Start Group ====		-> Start when Game starts from MainMenu
+			stage.is(stage.One, enum_releaseRegion)
+			&& gameState.on_changeFromTo(gameState.MainMenu, gameState.PreStageScreen, enum_releaseRegion)
+			&& !playerInput.is_pressed(playerInput.DpadDown, enum_releaseRegion)
+		// [2] ==== Alt Reset Group ====		-> Reset when at MainMenu || Demo active
+			|| never_toAlt(
+				gameState.is(gameState.MainMenu, enum_releaseRegion)
+				|| gameState.is(gameState.Demo, enum_releaseRegion))
+		}), 
+	"lb_GameFinScoreWeighted": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Alt Start Group ====		-> Start when ...
+			always_false()
+		// [1] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		// [2] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		), 
+	"lb_Stg1Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Alt Start Group ====		-> Start when ...
+			always_false()
+		// [1] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		// [2] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		), 
+	"lb_Stg2Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Alt Start Group ====		-> Start when ...
+			always_false()
+		// [1] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		// [2] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		), 
+	"lb_Stg3Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Alt Start Group ====		-> Start when ...
+			always_false()
+		// [1] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		// [2] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		), 
+	"lb_Stg4Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Alt Start Group ====		-> Start when ...
+			always_false()
+		// [1] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		// [2] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		), 
+	"lb_Stg5Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Alt Start Group ====		-> Start when ...
+			always_false()
+		// [1] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		// [2] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		), 
+	"lb_Stg6Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Alt Start Group ====		-> Start when ...
+			always_false()
+		// [1] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		// [2] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		), 
+	"lb_Stg7Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Alt Start Group ====		-> Start when ...
+			always_false()
+		// [1] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		// [2] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		), 
+	"lb_Stg8Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Alt Start Group ====		-> Start when ...
+			always_false()
+		// [1] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		// [2] ==== Alt Start Group ====		-> Start when ...
+		 || always_false()
+		), 
 	}
 dict_cancelTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -2243,6 +2396,84 @@ dict_cancelTriggers = {
 		// 	|| is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
+	"lb_GameFinTime": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>				
+		// [1] ==== Alt Cancel Group ====		-> Cancel when at MainMenu
+			gameState.on_changeTo(gameState.MainMenu, enum_releaseRegion)
+		// [2] ==== Alt Cancel Group ====		-> Cancel when Demo active
+			|| gameState.on_changeTo(gameState.Demo, enum_releaseRegion)
+		),
+	"lb_GameFinScoreWeighted": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Cancel Group ====		-> Cancel when ...
+			always_false()
+		// [2] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		// [3] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		),
+	"lb_Stg1Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Cancel Group ====		-> Cancel when ...
+			always_false()
+		// [2] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		// [3] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		),
+	"lb_Stg2Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Cancel Group ====		-> Cancel when ...
+			always_false()
+		// [2] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		// [3] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		),
+	"lb_Stg3Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Cancel Group ====		-> Cancel when ...
+			always_false()
+		// [2] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		// [3] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		),
+	"lb_Stg4Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Cancel Group ====		-> Cancel when ...
+			always_false()
+		// [2] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		// [3] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		),
+	"lb_Stg5Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Cancel Group ====		-> Cancel when ...
+			always_false()
+		// [2] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		// [3] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		),
+	"lb_Stg6Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Cancel Group ====		-> Cancel when ...
+			always_false()
+		// [2] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		// [3] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		),
+	"lb_Stg7Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Cancel Group ====		-> Cancel when ...
+			always_false()
+		// [2] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		// [3] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		),
+	"lb_Stg8Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Cancel Group ====		-> Cancel when ...
+			always_false()
+		// [2] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		// [3] ==== Alt Cancel Group ====		-> Cancel when ...
+			|| always_false()
+		),
 	}
 dict_submitTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -2253,18 +2484,130 @@ dict_submitTriggers = {
 		// 	|| is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
+	"lb_GameFinTime": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ALL_STAGES = [stage.One, stage.Two, stage.Three, stage.Four, stage.Five, stage.Six, stage.Seven, stage.Eight]
+		return
+		// [1] ==== Alt Submit Group ====		-> Submit when OutroSequence Starts
+		 	once( // --CheckIf--> Game starts from MainMenu
+				stage.is(stage.One, enum_releaseRegion)
+				&& gameState.on_changeFromTo(gameState.MainMenu, gameState.PreStageScreen, enum_releaseRegion)) 
+			
+			&& tally_of(const_ALL_STAGES, length(const_ALL_STAGES), enum_stage => // --Tally--[StartCondition]--> CheckIf: All Stages were started from beginning 
+				once(
+					stage.is(enum_stage, enum_releaseRegion)
+					&& gameState.on_changeFromTo(gameState.PreStageScreen, gameState.InGame, enum_releaseRegion)))
+			&& tally_of(const_ALL_STAGES, length(const_ALL_STAGES), (enum_stage) { // --Tally--> CheckIf: All Stages were finished
+				if(enum_stage == stage.Eight) return once(
+					stage.is(stage.Eight, enum_releaseRegion)
+					&& gameState.on_changeFromTo(gameState.BossFight, gameState.OutroSequence, enum_releaseRegion))
+				else if(!stage.is_StageType_OnRails(enum_stage)) return once(
+					gameState.on_changeFromTo(gameState.BossFight, gameState.PreStageScreen, enum_releaseRegion)
+					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion))
+				return once(
+					gameState.on_changeFromTo(gameState.InGame, gameState.PreStageScreen, enum_releaseRegion)
+					&& stage.on_changeFromTo(enum_stage, enum_stage +1, enum_releaseRegion))
+				})
+		// [2] ==== Alt Reset Group ====			-> Reset when at MainMenu || Demo active
+			|| never_toAlt(
+				gameState.is(gameState.MainMenu, enum_releaseRegion)
+				|| gameState.is(gameState.Demo, enum_releaseRegion))
+		}),
+	"lb_GameFinScoreWeighted": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Submit Group ====			-> Submit when ...
+			always_false()
+		// [2] ==== Alt Reset Group ====			-> Reset when ...
+			|| always_false()
+		),
+	"lb_Stg1Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Submit Group ====			-> Submit when ...
+			always_false()
+		// [2] ==== Alt Reset Group ====			-> Reset when ...
+			|| always_false()
+		),
+	"lb_Stg2Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Submit Group ====			-> Submit when ...
+			always_false()
+		// [2] ==== Alt Reset Group ====			-> Reset when ...
+			|| always_false()
+		),
+	"lb_Stg3Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Submit Group ====			-> Submit when ...
+			always_false()
+		// [2] ==== Alt Reset Group ====			-> Reset when ...
+			|| always_false()
+		),
+	"lb_Stg4Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Submit Group ====			-> Submit when ...
+			always_false()
+		// [2] ==== Alt Reset Group ====			-> Reset when ...
+			|| always_false()
+		),
+	"lb_Stg5Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Submit Group ====			-> Submit when ...
+			always_false()
+		// [2] ==== Alt Reset Group ====			-> Reset when ...
+			|| always_false()
+		),
+	"lb_Stg6Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Submit Group ====			-> Submit when ...
+			always_false()
+		// [2] ==== Alt Reset Group ====			-> Reset when ...
+			|| always_false()
+		),
+	"lb_Stg7Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Submit Group ====			-> Submit when ...
+			always_false()
+		// [2] ==== Alt Reset Group ====			-> Reset when ...
+			|| always_false()
+		),
+	"lb_Stg8Score": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Submit Group ====			-> Submit when ...
+			always_false()
+		// [2] ==== Alt Reset Group ====			-> Reset when ...
+			|| always_false()
+		),
 	}
 dict_valueMeasures = {
 	// "lb_template": leaderboardValueMeasure.Template_TimeSpentInLevel(),
+	"lb_GameFinTime": leaderboardValueMeasure.TimeSpentInGame(),
+	"lb_GameFinScoreWeighted": leaderboardValueMeasure.Score(), 
+	"lb_Stg1Score": leaderboardValueMeasure.Score(), 
+	"lb_Stg2Score": leaderboardValueMeasure.Score(), 
+	"lb_Stg3Score": leaderboardValueMeasure.Score(), 
+	"lb_Stg4Score": leaderboardValueMeasure.Score(), 
+	"lb_Stg5Score": leaderboardValueMeasure.Score(), 
+	"lb_Stg6Score": leaderboardValueMeasure.Score(), 
+	"lb_Stg7Score": leaderboardValueMeasure.Score(), 
+	"lb_Stg8Score": leaderboardValueMeasure.Score(), 
 	}
 // #endregion LB - Triggers
 
 // #region LB - Text
 dict_titles = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
+	"lb_GameFinTime": 					{"en": "xxxxxx"},
+	"lb_GameFinScoreWeighted": 			{"en": "xxxxxx"},
+	"lb_Stg1Score": 					{"en": "xxxxxx"},
+	"lb_Stg2Score": 					{"en": "xxxxxx"},
+	"lb_Stg3Score": 					{"en": "xxxxxx"},
+	"lb_Stg4Score": 					{"en": "xxxxxx"},
+	"lb_Stg5Score": 					{"en": "xxxxxx"},
+	"lb_Stg6Score": 					{"en": "xxxxxx"},
+	"lb_Stg7Score": 					{"en": "xxxxxx"},
+	"lb_Stg8Score": 					{"en": "xxxxxx"},
 	}
 dict_descriptions = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
+	"lb_GameFinTime": 					{"en": "xxxxxxx (Opt-out of leaderboard by holding Dpad Down whilst pressing Start at Main Menu)"},
+	"lb_GameFinScoreWeighted": 			{"en": "xxxxxx"},
+	"lb_Stg1Score": 					{"en": "xxxxxx"},
+	"lb_Stg2Score": 					{"en": "xxxxxx"},
+	"lb_Stg3Score": 					{"en": "xxxxxx"},
+	"lb_Stg4Score": 					{"en": "xxxxxx"},
+	"lb_Stg5Score": 					{"en": "xxxxxx"},
+	"lb_Stg6Score": 					{"en": "xxxxxx"},
+	"lb_Stg7Score": 					{"en": "xxxxxx"},
+	"lb_Stg8Score": 					{"en": "xxxxxx"},
 	}
 // #endregion LB - Text
 
