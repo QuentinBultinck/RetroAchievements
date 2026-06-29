@@ -2345,15 +2345,79 @@ class CLASS_LeaderboardValuesMeasures {
 			array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
 		return max_of(let_array_valueMeasures)}
 	function ScoreWeighted() {
-		function valueMeasure(enum_releaseRegion) => 
-			measured(
-				player.current_Score(enum_releaseRegion) // TODO ScoreWeighted(): implement weighted system for this
-				+ player.current_ContinuesUsed(enum_releaseRegion)
-				+ player.current_Lives(enum_releaseRegion))
-
+		const_LIVES_WEIGHT = 0.15 // --> Each life left: Add 0.15 to multiplier
+		const_CONTINUES_NOT_USED_WEIGHT = 0.5 // --> Each unused continue: Add 0.5 to multiplier
+		const_MAX_CONTINUES_AVAILABLE = 3
+		function valueMeasure_ContinuesUsed_0(enum_releaseRegion) =>
+			// MANUAL_CONSTRUCTION 
+				// K:0xH001f*f0.15_K:{recall}+f1.0_K:{recall}*b0xW0012_K:{recall}*f10.0_K:{recall}*f2.5_M:{recall}_Q:0xH0002=0
+				// -----------
+				//
+				// 	Remember	[8-bit:Player_Lives]	*	Float	0.15
+				// 	Remember	Recall					+	Float	1.0
+				// 	Remember	Recall					*	[24-bit BCD:Score]
+				// 	Remember	Recall					*	Float	10.0
+				// 	Remember	Recall					*	Float	2.5
+				// 	Measured	Recall
+				// 	MeasuredIf	[8-bit:ContinuesUsed]	=	Val		0
+				measured(
+					player.current_Lives(enum_releaseRegion)
+					+ player.current_Score(enum_releaseRegion)
+					+ player.current_ContinuesUsed(enum_releaseRegion))				
+		function valueMeasure_ContinuesUsed_1(enum_releaseRegion) =>
+			// MANUAL_CONSTRUCTION 
+				// K:0xH001f*f0.15_K:{recall}+f1.0_K:{recall}*b0xW0012_K:{recall}*f10.0_K:{recall}*f2.0_M:{recall}_Q:0xH0002=1
+				// -----------
+				//
+				// 	Remember	[8-bit:Player_Lives]	*	Float	0.15
+				// 	Remember	Recall					+	Float	1.0
+				// 	Remember	Recall					*	[24-bit BCD:Score]
+				// 	Remember	Recall					*	Float	10.0
+				// 	Remember	Recall					*	Float	2.0
+				// 	Measured	Recall
+				// 	MeasuredIf	[8-bit:ContinuesUsed]	=	Val		1
+				measured(
+					player.current_Lives(enum_releaseRegion)
+					+ player.current_Score(enum_releaseRegion)
+					+ player.current_ContinuesUsed(enum_releaseRegion))
+		function valueMeasure_ContinuesUsed_2(enum_releaseRegion) =>
+			// MANUAL_CONSTRUCTION 
+				// K:0xH001f*f0.15_K:{recall}+f1.0_K:{recall}*b0xW0012_K:{recall}*f10.0_K:{recall}*f1.5_M:{recall}_Q:0xH0002=2
+				// -----------
+				//
+				// 	Remember	[8-bit:Player_Lives]	*	Float	0.15
+				// 	Remember	Recall					+	Float	1.0
+				// 	Remember	Recall					*	[24-bit BCD:Score]
+				// 	Remember	Recall					*	Float	10.0
+				// 	Remember	Recall					*	Float	1.5
+				// 	Measured	Recall
+				// 	MeasuredIf	[8-bit:ContinuesUsed]	=	Val		2
+				measured(
+					player.current_Lives(enum_releaseRegion)
+					+ player.current_Score(enum_releaseRegion)
+					+ player.current_ContinuesUsed(enum_releaseRegion))
+		function valueMeasure_ContinuesUsed_3(enum_releaseRegion) =>
+			// MANUAL_CONSTRUCTION 
+				// K:0xH001f*f0.15_K:{recall}+f1.0_K:{recall}*b0xW0012_K:{recall}*f10.0_K:{recall}*f1.0_M:{recall}_Q:0xH0002=3
+				// -----------
+				//
+				// 	Remember	[8-bit:Player_Lives]	*	Float	0.15
+				// 	Remember	Recall					+	Float	1.0
+				// 	Remember	Recall					*	[24-bit BCD:Score]
+				// 	Remember	Recall					*	Float	10.0
+				// 	Remember	Recall					*	Float	1.0
+				// 	Measured	Recall
+				// 	MeasuredIf	[8-bit:ContinuesUsed]	=	Val		3
+				measured(
+					player.current_Lives(enum_releaseRegion)
+					+ player.current_Score(enum_releaseRegion)
+					+ player.current_ContinuesUsed(enum_releaseRegion))
 		let_array_valueMeasures = []
-		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
-			array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			array_push(let_array_valueMeasures, valueMeasure_ContinuesUsed_0(enum_releaseRegion))
+			array_push(let_array_valueMeasures, valueMeasure_ContinuesUsed_1(enum_releaseRegion))
+			array_push(let_array_valueMeasures, valueMeasure_ContinuesUsed_2(enum_releaseRegion))
+			array_push(let_array_valueMeasures, valueMeasure_ContinuesUsed_3(enum_releaseRegion))}
 		return max_of(let_array_valueMeasures)}
 	function HighScore() {
 		function valueMeasure(enum_releaseRegion) => 
@@ -2381,8 +2445,8 @@ dict_coreData = {
 
 	// "lb_GameFinTime": { // VERIFIED
 		// "id": 165834, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "Time: Game Completion (from start-finish)"},
-	// "lb_GameFinScoreWeighted": { // TODO lb_GameFinScoreWeighted
-		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score: Game Completion (from start-finish), weighted by LivesLeft and ContinuesUsed"},
+	// "lb_GameFinScoreWeighted": { // VERIFIED
+		// "id": 165877, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score: Game Completion (from start-finish), weighted by LivesLeft and ContinuesUsed"},
 	// "lb_Stg1Score": { // VERIFIED
 		// "id": 165836, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score: Stage 1 Completion"},
 	// "lb_Stg2Score": { // VERIFIED
