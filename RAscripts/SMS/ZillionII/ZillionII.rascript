@@ -1730,15 +1730,15 @@ dict_descriptions = {
 	
 	"a_Stg1Deathless":		{"en": "Complete Stage 1 without dying"},
 	"a_Stg2Deathless":		{"en": "Complete Stage 2 without dying"},
-	"a_Stg3Deathless":		{"en": "Complete Stage 3 as Apple without dying. Summon Apple near beginning of Stage"},
+	"a_Stg3Deathless":		{"en": "Complete Stage 3 as Apple without dying. Summon Apple near the beginning of Stage"},
 	"a_Stg4Deathless":		{"en": "Complete Stage 4 without dying"},
-	"a_Stg5Deathless":		{"en": "Complete Stage 5 as Champ without dying. Summon Champ near beginning of Stage"},
+	"a_Stg5Deathless":		{"en": "Complete Stage 5 as Champ without dying. Summon Champ near the beginning of Stage"},
 	"a_Stg6Deathless":		{"en": "Complete Stage 6 without dying"},
 	"a_Stg7Deathless":		{"en": "Complete Stage 7 without dying"},
 	"a_Stg8Deathless":		{"en": "Complete Stage 8 without dying"},
-	"a_WinNoSummon":		{"en": "Complete Game without summoning Champ or Apple"},
-	"a_WinNoContinue":		{"en": "Complete the game without using a continue"},
-	"a_WinScore":			{"en": "Complete Game with 150k score"},
+	"a_WinNoSummon":		{"en": "Complete the mission without summoning Champ or Apple"},
+	"a_WinNoContinue":		{"en": "Complete the mission without using a continue"},
+	"a_WinScore":			{"en": "Complete the mission with at least 150k score"},
 	"a_NoHeals":			{"en": "Complete any on-rails stage without dying or restoring HP (life)"},
 	"a_MinHits":			{"en": "Complete any on-foot stage without dying and while taking no more than 3 hits"},
 	}
@@ -2768,8 +2768,8 @@ dict_titles = {
 	}
 dict_descriptions = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
-	"lb_GameFinTime": 					{"en": "Fastest times for completing the game. (Opt-out available: Hold D-Pad Down while pressing Start at the Main Menu)"},
-	"lb_GameFinScoreWeighted": 			{"en": "Highest weighted scores for completing the game. This score enhances the game's internal scoring system with continues used and player lives remaining, details in RAguide"},
+	"lb_GameFinTime": 					{"en": "Fastest times for completing the mission. (Opt-out available: Hold D-Pad Down while pressing Start at the Main Menu)"},
+	"lb_GameFinScoreWeighted": 			{"en": "Highest weighted scores for completing the mission. This score enhances the game's internal scoring system with continues used and player lives remaining, details in RAguide"},
 	"lb_Stg1Score": 					{"en": "Highest scores achieved at the end of Stage 1"},
 	"lb_Stg2Score": 					{"en": "Highest scores achieved at the end of Stage 2"},
 	"lb_Stg3Score": 					{"en": "Highest scores achieved at the end of Stage 3"},
@@ -2778,7 +2778,7 @@ dict_descriptions = {
 	"lb_Stg6Score": 					{"en": "Highest scores achieved at the end of Stage 6"},
 	"lb_Stg7Score": 					{"en": "Highest scores achieved at the end of Stage 7"},
 	"lb_Stg8Score": 					{"en": "Highest scores achieved at the end of Stage 8"},
-	"lb_HighScore": 					{"en": "Overall highest scores recorded during gameplay, including scores at game over and at full completion"},
+	"lb_HighScore": 					{"en": "Overall highest scores recorded at game over and at mission completion"},
 	}
 // #endregion LB - Text
 
