@@ -57,7 +57,7 @@
 // #region GENERAL UTILITY
 
 class CLASS_Utility {
-    isDebugModeActive = true // if true => extra information may be displayed on achievement titles & descriptions
+    isDebugModeActive = false // if true => extra information may be displayed on achievement titles & descriptions
     language = "en"	// ISO 639-1 language codes
 
 	iNULL = -1		// Two types are necessary because RAtools can't compare integers to strings
@@ -1229,7 +1229,7 @@ dict_coreData = {
 		// "a_Stg2Deathless": { // VERIFIED
 			// "id": 618517, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 2 without dying"},
 		// "a_Stg3Deathless": { // VERIFIED
-			// "id": 618516, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3 as Apple without dying. Summon Apple near beginning of Stage "},
+			// "id": 618516, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3 as Apple without dying. Summon Apple near beginning of Stage"},
 		// "a_Stg4Deathless": { // VERIFIED
 			// "id": 618515, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4 without dying"},
 		// "a_Stg5Deathless": { // VERIFIED
@@ -1673,7 +1673,7 @@ dict_triggers = {
 	}
 // #endregion ACH - Triggers
 
-// #region ACH - Text // TODO Achievement Writing
+// #region ACH - Text
 dict_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_Stage1": 			{"en": "Mission Commenced"},
@@ -1685,28 +1685,28 @@ dict_titles = {
 	"a_Stage7": 			{"en": "Final Approach"},
 	"a_Stage8": 			{"en": "For Maris!"},
 	
-	"a_Stg1PowerUp": 			{"en": "xxxxxxxxx"},
-	"a_Stg3PowerUp": 			{"en": "xxxxxxxxx"},
-	"a_Stg5PowerUp": 			{"en": "xxxxxxxxx"},
-	"a_Stg7PowerUp": 			{"en": "xxxxxxxxx"},
-	"a_TriCharged": 			{"en": "xxxxxxxxx"},
-	"a_MaxLives": 				{"en": "xxxxxxxxx"},
-	"a_RescueChamp": 			{"en": "xxxxxxxxx"},
-	"a_RescueApple": 			{"en": "xxxxxxxxx"},
+	"a_Stg1PowerUp": 			{"en": "Combat Ready"},
+	"a_Stg3PowerUp": 			{"en": "Powered Up"},
+	"a_Stg5PowerUp": 			{"en": "Maximum Firepower"},
+	"a_Stg7PowerUp": 			{"en": "Overcharged"},
+	"a_TriCharged": 			{"en": "Tri Formation!"},
+	"a_MaxLives": 				{"en": "Life Insurance"},
+	"a_RescueChamp": 			{"en": "Champ's Buddy"},
+	"a_RescueApple": 			{"en": "Apple's Knight"},
 
-	"a_Stg1Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg2Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg3Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg4Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg5Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg6Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg7Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg8Deathless":		{"en": "xxxxxxxxx"},
-	"a_WinNoSummon":		{"en": "Stay back I got this!"},
-	"a_WinNoContinue":		{"en": "xxxxxxxxx"},
+	"a_Stg1Deathless":		{"en": "A-Okay"},
+	"a_Stg2Deathless":		{"en": "Distinguished Cadet"},
+	"a_Stg3Deathless":		{"en": "Apple of My Eye"},
+	"a_Stg4Deathless":		{"en": "Soaring Ace"},
+	"a_Stg5Deathless":		{"en": "Let's Get This Done"},
+	"a_Stg6Deathless":		{"en": "Through Fire"},
+	"a_Stg7Deathless":		{"en": "Against All Odds"},
+	"a_Stg8Deathless":		{"en": "The White Aces"},
+	"a_WinNoSummon":		{"en": "Stay Back I Got This!"},
+	"a_WinNoContinue":		{"en": "Mr. Gordo Would Be Proud"},
 	"a_WinScore":			{"en": "Not a Toy Gun"},
-	"a_NoHeals":			{"en": "xxxxxxxxx"},
-	"a_MinHits":			{"en": "xxxxxxxxx"},
+	"a_NoHeals":			{"en": "Certified by Dave"},
+	"a_MinHits":			{"en": "Duck and Weave"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -1719,28 +1719,28 @@ dict_descriptions = {
 	"a_Stage7": 			{"en": "Complete Stage 7 and access the inner garrison"},
 	"a_Stage8": 			{"en": "Defeat Baron Ricks, thwarting the latest Nohza invasion"},
 
-	"a_Stg1PowerUp": 			{"en": "xxxxxxxxx"},
-	"a_Stg3PowerUp": 			{"en": "xxxxxxxxx"},
-	"a_Stg5PowerUp": 			{"en": "xxxxxxxxx"},
-	"a_Stg7PowerUp": 			{"en": "xxxxxxxxx"},
-	"a_TriCharged": 			{"en": "xxxxxxxxx"},
-	"a_MaxLives": 				{"en": "xxxxxxxxx"},
-	"a_RescueChamp": 			{"en": "xxxxxxxxx"},
-	"a_RescueApple": 			{"en": "xxxxxxxxx"},
+	"a_Stg1PowerUp": 			{"en": "Collect 10 A or Z Power-Ups in Stage 1 without dying"},
+	"a_Stg3PowerUp": 			{"en": "Collect 8 A or Z Power-Ups in Stage 3 without dying"},
+	"a_Stg5PowerUp": 			{"en": "Collect 8 Z Power-Ups in Stage 5 without dying"},
+	"a_Stg7PowerUp": 			{"en": "Collect 9 Z Power-Ups in Stage 7 without dying"},
+	"a_TriCharged": 			{"en": "Complete any on-rails stage using only the Armorator, without dying. Transform the Tricycle into the Armorator near the start of the Stage"},
+	"a_MaxLives": 				{"en": "Acquire a total of 6 player lives (PL)"},
+	"a_RescueChamp": 			{"en": "Rescue Champ from captivity during Stage 2"},
+	"a_RescueApple": 			{"en": "Rescue Apple from captivity during Stage 2"},
 	
-	"a_Stg1Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg2Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg3Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg4Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg5Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg6Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg7Deathless":		{"en": "xxxxxxxxx"},
-	"a_Stg8Deathless":		{"en": "xxxxxxxxx"},
-	"a_WinNoSummon":		{"en": "xxxxxxxxx"},
-	"a_WinNoContinue":		{"en": "xxxxxxxxx"},
-	"a_WinScore":			{"en": "xxxxxxxxx"},
-	"a_NoHeals":			{"en": "xxxxxxxxx"},
-	"a_MinHits":			{"en": "xxxxxxxxx"},
+	"a_Stg1Deathless":		{"en": "Complete Stage 1 without dying"},
+	"a_Stg2Deathless":		{"en": "Complete Stage 2 without dying"},
+	"a_Stg3Deathless":		{"en": "Complete Stage 3 as Apple without dying. Summon Apple near beginning of Stage"},
+	"a_Stg4Deathless":		{"en": "Complete Stage 4 without dying"},
+	"a_Stg5Deathless":		{"en": "Complete Stage 5 as Champ without dying. Summon Champ near beginning of Stage"},
+	"a_Stg6Deathless":		{"en": "Complete Stage 6 without dying"},
+	"a_Stg7Deathless":		{"en": "Complete Stage 7 without dying"},
+	"a_Stg8Deathless":		{"en": "Complete Stage 8 without dying"},
+	"a_WinNoSummon":		{"en": "Complete Game without summoning Champ or Apple"},
+	"a_WinNoContinue":		{"en": "Complete the game without using a continue"},
+	"a_WinScore":			{"en": "Complete Game with 150k score"},
+	"a_NoHeals":			{"en": "Complete any on-rails stage without dying or restoring HP (life)"},
+	"a_MinHits":			{"en": "Complete any on-foot stage without dying and while taking no more than 3 hits"},
 	}
 // #endregion ACH - Text
 
@@ -2751,34 +2751,34 @@ dict_valueMeasures = {
 	}
 // #endregion LB - Triggers
 
-// #region LB - Text // TODO LEADERBOARD Writing
+// #region LB - Text
 dict_titles = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
-	"lb_GameFinTime": 					{"en": "xxxxxx"},
-	"lb_GameFinScoreWeighted": 			{"en": "xxxxxx"},
-	"lb_Stg1Score": 					{"en": "xxxxxx"},
-	"lb_Stg2Score": 					{"en": "xxxxxx"},
-	"lb_Stg3Score": 					{"en": "xxxxxx"},
-	"lb_Stg4Score": 					{"en": "xxxxxx"},
-	"lb_Stg5Score": 					{"en": "xxxxxx"},
-	"lb_Stg6Score": 					{"en": "xxxxxx"},
-	"lb_Stg7Score": 					{"en": "xxxxxx"},
-	"lb_Stg8Score": 					{"en": "xxxxxx"},
-	"lb_HighScore": 					{"en": "xxxxxx"},
+	"lb_GameFinTime": 					{"en": "Mission Times"},
+	"lb_GameFinScoreWeighted": 			{"en": "Mission Performance Scores"},
+	"lb_Stg1Score": 					{"en": "Stage 1 High Scores"},
+	"lb_Stg2Score": 					{"en": "Stage 2 High Scores"},
+	"lb_Stg3Score": 					{"en": "Stage 3 High Scores"},
+	"lb_Stg4Score": 					{"en": "Stage 4 High Scores"},
+	"lb_Stg5Score": 					{"en": "Stage 5 High Scores"},
+	"lb_Stg6Score": 					{"en": "Stage 6 High Scores"},
+	"lb_Stg7Score": 					{"en": "Stage 7 High Scores"},
+	"lb_Stg8Score": 					{"en": "Stage 8 High Scores"},
+	"lb_HighScore": 					{"en": "Mission High Scores"},
 	}
 dict_descriptions = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
-	"lb_GameFinTime": 					{"en": "xxxxxxx (Opt-out of leaderboard by holding Dpad Down whilst pressing Start at Main Menu)"},
-	"lb_GameFinScoreWeighted": 			{"en": "xxxxxx"},
-	"lb_Stg1Score": 					{"en": "xxxxxx"},
-	"lb_Stg2Score": 					{"en": "xxxxxx"},
-	"lb_Stg3Score": 					{"en": "xxxxxx"},
-	"lb_Stg4Score": 					{"en": "xxxxxx"},
-	"lb_Stg5Score": 					{"en": "xxxxxx"},
-	"lb_Stg6Score": 					{"en": "xxxxxx"},
-	"lb_Stg7Score": 					{"en": "xxxxxx"},
-	"lb_Stg8Score": 					{"en": "xxxxxx"},
-	"lb_HighScore": 					{"en": "xxxxxx"},
+	"lb_GameFinTime": 					{"en": "Fastest times for completing the game. (Opt-out available: Hold D-Pad Down while pressing Start at the Main Menu)"},
+	"lb_GameFinScoreWeighted": 			{"en": "Highest weighted scores for completing the game. This score enhances the game's internal scoring system with continues used and player lives remaining, details in RAguide"},
+	"lb_Stg1Score": 					{"en": "Highest scores achieved at the end of Stage 1"},
+	"lb_Stg2Score": 					{"en": "Highest scores achieved at the end of Stage 2"},
+	"lb_Stg3Score": 					{"en": "Highest scores achieved at the end of Stage 3"},
+	"lb_Stg4Score": 					{"en": "Highest scores achieved at the end of Stage 4"},
+	"lb_Stg5Score": 					{"en": "Highest scores achieved at the end of Stage 5"},
+	"lb_Stg6Score": 					{"en": "Highest scores achieved at the end of Stage 6"},
+	"lb_Stg7Score": 					{"en": "Highest scores achieved at the end of Stage 7"},
+	"lb_Stg8Score": 					{"en": "Highest scores achieved at the end of Stage 8"},
+	"lb_HighScore": 					{"en": "Overall highest scores recorded during gameplay, including scores at game over and at full completion"},
 	}
 // #endregion LB - Text
 
