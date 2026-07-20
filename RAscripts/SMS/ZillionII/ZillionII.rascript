@@ -1205,51 +1205,51 @@ dict_coreData = {
 		},
 	"c_Bonus": { // Bonus - Miscellaneous achievements
 		// "a_Stg1PowerUp": { // VERIFIED
-			// "id": 614328, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of 10 A or Z Power-Ups in this stage, without dying"},
+			// "id": 614328, "points": AchievementPointClass.Challenging_10, "devInfo": "Collect a total of 10 A or Z Power-Ups in this stage, without dying"},
 		// "a_Stg3PowerUp": { // VERIFIED
-			// "id": 616732, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of 8 A or Z Power-Ups in this stage, without dying"},
+			// "id": 616732, "points": AchievementPointClass.Challenging_10, "devInfo": "Collect a total of 8 A or Z Power-Ups in this stage, without dying"},
 		// "a_Stg5PowerUp": { // VERIFIED
-			// "id": 616733, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of 8 Z Power-Ups in this stage, without dying"},
+			// "id": 616733, "points": AchievementPointClass.Challenging_10, "devInfo": "Collect a total of 8 Z Power-Ups in this stage, without dying"},
 		// "a_Stg7PowerUp": { // VERIFIED
-			// "id": 616734, "points": AchievementPointClass.Free_0, "devInfo": "Collect a total of 9 Z Power-Ups in this stage, without dying"},
+			// "id": 616734, "points": AchievementPointClass.Challenging_10, "devInfo": "Collect a total of 9 Z Power-Ups in this stage, without dying"},
 		// "a_TriCharged": { // VERIFIED
-			// "id": 616747, "points": AchievementPointClass.Free_0, "devInfo": "Complete an On-Rails Stage using only the Armorator and without dying. Transform near the beginning of the Stage"},
+			// "id": 616747, "points": AchievementPointClass.Advanced_5, "devInfo": "Complete an On-Rails Stage using only the Armorator and without dying. Transform near the beginning of the Stage"},
 		// "a_MaxLives": { // VERIFIED
-			// "id": 616784, "points": AchievementPointClass.Free_0, "devInfo": "Acquire a total of 6 lives (extra lives unlocked at 30k, 70k and 120k score + start at 3)"},
+			// "id": 616784, "points": AchievementPointClass.Challenging_10, "devInfo": "Acquire a total of 6 lives (extra lives unlocked at 30k, 70k and 120k score + start at 3)"},
 		},
 	"c_mBonus": { // Missable Bonus - Missable achievements
 		// "a_RescueApple": { // VERIFIED
-			// "id": 616785, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Apple in Stage 2"},
+			// "id": 616785, "points": AchievementPointClass.Easy_3, "devInfo": "Rescue Apple in Stage 2"},
 		// "a_RescueChamp": { // VERIFIED
-			// "id": 616786, "points": AchievementPointClass.Free_0, "devInfo": "Rescue Champ in Stage 4"},
+			// "id": 616786, "points": AchievementPointClass.Easy_3, "devInfo": "Rescue Champ in Stage 4"},
 		},
 	"c_Challenges": { // Challenges
 		// "a_Stg1Deathless": { // VERIFIED
-			// "id": 618518, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 1 without dying"},
+			// "id": 618518, "points": AchievementPointClass.Challenging_10, "devInfo": "Complete Stage 1 without dying"},
 		// "a_Stg2Deathless": { // VERIFIED
-			// "id": 618517, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 2 without dying"},
+			// "id": 618517, "points": AchievementPointClass.Challenging_10, "devInfo": "Complete Stage 2 without dying"},
 		// "a_Stg3Deathless": { // VERIFIED
-			// "id": 618516, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3 as Apple without dying. Summon Apple near beginning of Stage"},
+			// "id": 618516, "points": AchievementPointClass.Challenging_10, "devInfo": "Complete Stage 3 as Apple without dying. Summon Apple near beginning of Stage"},
 		// "a_Stg4Deathless": { // VERIFIED
-			// "id": 618515, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4 without dying"},
+			// "id": 618515, "points": AchievementPointClass.Challenging_10, "devInfo": "Complete Stage 4 without dying"},
 		// "a_Stg5Deathless": { // VERIFIED
-			// "id": 618514, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 5 as Champ without dying. Summon Champ near beginning of Stage"},
+			// "id": 618514, "points": AchievementPointClass.Challenging_10, "devInfo": "Complete Stage 5 as Champ without dying. Summon Champ near beginning of Stage"},
 		// "a_Stg6Deathless": { // VERIFIED
-			// "id": 618513, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 6 without dying"},
+			// "id": 618513, "points": AchievementPointClass.Challenging_10, "devInfo": "Complete Stage 6 without dying"},
 		// "a_Stg7Deathless": { // VERIFIED
-			// "id": 618512, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 7 without dying"},
+			// "id": 618512, "points": AchievementPointClass.Challenging_10, "devInfo": "Complete Stage 7 without dying"},
 		// "a_Stg8Deathless": { // VERIFIED
-			// "id": 618511, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 8 without dying"},
+			// "id": 618511, "points": AchievementPointClass.Challenging_10, "devInfo": "Complete Stage 8 without dying"},
 		// "a_WinNoSummon": { // VERIFIED
-			// "id": 618544, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without summoning Champ or Apple"},
+			// "id": 618544, "points": AchievementPointClass.Advanced_5, "devInfo": "Complete Game without summoning Champ or Apple"},
 		// "a_WinNoContinue": { // VERIFIED
-			// "id": 618543, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game without using a continue"},
+			// "id": 618543, "points": AchievementPointClass.VeryHard_50, "devInfo": "Complete Game without using a continue"},
 		// "a_WinScore": { // VERIFIED
-			// "id": 618586, "points": AchievementPointClass.Free_0, "devInfo": "Complete Game with 150k score"},
+			// "id": 618586, "points": AchievementPointClass.Challenging_10, "devInfo": "Complete Game with 150k score"},
 		// "a_NoHeals": { // VERIFIED
-			// "id": 618565, "points": AchievementPointClass.Free_0, "devInfo": "Complete any On-Rails Stage without dying and without HP healing (from L-Power-Up and Summon)"},
+			// "id": 618565, "points": AchievementPointClass.Advanced_5, "devInfo": "Complete any On-Rails Stage without dying and without HP healing (from L-Power-Up and Summon)"},
 		// "a_MinHits": { // VERIFIED
-			// "id": 618584, "points": AchievementPointClass.Free_0, "devInfo": "Complete any On-Foot Stage without dying and taking only a max of 3 hits"},
+			// "id": 618584, "points": AchievementPointClass.Advanced_5, "devInfo": "Complete any On-Foot Stage without dying and taking only a max of 3 hits"},
 		},
 	}
 dict_achievementCategoryToAchievementType = {
