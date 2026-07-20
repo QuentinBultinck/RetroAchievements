@@ -693,7 +693,7 @@ class CLASS_MEMLOGIC_PlayerLogic {
 	function current_Character(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:PlayerCharacter_ID", enum_releaseRegion))	
 	function prev_Character(enum_releaseRegion) =>
-		prev(this.current_Character(enum_releaseRegion))		
+		prev(this.current_Character(enum_releaseRegion))
 	
 	function on_Apple_rescue(enum_releaseRegion) =>
 		this.prev_flagState_IsAppleAvailable(enum_releaseRegion) == 0
@@ -1097,6 +1097,10 @@ class CLASS_AchievementSubLogic {
 				&& !stage.is(enum_stage, enum_releaseRegion)))
 			&& never( // --ResetIf--> player dies (loses a life)
 				player.on_Life_lose(enum_releaseRegion))
+			&& never( // --ResetIf--> player switches to another character
+				gameState.is(gameState.InGame, enum_releaseRegion)
+				&& player.prev_Character(enum_releaseRegion) == enum_playerCharacter
+				&& player.current_Character(enum_releaseRegion) != enum_playerCharacter)
 
 			&& once( // --CheckIf--[StartCondition_A]--> Player start from beginning of stage (not via checkpoint, after death)
 				stage.is(enum_stage, enum_releaseRegion)
