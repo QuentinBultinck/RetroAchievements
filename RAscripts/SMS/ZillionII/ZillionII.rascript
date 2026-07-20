@@ -1606,7 +1606,7 @@ dict_triggers = {
 					!stage.is(enum_stage, enum_releaseRegion))))
 			&& never( // --ResetIf--> player dies (loses a life)
 				player.on_Life_lose(enum_releaseRegion))
-			&& never( // --ResetIf--> player picks up a healing item (L-Power-Up)
+			&& never( // --ResetIf--> player picks up a healing item (L-Power-Up) OR uses a summon to heal
 				gameState.is(gameState.InGame, enum_releaseRegion)
 				&& player.on_Heal(enum_releaseRegion))
 
