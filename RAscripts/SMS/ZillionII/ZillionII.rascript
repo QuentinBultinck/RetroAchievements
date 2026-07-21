@@ -6,7 +6,7 @@
 // md5: 605b0c360075876b4a0be479679d1075 (World)
 // RA Hash: 605b0c360075876b4a0be479679d1075 (World)
 // Platform: Sega Master System
-// Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
+// Achievement Guide: [Link_to_guide] // TODO GUIDE (only leaderboard section left to write) => https://github.com/RetroAchievements/guides/wiki
 // RA Game Page: https://retroachievements.org/game/10716
 // RATools version: v1.17.0
 
@@ -1329,7 +1329,7 @@ dict_triggers = {
 		}),
 	"a_Stg7PowerUp": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.Seven
-		const_AZ_POWERS_TO_COLLECT = 10 -1 // --> Stage 7: [9 Z-PowerUps]; minus one, to allow for some breathing room
+		const_AZ_POWERS_TO_COLLECT = 10 -1 // --> Stage 7: [10 Z-PowerUps]; minus one, to allow for some breathing room
 		return 
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			achievementSubLogic.CoreGroup_PowerCollector(const_STAGE, const_AZ_POWERS_TO_COLLECT, enum_releaseRegion)
@@ -2573,7 +2573,7 @@ dict_startTriggers = {
 		const_MIN_SCORE_REQUIREMENT = 300
 		const_FRAME_DELAY_TILL_HIGHSCORE_UPDATES = 15 // --> actually this is 4~ frames, but add some extra frames
 		return
-		// [1] ==== Alt Start Group ====		-> (Instant Start-Submit) Start OutroSequence is done			
+		// [1] ==== Alt Start Group ====		-> Instant Start-Submit when OutroSequence is done			
 			once( // --CheckIf--> Stage 8 was started from beginning
 				never(!stage.is(stage.Eight, enum_releaseRegion)) // --ResetNextIf--> When not in correct stage
 				&& stage.is(stage.Eight, enum_releaseRegion)
@@ -2595,7 +2595,7 @@ dict_startTriggers = {
 				&& gameState.is(gameState.MainMenu, enum_releaseRegion))
 			
 			&& player.current_HighScore(enum_releaseRegion) >= const_MIN_SCORE_REQUIREMENT
-		// [2] ==== Alt Start Group ====		-> (Instant Start-Submit) Start when GameOver
+		// [2] ==== Alt Start Group ====		-> Instant Start-Submit when GameOver
 			|| gameState.is(gameState.PlayerDeath, enum_releaseRegion)
 			&& player.prev_Lives(enum_releaseRegion) == 1 // = no lives left
 			&& player.current_Lives(enum_releaseRegion) == 0 // = Game Over
