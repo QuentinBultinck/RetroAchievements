@@ -1,0 +1,27 @@
+Lookup:CharacterName
+0=JJ is
+1=Apple is
+2=Champ is
+*=The White Nuts are
+
+Format:ContinuesLeft
+FormatType=VALUE
+
+Format:LivesLeft
+FormatType=VALUE
+
+Format:Score
+FormatType=SCORE
+
+Format:StageNumber
+FormatType=VALUE
+
+Display:
+?1=1S0xH0010=0S0xH0010>8?Playing Zillion II: The Tri Formation ⚡ High Score @Score(b0xW000d)0
+?0xH0010=1_0xW000d!=0?Playing Zillion II: The Tri Formation ⚡ Main Menu ⚡ High Score @Score(b0xW000d)0
+?0xH0010=1_0xW000d!=0?Playing Zillion II: The Tri Formation ⚡ Demo ⚡ High Score @Score(b0xW000d)0
+?0xH0010=1_0xW000d=0?Playing Zillion II: The Tri Formation ⚡ Main Menu
+?0xH0010=2_0xW000d=0?Playing Zillion II: The Tri Formation ⚡ Demo
+?1=1S0xH0010=7S0xH0010=3S0xH0010=4S0xH0010=8?Playing Zillion II: The Tri Formation ⚡ @CharacterName(0xH0095) in combat with Nozha Forces, in Stage @StageNumber(0xH0015) ⚡ Score @Score(b0xW0012)0 ⚡ Lives @LivesLeft(0xH001f_v-1) ⚡ Continues @ContinuesLeft(0xH0002*-1_v3)/3
+?0xH0133<=3S0xH0010=6S0xH0010=5?Playing Zillion II: The Tri Formation ⚡ The White Nuts have defeated Baron Ricks and his Nozha Invasion ⚡ Score @Score(b0xW0012)0 ⚡ Lives @LivesLeft(0xH001f_v-1) ⚡ Continues @ContinuesLeft(0xH0002*-1_v3)/3
+Playing Zillion II: The Tri Formation
