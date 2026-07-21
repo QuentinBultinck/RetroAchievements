@@ -8,7 +8,7 @@
 
 This guide provides comprehensive details on how to unlock each achievement within the base set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
 
-<sup>This guide mirrors the one available on the achievement set developer's *[Github](_LINK_TO_RA_GUIDE_GITHUB_ "Zillion II: The Tri Formation (Sega Master System) - Achievement Guide")*</sup>
+<sup>This guide mirrors the one available on the achievement set developer's *[Github](https://github.com/QuentinBultinck/RetroAchievements/tree/main/RAscripts/SMS/ZillionII "Zillion II: The Tri Formation (Sega Master System) - Achievement Guide")*</sup>
 
 <h3 id=ToC> 📑 Table of Contents</h3>
 
