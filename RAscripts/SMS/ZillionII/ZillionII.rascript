@@ -1837,8 +1837,8 @@ dict_descriptions = {
 
 	"a_Stg1PowerUp": 			{"en": "Collect at least 9 A or Z Power-Ups in Stage 1 without dying"},
 	"a_Stg3PowerUp": 			{"en": "Collect at least 7 A or Z Power-Ups in Stage 3 without dying"},
-	"a_Stg5PowerUp": 			{"en": "Collect at least 7 Z Power-Ups in Stage 5 without dying"},
-	"a_Stg7PowerUp": 			{"en": "Collect at least 8 Z Power-Ups in Stage 7 without dying"},
+	"a_Stg5PowerUp": 			{"en": "Collect at least 6 Z Power-Ups in Stage 5 without dying"},
+	"a_Stg7PowerUp": 			{"en": "Collect at least 7 Z Power-Ups in Stage 7 without dying"},
 	"a_TriCharged": 			{"en": "Complete any on-rails stage using only the Armorator, without dying. Transform the Tricycle into the Armorator near the start of the Stage"},
 	"a_MaxLives": 				{"en": "Acquire a total of 6 player lives (PL)"},
 	"a_RescueChamp": 			{"en": "Rescue Champ from captivity during Stage 4"},
