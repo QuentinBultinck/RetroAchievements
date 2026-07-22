@@ -806,7 +806,7 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
 	// ----AdventureModeDialogueText_IDs----
 	EnteringEnrikuTemple_A = 0x6 // "Kane: look at all the destruction!"
 	FirstBossFight_A = 0x31 // "Mysterious Enemy: Kusanagi!!!" - After defeating 1st boss (mysterious man) at IzumoTemple
-	FirstBossFight_B = 0x32 // "with that word, the mysterious enemy disappears!
+	FirstBossFight_B = 0x32 // "with that word, the mysterious enemy disappears!"
 	XRayGlasses_Use = 0xDA // "Kane puts on the X-Ray Glasses"
 	XRayGlasses_Success = 0xEB // "Kane: I can see a chest on the seabed!"
 	EatSpaghetti_A = 0x3b // "Kane: Thank You!"
@@ -3251,7 +3251,7 @@ dict_triggers = {
 			never(repeated(10, // --Repeated--10_frames--> On OutroSequence start, when outrosequence toggles from "SecondTextParagraph" to "EndingScene", gameStateA is temporarily 0x6 as a transitional value (0x86 -> 0x6 -> 0x86). This is also the case when switching from "EndingScene" to "Credits"
 				never(gameStateA.on_change(enum_releaseRegion))
 				&& !gameStateA.is_inGame(enum_releaseRegion)))
-			&& never(repeated(40, // --Repeated--40_frames--> On OutroSequence start, when gameStateB toggles from "gameStateB.Started_MainMenu_InGame"(0x1) ro "gameStateB.OutroSequence"(0xE), gameStateB is "BootingGame_StartMenu_Demo"(0x0) for 20-ish frames as a transitional value (0x1 -> 0x0 -> 0xE)
+			&& never(repeated(40, // --Repeated--40_frames--> On OutroSequence start, when gameStateB toggles from "gameStateB.Started_MainMenu_InGame"(0x1) to "gameStateB.OutroSequence"(0xE), gameStateB is "BootingGame_StartMenu_Demo"(0x0) for 20-ish frames as a transitional value (0x1 -> 0x0 -> 0xE)
 				never(gameStateB.on_change(enum_releaseRegion))
 				&& !gameStateB.is_gameStarted(enum_releaseRegion)))
 			&& never(demo.is_active(enum_releaseRegion))
