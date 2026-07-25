@@ -2665,7 +2665,7 @@ dict_triggers = {
 				&& bossEnemy.is_bossArena_active(const_BOSS_B, enum_releaseRegion)
 				&& bossEnemy.on_death(const_BOSS_B, enum_releaseRegion)
 				)
-		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much spell usages left
+		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking ENGY is left to be used
 			|| unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss
 				actionLevel.is(actionLevel.MtHinokami_Level_1, enum_releaseRegion)
 				&& gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
@@ -3105,7 +3105,7 @@ dict_triggers = {
 			&& trigger_when( // --Trigger--> When boss dies	
 				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion) 
 				&& bossEnemy.on_death(const_BOSS, enum_releaseRegion))
-		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much Makiri spell usages left
+		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much ENGY is left to be used
 			|| unless(once( // --PauseLock--> When player dies
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
 				&& bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
