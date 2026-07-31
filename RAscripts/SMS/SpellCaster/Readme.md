@@ -137,7 +137,7 @@ A set of custom-made challenge achievements encompassing each Action level/boss 
 
 A collection of bonus achievements, showcasing various easter eggs and miscellaneous tasks.
 
-### Misc_AchievementCategory Achievement List
+### Bonus Achievement List
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -156,7 +156,7 @@ A collection of bonus achievements, showcasing various easter eggs and miscellan
 
 🔗 [Back to Table of Contents](#ToC)
 
-🔗 [Back to Top of Achievement Category](#Misc_AchievementCategory)
+🔗 [Back to Top of Achievement Category](#Bonus)
 
 ---
 
