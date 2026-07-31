@@ -3353,7 +3353,14 @@ dict_triggers = {
 			&& item.is_inInventory(item.Ch2_Lute, enum_releaseRegion)
 
 			&& let_sumOf_deltaFlagStates_SeaSpiritVanquishedEvents == length(const_array_SEASPIRIT_VANQUISHED_EVENTS) -1  // --SumOf--> all delta event flags ----> (delta: 5 defeated spirits)
-			&& measured(let_sumOf_currentFlagStates_SeaSpiritVanquishedEvents == length(const_array_SEASPIRIT_VANQUISHED_EVENTS))  // --Measured--SumOf--> all current event flags ----> (current: 6 defeated spirits)
+			&& measured( // --Measured--SumOf--> all current event flags ----> (current: 6 defeated spirits)
+				let_sumOf_currentFlagStates_SeaSpiritVanquishedEvents == length(const_array_SEASPIRIT_VANQUISHED_EVENTS),
+				when = 
+					storyChapter.is(storyChapter.Ch_2_SwordOfKusanagi, enum_releaseRegion)
+					&& mainQuest.is_priorEventsCompleted(mainQuest.Ch2_LuteSpiritVanquished, enum_releaseRegion)
+					&& mainQuest.is_eventCompleted(mainQuest.Ch2_LuteSpiritVanquished, enum_releaseRegion)
+					&& item.is_inInventory(item.Ch2_Lute, enum_releaseRegion)
+				)  
 		}),
 	
 	"a_xRaying": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
