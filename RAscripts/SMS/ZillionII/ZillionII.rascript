@@ -1463,10 +1463,12 @@ dict_triggers = {
 					!stage.is(enum_stage, enum_releaseRegion))))
 			&& never( // --ResetIf--> player dies (loses a life)
 				player.on_Life_lose(enum_releaseRegion))
-			&& never( // --ResetIf--> player isn't in Armorator while not at beginning of stage
+
+			&& never(tally_of(const_ALLOWED_STAGES, 1, enum_stage => // --Tally--OrNext--ResetIf--> ResetIf player isn't in Armorator while in "play" area (= while not at beginning of Stage + also not at Stage end, at the door); check this for all allowed Stages
 				gameState.is(gameState.InGame, enum_releaseRegion)
-				&& stageSection.current(enum_releaseRegion) > const_BEGINNING_OF_STAGE_THRESHOLD
-				&& !player.is_armoratorActive(enum_releaseRegion))
+				&& stage.is(enum_stage, enum_releaseRegion)
+				&& const_BEGINNING_OF_STAGE_THRESHOLD < stageSection.current(enum_releaseRegion) && stageSection.current(enum_releaseRegion) < stage.get_StageSection_End(enum_stage)
+				&& !player.is_armoratorActive(enum_releaseRegion)))
 
 			&& once( // --CheckIf--[StartCondition]--> Player start from beginning of stage (not via checkpoint, after death)
 				gameState.is(gameState.InGame, enum_releaseRegion)
