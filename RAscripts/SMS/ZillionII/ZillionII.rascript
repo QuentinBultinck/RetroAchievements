@@ -1273,7 +1273,7 @@ dict_coreData = {
 		// "a_TriCharged": { // VERIFIED
 			// "id": 616747, "points": AchievementPointClass.Advanced_5, "devInfo": "Complete an On-Rails Stage using only the Armorator and without dying. Transform near the beginning of the Stage"},
 		// "a_MaxLives": { // VERIFIED
-			// "id": 616784, "points": AchievementPointClass.Challenging_10, "devInfo": "Acquire a total of 6 lives (extra lives unlocked at 30k, 70k and 120k score + start at 3)"},
+			// "id": 616784, "points": AchievementPointClass.Challenging_10, "devInfo": "Acquire a total of 5 lives (extra lives unlocked at 30k, 70k and 120k score + start at 2)"},
 		},
 	"c_mBonus": { // Missable Bonus - Missable achievements
 		// "a_RescueApple": { // VERIFIED
@@ -1498,7 +1498,7 @@ dict_triggers = {
 			)
 		}),
 	"a_MaxLives": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_MAX_LIVES = 6 +1 // = Max attainable lives (plus one, because that's how the game stores lives)
+		const_MAX_LIVES = 5 +1 // = Max attainable lives (plus one, because that's how the game stores lives)
 		const_THIRD_LIFE_SCORE_REQUIREMENT = 120000 // = 120k (unlocks a third extra life)
 
 		return 
@@ -1842,7 +1842,7 @@ dict_descriptions = {
 	"a_Stg5PowerUp": 			{"en": "Collect at least 6 Z Power-Ups in Stage 5 without dying"},
 	"a_Stg7PowerUp": 			{"en": "Collect at least 7 Z Power-Ups in Stage 7 without dying"},
 	"a_TriCharged": 			{"en": "Complete any on-rails stage using only the Armorator, without dying. Transform the Tricycle into the Armorator near the start of the Stage"},
-	"a_MaxLives": 				{"en": "Acquire a total of 6 player lives (PL)"},
+	"a_MaxLives": 				{"en": "Acquire a total of 5 player lives (PL)"},
 	"a_RescueChamp": 			{"en": "Rescue Champ from captivity during Stage 4"},
 	"a_RescueApple": 			{"en": "Rescue Apple from captivity during Stage 2"},
 	
