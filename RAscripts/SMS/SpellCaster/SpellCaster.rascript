@@ -726,6 +726,7 @@ class CLASS_MEMLOGIC_MainQuestProgress {
 	// ----MainQuestEvents (enum = flagIndex in "FlagArray:MainQuestEventFlags")----
 	Ch1_MysteryManDefeated = 5
 	Ch1_MtMiwaGuardDefeated = 11
+	Ch1_AcquireSwordOfBranches = 17
 	Ch2_LuteSpiritVanquished = 11
 	Ch2_AcquireSwordOfKusanagi = 18
 	Ch3_AcquireBallOfShimazu = 3
@@ -1894,7 +1895,6 @@ dict_triggers = {
 			
 			&& storyChapter.is(const_CHAPTER, enum_releaseRegion)
 			&& player.is_alive(enum_releaseRegion)
-			&& adventureScene.is(adventureScene.KashimaTemple_FirstVisit, enum_releaseRegion)
 
 			&& once( // --CheckIf--[StartCondition]--> Boss starts at max HP
 				bossEnemy.is_bossArena_active(const_BOSS, enum_releaseRegion)
@@ -1909,7 +1909,11 @@ dict_triggers = {
 					&& bossEnemy.on_HP_negativelyOverflows(const_BOSS, enum_releaseRegion))
 				])
 
-			&& trigger_when(gameStateA.on_changeTo(gameStateA.AdventureMode, enum_releaseRegion))
+			&& trigger_when(
+				gameStateA.is_active(gameStateA.AdventureMode, enum_releaseRegion)
+				&& adventureScene.is(adventureScene.KashimaTemple_FirstVisit, enum_releaseRegion)
+				&& mainQuest.is_priorEventsCompleted(mainQuest.Ch1_AcquireSwordOfBranches, enum_releaseRegion)
+				&& mainQuest.on_event_completion(mainQuest.Ch1_AcquireSwordOfBranches, enum_releaseRegion))
 			}),
 	"a_Ch2SwordKusanagi": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
@@ -3641,7 +3645,7 @@ dict_titles = {
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_Ch1MysteryMan": 			{"en": "Defeat the mysterious man at Izumo Temple and take your first step toward uncovering the truth"},
-	"a_Ch1KashimaBoss": 		{"en": "Stop the Serpent God's summoning at Kashima by overcoming the warrior of flame"},
+	"a_Ch1KashimaBoss": 		{"en": "Stop the Serpent God's summoning at Kashima by overcoming the Warrior of Flame and claim his blazing weapon as a trophy"},
 	"a_Ch2SwordKusanagi": 		{"en": "Claim the legendary Sword of Kusanagi and unleash its might against your foes"},
 	"a_Ch3Shimazu":  			{"en": "Uncover the true intentions of the Iwato family's actions"},
 	"a_Ch3Ameno": 				{"en": "Activate the machine at Kakogen and receive the revelation of the Serpent God Ooku"},
