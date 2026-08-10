@@ -1,7 +1,7 @@
 RA_GauntletPoll:
 **************
 
-!poll 'Game: [_GAME_TITLE_ (_CONSOLE_)](_LINK_TO_RA_GAME_PAGE_)'
+/poll 'Game: [_GAME_TITLE_ (_CONSOLE_)](_LINK_TO_RA_GAME_PAGE_)'
 
 'Current: _LINK_'
 'Contender 1: _LINK_ _EXTRA_INFO_'
@@ -14,7 +14,7 @@ RA_GauntletPoll:
 RA_GauntletPoll:
 **************
 
-!poll 'Game: [Darkwatch (PlayStation 2)](https://retroachievements.org/game/19111)'
+/poll 'Game: [Darkwatch (PlayStation 2)](https://retroachievements.org/game/19111)'
 
 'Current: https://media.retroachievements.org/Images/061650.png'
 'Contender 1: https://cdn.discordapp.com/attachments/894679616264998993/1363773763178729563/Mastery_B.png?ex=680740ca&is=6805ef4a&hm=4713395ffdccfcd7e3fc66e6fee32bbf716f2e3f15722165468394ed80ca8a14& Just the skull'
