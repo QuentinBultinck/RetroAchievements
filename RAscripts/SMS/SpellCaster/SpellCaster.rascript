@@ -1769,8 +1769,8 @@ dict_coreData = {
 			// "id": 610554, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Reach Demon and defeat him, within xx time, using only xx amount of ENGY"},
 		// "a_ClgYomotsuPlain": { // VERIFIED
 			// "id": 610558, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Starting from the Misty Crossing (left side of level), reach the Holy Bridge (right side of level), within xx time, using only xx amount of ENGY, taking only one hit of damage, disallowed spells Makiri & Mars"},
-		// "a_ClgFinalBattle": { // VERIFIED
-			// "id": 610555, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, witohut going below xx STGH"},
+		"a_ClgFinalBattle": { // VERIFIED
+			"id": 610555, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, witohut going below xx STGH"},
 		// "a_ClgAsaka": { // VERIFIED
 			// "id": 610573, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Defeat using only xx amount of ENGY, within xx time"},	
 		// "a_ClgCentipede": { // VERIFIED
@@ -2916,6 +2916,9 @@ dict_triggers = {
 			&& unless(once( // --PauseLock--> When player casts disallowed spell
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
 				&& player.on_spellCast(const_DISALLOWED_SPELL, enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When player resurrects with necklace
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& item.on_lose(item.Ch7_Necklace, enum_releaseRegion)))
 			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
 			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
@@ -2984,6 +2987,9 @@ dict_triggers = {
 			&& unless(once( // --PauseLock--> When player casts disallowed spell
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
 				&& player.on_spellCast(const_DISALLOWED_SPELL, enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When player resurrects with necklace
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& item.on_lose(item.Ch7_Necklace, enum_releaseRegion)))
 			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
 			&& achievementSubLogic.PauseLock_playerExceedsEnergyAllowance(const_ALLOWED_ENGY_TO_USE, enum_releaseRegion) // --PauseLock--> When player used too much ENGY
@@ -3214,6 +3220,9 @@ dict_triggers = {
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
 				&& player.current_spellSelected(enum_releaseRegion) != const_ALLOWED_SPELL
 				&& player.on_ENGY_decrement(enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When player takes a hit
+				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)
+				&& player.on_STGH_decrement(enum_releaseRegion)))
 			&& unless(repeated(const_TIME_LIMIT_FRAMES, // --PauseLock--> When time exceeds const_TIME_LIMIT_SECONDS; timer only counts while in "gameStateA.ActionMode"
 				gameStateA.is_active(gameStateA.ActionMode, enum_releaseRegion)))
 
@@ -3495,7 +3504,7 @@ dict_triggers = {
 
 			&& item.on_lose(item.Ch7_Necklace, enum_releaseRegion)
 			&& 0 <= player.prev_STGH(enum_releaseRegion) && player.prev_STGH(enum_releaseRegion) <= (const_MAX_STGH_FINAL_BATTLE/5)
-			&& player.current_STGH(enum_releaseRegion) == const_MAX_STGH_FINAL_BATTLE			
+			&& player.current_STGH(enum_releaseRegion) == const_MAX_STGH_FINAL_BATTLE
 		}),	
 	"a_EatSpaghetti": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
@@ -3664,7 +3673,7 @@ dict_descriptions = {
 	"a_ClgMtHinokami": 			{"en": "Reach the top of Mt. Hinokami and defeat the villians without exceeding the ENGY limit of 70. Taking damage restores your allowance and the spell 'Mars' may only be cast once"},
 	"a_ClgPyramid": 			{"en": "Reach and defeat the Pyramid Demon within 8 minutes whilst using no more than 70 ENGY"},
 	"a_ClgYomotsuPlain": 		{"en": "Travel from the Misty Crossing to the Holy Bridge within 2 minutes, using no more than 40 ENGY, taking only 1 hit, and without the spells 'Makiri' or 'Mars'"},
-	"a_ClgFinalBattle": 		{"en": "Defeat the Evil Lord within 5 minutes 20 seconds, using no more than 250 ENGY, and never falling below 25 STGH"},	
+	"a_ClgFinalBattle": 		{"en": "Defeat the Evil Lord within 5 minutes 20 seconds, using no more than 250 ENGY, never falling below 25 STGH, and without any healing or resurrection"},
 	"a_ClgAsaka": 				{"en": "Defeat Princess Asaka within 1 minute whilst using no more than 50 ENGY"},
 	"a_ClgCentipede": 			{"en": "Defeat the Giant Centipede using only 1 spell of choice, within 1 minute 15 seconds, using no more than 50 ENGY, and without taking damage"},
 	"a_ClgThunderGod": 			{"en": "Defeat the Thunder God and claim the Sword of Kusanagi within 10 seconds"},
