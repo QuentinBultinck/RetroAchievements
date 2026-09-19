@@ -118,7 +118,10 @@ class CLASS_MemoryData {
 	function getRegionOffset(string_structKey, string_offsetKey) =>
 		this.dict_regionOffsets[string_structKey][string_offsetKey]
 	// -------------------------------------
-	dict_structDefinitions = {}
+	dict_structDefinitions = {	
+		"Struct:Entity": {
+			"sizeInBytes": 32},
+	}
 	function getStruct_SizeInBytes(string_structKey) =>
 		this.dict_structDefinitions[string_structKey]["sizeInBytes"]
 
@@ -170,11 +173,14 @@ class CLASS_MemoryData {
 	dict_addresses = {
 		// "memAddrKey": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: util.sNULL},
 
+		"8-bit:GameState": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x00e2},
 		"8-bit:Stage_ID": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0077},
 		"8-bit:Area_ID": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x00AC},
 		"8-bit:TalismansCollected": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0079},
 		"8-bit:BossHitsTaken_A": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x060A},
 		"8-bit:BossHitsTaken_B": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x060B},
+
+		"Array:Entities": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0400},		
 		}
 
 	function getAddress(string_addrKey, enum_releaseRegion) {
@@ -364,6 +370,28 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 		)
 	)
 
+// ..............
+// ◦ Game State ◦
+// ''''''''''''''
+// #region Game State
+
+class CLASS_MEMLOGIC_GameState {
+	// --------Variables/Enums--------
+	InGame = 0x1
+	GameOver = 0x2 // (also for TheEnd)
+
+	// --------Functions--------
+	function current(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:GameState", enum_releaseRegion))
+	function prev(enum_releaseRegion) =>
+		prev(this.current(enum_releaseRegion))
+	
+	function is(enum_gameState, enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == enum_gameState
+} gameState = CLASS_MEMLOGIC_GameState()
+
+// #endregion Game State
+
 // ........................
 // ◦ Stage Identification ◦
 // ''''''''''''''''''''''''
@@ -398,11 +426,18 @@ class CLASS_MEMLOGIC_StageIdentification {
 // #region Area Identification
 
 class CLASS_MEMLOGIC_AreaIdentification {
-	// --------Variables/Enums--------
+	// --------Variables/Enums-------- 
 	S1_BossRoomEntrance = 0x1F
 	S1_BossRoom = 0x6C
 	S2_BossRoomEntrance = 0x61
 	S2_BossRoom = 0x6b
+	S3_BossRoomEntrance = 0x01
+	S3_BossRoom = 0x4D
+	S4_BossRoomEntrance = 0x08
+	S4_BossRoom = 0x3D
+	// S5_BossRoomEntrance, multiple entrances to boss
+	S5_BossRoom_A = 0x02
+	S5_BossRoom_B = 0x0C
 
 	// --------Functions--------
 	function current(enum_releaseRegion) =>
@@ -444,41 +479,88 @@ class CLASS_MEMLOGIC_PlayerLogic {
 // #region Boss Entity Data
 class CLASS_MEMLOGIC_BossEntityData {
 	// --------Variables/Enums--------
+	S1 = 10
+	S2 = 20
+	S3 = 30
+	S4 = 40
+	S5_A = 51
+	S5_B = 52
+
 	dict_BossData = {
-		stage.S1: {
+		S1: {
 			"BossHitsTaken_MemLocation": "A",
 			"BossHitsToDeath": 0x4},
-		stage.S2: {
+		S2: {
 			"BossHitsTaken_MemLocation": "B",
 			"BossHitsToDeath": 0x5},
-		// stage.S3: {
-		// 	"BossHitsTaken_MemLocation": "xxxx",
-		// 	"BossHitsToDeath": xxx},
-		// stage.S4: {
-		// 	"BossHitsTaken_MemLocation": "xxxx",
-		// 	"BossHitsToDeath": xxx},
-		// stage.S5: {
-		// 	"BossHitsTaken_MemLocation": "xxxx",
-		// 	"BossHitsToDeath": xxx},
+		S3: {
+			"BossHitsTaken_MemLocation": "B",
+			"BossHitsToDeath": 0x7},
+		S4: {
+			"BossHitsTaken_MemLocation": "B",
+			"BossHitsToDeath": 0x7},
+		S5_A: {
+			"BossHitsTaken_MemLocation": "B",
+			"BossHitsToDeath": 0x8},
+		S5_B: {
+			"BossHitsTaken_MemLocation": "B",
+			"BossHitsToDeath": 0x8},
 	}
-	function get_BossHitsTaken_MemLocation(enum_stage) => this.dict_BossData[enum_stage]["BossHitsTaken_MemLocation"]
-	function get_BossHitsToDeath(enum_stage) => this.dict_BossData[enum_stage]["BossHitsToDeath"]
+	function get_BossHitsTaken_MemLocation(enum_boss) => this.dict_BossData[enum_boss]["BossHitsTaken_MemLocation"]
+	function get_BossHitsToDeath(enum_boss) => this.dict_BossData[enum_boss]["BossHitsToDeath"]
 	// --------Functions--------
 
 
-	function current_HitsTaken(enum_stage, enum_releaseRegion) {
-		let_memAddrKey_BossHitsTaken = format("8-bit:BossHitsTaken_{0}", this.get_BossHitsTaken_MemLocation(enum_stage))
+	function current_HitsTaken(enum_boss, enum_releaseRegion) {
+		let_memAddrKey_BossHitsTaken = format("8-bit:BossHitsTaken_{0}", this.get_BossHitsTaken_MemLocation(enum_boss))
 		return byte(memory.getAddress(let_memAddrKey_BossHitsTaken, enum_releaseRegion))}
-	function prev_HitsTaken(enum_stage, enum_releaseRegion) =>
-		prev(this.current_HitsTaken(enum_stage, enum_releaseRegion))
+	function prev_HitsTaken(enum_boss, enum_releaseRegion) =>
+		prev(this.current_HitsTaken(enum_boss, enum_releaseRegion))
 	
-	function on_death(enum_stage, enum_releaseRegion) {
-		let_BossHitsToDeath = this.get_BossHitsToDeath(enum_stage)
+	function on_death(enum_boss, enum_releaseRegion) {
+		let_BossHitsToDeath = this.get_BossHitsToDeath(enum_boss)
 		return 
-			this.prev_HitsTaken(enum_stage, enum_releaseRegion) == let_BossHitsToDeath -1
-			&& this.current_HitsTaken(enum_stage, enum_releaseRegion) == let_BossHitsToDeath}
+			this.prev_HitsTaken(enum_boss, enum_releaseRegion) == let_BossHitsToDeath -1
+			&& this.current_HitsTaken(enum_boss, enum_releaseRegion) == let_BossHitsToDeath}
 } bossEnemy = CLASS_MEMLOGIC_BossEntityData()
 // #endregion Boss Entity Data
+
+// ...............
+// ◦ Entity Data ◦
+// '''''''''''''''
+// #region Entity Data
+class CLASS_MEMLOGIC_EntityData {
+	// --------Variables/Enums--------
+	// --------Functions--------
+	function current_State(int_entityIndex, enum_releaseRegion) {
+		let_memAddr_EntityArray = memory.getAddress("Array:Entities", enum_releaseRegion)
+		let_offsetToEntity = memory.getStruct_SizeInBytes("Struct:Entity") * int_entityIndex
+		return dword(let_memAddr_EntityArray + let_offsetToEntity)}
+	function prev_State(int_entityIndex, enum_releaseRegion) =>
+		prev(this.current_State(int_entityIndex, enum_releaseRegion))
+
+	// NOTE: CheckIf all EntityObjects but PlayerCharacterEntity and BossEntity are zeroed out (15-NonImportantEntities)
+	function on_AllNonImportantEntities_zeroedOut(enum_releaseRegion) {
+		let_array_EntitiyIndicesToCheck = []
+		for let_index in range(1, 15) 
+			array_push(let_array_EntitiyIndicesToCheck, let_index)
+
+		let_sumOf_AllNonImportantEntities_currentStates = 
+			sum_of(let_array_EntitiyIndicesToCheck, let_entityIndex =>
+				this.current_State(let_entityIndex, enum_releaseRegion))
+
+		let_sumOf_AllNonImportantEntities_prevStates = 
+			sum_of(let_array_EntitiyIndicesToCheck, let_entityIndex =>
+				this.prev_State(let_entityIndex, enum_releaseRegion))
+
+		return 
+			let_sumOf_AllNonImportantEntities_prevStates > 0
+			&& let_sumOf_AllNonImportantEntities_currentStates == 0
+		}
+
+} entity = CLASS_MEMLOGIC_EntityData()
+// #endregion Entity Data
+
 
 // ................
 // ◦ Sub_Header_1 ◦
@@ -529,7 +611,25 @@ class CLASS_MEMLOGIC_xxxx {
 // #region ACH - sub logic
 //	- For achievement logic that's reoccuring across multiple triggers
 class CLASS_AchievementSubLogic {
+	function CoreGroup_StageProgression(enum_stage, enum_boss, enum_area_BossRoomEntrance, enum_area_BossRoom, enum_releaseRegion) {
+		const_REQUIRED_TALISMAN_COUNT = 5 // ---> Required to enter boss arena
 
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			never(!gameState.is(gameState.InGame, enum_releaseRegion))
+			&& never(repeated(2, // ---> repeated so last condition is available to trigger
+				!stage.is(enum_stage, enum_releaseRegion)))
+			
+			&& repeated( // --CheckIf--> Collected all talismans
+				const_REQUIRED_TALISMAN_COUNT, player.on_TalismanCount_increment(enum_releaseRegion))
+			&& once( // --CheckIf--> Entering BossRoom
+				area.on_changeFromTo(enum_area_BossRoomEntrance, enum_area_BossRoom, enum_releaseRegion))
+			&& once( // --CheckIf--> Boss dies
+				bossEnemy.on_death(enum_boss, enum_releaseRegion))
+
+			&& trigger_when(
+				stage.on_changeFromTo(enum_stage, enum_stage +0x1, enum_releaseRegion))
+		}
 } achievementSubLogic = CLASS_AchievementSubLogic()
 // #endregion ACH - sub logic
 
@@ -572,14 +672,14 @@ dict_coreData = {
 			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 1"},
 		"a_Stage2": { // VERIFIED
 			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 2"},
-		// "a_Stage3": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3"},
-		// "a_Stage4": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4"},
+		"a_Stage3": { // VERIFIED
+			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3"},
+		"a_Stage4": { // VERIFIED
+			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4"},
 		},
 	"c_WinCondy": { // Last Stage completion
-		// "a_Stage5": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 5 (finish game)"},
+		"a_Stage5": { // VERIFIED
+			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 5 (finish game)"},
 		},		
 	"c_Challenge": { // Challenges
 		// CONCEPT c_Challenge
@@ -630,51 +730,54 @@ dict_triggers = {
 		// 	always_false()),
 	"a_Stage1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.S1
-		const_REQUIRED_TALISMAN_COUNT = 5 // ---> Required to enter boss arena
-
-		return
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			never(repeated(2, // ---> repeated so last condition is available to trigger
-				!stage.is(const_STAGE, enum_releaseRegion)))
-			
-			&& repeated( // --CheckIf--> Collected all talismans
-				const_REQUIRED_TALISMAN_COUNT, player.on_TalismanCount_increment(enum_releaseRegion))
-			&& once( // --CheckIf--> Entering BossRoom
-				area.on_changeFromTo(area.S1_BossRoomEntrance, area.S1_BossRoom, enum_releaseRegion))
-			&& once( // --CheckIf--> Boss dies
-				bossEnemy.on_death(const_STAGE, enum_releaseRegion))
-
-			&& trigger_when(
-				stage.on_changeFromTo(const_STAGE, const_STAGE +0x1, enum_releaseRegion))
-		}),
+		const_BOSS = bossEnemy.S1
+		const_AREA_BossRoomEntrance = area.S1_BossRoomEntrance
+		const_AREA_BossRoom = area.S1_BossRoom
+		return achievementSubLogic.CoreGroup_StageProgression(const_STAGE, const_BOSS, const_AREA_BossRoomEntrance, const_AREA_BossRoom, enum_releaseRegion)}),
 	"a_Stage2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.S2
+		const_BOSS = bossEnemy.S2
+		const_AREA_BossRoomEntrance = area.S2_BossRoomEntrance
+		const_AREA_BossRoom = area.S2_BossRoom
+		return achievementSubLogic.CoreGroup_StageProgression(const_STAGE, const_BOSS, const_AREA_BossRoomEntrance, const_AREA_BossRoom, enum_releaseRegion)}),
+	"a_Stage3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S3
+		const_BOSS = bossEnemy.S3
+		const_AREA_BossRoomEntrance = area.S3_BossRoomEntrance
+		const_AREA_BossRoom = area.S3_BossRoom
+		return achievementSubLogic.CoreGroup_StageProgression(const_STAGE, const_BOSS, const_AREA_BossRoomEntrance, const_AREA_BossRoom, enum_releaseRegion)}),
+	"a_Stage4": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S4
+		const_BOSS = bossEnemy.S4
+		const_AREA_BossRoomEntrance = area.S4_BossRoomEntrance
+		const_AREA_BossRoom = area.S4_BossRoom
+		return achievementSubLogic.CoreGroup_StageProgression(const_STAGE, const_BOSS, const_AREA_BossRoomEntrance, const_AREA_BossRoom, enum_releaseRegion)}),
+	"a_Stage5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S5
+		const_BOSS_A = bossEnemy.S5_A
+		const_BOSS_B = bossEnemy.S5_B
 		const_REQUIRED_TALISMAN_COUNT = 5 // ---> Required to enter boss arena
 
 		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			never(repeated(2, // ---> repeated so last condition is available to trigger
+			never(!gameState.is(gameState.InGame, enum_releaseRegion))
+			&& never(repeated(2, // ---> repeated so last condition is available to trigger
 				!stage.is(const_STAGE, enum_releaseRegion)))
 			
 			&& repeated( // --CheckIf--> Collected all talismans
 				const_REQUIRED_TALISMAN_COUNT, player.on_TalismanCount_increment(enum_releaseRegion))
-			&& once( // --CheckIf--> Entering BossRoom
-				area.on_changeFromTo(area.S2_BossRoomEntrance, area.S2_BossRoom, enum_releaseRegion))
-			&& once( // --CheckIf--> Boss dies
-				bossEnemy.on_death(const_STAGE, enum_releaseRegion))
+			&& once( // --CheckIf--> Boss_A dies
+				area.is(area.S5_BossRoom_A, enum_releaseRegion)
+				&& bossEnemy.on_death(const_BOSS_A, enum_releaseRegion))
+			&& once( // --CheckIf--> Switching BossRoom
+				area.on_changeFromTo(area.S5_BossRoom_A, area.S5_BossRoom_B, enum_releaseRegion))
+			&& once( // --CheckIf--> Boss_B dies
+				area.is(area.S5_BossRoom_B, enum_releaseRegion)
+				&& bossEnemy.on_death(const_BOSS_B, enum_releaseRegion))
 
-			&& trigger_when(
-				stage.on_changeFromTo(const_STAGE, const_STAGE +0x1, enum_releaseRegion))
+			&& trigger_when( // --Trigger--> When all sprites/entities are removed (when main and side character are removed from screen)
+				entity.on_AllNonImportantEntities_zeroedOut(enum_releaseRegion))
 		}),
-	"a_Stage3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_false()),
-	"a_Stage4": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_false()),
-	"a_Stage5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_false()),
 	}
 // #endregion ACH - Triggers
 
