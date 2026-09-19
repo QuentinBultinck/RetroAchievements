@@ -669,17 +669,17 @@ dict_coreData = {
 	
 	"c_Progress": { // Progress through stages
 		"a_Stage1": { // VERIFIED
-			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 1"},
+			"id": 637735, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 1"},
 		"a_Stage2": { // VERIFIED
-			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 2"},
+			"id": 637736, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 2"},
 		"a_Stage3": { // VERIFIED
-			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3"},
+			"id": 637737, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3"},
 		"a_Stage4": { // VERIFIED
-			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4"},
+			"id": 637738, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4"},
 		},
 	"c_WinCondy": { // Last Stage completion
 		"a_Stage5": { // VERIFIED
-			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 5 (finish game)"},
+			"id": 637739, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 5 (finish game)"},
 		},		
 	"c_Challenge": { // Challenges
 		// CONCEPT c_Challenge
