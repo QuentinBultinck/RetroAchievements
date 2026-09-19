@@ -475,7 +475,7 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 dict_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()),
 	}
 // #endregion ACH - Triggers
@@ -849,7 +849,7 @@ class CLASS_LeaderboardValuesMeasures {
 		function valueMeasure(enum_releaseRegion) => 
 			measured(
 				current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion),
-				when = is_ReleaseRegion(enum_releaseRegion))
+				when = releaseRegion.is(enum_releaseRegion))
 
 		let_array_valueMeasures = []
 		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
@@ -879,36 +879,36 @@ dict_coreData = {
 dict_startTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// // [1] ==== Alt Start Group ====		-> Start when ...
-		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// // [2] ==== Alt Start Group ====		-> Start when ...
-		//  	|| is_ReleaseRegion(enum_releaseRegion)
+		//  	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// // [3] ==== Alt Reset Group ====		-> Reset when ...
-		//  	|| is_ReleaseRegion(enum_releaseRegion)
+		//  	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
 	}
 dict_cancelTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// // [1] ==== Alt Cancel Group ====		-> Cancel when ...
-		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// // [2] ==== Alt Cancel Group ====		-> Cancel when ...
-		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// // [3] ==== Alt Reset Group ====			-> Reset when ...
-		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
 	}
 dict_submitTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// // [1] ==== Alt Submit Group ====			-> Submit when ...
-		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// // [2] ==== Alt Reset Group ====			-> Reset when ...
-		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
 	}
