@@ -1,13 +1,13 @@
-// ****************************************** \\
-//   █▀▀ ▄▀█ █▀▄▀█ █▀▀    ▀█▀ █ ▀█▀ █░░ █▀▀   \\
-//   █▄█ █▀█ █░▀░█ ██▄    ░█░ █ ░█░ █▄▄ ██▄   \\
-// ****************************************** \\
-// #ID = [game_ID_here]	// TODO Set header info - Two Line Text Generator: https://www.fancytextpro.com/BigTextGenerator
-// md5: [hash_here] (region_here)
-// RA Hash: [hash_here] (region_here)
-// Platform: [platform_here]
+// *********************************************** \\
+// █▄█ █▀█ █░█ █▄▀ ▄▀█ █    █▄█ ▄▀█ █▀ █░█ █ █▄▀ █ \\
+// ░█░ █▄█ █▄█ █░█ █▀█ █    ░█░ █▀█ ▄█ █▀█ █ █░█ █ \\
+// *********************************************** \\
+// #ID = 2112
+// md5: e6adea91c53b0d7d88f9fdfcb6605247 (JPN)
+// RA Hash: ed934f1d3db315a20d110470fd824940 (JPN)
+// Platform: Famicom Disk System
 // Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
-// RA Game Page: [link_to_game_page]
+// RA Game Page: https://retroachievements.org/game/2112
 // RATools version: [version_here] // TODO set last used RATools version here
 
 //#####################################################################################################\\
@@ -96,7 +96,7 @@ class CLASS_ENUM_ReleaseRegions {
 	JPN = "NTSC-J"
 	EUR = "PAL"
 } ReleaseRegion = CLASS_ENUM_ReleaseRegions()
-RELEASE_REGIONS_SUPPORTED = [] // TODO add regions
+RELEASE_REGIONS_SUPPORTED = [ReleaseRegion.JPN]
 
 // #endregion GENERAL UTILITY
 
@@ -169,6 +169,12 @@ class CLASS_MemoryData {
 	// #region MEM - Address Storage
 	dict_addresses = {
 		// "memAddrKey": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: util.sNULL},
+
+		"8-bit:Stage_ID": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0077},
+		"8-bit:Area_ID": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x00AC},
+		"8-bit:TalismansCollected": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0079},
+		"8-bit:BossHitsTaken_A": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x060A},
+		"8-bit:BossHitsTaken_B": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x060B},
 		}
 
 	function getAddress(string_addrKey, enum_releaseRegion) {
@@ -335,17 +341,17 @@ class CLASS_MemoryUtility {
 	// #endregion MemUtil - Main
 } memUtil = CLASS_MemoryUtility()
 
-class CLASS_MEMLOGIC_ReleaseRegion { // TODO implement is_ReleaseRegion()
-	function is(enum_releaseRegion) {	
-		let_string_GameID = util.sNULL
-		if(enum_releaseRegion == ReleaseRegion.USA) let_string_GameID = util.sNULL // FullString: "xxxxx"
-		else if(enum_releaseRegion == ReleaseRegion.JPN) let_string_GameID = util.sNULL // FullString: "xxxxx"
-		else if(enum_releaseRegion == ReleaseRegion.EUR) let_string_GameID = util.sNULL // FullString: "xxxxx"
+// class CLASS_MEMLOGIC_ReleaseRegion { // DISABLED. only one region supported
+// 	function is(enum_releaseRegion) {	
+// 		let_string_GameID = util.sNULL
+// 		if(enum_releaseRegion == ReleaseRegion.USA) let_string_GameID = util.sNULL // FullString: "xxxxx"
+// 		else if(enum_releaseRegion == ReleaseRegion.JPN) let_string_GameID = util.sNULL // FullString: "xxxxx"
+// 		else if(enum_releaseRegion == ReleaseRegion.EUR) let_string_GameID = util.sNULL // FullString: "xxxxx"
 		
-		if (let_string_GameID == util.sNULL) util.throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
-		return memUtil.is_ASCII_EqualTo(memory.getAddress("ASCII:GameID", enum_releaseRegion), let_string_GameID)
-		}
-} releaseRegion = CLASS_MEMLOGIC_ReleaseRegion()
+// 		if (let_string_GameID == util.sNULL) util.throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
+// 		return memUtil.is_ASCII_EqualTo(memory.getAddress("ASCII:GameID", enum_releaseRegion), let_string_GameID)
+// 		}
+// } releaseRegion = CLASS_MEMLOGIC_ReleaseRegion()
 
 function never_toAlt(comparison) => // never_toAlt() => creates a single alt group for a 'Reset If' comparison
 	(
@@ -357,6 +363,122 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 			always_false()
 		)
 	)
+
+// ........................
+// ◦ Stage Identification ◦
+// ''''''''''''''''''''''''
+// #region Stage Identification
+
+class CLASS_MEMLOGIC_StageIdentification {
+	// --------Variables/Enums--------
+	S1 = 0x0
+	S2 = 0x1
+	S3 = 0x2
+	S4 = 0x3
+	S5 = 0x4
+
+	// --------Functions--------
+	function current(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:Stage_ID", enum_releaseRegion))
+	function prev(enum_releaseRegion) =>
+		prev(this.current(enum_releaseRegion))
+	
+	function is(enum_stage, enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == enum_stage
+	function on_changeFromTo(enum_stagePrev, enum_stageCurrent, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) == enum_stagePrev
+		&& this.current(enum_releaseRegion) == enum_stageCurrent
+} stage = CLASS_MEMLOGIC_StageIdentification()
+
+// #endregion Stage Identification
+
+// ........................
+// ◦ Area Identification ◦
+// ''''''''''''''''''''''''
+// #region Area Identification
+
+class CLASS_MEMLOGIC_AreaIdentification {
+	// --------Variables/Enums--------
+	S1_BossRoomEntrance = 0x1F
+	S1_BossRoom = 0x6C
+	S2_BossRoomEntrance = 0x61
+	S2_BossRoom = 0x6b
+
+	// --------Functions--------
+	function current(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:Area_ID", enum_releaseRegion))
+	function prev(enum_releaseRegion) =>
+		prev(this.current(enum_releaseRegion))
+	
+	function is(enum_area, enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == enum_area
+	function on_changeFromTo(enum_areaPrev, enum_areaCurrent, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) == enum_areaPrev
+		&& this.current(enum_releaseRegion) == enum_areaCurrent
+} area = CLASS_MEMLOGIC_AreaIdentification()
+
+// #endregion Area Identification
+
+// ................
+// ◦ Player Logic ◦
+// ''''''''''''''''
+// #region Player Logic
+class CLASS_MEMLOGIC_PlayerLogic {
+	// --------Variables/Enums--------
+	// --------Functions--------
+
+	// ----------------TalismanLogic---------------------
+	function current_TalismanCount(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:TalismansCollected", enum_releaseRegion))
+	function prev_TalismanCount(enum_releaseRegion) =>
+		prev(this.current_TalismanCount(enum_releaseRegion))
+	
+	function on_TalismanCount_increment(enum_releaseRegion) =>
+		this.current_TalismanCount(enum_releaseRegion) > this.prev_TalismanCount(enum_releaseRegion)
+} player = CLASS_MEMLOGIC_PlayerLogic()
+// #endregion Player Logic
+
+// ....................
+// ◦ Boss Entity Data ◦
+// ''''''''''''''''''''
+// #region Boss Entity Data
+class CLASS_MEMLOGIC_BossEntityData {
+	// --------Variables/Enums--------
+	dict_BossData = {
+		stage.S1: {
+			"BossHitsTaken_MemLocation": "A",
+			"BossHitsToDeath": 0x4},
+		stage.S2: {
+			"BossHitsTaken_MemLocation": "B",
+			"BossHitsToDeath": 0x5},
+		// stage.S3: {
+		// 	"BossHitsTaken_MemLocation": "xxxx",
+		// 	"BossHitsToDeath": xxx},
+		// stage.S4: {
+		// 	"BossHitsTaken_MemLocation": "xxxx",
+		// 	"BossHitsToDeath": xxx},
+		// stage.S5: {
+		// 	"BossHitsTaken_MemLocation": "xxxx",
+		// 	"BossHitsToDeath": xxx},
+	}
+	function get_BossHitsTaken_MemLocation(enum_stage) => this.dict_BossData[enum_stage]["BossHitsTaken_MemLocation"]
+	function get_BossHitsToDeath(enum_stage) => this.dict_BossData[enum_stage]["BossHitsToDeath"]
+	// --------Functions--------
+
+
+	function current_HitsTaken(enum_stage, enum_releaseRegion) {
+		let_memAddrKey_BossHitsTaken = format("8-bit:BossHitsTaken_{0}", this.get_BossHitsTaken_MemLocation(enum_stage))
+		return byte(memory.getAddress(let_memAddrKey_BossHitsTaken, enum_releaseRegion))}
+	function prev_HitsTaken(enum_stage, enum_releaseRegion) =>
+		prev(this.current_HitsTaken(enum_stage, enum_releaseRegion))
+	
+	function on_death(enum_stage, enum_releaseRegion) {
+		let_BossHitsToDeath = this.get_BossHitsToDeath(enum_stage)
+		return 
+			this.prev_HitsTaken(enum_stage, enum_releaseRegion) == let_BossHitsToDeath -1
+			&& this.current_HitsTaken(enum_stage, enum_releaseRegion) == let_BossHitsToDeath}
+} bossEnemy = CLASS_MEMLOGIC_BossEntityData()
+// #endregion Boss Entity Data
 
 // ................
 // ◦ Sub_Header_1 ◦
@@ -446,21 +568,21 @@ dict_coreData = {
 		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_Progress": { // Progress through stages
-		// "a_Stage1": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 1"}
-		// "a_Stage2": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 2"}
+		"a_Stage1": { // VERIFIED
+			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 1"},
+		"a_Stage2": { // VERIFIED
+			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 2"},
 		// "a_Stage3": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3"}
+		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3"},
 		// "a_Stage4": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4"}
+		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4"},
 		},
 	"c_WinCondy": { // Last Stage completion
 		// "a_Stage5": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 5"}
+		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 5 (finish game)"},
 		},		
 	"c_Challenge": { // Challenges
-		// CONCEPT
+		// CONCEPT c_Challenge
 		// - TimeTrials (series): Complete Stage X within xx time
 		// - Hitless: Defeat any boss without losing HP
 
@@ -468,12 +590,12 @@ dict_coreData = {
 		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
 		},
 	"c_Bonus": { // Bonus achievements
-		// CONCEPT
+		// CONCEPT c_Bonus
 		// - FreezeKills: Kill xx enemies with Mahjon Piece active (frozen enemies)
 		// - RiceTaster: Recharge yourself by eating some Onigiri (next to a statue)
 		// - RiceCollector: Collect a total of 9 Onigiri || Finish game with 9 Onigiri in inventory	
 		// - Collector (series): Collect all (non-Talisman??) items (at least once) in each Stage --> some lamps/lanterns respawn, most don't?? (with measured)
-		// - Explorer (series): Fully map out each Stage --> (No measured, see progress in map screen)
+		// - Explorer (series): Fully map out each Stage --> (With measured, see progress in map screen + players can't see how many rooms left (also hidden rooms))
 		// - WinScore: Finish game with xx score
 		// - WinBattery: Finish game with max batteries (8 max?? --> batteries are random drop from lamps/lanterns, not garanteed, but players can re-enter rooms for another chance??, some lamps/lanterns respawn, most don't??)
 
@@ -493,8 +615,10 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 	//	- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
 	
-	// "c_Template": 	AchievementType.Standard,
-	"c_Template": 		AchievementType.Standard
+	"c_Progress": 		AchievementType.Progression,
+	"c_WinCondy": 		AchievementType.WinCondition,
+	"c_Challenge": 		AchievementType.Standard,
+	"c_Bonus": 			AchievementType.Standard,
 	}
 
 // #endregion ACH - Core Data
@@ -503,17 +627,73 @@ dict_achievementCategoryToAchievementType = { // TODO set achievement types
 dict_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-		// 	is_ReleaseRegion(enum_releaseRegion)
-		// 	&& always_false()),
+		// 	always_false()),
+	"a_Stage1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S1
+		const_REQUIRED_TALISMAN_COUNT = 5 // ---> Required to enter boss arena
+
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			never(repeated(2, // ---> repeated so last condition is available to trigger
+				!stage.is(const_STAGE, enum_releaseRegion)))
+			
+			&& repeated( // --CheckIf--> Collected all talismans
+				const_REQUIRED_TALISMAN_COUNT, player.on_TalismanCount_increment(enum_releaseRegion))
+			&& once( // --CheckIf--> Entering BossRoom
+				area.on_changeFromTo(area.S1_BossRoomEntrance, area.S1_BossRoom, enum_releaseRegion))
+			&& once( // --CheckIf--> Boss dies
+				bossEnemy.on_death(const_STAGE, enum_releaseRegion))
+
+			&& trigger_when(
+				stage.on_changeFromTo(const_STAGE, const_STAGE +0x1, enum_releaseRegion))
+		}),
+	"a_Stage2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S2
+		const_REQUIRED_TALISMAN_COUNT = 5 // ---> Required to enter boss arena
+
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			never(repeated(2, // ---> repeated so last condition is available to trigger
+				!stage.is(const_STAGE, enum_releaseRegion)))
+			
+			&& repeated( // --CheckIf--> Collected all talismans
+				const_REQUIRED_TALISMAN_COUNT, player.on_TalismanCount_increment(enum_releaseRegion))
+			&& once( // --CheckIf--> Entering BossRoom
+				area.on_changeFromTo(area.S2_BossRoomEntrance, area.S2_BossRoom, enum_releaseRegion))
+			&& once( // --CheckIf--> Boss dies
+				bossEnemy.on_death(const_STAGE, enum_releaseRegion))
+
+			&& trigger_when(
+				stage.on_changeFromTo(const_STAGE, const_STAGE +0x1, enum_releaseRegion))
+		}),
+	"a_Stage3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_false()),
+	"a_Stage4": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_false()),
+	"a_Stage5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_false()),
 	}
 // #endregion ACH - Triggers
 
 // #region ACH - Text
 dict_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
+	"a_Stage1": 			{"en": "xxxxx"},
+	"a_Stage2": 			{"en": "xxxxx"},
+	"a_Stage3": 			{"en": "xxxxx"},
+	"a_Stage4": 			{"en": "xxxxx"},
+	"a_Stage5": 			{"en": "xxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
+	"a_Stage1": 			{"en": "Complete Stage 1"},
+	"a_Stage2": 			{"en": "Complete Stage 2"},
+	"a_Stage3": 			{"en": "Complete Stage 3"},
+	"a_Stage4": 			{"en": "Complete Stage 4"},
+	"a_Stage5": 			{"en": "Complete Stage 5"},
 	}
 // #endregion ACH - Text
 
@@ -877,7 +1057,7 @@ class CLASS_LeaderboardValuesMeasures {
 		function valueMeasure(enum_releaseRegion) => 
 			measured(
 				current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion),
-				when = is_ReleaseRegion(enum_releaseRegion))
+				when = releaseRegion.is(enum_releaseRegion))
 
 		let_array_valueMeasures = []
 		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
@@ -907,36 +1087,36 @@ dict_coreData = {
 dict_startTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// // [1] ==== Alt Start Group ====		-> Start when ...
-		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// // [2] ==== Alt Start Group ====		-> Start when ...
-		//  	|| is_ReleaseRegion(enum_releaseRegion)
+		//  	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// // [3] ==== Alt Reset Group ====		-> Reset when ...
-		//  	|| is_ReleaseRegion(enum_releaseRegion)
+		//  	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
 	}
 dict_cancelTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// // [1] ==== Alt Cancel Group ====		-> Cancel when ...
-		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// // [2] ==== Alt Cancel Group ====		-> Cancel when ...
-		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// // [3] ==== Alt Reset Group ====			-> Reset when ...
-		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
 	}
 dict_submitTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// // [1] ==== Alt Submit Group ====			-> Submit when ...
-		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// // [2] ==== Alt Reset Group ====			-> Reset when ...
-		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
 	}
