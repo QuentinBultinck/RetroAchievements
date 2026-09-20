@@ -813,6 +813,7 @@ class CLASS_MEMLOGIC_DialogueTextIdentification {
 	EatSpaghetti_A = 0x3b // "Kane: Thank You!"
 	EatSpaghetti_B = 0x3c // "Kane accepts the item"
 	EatSpaghetti_C = 0x3d // "Kane regains his strength"
+	JukakDefeated_A = 0x52 // "Jukak: You are persistent. You are from Summit Temple?" - After defeating Jukak at AttaroShrine
 	EatAtMidori_A = 0xb7 // "Kane picks up some chopsticks"
 	EatAtMidori_Seaweed = 0xb8 // "Kane: That was great! You're a good cook!"
 	EatAtMidori_Sushi = 0xb9 // "Kane: That fish looks good! Mm!"
@@ -1769,8 +1770,8 @@ dict_coreData = {
 			// "id": 610554, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Reach Demon and defeat him, within xx time, using only xx amount of ENGY"},
 		// "a_ClgYomotsuPlain": { // VERIFIED
 			// "id": 610558, "points": ENUM_AchievementPointClass.Advanced_5, "devInfo": "Starting from the Misty Crossing (left side of level), reach the Holy Bridge (right side of level), within xx time, using only xx amount of ENGY, taking only one hit of damage, disallowed spells Makiri & Mars"},
-		"a_ClgFinalBattle": { // VERIFIED
-			"id": 610555, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, witohut going below xx STGH"},
+		// "a_ClgFinalBattle": { // VERIFIED
+			// "id": 610555, "points": ENUM_AchievementPointClass.Challenging_10, "devInfo": "Defeat the final boss, within xx time, using only xx amount of ENGY, witohut going below xx STGH"},
 		// "a_ClgAsaka": { // VERIFIED
 			// "id": 610573, "points": ENUM_AchievementPointClass.Intermediate_4, "devInfo": "Defeat using only xx amount of ENGY, within xx time"},	
 		// "a_ClgCentipede": { // VERIFIED
@@ -2256,16 +2257,27 @@ dict_triggers = {
 					&& gameStateA.prev(enum_releaseRegion) == gameStateA.AdventureMode
 					&& gameStateA.current(enum_releaseRegion) == gameStateA.ActionMode)
 
-				&& tally(1, [ // --Tally--OrNext--[TriggerCondition]--> CheckIf: Boss dies, there's two death scenarios (see below) 
-					once( // --CheckIf--> Boss dies on_HP_hitsZero()
-						player.is_alive(enum_releaseRegion) // --> without this: when player dies, this block would trigger
-						&& bossEnemy.is_bossArena_active(const_END_BOSS, enum_releaseRegion) 
-						&& bossEnemy.on_HP_hitsZero(const_END_BOSS, enum_releaseRegion)), // WARNING: don't use "bossEnemy.on_death()" for Jukak, as he doesn't "die"
-					once( // --CheckIf--> Boss dies on_HP_negativelyOverflows()
-						player.is_alive(enum_releaseRegion) // --> without this: when player dies, this block would trigger
-						&& bossEnemy.is_bossArena_active(const_END_BOSS, enum_releaseRegion) 
-						&& bossEnemy.on_HP_negativelyOverflows(const_END_BOSS, enum_releaseRegion))
-					])
+				// DISABLED below block code BUG: When challenge is still active at this point and player dies, "Boss dies on_HP_hitsZero()", toggles true.
+				// && tally(1, [ // --Tally--OrNext--[TriggerCondition]--> CheckIf: Boss dies, there's two death scenarios (see below) 
+				// 	once( // --CheckIf--> Boss dies on_HP_hitsZero()
+				// 		player.is_alive(enum_releaseRegion) // --> without this: when player dies, this block would trigger
+				// 		&& bossEnemy.is_bossArena_active(const_END_BOSS, enum_releaseRegion) 
+				// 		&& bossEnemy.on_HP_hitsZero(const_END_BOSS, enum_releaseRegion)), // WARNING: don't use "bossEnemy.on_death()" for Jukak, as he doesn't "die"
+				// 	once( // --CheckIf--> Boss dies on_HP_negativelyOverflows()
+				// 		player.is_alive(enum_releaseRegion) // --> without this: when player dies, this block would trigger
+				// 		&& bossEnemy.is_bossArena_active(const_END_BOSS, enum_releaseRegion) 
+				// 		&& bossEnemy.on_HP_negativelyOverflows(const_END_BOSS, enum_releaseRegion))
+				// 	])
+
+				// NOTE: Fix for above.
+				&& once( // --CheckIf--> Post boss battle dialogue text displays
+					gameStateA.prior(enum_releaseRegion) == gameStateA.ActionMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode
+					&& dialogueText.on_changeTo(dialogueText.JukakDefeated_A, enum_releaseRegion)) // --> may hit on seperate frame than below check
+				&& once( // --CheckIf--> Post boss battle dialogue text displays
+					gameStateA.prior(enum_releaseRegion) == gameStateA.ActionMode
+					&& gameStateA.current(enum_releaseRegion) == gameStateA.AdventureMode
+					&& dialogueText.on_textBox_render(enum_releaseRegion)) // --> may hit on seperate frame than above check
 				)
 		// [2] ==== Alt Measured Group ==== 		-> Group is responsible for displaying a MeasuredIndicator, tracking how much Makiri spell usages left
 			|| unless(once( // --PauseLock--> When player dies during any of the actionLevels prior to the boss	
