@@ -174,13 +174,19 @@ class CLASS_MemoryData {
 		// "memAddrKey": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: util.sNULL},
 
 		"8-bit:GameState": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x00e2},
+		"8-bit:IntroState": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x00e3},
 		"8-bit:Stage_ID": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0077},
 		"8-bit:Area_ID": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x00AC},
+		"8-bit:BatteryCount": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x007a},
+		"8-bit:BatteryCharges": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x007b},
 		"8-bit:TalismansCollected": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0079},
-		"8-bit:BossHitsTaken_A": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x060A},
+		"8-bit:BossHitsTaken_A": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x060A},		
 		"8-bit:BossHitsTaken_B": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x060B},
 
-		"Array:Entities": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0400},		
+		"6-byte:HighScore": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0048},
+		"6-byte:Score": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0070},
+
+		"Array:Entities": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0400},
 		}
 
 	function getAddress(string_addrKey, enum_releaseRegion) {
@@ -390,6 +396,29 @@ class CLASS_MEMLOGIC_GameState {
 		this.current(enum_releaseRegion) == enum_gameState
 } gameState = CLASS_MEMLOGIC_GameState()
 
+class CLASS_MEMLOGIC_IntroState {
+	// --------Variables/Enums--------
+	InActive = 0x0
+	Intro_Starting = 0x1
+	// TransitionalValues [0x2-0x7] --> Intro_Cutscene Active
+	TitleScreen_Transition = 0x8
+	TitleScreen_Active = 0x9
+	GameStarted = 0xA
+
+	// --------Functions--------
+	function current(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:IntroState", enum_releaseRegion))
+	function prev(enum_releaseRegion) =>
+		prev(this.current(enum_releaseRegion))
+
+	function is(enum_introState, enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == enum_introState
+	function is_Cutscene_active(enum_releaseRegion) =>
+		this.Intro_Starting < this.current(enum_releaseRegion) && this.current(enum_releaseRegion) < this.TitleScreen_Transition
+	function is_MainMenu_active(enum_releaseRegion) =>
+		this.TitleScreen_Transition <= this.current(enum_releaseRegion) && this.current(enum_releaseRegion) <= this.TitleScreen_Active
+} introState = CLASS_MEMLOGIC_IntroState()
+
 // #endregion Game State
 
 // ........................
@@ -447,6 +476,9 @@ class CLASS_MEMLOGIC_AreaIdentification {
 	
 	function is(enum_area, enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == enum_area
+	function is_anyBossRoom_active(enum_releaseRegion) {
+		let_array_AllBossRooms = [this.S1_BossRoom, this.S2_BossRoom, this.S3_BossRoom, this.S4_BossRoom, this.S5_BossRoom_A, this.S5_BossRoom_B]
+		return any_of(let_array_AllBossRooms, enum_area_BossRoom => this.is(enum_area_BossRoom, enum_releaseRegion))}
 	function on_changeFromTo(enum_areaPrev, enum_areaCurrent, enum_releaseRegion) =>
 		this.prev(enum_releaseRegion) == enum_areaPrev
 		&& this.current(enum_releaseRegion) == enum_areaCurrent
@@ -462,6 +494,16 @@ class CLASS_MEMLOGIC_PlayerLogic {
 	// --------Variables/Enums--------
 	// --------Functions--------
 
+	// ----------------BatteryLogic---------------------
+	function current_BatteryCount(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:BatteryCount", enum_releaseRegion))
+	function prev_BatteryCount(enum_releaseRegion) =>
+		prev(this.current_BatteryCount(enum_releaseRegion))
+
+	function current_BatteryCharges(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:BatteryCharges", enum_releaseRegion))
+	function prev_BatteryCharges(enum_releaseRegion) =>
+		prev(this.current_BatteryCharges(enum_releaseRegion))
 	// ----------------TalismanLogic---------------------
 	function current_TalismanCount(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:TalismansCollected", enum_releaseRegion))
@@ -561,6 +603,52 @@ class CLASS_MEMLOGIC_EntityData {
 } entity = CLASS_MEMLOGIC_EntityData()
 // #endregion Entity Data
 
+// .........
+// ◦ Score ◦
+// '''''''''
+// #region Score
+
+class CLASS_MEMLOGIC_Score {
+	// --------Functions--------
+	function current(enum_releaseRegion) {
+		let_memAddr_Score = memory.getAddress("6-byte:Score", enum_releaseRegion)
+		return low4(let_memAddr_Score) * 100000
+			+ low4(let_memAddr_Score +0x1) * 10000
+			+ low4(let_memAddr_Score +0x2) * 1000
+			+ low4(let_memAddr_Score +0x3) * 100
+			+ low4(let_memAddr_Score +0x4) * 10
+			+ low4(let_memAddr_Score +0x5)}
+	function prev(enum_releaseRegion) {
+		let_memAddr_Score = memory.getAddress("6-byte:Score", enum_releaseRegion)
+		return prev(low4(let_memAddr_Score)) * 100000
+			+ prev(low4(let_memAddr_Score +0x1)) * 10000
+			+ prev(low4(let_memAddr_Score +0x2)) * 1000
+			+ prev(low4(let_memAddr_Score +0x3)) * 100
+			+ prev(low4(let_memAddr_Score +0x4)) * 10
+			+ prev(low4(let_memAddr_Score +0x5))}	
+} score = CLASS_MEMLOGIC_Score()
+
+class CLASS_MEMLOGIC_Highscore {
+	// --------Functions--------
+	function current(enum_releaseRegion) {
+		let_memAddr_HighScore = memory.getAddress("6-byte:HighScore", enum_releaseRegion)
+		return low4(let_memAddr_HighScore) * 100000
+			+ low4(let_memAddr_HighScore +0x1) * 10000
+			+ low4(let_memAddr_HighScore +0x2) * 1000
+			+ low4(let_memAddr_HighScore +0x3) * 100
+			+ low4(let_memAddr_HighScore +0x4) * 10
+			+ low4(let_memAddr_HighScore +0x5)}
+	function prev(enum_releaseRegion) {
+		let_memAddr_HighScore = memory.getAddress("6-byte:HighScore", enum_releaseRegion)
+		return prev(low4(let_memAddr_HighScore)) * 100000
+			+ prev(low4(let_memAddr_HighScore +0x1)) * 10000
+			+ prev(low4(let_memAddr_HighScore +0x2)) * 1000
+			+ prev(low4(let_memAddr_HighScore +0x3)) * 100
+			+ prev(low4(let_memAddr_HighScore +0x4)) * 10
+			+ prev(low4(let_memAddr_HighScore +0x5))}
+} highscore = CLASS_MEMLOGIC_Highscore()
+
+// #endregion Score
 
 // ................
 // ◦ Sub_Header_1 ◦
@@ -705,7 +793,7 @@ dict_coreData = {
 		},
 	}
 
-dict_achievementCategoryToAchievementType = { // TODO set achievement types
+dict_achievementCategoryToAchievementType = {
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
 	//	- util.sNULL => when it's not necessarily a missable achievement --> will result in type: "standard"
@@ -874,7 +962,6 @@ function initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region RICH PRESENCE
-// TODO implement Rich Presence
 
 // ======================
 // • RICH PRESENCE text •
@@ -883,8 +970,15 @@ function initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = {
 	// "rp_Template": 				{"en": "xxxxxxxx"},
-	"rp_DefaultPlus":				{"en": "xxxxxxxx"},
-	"rp_Default":					{"en": "xxxxxxxx"}}
+	"rp_Ending":          			{"en": "Playing Youkai Yashiki ⛩ Kouji's vanquished the evil spirits and rescued his sister • Score {0}0"}, // TODO implement rp_Ending
+	"rp_BossBattle":      			{"en": "Playing Youkai Yashiki ⛩ Kouji's confronting the malevolent spirit of Stage {0} • Flashlight {1} • Score {2}0"},
+	"rp_InGame":          			{"en": "Playing Youkai Yashiki ⛩ Kouji's searching for his sister through Stage {0} • Talismans {1} • Flashlight {2} • Score {3}0"},
+	"rp_MainMenuHiScore": 			{"en": "Playing Youkai Yashiki ⛩ Kouji's preparing to enter the haunted mansion • Highscore {0}0"},
+	"rp_MainMenu":        			{"en": "Playing Youkai Yashiki ⛩ Kouji's preparing to enter the haunted mansion"},
+	"rp_IntroCutscene":   			{"en": "Playing Youkai Yashiki ⛩ Kouji's sister has vanished into the night"},
+	"rp_DefaultPlusHiScore":		{"en": "Playing Youkai Yashiki ⛩ Evil spirits stir within the darkness... • Highscore {0}0"},
+	"rp_DefaultPlus":     			{"en": "Playing Youkai Yashiki ⛩ Evil spirits stir within the darkness..."},
+	"rp_Default":					{"en": "Playing Youkai Yashiki"}}
 richPresence_LookupTablesText = {
 	// "lupText_Template": {
 		// "LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
@@ -892,6 +986,23 @@ richPresence_LookupTablesText = {
 		// "LookupTextKey_B":				{"en": "xxxxxxxx"},
 		// "LookupTextKey_C":				{"en": "xxxxxxxx"},
 		// },
+
+	"lupText_FlashlightStatus": {
+		"Empty":				{"en": "empty"},
+		"VeryLow":				{"en": "fading"},
+		"Low":					{"en": "dim"},
+		"Moderate":				{"en": "steady"},
+		"High":					{"en": "bright"},
+		"NearFull":				{"en": "blazing"},
+		},
+	"lupText_TalismanCount": {
+		"Talismans_0":				{"en": "□ □ □ □ □ "},
+		"Talismans_1":				{"en": "📜 □ □ □ □ "},
+		"Talismans_2":				{"en": "📜📜 □ □ □ "},
+		"Talismans_3":				{"en": "📜📜📜 □ □ "},
+		"Talismans_4":				{"en": "📜📜📜📜 □ "},
+		"Talismans_5":				{"en": "📜📜📜📜📜"},
+		},
 	}
 richPresence_ReleaseRegion_toSuperScript = {
 	// NOTE: Text to superscript --> https://lingojam.com/SuperscriptGenerator
@@ -918,6 +1029,47 @@ richPresence_lookupTables = {
 		// 	enum_XXX_C:					"LookupTextKey_C",
 		// 	},
 		// },
+	"lup_FlashlightStatus": {
+		"LookupTableText_Key": "lupText_FlashlightStatus",
+		"LookUpTable": {
+			0:					"Empty",
+			1:					"VeryLow",
+			2:					"VeryLow",
+			3:					"VeryLow",
+			4:					"VeryLow",
+			5:					"VeryLow",
+			6:					"Low",
+			7:					"Low",
+			8:					"Low",
+			9:					"Low",
+			10:					"Moderate",
+			11:					"Moderate",
+			12:					"Moderate",
+			13:					"Moderate",
+			14:					"Moderate",
+			15:					"Moderate",
+			16:					"High",
+			17:					"High",
+			18:					"High",
+			19:					"High",
+			20:					"High",
+			21:					"NearFull",
+			22:					"NearFull",
+			23:					"NearFull",
+			24:					"NearFull",
+			},
+		},		
+	"lup_TalismanCount": {
+		"LookupTableText_Key": "lupText_TalismanCount",
+		"LookUpTable": {
+			0:					"Talismans_0",
+			1:					"Talismans_1",
+			2:					"Talismans_2",
+			3:					"Talismans_3",
+			4:					"Talismans_4",
+			5:					"Talismans_5",
+			},
+		},
 	}
 function richPresence_getLookupTable(string_lookupTableKey) =>
 	richPresence_lookupTables[string_lookupTableKey]["LookUpTable"]
@@ -989,18 +1141,82 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 	// 	releaseRegion.is(enum_releaseRegion)
 	// return rich_presence_conditional_display( 
 	// 	condition(enum_releaseRegion),
-	// 	richPresence_getText_withRegionSuperScript("rp_Template", enum_releaseRegion),
+	// 	richPresence_getText("rp_Template"),
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 0
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 1
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion) // 2
 	// )}
 
-function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+function rp_BossBattle(enum_releaseRegion) { 
 	function condition(enum_releaseRegion) =>
-		releaseRegion.is(enum_releaseRegion)
+		introState.is(introState.GameStarted, enum_releaseRegion)
+		&& gameState.is(gameState.InGame, enum_releaseRegion)
+		&& area.is_anyBossRoom_active(enum_releaseRegion)
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
-		richPresence_getText_withRegionSuperScript("rp_DefaultPlus", enum_releaseRegion)
+		richPresence_getText("rp_BossBattle"),
+		richPresence_callParameterFunction("rpp_Stage", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_FlashlightStatus", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_Score", enum_releaseRegion) // 2
+	)}
+function rp_InGame(enum_releaseRegion) { 
+	function condition(enum_releaseRegion) =>
+		introState.is(introState.GameStarted, enum_releaseRegion)
+		&& gameState.is(gameState.InGame, enum_releaseRegion)
+		&& !area.is_anyBossRoom_active(enum_releaseRegion)
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_InGame"),
+		richPresence_callParameterFunction("rpp_Stage", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_TalismanCount", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_FlashlightStatus", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_Score", enum_releaseRegion) // 3
+	)}
+function rp_MainMenuHiScore(enum_releaseRegion) { 
+	function condition(enum_releaseRegion) =>
+		introState.is_MainMenu_active(enum_releaseRegion)
+		&& !gameState.is(gameState.InGame, enum_releaseRegion)
+		&& highscore.current(enum_releaseRegion) > 0
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_MainMenuHiScore"),
+		richPresence_callParameterFunction("rpp_Highscore", enum_releaseRegion) // 0
+	)}
+function rp_MainMenu(enum_releaseRegion) { 
+	function condition(enum_releaseRegion) =>
+		introState.is_MainMenu_active(enum_releaseRegion)
+		&& !gameState.is(gameState.InGame, enum_releaseRegion)
+		&& highscore.current(enum_releaseRegion) == 0
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_MainMenu")
+	)}
+function rp_IntroCutscene(enum_releaseRegion) { 
+	function condition(enum_releaseRegion) =>
+		introState.is_Cutscene_active(enum_releaseRegion)
+		&& !gameState.is(gameState.InGame, enum_releaseRegion)
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_IntroCutscene")
+	)}
+function rp_DefaultPlusHiScore(enum_releaseRegion) {
+		!introState.is_Cutscene_active(enum_releaseRegion)
+		&& !gameState.is(gameState.InGame, enum_releaseRegion)
+		&& highscore.current(enum_releaseRegion) > 0
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_DefaultPlusHiScore"),
+		richPresence_callParameterFunction("rpp_Highscore", enum_releaseRegion) // 0
+	)}
+function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+	function condition(enum_releaseRegion) =>
+		!introState.is_Cutscene_active(enum_releaseRegion)
+		&& !introState.is_MainMenu_active(enum_releaseRegion)
+		&& !gameState.is(gameState.InGame, enum_releaseRegion)
+		&& highscore.current(enum_releaseRegion) == 0
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_DefaultPlus")
 	)}
 function rp_Default() {
 	return rich_presence_display(
@@ -1008,9 +1224,14 @@ function rp_Default() {
 	)}
 // -------------------------------------
 function richPresence_initializeDisplays() {
-	rp_Default() // TODO rp_Default
+	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		// rp_DefaultPlus(enum_releaseRegion) // CONCEPT rp_DefaultPlus
+		rp_DefaultPlus(enum_releaseRegion)
+		rp_IntroCutscene(enum_releaseRegion)
+		rp_MainMenu(enum_releaseRegion)
+		rp_MainMenuHiScore(enum_releaseRegion)
+		rp_InGame(enum_releaseRegion)
+		rp_BossBattle(enum_releaseRegion)
 	}} 
 // #endregion RP - Display Script
 
@@ -1066,9 +1287,48 @@ richPresence_parameterData = {
 		// 	ReleaseRegion.USA: always_false(), 
 		// 	ReleaseRegion.EUR: always_false(),
 		// 	ReleaseRegion.JPN: always_false()},
-		// "MacroFormat": "Number"},
+		// "MacroFormat": "Number"},	
+
+	"rpp_TalismanCount": {
+		"RPtype": RichPresenceParameterType.LOOKUP_HEX,
+		"Expression": {
+			// ReleaseRegion.USA: always_false(), 
+			// ReleaseRegion.EUR: always_false(),
+			ReleaseRegion.JPN: player.current_TalismanCount(ReleaseRegion.JPN)},
+		"LookupTableID": "lup_TalismanCount",
+		"LookupFallback": richPresence_getLookupTableText("lupText_TalismanCount", "Talismans_2")},
+
+	"rpp_FlashlightStatus": {
+		"RPtype": RichPresenceParameterType.LOOKUP_HEX,
+		"Expression": {
+			// ReleaseRegion.USA: always_false(), 
+			// ReleaseRegion.EUR: always_false(),
+			ReleaseRegion.JPN: player.current_BatteryCharges(ReleaseRegion.JPN) + player.current_BatteryCount(ReleaseRegion.JPN)},
+		"LookupTableID": "lup_FlashlightStatus",
+		"LookupFallback": richPresence_getLookupTableText("lupText_FlashlightStatus", "Moderate")},
+
+	"rpp_Stage": {
+		"RPtype": RichPresenceParameterType.VALUE,
+		"Expression": {
+			// ReleaseRegion.USA: always_false(),
+			// ReleaseRegion.EUR: always_false(),
+			ReleaseRegion.JPN: stage.current(ReleaseRegion.JPN) +1},
+		"ValueFormat": "VALUE"},
 	
-	
+	"rpp_Score": {
+		"RPtype": RichPresenceParameterType.MACRO,
+		"Expression": {
+			// ReleaseRegion.USA: always_false(),
+			// ReleaseRegion.EUR: always_false(),
+			ReleaseRegion.JPN: score.current(ReleaseRegion.JPN)},
+		"MacroFormat": "Score"},
+	"rpp_Highscore": {
+		"RPtype": RichPresenceParameterType.MACRO,
+		"Expression": {
+			// ReleaseRegion.USA: always_false(),
+			// ReleaseRegion.EUR: always_false(),
+			ReleaseRegion.JPN: highscore.current(ReleaseRegion.JPN)},
+		"MacroFormat": "Score"},
 
 	}
 // -------------------------------------
@@ -1143,6 +1403,9 @@ function richPresence_initialize() {
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
 // TODO implement leaderboards
+// - Highscore leaderboards for completing each stage: submit onStageCompletion (score resets on GameOver, HighScore stays whole session, only overwrites when CurrentScore > HighScore)
+// - Overal Highscore game wide: submit onGameOver + onGameCompletion
+// ? Timed leaderboards for completing each stage
 
 // ==========================================
 // • LEADERBOARD sub logic & value measures •
