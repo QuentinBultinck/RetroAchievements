@@ -756,18 +756,18 @@ dict_coreData = {
 		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_Progress": { // Progress through stages
-		"a_Stage1": { // VERIFIED
-			"id": 637735, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 1"},
-		"a_Stage2": { // VERIFIED
-			"id": 637736, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 2"},
-		"a_Stage3": { // VERIFIED
-			"id": 637737, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3"},
-		"a_Stage4": { // VERIFIED
-			"id": 637738, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4"},
+		// "a_Stage1": { // VERIFIED
+			// "id": 637735, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 1"},
+		// "a_Stage2": { // VERIFIED
+			// "id": 637736, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 2"},
+		// "a_Stage3": { // VERIFIED
+			// "id": 637737, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 3"},
+		// "a_Stage4": { // VERIFIED
+			// "id": 637738, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 4"},
 		},
 	"c_WinCondy": { // Last Stage completion
-		"a_Stage5": { // VERIFIED
-			"id": 637739, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 5 (finish game)"},
+		// "a_Stage5": { // VERIFIED
+			// "id": 637739, "points": Ac:hievementPointClass.Free_0, "devInfo": "Complete Stage 5 (finish game)"},
 		},		
 	"c_Challenge": { // Challenges
 		// CONCEPT c_Challenge
@@ -786,7 +786,6 @@ dict_coreData = {
 		// - Explorer (series): Fully map out each Stage --> (With measured, see progress in map screen + players can't see how many rooms left (also hidden rooms))
 		// - WinScore: Finish game with xx score
 		// - WinBattery: Finish game with max batteries (8 max?? --> batteries are random drop from lamps/lanterns, not garanteed, but players can re-enter rooms for another chance??, some lamps/lanterns respawn, most don't??)
-
 
 		// "a_Template": {
 		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
@@ -970,9 +969,8 @@ function initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = {
 	// "rp_Template": 				{"en": "xxxxxxxx"},
-	"rp_Ending":          			{"en": "Playing Youkai Yashiki ⛩ Kouji's vanquished the evil spirits and rescued his sister • Score {0}0"}, // TODO implement rp_Ending
 	"rp_BossBattle":      			{"en": "Playing Youkai Yashiki ⛩ Kouji's confronting the malevolent spirit of Stage {0} • Flashlight {1} • Score {2}0"},
-	"rp_InGame":          			{"en": "Playing Youkai Yashiki ⛩ Kouji's searching for his sister through Stage {0} • Talismans {1} • Flashlight {2} • Score {3}0"},
+	"rp_InGame":          			{"en": "Playing Youkai Yashiki ⛩ Kouji's searching for his sister through Stage {0} • Talismans {1} • Flashlight {2} • Score {3}0"}, // CONCEPT Flavour text describing each stage: Mansion, Ice caverns, forests...
 	"rp_MainMenuHiScore": 			{"en": "Playing Youkai Yashiki ⛩ Kouji's preparing to enter the haunted mansion • Highscore {0}0"},
 	"rp_MainMenu":        			{"en": "Playing Youkai Yashiki ⛩ Kouji's preparing to enter the haunted mansion"},
 	"rp_IntroCutscene":   			{"en": "Playing Youkai Yashiki ⛩ Kouji's sister has vanished into the night"},

@@ -1,9 +1,23 @@
 Lookup:FlashlightStatus
 0=empty
-1-5=fading
-6-9=dim
-16-20=bright
-21-24=blazing
+1=fading
+2=fading
+3=fading
+4=fading
+5=fading
+6=dim
+7=dim
+8=dim
+9=dim
+16=bright
+17=bright
+18=bright
+19=bright
+20=bright
+21=blazing
+22=blazing
+23=blazing
+24=blazing
 *=steady
 
 Lookup:TalismanCount
@@ -14,14 +28,17 @@ Lookup:TalismanCount
 5=📜📜📜📜📜
 *=📜📜 □ □ □ 
 
+Format:Score
+FormatType=SCORE
+
 Format:Stage
 FormatType=VALUE
 
 Display:
-?0xH00e2!=1_A:0xL0048*100000_A:0xL0049*10000_A:0xL004a*1000_A:0xL004b*100_A:0xL004c*10_0xL004d=0S0xH00e3<=1S0xH00e3>9?Playing Youkai Yashiki ⛩ Evil spirits stir within the darkness...
-?0xH00e3>1_0xH00e3<8_0xH00e2!=1?Playing Youkai Yashiki ⛩ Kouji's sister has vanished into the night
-?0xH00e3>=8_0xH00e3<=9_0xH00e2!=1_A:0xL0048*100000_A:0xL0049*10000_A:0xL004a*1000_A:0xL004b*100_A:0xL004c*10_0xL004d=0?Playing Youkai Yashiki ⛩ Kouji's preparing to enter the haunted mansion
-?0xH00e3>=8_0xH00e3<=9_0xH00e2!=1_A:0xL0048*100000_A:0xL0049*10000_A:0xL004a*1000_A:0xL004b*100_A:0xL004c*10_0xL004d>0?Playing Youkai Yashiki ⛩ Kouji's preparing to enter the haunted mansion • Highscore @Score(0xL0048*100000_0xL0049*10000_0xL004a*1000_0xL004b*100_0xL004c*10_0xL004d)0
-?0xH00e3=10_0xH00e2=1_0xH00ac!=108_0xH00ac!=107_0xH00ac!=77_0xH00ac!=61_0xH00ac!=2_0xH00ac!=12?Playing Youkai Yashiki ⛩ Kouji's searching for his sister through Stage @Stage(0xH0077_v1) • Talismans @TalismanCount(0xH0079) • Flashlight @FlashlightStatus(0xH007b_0xH007a) • Score @Score(0xL0070*100000_0xL0071*10000_0xL0072*1000_0xL0073*100_0xL0074*10_0xL0075)0
-?0xH00e3=10_0xH00e2=1S0xH00ac=108S0xH00ac=107S0xH00ac=77S0xH00ac=61S0xH00ac=2S0xH00ac=12?Playing Youkai Yashiki ⛩ Kouji's confronting the malevolent spirit of Stage @Stage(0xH0077_v1) • Flashlight @FlashlightStatus(0xH007b_0xH007a) • Score @Score(0xL0070*100000_0xL0071*10000_0xL0072*1000_0xL0073*100_0xL0074*10_0xL0075)0
+?0xHe2!=1_A:0xL48*100000_A:0xL49*10000_A:0xL4a*1000_A:0xL4b*100_A:0xL4c*10_0xL4d=0S0xHe3<=1S0xHe3>9?Playing Youkai Yashiki ⛩ Evil spirits stir within the darkness...
+?0xHe3>1_0xHe3<8_0xHe2!=1?Playing Youkai Yashiki ⛩ Kouji's sister has vanished into the night
+?0xHe3>=8_0xHe3<=9_0xHe2!=1_A:0xL48*100000_A:0xL49*10000_A:0xL4a*1000_A:0xL4b*100_A:0xL4c*10_0xL4d=0?Playing Youkai Yashiki ⛩ Kouji's preparing to enter the haunted mansion
+?0xHe3>=8_0xHe3<=9_0xHe2!=1_A:0xL48*100000_A:0xL49*10000_A:0xL4a*1000_A:0xL4b*100_A:0xL4c*10_0xL4d>0?Playing Youkai Yashiki ⛩ Kouji's preparing to enter the haunted mansion • Highscore @Score(0xL48*100000_0xL49*10000_0xL4a*1000_0xL4b*100_0xL4c*10_0xL4d)0
+?0xHe3=10_0xHe2=1_0xHac!=108_0xHac!=107_0xHac!=77_0xHac!=61_0xHac!=2_0xHac!=12?Playing Youkai Yashiki ⛩ Kouji's searching for his sister through Stage @Stage(0xH77_v1) • Talismans @TalismanCount(0xH79) • Flashlight @FlashlightStatus(0xH7b_0xH7a) • Score @Score(0xL70*100000_0xL71*10000_0xL72*1000_0xL73*100_0xL74*10_0xL75)0
+?0xHe3=10_0xHe2=1S0xHac=108S0xHac=107S0xHac=77S0xHac=61S0xHac=2S0xHac=12?Playing Youkai Yashiki ⛩ Kouji's confronting the malevolent spirit of Stage @Stage(0xH77_v1) • Flashlight @FlashlightStatus(0xH7b_0xH7a) • Score @Score(0xL70*100000_0xL71*10000_0xL72*1000_0xL73*100_0xL74*10_0xL75)0
 Playing Youkai Yashiki
