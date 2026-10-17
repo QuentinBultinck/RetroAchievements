@@ -180,7 +180,8 @@ class CLASS_MemoryData {
 		"8-bit:BatteryCount": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x007a},
 		"8-bit:BatteryCharges": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x007b},
 		"8-bit:TalismansCollected": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0079},
-		"8-bit:BossHitsTaken_A": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x060A},		
+		"8-bit:OnigiriCount": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x007c},
+		"8-bit:BossHitsTaken_A": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x060A},	
 		"8-bit:BossHitsTaken_B": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x060B},
 
 		"6-byte:HighScore": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0048},
@@ -504,6 +505,10 @@ class CLASS_MEMLOGIC_PlayerLogic {
 		byte(memory.getAddress("8-bit:BatteryCharges", enum_releaseRegion))
 	function prev_BatteryCharges(enum_releaseRegion) =>
 		prev(this.current_BatteryCharges(enum_releaseRegion))
+	
+	function on_BatteryCharges_filled(enum_releaseRegion) =>
+		this.prev_BatteryCharges(enum_releaseRegion) < this.current_BatteryCount(enum_releaseRegion) * 2
+		&& this.current_BatteryCharges(enum_releaseRegion) == this.current_BatteryCount(enum_releaseRegion) * 2
 	// ----------------TalismanLogic---------------------
 	function current_TalismanCount(enum_releaseRegion) =>
 		byte(memory.getAddress("8-bit:TalismansCollected", enum_releaseRegion))
@@ -512,6 +517,16 @@ class CLASS_MEMLOGIC_PlayerLogic {
 	
 	function on_TalismanCount_increment(enum_releaseRegion) =>
 		this.current_TalismanCount(enum_releaseRegion) > this.prev_TalismanCount(enum_releaseRegion)
+	// ----------------Onigiri---------------------
+	function current_OnigiriCount(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:OnigiriCount", enum_releaseRegion))
+	function prev_OnigiriCount(enum_releaseRegion) =>
+		prev(this.current_OnigiriCount(enum_releaseRegion))
+	
+	function on_OnigiriCount_increment(enum_releaseRegion) =>
+		this.current_OnigiriCount(enum_releaseRegion) > this.prev_OnigiriCount(enum_releaseRegion)
+	function on_OnigiriCount_decrement(enum_releaseRegion) =>
+		this.current_OnigiriCount(enum_releaseRegion) < this.prev_OnigiriCount(enum_releaseRegion)
 } player = CLASS_MEMLOGIC_PlayerLogic()
 // #endregion Player Logic
 
@@ -772,23 +787,37 @@ dict_coreData = {
 	"c_Challenge": { // Challenges
 		// CONCEPT c_Challenge
 		// - TimeTrials (series): Complete Stage X within xx time
-		// - Hitless: Defeat any boss without losing HP
+		// - WinScore: Finish game with xx score
 
 		// "a_Template": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
+		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"},
 		},
 	"c_Bonus": { // Bonus achievements
 		// CONCEPT c_Bonus
 		// - FreezeKills: Kill xx enemies with Mahjon Piece active (frozen enemies)
-		// - RiceTaster: Recharge yourself by eating some Onigiri (next to a statue)
 		// - RiceCollector: Collect a total of 9 Onigiri || Finish game with 9 Onigiri in inventory	
+		// - NoLight: Destroy xx unique lanterns/lamps within a stage 
 		// - Collector (series): Collect all (non-Talisman??) items (at least once) in each Stage --> some lamps/lanterns respawn, most don't?? (with measured)
 		// - Explorer (series): Fully map out each Stage --> (With measured, see progress in map screen + players can't see how many rooms left (also hidden rooms))
-		// - WinScore: Finish game with xx score
+
 		// - WinBattery: Finish game with max batteries (8 max?? --> batteries are random drop from lamps/lanterns, not garanteed, but players can re-enter rooms for another chance??, some lamps/lanterns respawn, most don't??)
 
 		// "a_Template": {
 		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
+		"a_Explorer1": {
+			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 1, (excluding hell/boss area's)"},
+		"a_Explorer2": {
+			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 2, (excluding hell/boss area's)"},
+		"a_Explorer3": {
+			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 3, (excluding hell/boss area's)"},
+		"a_Explorer4": {
+			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 4, (excluding hell/boss area's)"},
+		"a_Explorer5": {
+			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 5, (excluding hell/boss area's)"},
+		// "a_RiceTaster": { // VERIFIED
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Recharge batteries by eating Onigiri at a statue"},
+		// "a_RiceHoarder": { // VERIFIED
+			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Hold a total of 9 Onigiri (max allowed to keep in inventory)"},
 		},
 	}
 
@@ -865,6 +894,36 @@ dict_triggers = {
 			&& trigger_when( // --Trigger--> When all sprites/entities are removed (when main and side character are removed from screen)
 				entity.on_AllNonImportantEntities_zeroedOut(enum_releaseRegion))
 		}),
+	"a_Explorer1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_false()),
+	"a_Explorer2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_false()),
+	"a_Explorer3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_false()),
+	"a_Explorer4": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_false()),
+	"a_Explorer5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			always_false()),
+	"a_RiceTaster": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			gameState.is(gameState.InGame, enum_releaseRegion)
+			&& player.prev_BatteryCount(enum_releaseRegion) > 0
+			&& player.prev_OnigiriCount(enum_releaseRegion) > 0
+			&& player.on_BatteryCharges_filled(enum_releaseRegion)
+			&& player.on_OnigiriCount_decrement(enum_releaseRegion)),
+	"a_RiceHoarder": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
+		const_MAX_ONIGIRI = 9 // NOTE: collecting another onigiri at 9, doesn't increment the counter
+
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			gameState.is(gameState.InGame, enum_releaseRegion)
+			&& player.prev_OnigiriCount(enum_releaseRegion) == const_MAX_ONIGIRI -1
+			&& player.current_OnigiriCount(enum_releaseRegion) == const_MAX_ONIGIRI}),
 	}
 // #endregion ACH - Triggers
 
@@ -876,6 +935,13 @@ dict_titles = {
 	"a_Stage3": 			{"en": "xxxxx"},
 	"a_Stage4": 			{"en": "xxxxx"},
 	"a_Stage5": 			{"en": "xxxxx"},
+	"a_Explorer1": 		{"en": "xxxxx"},
+	"a_Explorer2": 		{"en": "xxxxx"},
+	"a_Explorer3": 		{"en": "xxxxx"},
+	"a_Explorer4": 		{"en": "xxxxx"},
+	"a_Explorer5": 		{"en": "xxxxx"},
+	"a_RiceTaster": 			{"en": "xxxxxxxxx"},
+	"a_RiceHoarder": 			{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -884,6 +950,13 @@ dict_descriptions = {
 	"a_Stage3": 			{"en": "Complete Stage 3"},
 	"a_Stage4": 			{"en": "Complete Stage 4"},
 	"a_Stage5": 			{"en": "Complete Stage 5"},
+	"a_Explorer1": 		{"en": "Fully explore Stage 1"},
+	"a_Explorer2": 		{"en": "Fully explore Stage 2"},
+	"a_Explorer3": 		{"en": "Fully explore Stage 3"},
+	"a_Explorer4": 		{"en": "Fully explore Stage 4"},
+	"a_Explorer5": 		{"en": "Fully explore Stage 5"},
+	"a_RiceTaster": 			{"en": "xxxxxxxxx"},
+	"a_RiceHoarder": 			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
