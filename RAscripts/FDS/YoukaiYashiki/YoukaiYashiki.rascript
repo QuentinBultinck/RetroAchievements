@@ -178,7 +178,8 @@ class CLASS_MemoryData {
 	dict_addresses = {
 		// "memAddrKey": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: util.sNULL},
 
-		"8-bit:GameState": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x00e2},
+		"8-bit:GameState_A": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x00e2},
+		"8-bit:GameState_B": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0003},
 		"8-bit:IntroState": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x00e3},
 		"8-bit:Stage_ID": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0077},
 		"8-bit:Area_ID": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x00AC},
@@ -397,13 +398,35 @@ class CLASS_MEMLOGIC_GameState {
 
 	// --------Functions--------
 	function current(enum_releaseRegion) =>
-		byte(memory.getAddress("8-bit:GameState", enum_releaseRegion))
+		byte(memory.getAddress("8-bit:GameState_A", enum_releaseRegion))
 	function prev(enum_releaseRegion) =>
 		prev(this.current(enum_releaseRegion))
 	
 	function is(enum_gameState, enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == enum_gameState
-} gameState = CLASS_MEMLOGIC_GameState()
+} gameState_A = CLASS_MEMLOGIC_GameState()
+
+class CLASS_MEMLOGIC_GameState {
+	// --------Variables/Enums--------
+	Paused = 0x23
+	Loading = 0x6F
+	InGame = 0x02
+
+	// --------Functions--------
+	function current(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:GameState_B", enum_releaseRegion))
+	function prev(enum_releaseRegion) =>
+		prev(this.current(enum_releaseRegion))
+	
+	function is(enum_gameState, enum_releaseRegion) =>
+		this.current(enum_releaseRegion) == enum_gameState
+	function on_changeTo(enum_gameState, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) != enum_gameState
+		&& this.current(enum_releaseRegion) == enum_gameState
+	function on_changeFromTo(enum_gameStatePrev, enum_gameStateCurrent, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) == enum_gameStatePrev
+		&& this.current(enum_releaseRegion) == enum_gameStateCurrent
+} gameState_B = CLASS_MEMLOGIC_GameState()
 
 class CLASS_MEMLOGIC_IntroState {
 	// --------Variables/Enums--------
@@ -466,14 +489,19 @@ class CLASS_MEMLOGIC_StageIdentification {
 
 class CLASS_MEMLOGIC_AreaIdentification {
 	// --------Variables/Enums-------- 
+	S1_Start = 0x0C
 	S1_BossRoomEntrance = 0x1F
 	S1_BossRoom = 0x6C
+	S2_Start = 0x40
 	S2_BossRoomEntrance = 0x61
 	S2_BossRoom = 0x6b
+	S3_Start = 0x22
 	S3_BossRoomEntrance = 0x01
 	S3_BossRoom = 0x4D
+	S4_Start = 0x05
 	S4_BossRoomEntrance = 0x08
 	S4_BossRoom = 0x3D
+	S5_Start = 0x06
 	// S5_BossRoomEntrance, multiple entrances to boss
 	S5_BossRoom_A = 0x02
 	S5_BossRoom_B = 0x0C
@@ -489,6 +517,11 @@ class CLASS_MEMLOGIC_AreaIdentification {
 	function is_anyBossRoom_active(enum_releaseRegion) {
 		let_array_AllBossRooms = [this.S1_BossRoom, this.S2_BossRoom, this.S3_BossRoom, this.S4_BossRoom, this.S5_BossRoom_A, this.S5_BossRoom_B]
 		return any_of(let_array_AllBossRooms, enum_area_BossRoom => this.is(enum_area_BossRoom, enum_releaseRegion))}
+	function on_change(enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) != this.current(enum_releaseRegion)
+	function on_changeTo(enum_area, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) != enum_area
+		&& this.current(enum_releaseRegion) == enum_area
 	function on_changeFromTo(enum_areaPrev, enum_areaCurrent, enum_releaseRegion) =>
 		this.prev(enum_releaseRegion) == enum_areaPrev
 		&& this.current(enum_releaseRegion) == enum_areaCurrent
@@ -788,7 +821,7 @@ class CLASS_AchievementSubLogic {
 
 		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			never(!gameState.is(gameState.InGame, enum_releaseRegion))
+			never(!gameState_A.is(gameState_A.InGame, enum_releaseRegion))
 			&& never(repeated(2, // ---> repeated so last condition is available to trigger
 				!stage.is(enum_stage, enum_releaseRegion)))
 			
@@ -816,8 +849,24 @@ class CLASS_AchievementSubLogic {
 			&& entity.prev_EntityID(let_entityIndex, enum_releaseRegion) == entity.ENTITY_ID_Item // --> is entity an item (prev frame)
 			&& entity.prev_ItemEntityID(let_entityIndex, enum_releaseRegion) == enum_item // --> is itemEntity the required item (prev frame)
 			&& entity.on_remove(let_entityIndex, enum_releaseRegion))
-	}
+		}
 
+	function CoreGroup_StageExploration(enum_stage, array_allAreaIDs, enum_area_start, enum_releaseRegion) =>
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			never(!gameState_A.is(gameState_A.InGame, enum_releaseRegion))
+			&& never(
+				!stage.is(enum_stage, enum_releaseRegion)
+				&& !stage.is(stage.Hell, enum_releaseRegion))
+
+			&& measured(tally_of(array_allAreaIDs, length(array_allAreaIDs), (enum_area) {
+				if (enum_area == enum_area_start) 
+					return once( // --AddHit--> when loading into first area of Stage, 1st time
+						area.is(enum_area_start, enum_releaseRegion)
+						&& gameState_B.on_changeTo(gameState_B.InGame, enum_releaseRegion))
+				return once( // --AddHit--> when entering each area for 1st time
+					area.on_changeTo(enum_area, enum_releaseRegion))}
+				))
+			&& trigger_when(area.on_change(enum_releaseRegion))
 } achievementSubLogic = CLASS_AchievementSubLogic()
 // #endregion ACH - sub logic
 
@@ -879,26 +928,22 @@ dict_coreData = {
 		},
 	"c_Bonus": { // Bonus achievements
 		// CONCEPT c_Bonus
-		// - FreezeKills: Kill xx enemies with Mahjon Piece active (frozen enemies)
-		// - RiceCollector: Collect a total of 9 Onigiri || Finish game with 9 Onigiri in inventory	
+		// - FreezeKills: Kill xx enemies with Mahjon Piece active (frozen enemies, with Mahjong Piece)
 		// - NoLight: Destroy xx unique lanterns/lamps within a stage 
-		// - Collector (series): Collect all (non-Talisman??) items (at least once) in each Stage --> some lamps/lanterns respawn, most don't?? (with measured)
-		// - Explorer (series): Fully map out each Stage --> (With measured, see progress in map screen + players can't see how many rooms left (also hidden rooms))
-
-		// - WinBattery: Finish game with max batteries (8 max?? --> batteries are random drop from lamps/lanterns, not garanteed, but players can re-enter rooms for another chance??, some lamps/lanterns respawn, most don't??)
 
 		// "a_Template": {
-		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"}
-		"a_Explorer1": {
-			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 1, (excluding hell/boss area's)"},
-		"a_Explorer2": {
-			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 2, (excluding hell/boss area's)"},
-		"a_Explorer3": {
-			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 3, (excluding hell/boss area's)"},
-		"a_Explorer4": {
-			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 4, (excluding hell/boss area's)"},
-		"a_Explorer5": {
-			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 5, (excluding hell/boss area's)"},
+		// 	"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "xxxxxxx"},
+
+		// "a_Explorer1": { // QA
+			// "id": 645128, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 1, (excluding hell/boss area's)"},
+		// "a_Explorer2": { // QA
+			// "id": 645129, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 2, (excluding hell/boss area's)"},
+		// "a_Explorer3": { // QA
+			// "id": 645130, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 3, (excluding hell/boss area's)"},
+		// "a_Explorer4": { // QA
+			// "id": 645131, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 4, (excluding hell/boss area's)"},
+		// "a_Explorer5": { // QA
+			// "id": 645132, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 5, (excluding hell/boss area's)"},
 		// "a_HellFinderS2": { // VERIFIED
 			// "id": 645123, "points": AchievementPointClass.Free_0, "devInfo": "Pickup the Flashlight item in the secret hell area of Stage 2 and escape hell"},
 		// "a_HellFinderS3": { // VERIFIED
@@ -909,6 +954,8 @@ dict_coreData = {
 			// "id": 645089, "points": AchievementPointClass.Free_0, "devInfo": "Recharge batteries by eating Onigiri at a statue"},
 		// "a_RiceHoarder": { // VERIFIED
 			// "id": 645090, "points": AchievementPointClass.Free_0, "devInfo": "Hold a total of 9 Onigiri (max allowed to keep in inventory)"},
+		// "a_Bright": { // VERIFIED
+			// "id": 645218, "points": AchievementPointClass.Free_0, "devInfo": "Acquire at least 5 fully charged batteries"},
 		},
 	}
 
@@ -967,7 +1014,7 @@ dict_triggers = {
 
 		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			never(!gameState.is(gameState.InGame, enum_releaseRegion))
+			never(!gameState_A.is(gameState_A.InGame, enum_releaseRegion))
 			&& never(repeated(2, // ---> repeated so last condition is available to trigger
 				!stage.is(const_STAGE, enum_releaseRegion)))
 			
@@ -985,21 +1032,79 @@ dict_triggers = {
 			&& trigger_when( // --Trigger--> When all sprites/entities are removed (when main and side character are removed from screen)
 				entity.on_AllNonImportantEntities_zeroedOut(enum_releaseRegion))
 		}),
-	"a_Explorer1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_false()),
-	"a_Explorer2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_false()),
-	"a_Explorer3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_false()),
-	"a_Explorer4": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_false()),
-	"a_Explorer5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			always_false()),
+	"a_Explorer1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S1
+		const_AREA_START = area.S1_Start
+		const_ALL_AREAS = [
+			0x02,		0x1F,		0x06,
+			0x0C, 0x0D, 0x0E, 0x0F,	0x10,
+						0x18,
+						0x22, 0x23,	0x24,
+						0x2C, 0x2E,
+						0x36, 0x37,	0x38,
+						0x40, 0x42,
+						0x4A, 0x51,	0x4C,
+						0x54, 0x56,
+						0x5E, 0x5F,	0x60]
+		return achievementSubLogic.CoreGroup_StageExploration(const_STAGE, const_ALL_AREAS, const_AREA_START, enum_releaseRegion)}),
+	"a_Explorer2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S2
+		const_AREA_START = area.S2_Start
+		const_ALL_AREAS = [
+												0x07,
+												0x11,
+									0x19, 		0x1B,
+			0x1F, 0x20, 0x21, 		0x23, 		0x25,
+			0x29, 		0x2B, 		0x2D, 		0x2F,
+			0x33, 		0x35, 		0x37, 		0x39,
+			0x3D, 0x3E, 0x3F, 0x40, 0x41, 0x42, 0x43, 0x44,
+			0x47, 								0x4D,
+												0x57,
+												0x61]
+		return achievementSubLogic.CoreGroup_StageExploration(const_STAGE, const_ALL_AREAS, const_AREA_START, enum_releaseRegion)}),
+	"a_Explorer3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S3
+		const_AREA_START = area.S3_Start
+		const_ALL_AREAS = [
+			0x01, 								0x07,
+			0x0B, 			  0x0E,				0x11,
+			0x15, 			  0x18,				0x1B,
+			0x1F, 		0x21, 0x22, 0x23, 0x24, 0x25,
+			0x29,			  0x2C, 			0x2F,
+			0x33,			  0x36, 			0x39,
+			0x3D,			  0x40, 			0x43,
+			0x47,			  0x4A,
+			0x51,			 					0x57,
+			0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60, 0x61]
+		return achievementSubLogic.CoreGroup_StageExploration(const_STAGE, const_ALL_AREAS, const_AREA_START, enum_releaseRegion)}),
+	"a_Explorer4": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S4
+		const_AREA_START = area.S4_Start
+		const_ALL_AREAS = [
+			0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+				  		0x0D, 			  0x10,
+				  0x16, 0x17, 0x18, 	  0x1A,
+				  0x20,		  0x22, 	  0x24, 0x25,
+			0x29, 0x2A, 0x2B, 0x2C, 	  0x2E, 0x2F,
+						0x35, 0x36, 	  0x38,
+							  0x40, 	  0x42,
+							  0x4A, 	  0x4C,		 0x4E,
+			0x51, 0x52, 0x53, 0x54, 	  0x56, 0x57, 0x58]
+		return achievementSubLogic.CoreGroup_StageExploration(const_STAGE, const_ALL_AREAS, const_AREA_START, enum_releaseRegion)}),
+	"a_Explorer5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S5
+		const_AREA_START = area.S5_Start
+		const_ALL_AREAS = [
+								0x04, 0x05, 0x06, 0x07, 0x08,
+								0x0E, 					0x12,
+			0x14, 0x15, 0x16, 	0x18, 					0x1C,
+			0x1E, 		0x20, 	0x22, 0x23, 0x24, 0x25, 0x26,
+			0x28, 		0x2A, 		  0x2D, 	  0x2F,
+			0x32,		0x34, 		  0x37, 	  0x39,
+			0x3C, 0x3D, 0x3E, 		  0x41, 	  0x43,
+									0x4B,		  0x4D,
+					0x52, 0x53, 0x54, 0x55, 	  0x57, 0x58]
+		return achievementSubLogic.CoreGroup_StageExploration(const_STAGE, const_ALL_AREAS, const_AREA_START, enum_releaseRegion)}),
 	"a_HellFinderS2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_STAGE = stage.S2
 		const_AREA_StageHellEntrance = 0x43
@@ -1013,7 +1118,7 @@ dict_triggers = {
 		
 		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			never(!gameState.is(gameState.InGame, enum_releaseRegion))
+			never(!gameState_A.is(gameState_A.InGame, enum_releaseRegion))
 			&& never( // --ResetIf--> Incorrect stage
 				!stage.is(const_STAGE, enum_releaseRegion)
 				&& !stage.is(stage.Hell, enum_releaseRegion))
@@ -1041,7 +1146,7 @@ dict_triggers = {
 		
 		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			never(!gameState.is(gameState.InGame, enum_releaseRegion))
+			never(!gameState_A.is(gameState_A.InGame, enum_releaseRegion))
 			&& never( // --ResetIf--> Incorrect stage
 				!stage.is(const_STAGE, enum_releaseRegion)
 				&& !stage.is(stage.Hell, enum_releaseRegion))
@@ -1070,7 +1175,7 @@ dict_triggers = {
 		
 		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			never(!gameState.is(gameState.InGame, enum_releaseRegion))
+			never(!gameState_A.is(gameState_A.InGame, enum_releaseRegion))
 			&& never( // --ResetIf--> Incorrect stage
 				!stage.is(const_STAGE, enum_releaseRegion)
 				&& !stage.is(stage.Hell, enum_releaseRegion))
@@ -1092,7 +1197,7 @@ dict_triggers = {
 			}),
 	"a_RiceTaster": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
-			gameState.is(gameState.InGame, enum_releaseRegion)
+			gameState_A.is(gameState_A.InGame, enum_releaseRegion)
 			&& player.prev_BatteryCount(enum_releaseRegion) > 0
 			&& player.prev_OnigiriCount(enum_releaseRegion) > 0
 			&& player.on_BatteryCharges_filled(enum_releaseRegion)
@@ -1102,9 +1207,19 @@ dict_triggers = {
 
 		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			gameState.is(gameState.InGame, enum_releaseRegion)
+			gameState_A.is(gameState_A.InGame, enum_releaseRegion)
 			&& player.prev_OnigiriCount(enum_releaseRegion) == const_MAX_ONIGIRI -1
 			&& player.current_OnigiriCount(enum_releaseRegion) == const_MAX_ONIGIRI}),
+	"a_Bright": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MIN_REQUIRED_FULL_BATTERIES = 5
+
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			never(!gameState_A.is(gameState_A.InGame, enum_releaseRegion))
+			&& player.current_BatteryCount(enum_releaseRegion) >= const_MIN_REQUIRED_FULL_BATTERIES
+			&& player.prev_BatteryCharges(enum_releaseRegion) < const_MIN_REQUIRED_FULL_BATTERIES *2
+			&& player.current_BatteryCharges(enum_releaseRegion) >= const_MIN_REQUIRED_FULL_BATTERIES *2
+			}),
 	}
 // #endregion ACH - Triggers
 
@@ -1126,6 +1241,7 @@ dict_titles = {
 	"a_HellFinderS4": 		{"en": "xxxxx"},
 	"a_RiceTaster": 			{"en": "xxxxxxxxx"},
 	"a_RiceHoarder": 			{"en": "xxxxxxxxx"},
+	"a_Bright": 				{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -1144,6 +1260,7 @@ dict_descriptions = {
 	"a_HellFinderS4": 		{"en": "xxxxx"},
 	"a_RiceTaster": 			{"en": "xxxxxxxxx"},
 	"a_RiceHoarder": 			{"en": "xxxxxxxxx"},
+	"a_Bright": 				{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
@@ -1408,7 +1525,7 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 function rp_BossBattle(enum_releaseRegion) { 
 	function condition(enum_releaseRegion) =>
 		introState.is(introState.GameStarted, enum_releaseRegion)
-		&& gameState.is(gameState.InGame, enum_releaseRegion)
+		&& gameState_A.is(gameState_A.InGame, enum_releaseRegion)
 		&& area.is_anyBossRoom_active(enum_releaseRegion)
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
@@ -1420,7 +1537,7 @@ function rp_BossBattle(enum_releaseRegion) {
 function rp_InGame(enum_releaseRegion) { 
 	function condition(enum_releaseRegion) =>
 		introState.is(introState.GameStarted, enum_releaseRegion)
-		&& gameState.is(gameState.InGame, enum_releaseRegion)
+		&& gameState_A.is(gameState_A.InGame, enum_releaseRegion)
 		&& !area.is_anyBossRoom_active(enum_releaseRegion)
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
@@ -1433,7 +1550,7 @@ function rp_InGame(enum_releaseRegion) {
 function rp_MainMenuHiScore(enum_releaseRegion) { 
 	function condition(enum_releaseRegion) =>
 		introState.is_MainMenu_active(enum_releaseRegion)
-		&& !gameState.is(gameState.InGame, enum_releaseRegion)
+		&& !gameState_A.is(gameState_A.InGame, enum_releaseRegion)
 		&& highscore.current(enum_releaseRegion) > 0
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
@@ -1443,7 +1560,7 @@ function rp_MainMenuHiScore(enum_releaseRegion) {
 function rp_MainMenu(enum_releaseRegion) { 
 	function condition(enum_releaseRegion) =>
 		introState.is_MainMenu_active(enum_releaseRegion)
-		&& !gameState.is(gameState.InGame, enum_releaseRegion)
+		&& !gameState_A.is(gameState_A.InGame, enum_releaseRegion)
 		&& highscore.current(enum_releaseRegion) == 0
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
@@ -1452,14 +1569,14 @@ function rp_MainMenu(enum_releaseRegion) {
 function rp_IntroCutscene(enum_releaseRegion) { 
 	function condition(enum_releaseRegion) =>
 		introState.is_Cutscene_active(enum_releaseRegion)
-		&& !gameState.is(gameState.InGame, enum_releaseRegion)
+		&& !gameState_A.is(gameState_A.InGame, enum_releaseRegion)
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
 		richPresence_getText("rp_IntroCutscene")
 	)}
 function rp_DefaultPlusHiScore(enum_releaseRegion) {
 		!introState.is_Cutscene_active(enum_releaseRegion)
-		&& !gameState.is(gameState.InGame, enum_releaseRegion)
+		&& !gameState_A.is(gameState_A.InGame, enum_releaseRegion)
 		&& highscore.current(enum_releaseRegion) > 0
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
@@ -1470,7 +1587,7 @@ function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default
 	function condition(enum_releaseRegion) =>
 		!introState.is_Cutscene_active(enum_releaseRegion)
 		&& !introState.is_MainMenu_active(enum_releaseRegion)
-		&& !gameState.is(gameState.InGame, enum_releaseRegion)
+		&& !gameState_A.is(gameState_A.InGame, enum_releaseRegion)
 		&& highscore.current(enum_releaseRegion) == 0
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
