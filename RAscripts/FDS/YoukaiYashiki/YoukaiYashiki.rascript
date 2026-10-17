@@ -120,7 +120,12 @@ class CLASS_MemoryData {
 	// -------------------------------------
 	dict_structDefinitions = {	
 		"Struct:Entity": {
-			"sizeInBytes": 32},
+			"sizeInBytes": 32,
+			"offsetToMember": {
+				"8-bit:ItemEntity_Coordinate_X": 0x2,
+				"8-bit:ItemEntity_Coordinate_Y": 0x3,
+				"8-bit:ItemEntity_ID": 0x4},
+			},
 	}
 	function getStruct_SizeInBytes(string_structKey) =>
 		this.dict_structDefinitions[string_structKey]["sizeInBytes"]
@@ -183,6 +188,9 @@ class CLASS_MemoryData {
 		"8-bit:OnigiriCount": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x007c},
 		"8-bit:BossHitsTaken_A": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x060A},	
 		"8-bit:BossHitsTaken_B": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x060B},
+
+		"8-bit:PlayerCoordinate_X": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x00b0},
+		"8-bit:PlayerCoordinate_Y": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x00b1},
 
 		"6-byte:HighScore": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0048},
 		"6-byte:Score": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0070},
@@ -434,6 +442,7 @@ class CLASS_MEMLOGIC_StageIdentification {
 	S3 = 0x2
 	S4 = 0x3
 	S5 = 0x4
+	Hell = 0x5
 
 	// --------Functions--------
 	function current(enum_releaseRegion) =>
@@ -493,7 +502,21 @@ class CLASS_MEMLOGIC_AreaIdentification {
 // #region Player Logic
 class CLASS_MEMLOGIC_PlayerLogic {
 	// --------Variables/Enums--------
+	ITEM_NEAR_THRESHOLD = 15
 	// --------Functions--------
+
+	// ----------------Coordinates---------------------
+	function current_Coordinate_x(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:PlayerCoordinate_X", enum_releaseRegion))
+	function current_Coordinate_y(enum_releaseRegion) =>
+		byte(memory.getAddress("8-bit:PlayerCoordinate_Y", enum_releaseRegion))
+
+	function is_nearCoordinates(coords_x, coords_y, int_nearThreshold, enum_releaseRegion) =>
+		(coords_x - int_nearThreshold) <= this.current_Coordinate_x(enum_releaseRegion) 		&& this.current_Coordinate_x(enum_releaseRegion) <= (coords_x + int_nearThreshold)
+		&& (coords_y - int_nearThreshold) <= this.current_Coordinate_y(enum_releaseRegion)	 	&& this.current_Coordinate_y(enum_releaseRegion) <= (coords_y + int_nearThreshold)
+
+	function is_nearItem(coords_item_x, coords_item_y, enum_releaseRegion) =>
+		this.is_nearCoordinates(coords_item_x, coords_item_y, this.ITEM_NEAR_THRESHOLD, enum_releaseRegion)
 
 	// ----------------BatteryLogic---------------------
 	function current_BatteryCount(enum_releaseRegion) =>
@@ -588,6 +611,22 @@ class CLASS_MEMLOGIC_BossEntityData {
 // #region Entity Data
 class CLASS_MEMLOGIC_EntityData {
 	// --------Variables/Enums--------
+	ENTITY_ID_Item = 0x19
+
+	ITEM_Flashlight = 0x0
+	ITEM_Armor = 0x1
+	ITEM_Lamp = 0x2
+	ITEM_Lantern = 0x3
+	ITEM_Onigiri = 0x4
+	ITEM_Moneybag = 0x5
+	ITEM_Amulet = 0x6
+	ITEM_Candle = 0x7
+	ITEM_Battery = 0x8
+	ITEM_MahjongPiece = 0x9
+	ITEM_Tomato = 0xA
+	ITEM_Chestnut = 0xB
+	ITEM_Talisman = 0xC
+
 	// --------Functions--------
 	function current_State(int_entityIndex, enum_releaseRegion) {
 		let_memAddr_EntityArray = memory.getAddress("Array:Entities", enum_releaseRegion)
@@ -595,6 +634,16 @@ class CLASS_MEMLOGIC_EntityData {
 		return dword(let_memAddr_EntityArray + let_offsetToEntity)}
 	function prev_State(int_entityIndex, enum_releaseRegion) =>
 		prev(this.current_State(int_entityIndex, enum_releaseRegion))
+	function current_EntityID(int_entityIndex, enum_releaseRegion) {
+		let_memAddr_EntityArray = memory.getAddress("Array:Entities", enum_releaseRegion)
+		let_offsetToEntity = memory.getStruct_SizeInBytes("Struct:Entity") * int_entityIndex
+		return byte(let_memAddr_EntityArray + let_offsetToEntity)}
+	function prev_EntityID(int_entityIndex, enum_releaseRegion) =>
+		prev(this.current_EntityID(int_entityIndex, enum_releaseRegion))
+	
+	function on_remove(int_entityIndex, enum_releaseRegion) =>
+		this.prev_State(int_entityIndex, enum_releaseRegion) > 0
+		&& this.current_State(int_entityIndex, enum_releaseRegion) == 0
 
 	// NOTE: CheckIf all EntityObjects but PlayerCharacterEntity and BossEntity are zeroed out (15-NonImportantEntities)
 	function on_AllNonImportantEntities_zeroedOut(enum_releaseRegion) {
@@ -615,6 +664,26 @@ class CLASS_MEMLOGIC_EntityData {
 			&& let_sumOf_AllNonImportantEntities_currentStates == 0
 		}
 
+	// --------Items--------
+	function current_ItemEntityID(int_entityIndex, enum_releaseRegion) {
+		let_memAddr_EntityArray = memory.getAddress("Array:Entities", enum_releaseRegion)
+		let_offsetToEntity = memory.getStruct_SizeInBytes("Struct:Entity") * int_entityIndex
+		let_offsetToItemEntityID = memory.getStruct_OffsetToMember("Struct:Entity", "8-bit:ItemEntity_ID")
+		return byte(let_memAddr_EntityArray + let_offsetToEntity + let_offsetToItemEntityID)}
+	function prev_ItemEntityID(int_entityIndex, enum_releaseRegion) =>
+		prev(this.current_ItemEntityID(int_entityIndex, enum_releaseRegion))
+
+	// NOTE: CheckIf a specific item, currently active on-screen, is picked up. By checking if the entity object is zeroed out
+	function on_Item_remove(enum_item, coord_x, coord_y, enum_releaseRegion) {
+		let_array_EntitiyIndicesToCheck = []
+		for let_index in range(1, 15) 
+			array_push(let_array_EntitiyIndicesToCheck, let_index)
+
+		return any_of(let_array_EntitiyIndicesToCheck, let_entityIndex => 
+			this.prev_EntityID(let_entityIndex, enum_releaseRegion) == this.ENTITY_ID_Item // --> is entity an item (prev frame)
+			&& this.prev_ItemEntityID(let_entityIndex, enum_releaseRegion) == enum_item // --> is itemEntity the required item (prev frame)
+			&& this.on_remove(let_entityIndex, enum_releaseRegion))
+		}
 } entity = CLASS_MEMLOGIC_EntityData()
 // #endregion Entity Data
 
@@ -733,6 +802,22 @@ class CLASS_AchievementSubLogic {
 			&& trigger_when(
 				stage.on_changeFromTo(enum_stage, enum_stage +0x1, enum_releaseRegion))
 		}
+
+	// NOTE: CheckIf a specific item, within an specific area of a stage is picked up by the player. This is done by checking all entityObjects within the EntityArray
+	function TallyOf_IsItemPickedUp(enum_stage, enum_area, enum_item, coords_item_x, coords_item_y, enum_releaseRegion) {
+		let_array_EntitiyIndicesToCheck = []
+		for let_index in range(1, 15) 
+			array_push(let_array_EntitiyIndicesToCheck, let_index)
+
+		return tally_of(let_array_EntitiyIndicesToCheck, 1, let_entityIndex => 
+			stage.is(enum_stage, enum_releaseRegion)
+			&& area.is(enum_area, enum_releaseRegion)
+			&& player.is_nearItem(coords_item_x, coords_item_y, enum_releaseRegion)
+			&& entity.prev_EntityID(let_entityIndex, enum_releaseRegion) == entity.ENTITY_ID_Item // --> is entity an item (prev frame)
+			&& entity.prev_ItemEntityID(let_entityIndex, enum_releaseRegion) == enum_item // --> is itemEntity the required item (prev frame)
+			&& entity.on_remove(let_entityIndex, enum_releaseRegion))
+	}
+
 } achievementSubLogic = CLASS_AchievementSubLogic()
 // #endregion ACH - sub logic
 
@@ -814,10 +899,16 @@ dict_coreData = {
 			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 4, (excluding hell/boss area's)"},
 		"a_Explorer5": {
 			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Fully map out Stage 5, (excluding hell/boss area's)"},
+		// "a_HellFinderS2": { // VERIFIED
+			// "id": 645123, "points": AchievementPointClass.Free_0, "devInfo": "Pickup the Flashlight item in the secret hell area of Stage 2 and escape hell"},
+		// "a_HellFinderS3": { // VERIFIED
+			// "id": 645124, "points": AchievementPointClass.Free_0, "devInfo": "Pickup the Flashlight item in the secret hell area of Stage 3 and escape hell"},
+		// "a_HellFinderS4": { // VERIFIED
+			// "id": 645125, "points": AchievementPointClass.Free_0, "devInfo": "Pickup the Armor item in the secret hell area of Stage 4 and escape hell"},
 		// "a_RiceTaster": { // VERIFIED
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Recharge batteries by eating Onigiri at a statue"},
+			// "id": 645089, "points": AchievementPointClass.Free_0, "devInfo": "Recharge batteries by eating Onigiri at a statue"},
 		// "a_RiceHoarder": { // VERIFIED
-			// "id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Hold a total of 9 Onigiri (max allowed to keep in inventory)"},
+			// "id": 645090, "points": AchievementPointClass.Free_0, "devInfo": "Hold a total of 9 Onigiri (max allowed to keep in inventory)"},
 		},
 	}
 
@@ -909,6 +1000,96 @@ dict_triggers = {
 	"a_Explorer5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			always_false()),
+	"a_HellFinderS2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S2
+		const_AREA_StageHellEntrance = 0x43
+		const_AREA_HellEntrance = 0x02
+		const_AREA_HellExit = 0x01
+		const_AREA_StageHellExit = 0x39
+		const_AREA_Item = 0x1
+		const_ITEM_TO_ACQUIRE = entity.ITEM_Flashlight
+		const_ITEM_COORDS_x = 0x70
+		const_ITEM_COORDS_y = 0x90
+		
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			never(!gameState.is(gameState.InGame, enum_releaseRegion))
+			&& never( // --ResetIf--> Incorrect stage
+				!stage.is(const_STAGE, enum_releaseRegion)
+				&& !stage.is(stage.Hell, enum_releaseRegion))
+
+			&& once( // --CheckIf--> Player enters hell area
+				stage.on_changeFromTo(const_STAGE, stage.Hell, enum_releaseRegion)
+				&& area.on_changeFromTo(const_AREA_StageHellEntrance, const_AREA_HellEntrance, enum_releaseRegion))
+
+			&& achievementSubLogic.TallyOf_IsItemPickedUp(stage.Hell, const_AREA_Item, const_ITEM_TO_ACQUIRE, const_ITEM_COORDS_x, const_ITEM_COORDS_y, enum_releaseRegion)
+
+			&& trigger_when( // --Trigger--> When player leaves hell
+				stage.on_changeFromTo(stage.Hell, const_STAGE, enum_releaseRegion)
+				&& area.on_changeFromTo(const_AREA_HellExit, const_AREA_StageHellExit, enum_releaseRegion))
+			}),
+	"a_HellFinderS3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S3
+		const_AREA_StageHellEntrance = 0x61
+		const_AREA_HellEntrance = 0x3D
+		const_AREA_HellExit = 0x35
+		const_AREA_StageHellExit = 0x61
+		const_AREA_Item = 0x47
+		const_ITEM_TO_ACQUIRE = entity.ITEM_Flashlight
+		const_ITEM_COORDS_x = 0x70
+		const_ITEM_COORDS_y = 0x90
+		
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			never(!gameState.is(gameState.InGame, enum_releaseRegion))
+			&& never( // --ResetIf--> Incorrect stage
+				!stage.is(const_STAGE, enum_releaseRegion)
+				&& !stage.is(stage.Hell, enum_releaseRegion))
+
+			&& once( // --CheckIf--> Player enters hell area
+				stage.on_changeFromTo(const_STAGE, stage.Hell, enum_releaseRegion)
+				&& area.on_changeFromTo(const_AREA_StageHellEntrance, const_AREA_HellEntrance, enum_releaseRegion))
+
+			&& achievementSubLogic.TallyOf_IsItemPickedUp(stage.Hell, const_AREA_Item, const_ITEM_TO_ACQUIRE, const_ITEM_COORDS_x, const_ITEM_COORDS_y, enum_releaseRegion)
+
+			&& trigger_when( // --Trigger--> When player leaves hell
+				stage.on_changeFromTo(stage.Hell, const_STAGE, enum_releaseRegion)
+				&& area.on_changeFromTo(const_AREA_HellExit, const_AREA_StageHellExit, enum_releaseRegion))
+			}),
+	"a_HellFinderS4": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S4
+		const_AREA_StageHellEntrance = 0x08
+		const_AREA_HellEntrance = 0x29
+		const_AREA_HellExit_A = 0x22
+		const_AREA_HellExit_B = 0x15
+		const_AREA_StageHellExit = 0x58
+		const_AREA_Item = 0x21
+		const_ITEM_TO_ACQUIRE = entity.ITEM_Armor
+		const_ITEM_COORDS_x = 0x78
+		const_ITEM_COORDS_y = 0xB0
+		
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			never(!gameState.is(gameState.InGame, enum_releaseRegion))
+			&& never( // --ResetIf--> Incorrect stage
+				!stage.is(const_STAGE, enum_releaseRegion)
+				&& !stage.is(stage.Hell, enum_releaseRegion))
+
+			&& once( // --CheckIf--> Player enters hell area
+				stage.on_changeFromTo(const_STAGE, stage.Hell, enum_releaseRegion)
+				&& area.on_changeFromTo(const_AREA_StageHellEntrance, const_AREA_HellEntrance, enum_releaseRegion))
+
+			&& achievementSubLogic.TallyOf_IsItemPickedUp(stage.Hell, const_AREA_Item, const_ITEM_TO_ACQUIRE, const_ITEM_COORDS_x, const_ITEM_COORDS_y, enum_releaseRegion)
+
+			&& trigger_when(tally(1, [  // --Trigger--> When player leaves hell, 2 possible exits
+				once(
+					stage.on_changeFromTo(stage.Hell, const_STAGE, enum_releaseRegion)
+					&& area.on_changeFromTo(const_AREA_HellExit_A, const_AREA_StageHellExit, enum_releaseRegion)),
+				once(
+					stage.on_changeFromTo(stage.Hell, const_STAGE, enum_releaseRegion)
+					&& area.on_changeFromTo(const_AREA_HellExit_B, const_AREA_StageHellExit, enum_releaseRegion))
+				]))
+			}),
 	"a_RiceTaster": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 			gameState.is(gameState.InGame, enum_releaseRegion)
@@ -940,6 +1121,9 @@ dict_titles = {
 	"a_Explorer3": 		{"en": "xxxxx"},
 	"a_Explorer4": 		{"en": "xxxxx"},
 	"a_Explorer5": 		{"en": "xxxxx"},
+	"a_HellFinderS2": 		{"en": "xxxxx"},
+	"a_HellFinderS3": 		{"en": "xxxxx"},
+	"a_HellFinderS4": 		{"en": "xxxxx"},
 	"a_RiceTaster": 			{"en": "xxxxxxxxx"},
 	"a_RiceHoarder": 			{"en": "xxxxxxxxx"},
 	}
@@ -955,6 +1139,9 @@ dict_descriptions = {
 	"a_Explorer3": 		{"en": "Fully explore Stage 3"},
 	"a_Explorer4": 		{"en": "Fully explore Stage 4"},
 	"a_Explorer5": 		{"en": "Fully explore Stage 5"},
+	"a_HellFinderS2": 		{"en": "xxxxx"},
+	"a_HellFinderS3": 		{"en": "xxxxx"},
+	"a_HellFinderS4": 		{"en": "xxxxx"},
 	"a_RiceTaster": 			{"en": "xxxxxxxxx"},
 	"a_RiceHoarder": 			{"en": "xxxxxxxxx"},
 	}
