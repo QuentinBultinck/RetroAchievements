@@ -406,6 +406,9 @@ class CLASS_MEMLOGIC_GameState {
 	
 	function is(enum_gameState, enum_releaseRegion) =>
 		this.current(enum_releaseRegion) == enum_gameState
+	function on_changeFromTo(enum_gameStatePrev, enum_gameStateCurrent, enum_releaseRegion) =>
+		this.prev(enum_releaseRegion) == enum_gameStatePrev
+		&& this.current(enum_releaseRegion) == enum_gameStateCurrent
 } gameState_A = CLASS_MEMLOGIC_GameState()
 
 class CLASS_MEMLOGIC_GameState {
@@ -743,6 +746,14 @@ class CLASS_MEMLOGIC_Score {
 			+ low4(let_memAddr_Score +0x3) * 100
 			+ low4(let_memAddr_Score +0x4) * 10
 			+ low4(let_memAddr_Score +0x5)}
+	function prior(enum_releaseRegion) {
+		let_memAddr_Score = memory.getAddress("6-byte:Score", enum_releaseRegion)
+		return prior(low4(let_memAddr_Score)) * 100000
+			+ prior(low4(let_memAddr_Score +0x1)) * 10000
+			+ prior(low4(let_memAddr_Score +0x2)) * 1000
+			+ prior(low4(let_memAddr_Score +0x3)) * 100
+			+ prior(low4(let_memAddr_Score +0x4)) * 10
+			+ prior(low4(let_memAddr_Score +0x5))}	
 	function prev(enum_releaseRegion) {
 		let_memAddr_Score = memory.getAddress("6-byte:Score", enum_releaseRegion)
 		return prev(low4(let_memAddr_Score)) * 100000
@@ -938,7 +949,6 @@ dict_coreData = {
 		},
 	"c_Bonus": { // Bonus achievements
 		// CONCEPT c_Bonus
-		// - FreezeKills: Kill xx enemies with Mahjon Piece active (frozen enemies, with Mahjong Piece)
 		// - NoLight: Destroy xx unique lanterns/lamps within a stage 
 
 		// "a_Template": {
@@ -966,9 +976,8 @@ dict_coreData = {
 			// "id": 645090, "points": AchievementPointClass.Free_0, "devInfo": "Hold a total of 9 Onigiri (max allowed to keep in inventory)"},
 		// "a_Bright": { // VERIFIED
 			// "id": 645218, "points": AchievementPointClass.Free_0, "devInfo": "Acquire at least 5 fully charged batteries"},
-		"a_FreezeKills": { // WIP
-			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Vanquish 2 monsters while they're stunned by a single Mahjong Piece power up"},
-			
+		// "a_FreezeKills": { // VERIFIED
+			// "id": 645432, "points": AchievementPointClass.Free_0, "devInfo": "Vanquish 2 monsters while they're stunned by a single Mahjong Piece power up"},
 		},
 	}
 
@@ -1823,7 +1832,26 @@ function richPresence_initialize() {
 // #region LB - sub logic
 //	- For achievement logic that's reoccuring across multiple triggers
 class CLASS_LeaderboardSubLogic {
+	function SubmitScoreOnStageProgression(enum_stage, enum_boss, enum_area_BossRoomEntrance, enum_area_BossRoom, enum_releaseRegion) {
+		const_REQUIRED_TALISMAN_COUNT = 5 // ---> Required to enter boss arena
 
+		return
+		// [0] ==== Core Logic Group ==== 			-> Instant Start/Submit when Stage 1 is completed
+			never(!gameState_A.is(gameState_A.InGame, enum_releaseRegion))
+			&& never(repeated(2, // ---> repeated so last condition is available to trigger
+				!stage.is(enum_stage, enum_releaseRegion)))
+
+			&& score.current(enum_releaseRegion) > 0
+			
+			&& repeated( // --CheckIf--> Collected all talismans
+				const_REQUIRED_TALISMAN_COUNT, player.on_TalismanCount_increment(enum_releaseRegion))
+			&& once( // --CheckIf--> Entering BossRoom
+				area.on_changeFromTo(enum_area_BossRoomEntrance, enum_area_BossRoom, enum_releaseRegion))
+			&& once( // --CheckIf--> Boss dies
+				bossEnemy.on_death(enum_boss, enum_releaseRegion))
+
+			&& stage.on_changeFromTo(enum_stage, enum_stage +0x1, enum_releaseRegion)
+		}
 } leaderboardSubLogic = CLASS_LeaderboardSubLogic()
 // #endregion LB - sub logic
 // #region LB - Value Measures
@@ -1834,6 +1862,23 @@ class CLASS_LeaderboardValuesMeasures {
 			measured(
 				current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion),
 				when = releaseRegion.is(enum_releaseRegion))
+
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+			array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+		return max_of(let_array_valueMeasures)}
+
+	function Current_Score() {
+		function valueMeasure(enum_releaseRegion) => 
+			measured(score.current(enum_releaseRegion) * 10)
+
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+			array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+		return max_of(let_array_valueMeasures)}
+	function Prior_Score() {
+		function valueMeasure(enum_releaseRegion) => 
+			measured(score.prior(enum_releaseRegion) * 10)
 
 		let_array_valueMeasures = []
 		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
@@ -1856,6 +1901,17 @@ dict_coreData = {
 
 	// "lb_Template": { // CONCEPT lb_template
 		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
+
+	"lb_ScoreS1": { // VERIFIED
+		"id": 175563, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on completing Stage 1"},
+	"lb_ScoreS2": { // VERIFIED
+		"id": 175564, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on completing Stage 2"},
+	"lb_ScoreS3": { // VERIFIED
+		"id": 175565, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on completing Stage 3"},
+	"lb_ScoreS4": { // VERIFIED
+		"id": 175566, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on completing Stage 4"},
+	"lb_ScoreFinal": { // VERIFIED
+		"id": 175567, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on GameOver or GameCompletion"},
 	}
 // #endregion LB - Core Data
 
@@ -1872,6 +1928,44 @@ dict_startTriggers = {
 		//  	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
+
+	"lb_ScoreS1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// [0] ==== Core Start Group ====		-> Instant Start/Submit when Stage is completed
+			const_STAGE = stage.S1
+			const_BOSS = bossEnemy.S1
+			const_AREA_BossRoomEntrance = area.S1_BossRoomEntrance
+			const_AREA_BossRoom = area.S1_BossRoom
+			return leaderboardSubLogic.SubmitScoreOnStageProgression(const_STAGE, const_BOSS, const_AREA_BossRoomEntrance, const_AREA_BossRoom, enum_releaseRegion)
+		}),
+	"lb_ScoreS2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// [0] ==== Core Start Group ====		-> Instant Start/Submit when Stage is completed
+			const_STAGE = stage.S2
+			const_BOSS = bossEnemy.S2
+			const_AREA_BossRoomEntrance = area.S2_BossRoomEntrance
+			const_AREA_BossRoom = area.S2_BossRoom
+			return leaderboardSubLogic.SubmitScoreOnStageProgression(const_STAGE, const_BOSS, const_AREA_BossRoomEntrance, const_AREA_BossRoom, enum_releaseRegion)
+		}),
+	"lb_ScoreS3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// [0] ==== Core Start Group ====		-> Instant Start/Submit when Stage is completed
+			const_STAGE = stage.S3
+			const_BOSS = bossEnemy.S3
+			const_AREA_BossRoomEntrance = area.S3_BossRoomEntrance
+			const_AREA_BossRoom = area.S3_BossRoom
+			return leaderboardSubLogic.SubmitScoreOnStageProgression(const_STAGE, const_BOSS, const_AREA_BossRoomEntrance, const_AREA_BossRoom, enum_releaseRegion)
+		}),
+	"lb_ScoreS4": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// [0] ==== Core Start Group ====		-> Instant Start/Submit when Stage is completed
+			const_STAGE = stage.S4
+			const_BOSS = bossEnemy.S4
+			const_AREA_BossRoomEntrance = area.S4_BossRoomEntrance
+			const_AREA_BossRoom = area.S4_BossRoom
+			return leaderboardSubLogic.SubmitScoreOnStageProgression(const_STAGE, const_BOSS, const_AREA_BossRoomEntrance, const_AREA_BossRoom, enum_releaseRegion)
+		}),
+	"lb_ScoreFinal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Start Group ==== 			-> Instant Start/Submit on GameCompletion || GameOver
+			score.prior(enum_releaseRegion) > 0 // --> Prior score, because when GameState_A changes to GameOver, score is zeroed out
+			&& gameState_A.on_changeFromTo(gameState_A.InGame, gameState_A.GameOver, enum_releaseRegion)
+		),
 	}
 dict_cancelTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -1885,6 +1979,27 @@ dict_cancelTriggers = {
 		// 	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
+		
+	"lb_ScoreS1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Cancel Group ====		-> Cancel never
+			always_false()
+		),
+	"lb_ScoreS2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Cancel Group ====		-> Cancel never
+			always_false()
+		),
+	"lb_ScoreS3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Cancel Group ====		-> Cancel never
+			always_false()
+		),
+	"lb_ScoreS4": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Cancel Group ====		-> Cancel never
+			always_false()
+		),
+	"lb_ScoreFinal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Cancel Group ====		-> Cancel never
+			always_false()
+		),
 	}
 dict_submitTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -1895,18 +2010,54 @@ dict_submitTriggers = {
 		// 	|| releaseRegion.is(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
+		
+	"lb_ScoreS1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Submit Group ====			-> Instant Start/Submit
+			always_true()
+		),
+	"lb_ScoreS2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Submit Group ====			-> Instant Start/Submit
+			always_true()
+		),
+	"lb_ScoreS3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Submit Group ====			-> Instant Start/Submit
+			always_true()
+		),
+	"lb_ScoreS4": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Submit Group ====			-> Instant Start/Submit
+			always_true()
+		),
+	"lb_ScoreFinal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Submit Group ====			-> Instant Start/Submit
+			always_true()
+		),
 	}
 dict_valueMeasures = {
 	// "lb_template": leaderboardValueMeasure.Template_TimeSpentInLevel(),
+	"lb_ScoreS1": leaderboardValueMeasure.Current_Score(),
+	"lb_ScoreS2": leaderboardValueMeasure.Current_Score(),
+	"lb_ScoreS3": leaderboardValueMeasure.Current_Score(),
+	"lb_ScoreS4": leaderboardValueMeasure.Current_Score(),
+	"lb_ScoreFinal": leaderboardValueMeasure.Prior_Score(),
 	}
 // #endregion LB - Triggers
 
 // #region LB - Text
 dict_titles = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
+	"lb_ScoreS1":			{"en": "xxxxxxxx"},
+	"lb_ScoreS2":			{"en": "xxxxxxxx"},
+	"lb_ScoreS3":			{"en": "xxxxxxxx"},
+	"lb_ScoreS4":			{"en": "xxxxxxxx"},
+	"lb_ScoreFinal":		{"en": "xxxxxxxx"},
 	}
 dict_descriptions = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
+	"lb_ScoreS1":			{"en": "xxxxxxxx"},
+	"lb_ScoreS2":			{"en": "xxxxxxxx"},
+	"lb_ScoreS3":			{"en": "xxxxxxxx"},
+	"lb_ScoreS4":			{"en": "xxxxxxxx"},
+	"lb_ScoreFinal":		{"en": "xxxxxxxx"},
 	}
 // #endregion LB - Text
 
