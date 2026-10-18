@@ -196,6 +196,8 @@ class CLASS_MemoryData {
 		"6-byte:HighScore": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0048},
 		"6-byte:Score": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0070},
 
+		"16-bit:MahjongPieceActivationTime": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0060},
+
 		"Array:Entities": {ReleaseRegion.USA: util.sNULL, ReleaseRegion.EUR: util.sNULL, ReleaseRegion.JPN: 0x0400},
 		}
 
@@ -583,6 +585,13 @@ class CLASS_MEMLOGIC_PlayerLogic {
 		this.current_OnigiriCount(enum_releaseRegion) > this.prev_OnigiriCount(enum_releaseRegion)
 	function on_OnigiriCount_decrement(enum_releaseRegion) =>
 		this.current_OnigiriCount(enum_releaseRegion) < this.prev_OnigiriCount(enum_releaseRegion)
+	// ----------------MahjongPowerUp---------------------
+	function current_MahjongPowerUp_State(enum_releaseRegion) =>
+		word(memory.getAddress("16-bit:MahjongPieceActivationTime", enum_releaseRegion))
+	function prev_MahjongPowerUp_State(enum_releaseRegion) =>
+		prev(this.current_MahjongPowerUp_State(enum_releaseRegion))
+	function is_MahjongPowerUp_active(enum_releaseRegion) => 
+		this.current_MahjongPowerUp_State(enum_releaseRegion) > 0
 } player = CLASS_MEMLOGIC_PlayerLogic()
 // #endregion Player Logic
 
@@ -696,7 +705,6 @@ class CLASS_MEMLOGIC_EntityData {
 			let_sumOf_AllNonImportantEntities_prevStates > 0
 			&& let_sumOf_AllNonImportantEntities_currentStates == 0
 		}
-
 	// --------Items--------
 	function current_ItemEntityID(int_entityIndex, enum_releaseRegion) {
 		let_memAddr_EntityArray = memory.getAddress("Array:Entities", enum_releaseRegion)
@@ -707,7 +715,7 @@ class CLASS_MEMLOGIC_EntityData {
 		prev(this.current_ItemEntityID(int_entityIndex, enum_releaseRegion))
 
 	// NOTE: CheckIf a specific item, currently active on-screen, is picked up. By checking if the entity object is zeroed out
-	function on_Item_remove(enum_item, coord_x, coord_y, enum_releaseRegion) {
+	function on_Item_remove(enum_item, enum_releaseRegion) {
 		let_array_EntitiyIndicesToCheck = []
 		for let_index in range(1, 15) 
 			array_push(let_array_EntitiyIndicesToCheck, let_index)
@@ -743,6 +751,8 @@ class CLASS_MEMLOGIC_Score {
 			+ prev(low4(let_memAddr_Score +0x3)) * 100
 			+ prev(low4(let_memAddr_Score +0x4)) * 10
 			+ prev(low4(let_memAddr_Score +0x5))}	
+	function on_increment(enum_releaseRegion) =>
+		this.current(enum_releaseRegion) > this.prev(enum_releaseRegion)
 } score = CLASS_MEMLOGIC_Score()
 
 class CLASS_MEMLOGIC_Highscore {
@@ -956,6 +966,9 @@ dict_coreData = {
 			// "id": 645090, "points": AchievementPointClass.Free_0, "devInfo": "Hold a total of 9 Onigiri (max allowed to keep in inventory)"},
 		// "a_Bright": { // VERIFIED
 			// "id": 645218, "points": AchievementPointClass.Free_0, "devInfo": "Acquire at least 5 fully charged batteries"},
+		"a_FreezeKills": { // WIP
+			"id": 000000, "points": AchievementPointClass.Free_0, "devInfo": "Vanquish 2 monsters while they're stunned by a single Mahjong Piece power up"},
+			
 		},
 	}
 
@@ -1220,6 +1233,26 @@ dict_triggers = {
 			&& player.prev_BatteryCharges(enum_releaseRegion) < const_MIN_REQUIRED_FULL_BATTERIES *2
 			&& player.current_BatteryCharges(enum_releaseRegion) >= const_MIN_REQUIRED_FULL_BATTERIES *2
 			}),
+	"a_FreezeKills": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_MONSTERS_TO_KILL = 2
+
+		return
+		// NOTE: Score increments same frame when an entity is removed from screen
+		// [1] ==== Core (Alt) Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless( // --PauseIf--> Player picks up a Moneybag, which gives 1000 score. So this shouldn't count toward "killing a foe"
+				entity.on_Item_remove(entity.ITEM_Moneybag, enum_releaseRegion))
+
+			&& measured(repeated(const_REQUIRED_MONSTERS_TO_KILL, // --AddHits--> When killing a foe (= when score increments, but not when picking a moneybag) 
+				score.on_increment(enum_releaseRegion)), 
+				when = player.is_MahjongPowerUp_active(enum_releaseRegion))
+		// [2] ==== Alt Triggered Group ==== 			-> This group only handles the Trigger Indicator, to visualize when the challenge is active.
+			|| once(player.is_MahjongPowerUp_active(enum_releaseRegion))
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group  ==== 			-> Reset when not InGame || when MahjongPowerUp is inactive
+			|| never_toAlt(
+				!gameState_A.is(gameState_A.InGame, enum_releaseRegion)
+				|| !player.is_MahjongPowerUp_active(enum_releaseRegion))
+		}),
 	}
 // #endregion ACH - Triggers
 
@@ -1242,6 +1275,7 @@ dict_titles = {
 	"a_RiceTaster": 			{"en": "xxxxxxxxx"},
 	"a_RiceHoarder": 			{"en": "xxxxxxxxx"},
 	"a_Bright": 				{"en": "xxxxxxxxx"},
+	"a_FreezeKills": 			{"en": "xxxxxxxxx"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -1261,6 +1295,7 @@ dict_descriptions = {
 	"a_RiceTaster": 			{"en": "xxxxxxxxx"},
 	"a_RiceHoarder": 			{"en": "xxxxxxxxx"},
 	"a_Bright": 				{"en": "xxxxxxxxx"},
+	"a_FreezeKills": 			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - Text
 
