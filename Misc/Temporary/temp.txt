@@ -1,11 +1,36 @@
-[8-bit:SelectedSpell]
+Welcome to the Haunted House
+Frostbite and Fright
+The Hollow Hills
+Whispers between Bamboo
+The Haunted Estate
+Nothing in the Attic
+Leaving No Stone Unfrozen
+Delving into Darkness
+Lost Among the Stalks
+Behind Every Shoji
+Hell of a Find
+Another Light in the Darkness
+Dressed for the Afterlife
+Divine Sustenance
+Emergency Rations
+A Beacon in the Dark
+Cold Hands, Dead Spirits
 
-0x0 => nothing selected || when casting a spell, but not enough energy
-0x1 => Hakuji
-0x2 => Indra
-0x3 => Fudo
-0x4 => Kannon
-0x5 => Hatten
-0x6 => Mars
-0x7 => Makiri
-0x8 => Nobota
+Welcome to the Haunted House
+Frostbite and Fright
+The Hollow Hills
+Whispers Between Bamboo
+The Haunted Estate
+Nothing in the Attic
+Leaving No Stone Unfrozen
+Delving into Darkness
+Lost Among the Stalks
+Behind Every Shoji
+Hell of a Find
+Another Light in the Darkness
+Dressed for the Afterlife
+Divine Sustenance
+Emergency Rations
+A Beacon in the Dark
+Cold Hands, Dead Spirits
+

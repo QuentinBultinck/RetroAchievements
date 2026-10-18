@@ -8,7 +8,7 @@
 // Platform: Famicom Disk System
 // Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
 // RA Game Page: https://retroachievements.org/game/2112
-// RATools version: [version_here] // TODO set last used RATools version here
+// RATools version: v1.17.3
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -1287,43 +1287,43 @@ dict_triggers = {
 // #region ACH - Text
 dict_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
-	"a_Stage1": 			{"en": "xxxxx"},
-	"a_Stage2": 			{"en": "xxxxx"},
-	"a_Stage3": 			{"en": "xxxxx"},
-	"a_Stage4": 			{"en": "xxxxx"},
-	"a_Stage5": 			{"en": "xxxxx"},
-	"a_Explorer1": 		{"en": "xxxxx"},
-	"a_Explorer2": 		{"en": "xxxxx"},
-	"a_Explorer3": 		{"en": "xxxxx"},
-	"a_Explorer4": 		{"en": "xxxxx"},
-	"a_Explorer5": 		{"en": "xxxxx"},
-	"a_HellFinderS2": 		{"en": "xxxxx"},
-	"a_HellFinderS3": 		{"en": "xxxxx"},
-	"a_HellFinderS4": 		{"en": "xxxxx"},
-	"a_RiceTaster": 			{"en": "xxxxxxxxx"},
-	"a_RiceHoarder": 			{"en": "xxxxxxxxx"},
-	"a_Bright": 				{"en": "xxxxxxxxx"},
-	"a_FreezeKills": 			{"en": "xxxxxxxxx"},
+	"a_Stage1": 			{"en": "Welcome to the Haunted House"},
+	"a_Stage2": 			{"en": "Frostbite and Fright"},
+	"a_Stage3": 			{"en": "The Hollow Hills"},
+	"a_Stage4": 			{"en": "Whispers Between Bamboo"},
+	"a_Stage5": 			{"en": "The Haunted Estate"},
+	"a_Explorer1": 		{"en": "Nothing in the Attic"},
+	"a_Explorer2": 		{"en": "Leaving No Stone Unfrozen"},
+	"a_Explorer3": 		{"en": "Delving into Darkness"},
+	"a_Explorer4": 		{"en": "Lost Among the Stalks"},
+	"a_Explorer5": 		{"en": "Behind Every Shoji"},
+	"a_HellFinderS2": 		{"en": "Hell of a Find"},
+	"a_HellFinderS3": 		{"en": "Another Light in the Darkness"},
+	"a_HellFinderS4": 		{"en": "Dressed for the Afterlife"},
+	"a_RiceTaster": 			{"en": "Divine Sustenance"},
+	"a_RiceHoarder": 			{"en": "Emergency Rations"},
+	"a_Bright": 				{"en": "A Beacon in the Dark"},
+	"a_FreezeKills": 			{"en": "Cold Hands, Dead Spirits"},
 	}
 dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_Stage1": 			{"en": "Complete Stage 1"},
-	"a_Stage2": 			{"en": "Complete Stage 2"},
-	"a_Stage3": 			{"en": "Complete Stage 3"},
-	"a_Stage4": 			{"en": "Complete Stage 4"},
-	"a_Stage5": 			{"en": "Complete Stage 5"},
+	"a_Stage1": 			{"en": "Survive the horrors lurking within the mansion of Stage 1"},
+	"a_Stage2": 			{"en": "Brave the chilling depths of the haunted ice caverns of Stage 2"},
+	"a_Stage3": 			{"en": "Vvercome the terrors hidden beneath the hillside of Stage 3"},
+	"a_Stage4": 			{"en": "Make your way through the haunted bamboo forest of Stage 4"},
+	"a_Stage5": 			{"en": "Survive the horrors of the sprawling castle of Stage 5"},
 	"a_Explorer1": 		{"en": "Fully explore Stage 1"},
 	"a_Explorer2": 		{"en": "Fully explore Stage 2"},
 	"a_Explorer3": 		{"en": "Fully explore Stage 3"},
 	"a_Explorer4": 		{"en": "Fully explore Stage 4"},
 	"a_Explorer5": 		{"en": "Fully explore Stage 5"},
-	"a_HellFinderS2": 		{"en": "xxxxx"},
-	"a_HellFinderS3": 		{"en": "xxxxx"},
-	"a_HellFinderS4": 		{"en": "xxxxx"},
-	"a_RiceTaster": 			{"en": "xxxxxxxxx"},
-	"a_RiceHoarder": 			{"en": "xxxxxxxxx"},
-	"a_Bright": 				{"en": "xxxxxxxxx"},
-	"a_FreezeKills": 			{"en": "xxxxxxxxx"},
+	"a_HellFinderS2": 		{"en": "Obtain an upgraded flashlight hidden in the secret hell area of Stage 2"},
+	"a_HellFinderS3": 		{"en": "Obtain an upgraded flashlight hidden in the secret hell area of Stage 3"},
+	"a_HellFinderS4": 		{"en": "Obtain a hidden piece of armor in the secret hell area of Stage 4"},
+	"a_RiceTaster": 			{"en": "Make an offering at a statue to restore the flashlight's power"},
+	"a_RiceHoarder": 			{"en": "Carry 9 balls of Onigiri at once"},
+	"a_Bright": 				{"en": "Equip the flashlight with at least 5 fully charged batteries"},
+	"a_FreezeKills": 			{"en": "Vanquish at least 2 monsters with a single Mahjong power-up"},
 	}
 // #endregion ACH - Text
 
@@ -1840,10 +1840,6 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
-// TODO implement leaderboards
-// - Highscore leaderboards for completing each stage: submit onStageCompletion (score resets on GameOver, HighScore stays whole session, only overwrites when CurrentScore > HighScore)
-// - Overal Highscore game wide: submit onGameOver + onGameCompletion
-// ? Timed leaderboards for completing each stage
 
 // ==========================================
 // • LEADERBOARD sub logic & value measures •
@@ -1976,8 +1972,8 @@ dict_coreData = {
 		// "id": 175565, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on completing Stage 3"},
 	// "lb_ScoreS4": { // VERIFIED
 		// "id": 175566, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on completing Stage 4"},
-	"lb_ScoreS5": { // VERIFIED // TODO remove submitting on GameOver (as game has respawning enemies, can farm points) --> only on GameCompletion, thus completing Stage 5
-		"id": 175567, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on completing Stage 5"},
+	// "lb_ScoreS5": { // VERIFIED
+		// "id": 175567, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on completing Stage 5"},
 	}
 // #endregion LB - Core Data
 
@@ -2233,29 +2229,29 @@ dict_valueMeasures = {
 // #region LB - Text
 dict_titles = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
-	"lb_ScoreS1":			{"en": "xxxxxxxx"},
-	"lb_ScoreS2":			{"en": "xxxxxxxx"},
-	"lb_ScoreS3":			{"en": "xxxxxxxx"},
-	"lb_ScoreS4":			{"en": "xxxxxxxx"},
-	"lb_ScoreS5":		{"en": "xxxxxxxx"},
-	"lb_TimeS1":		{"en": "xxxxxxxx"},
-	"lb_TimeS2":		{"en": "xxxxxxxx"},
-	"lb_TimeS3":		{"en": "xxxxxxxx"},
-	"lb_TimeS4":		{"en": "xxxxxxxx"},
-	"lb_TimeS5":		{"en": "xxxxxxxx"},
+	"lb_ScoreS1":			{"en": "Spirit Hunter Scores - Stage 1"},
+	"lb_ScoreS2":			{"en": "Spirit Hunter Scores - Stage 2"},
+	"lb_ScoreS3":			{"en": "Spirit Hunter Scores - Stage 3"},
+	"lb_ScoreS4":			{"en": "Spirit Hunter Scores - Stage 4"},
+	"lb_ScoreS5":			{"en": "Spirit Hunter Scores - Stage 5"},
+	"lb_TimeS1":		{"en": "Completion Times - Stage 1"},
+	"lb_TimeS2":		{"en": "Completion Times - Stage 2"},
+	"lb_TimeS3":		{"en": "Completion Times - Stage 3"},
+	"lb_TimeS4":		{"en": "Completion Times - Stage 4"},
+	"lb_TimeS5":		{"en": "Completion Times - Stage 5"},
 	}
 dict_descriptions = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
-	"lb_ScoreS1":			{"en": "xxxxxxxx"},
-	"lb_ScoreS2":			{"en": "xxxxxxxx"},
-	"lb_ScoreS3":			{"en": "xxxxxxxx"},
-	"lb_ScoreS4":			{"en": "xxxxxxxx"},
-	"lb_ScoreS5":		{"en": "xxxxxxxx"},
-	"lb_TimeS1":		{"en": "xxxxxxxx"},
-	"lb_TimeS2":		{"en": "xxxxxxxx"},
-	"lb_TimeS3":		{"en": "xxxxxxxx"},
-	"lb_TimeS4":		{"en": "xxxxxxxx"},
-	"lb_TimeS5":		{"en": "xxxxxxxx"},
+	"lb_ScoreS1":			{"en": "Highest scores achieved after completing Stage 1"},
+	"lb_ScoreS2":			{"en": "Highest scores achieved after completing Stage 2"},
+	"lb_ScoreS3":			{"en": "Highest scores achieved after completing Stage 3"},
+	"lb_ScoreS4":			{"en": "Highest scores achieved after completing Stage 4"},
+	"lb_ScoreS5":			{"en": "Highest scores achieved after completing Stage 5"},
+	"lb_TimeS1":		{"en": "Fastest completion times of Stage 1"},
+	"lb_TimeS2":		{"en": "Fastest completion times of Stage 2"},
+	"lb_TimeS3":		{"en": "Fastest completion times of Stage 3"},
+	"lb_TimeS4":		{"en": "Fastest completion times of Stage 4"},
+	"lb_TimeS5":		{"en": "Fastest completion times of Stage 5"},
 	}
 // #endregion LB - Text
 
