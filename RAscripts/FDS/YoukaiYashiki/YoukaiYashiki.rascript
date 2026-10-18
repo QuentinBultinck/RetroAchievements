@@ -1976,8 +1976,8 @@ dict_coreData = {
 		// "id": 175565, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on completing Stage 3"},
 	// "lb_ScoreS4": { // VERIFIED
 		// "id": 175566, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on completing Stage 4"},
-	// "lb_ScoreFinal": { // VERIFIED // TODO remove submitting on GameOver (as game has respawning enemies, can farm points) --> only on GameCompletion, thus completing Stage 5
-		// "id": 175567, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on GameOver or GameCompletion"},
+	"lb_ScoreS5": { // VERIFIED // TODO remove submitting on GameOver (as game has respawning enemies, can farm points) --> only on GameCompletion, thus completing Stage 5
+		"id": 175567, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Score achieved on completing Stage 5"},
 	}
 // #endregion LB - Core Data
 
@@ -2027,11 +2027,33 @@ dict_startTriggers = {
 			const_AREA_BossRoom = area.S4_BossRoom
 			return leaderboardSubLogic.SubmitScoreOnStageProgression(const_STAGE, const_BOSS, const_AREA_BossRoomEntrance, const_AREA_BossRoom, enum_releaseRegion)
 		}),
-	"lb_ScoreFinal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// [0] ==== Core Start Group ==== 			-> Instant Start/Submit on GameCompletion || GameOver
-			score.prior(enum_releaseRegion) > 0 // --> Prior score, because when GameState_A changes to GameOver, score is zeroed out
-			&& gameState_A.on_changeFromTo(gameState_A.InGame, gameState_A.GameOver, enum_releaseRegion)
-		),
+	"lb_ScoreS5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_STAGE = stage.S5
+		const_BOSS_A = bossEnemy.S5_A
+		const_BOSS_B = bossEnemy.S5_B
+		const_REQUIRED_TALISMAN_COUNT = 5 // ---> Required to enter boss arena
+
+		return
+		// [0] ==== Core Start Group ====		-> Instant Start/Submit when Stage is completed
+			never(!gameState_A.is(gameState_A.InGame, enum_releaseRegion))
+			&& never(repeated(2, // ---> repeated so last condition is available to trigger
+				!stage.is(const_STAGE, enum_releaseRegion)))
+				
+			&& score.current(enum_releaseRegion) > 0
+			
+			&& repeated( // --CheckIf--> Collected all talismans
+				const_REQUIRED_TALISMAN_COUNT, player.on_TalismanCount_increment(enum_releaseRegion))
+			&& once( // --CheckIf--> Boss_A dies
+				area.is(area.S5_BossRoom_A, enum_releaseRegion)
+				&& bossEnemy.on_death(const_BOSS_A, enum_releaseRegion))
+			&& once( // --CheckIf--> Switching BossRoom
+				area.on_changeFromTo(area.S5_BossRoom_A, area.S5_BossRoom_B, enum_releaseRegion))
+			&& once( // --CheckIf--> Boss_B dies
+				area.is(area.S5_BossRoom_B, enum_releaseRegion)
+				&& bossEnemy.on_death(const_BOSS_B, enum_releaseRegion))
+
+			&& entity.on_AllNonImportantEntities_zeroedOut(enum_releaseRegion) // --CheckIf--> When all sprites/entities are removed (when main and side character are removed from screen)
+		}),
 	"lb_TimeS1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// [0] ==== Core Start Group ====		-> Start when Stage begins
 			const_STAGE = stage.S1
@@ -2092,7 +2114,7 @@ dict_cancelTriggers = {
 		// [0] ==== Core Cancel Group ====		-> Cancel never
 			always_false()
 		),
-	"lb_ScoreFinal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"lb_ScoreS5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Cancel Group ====		-> Cancel never
 			always_false()
 		),
@@ -2138,7 +2160,7 @@ dict_submitTriggers = {
 		// [0] ==== Core Submit Group ====			-> Instant Start/Submit
 			always_true()
 		),
-	"lb_ScoreFinal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"lb_ScoreS5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Submit Group ====			-> Instant Start/Submit
 			always_true()
 		),
@@ -2199,7 +2221,7 @@ dict_valueMeasures = {
 	"lb_ScoreS2": leaderboardValueMeasure.Current_Score(),
 	"lb_ScoreS3": leaderboardValueMeasure.Current_Score(),
 	"lb_ScoreS4": leaderboardValueMeasure.Current_Score(),
-	"lb_ScoreFinal": leaderboardValueMeasure.Prior_Score(),
+	"lb_ScoreS5": leaderboardValueMeasure.Current_Score(),
 	"lb_TimeS1": leaderboardValueMeasure.Time_inFrames(),
 	"lb_TimeS2": leaderboardValueMeasure.Time_inFrames(),
 	"lb_TimeS3": leaderboardValueMeasure.Time_inFrames(),
@@ -2215,7 +2237,7 @@ dict_titles = {
 	"lb_ScoreS2":			{"en": "xxxxxxxx"},
 	"lb_ScoreS3":			{"en": "xxxxxxxx"},
 	"lb_ScoreS4":			{"en": "xxxxxxxx"},
-	"lb_ScoreFinal":		{"en": "xxxxxxxx"},
+	"lb_ScoreS5":		{"en": "xxxxxxxx"},
 	"lb_TimeS1":		{"en": "xxxxxxxx"},
 	"lb_TimeS2":		{"en": "xxxxxxxx"},
 	"lb_TimeS3":		{"en": "xxxxxxxx"},
@@ -2228,7 +2250,7 @@ dict_descriptions = {
 	"lb_ScoreS2":			{"en": "xxxxxxxx"},
 	"lb_ScoreS3":			{"en": "xxxxxxxx"},
 	"lb_ScoreS4":			{"en": "xxxxxxxx"},
-	"lb_ScoreFinal":		{"en": "xxxxxxxx"},
+	"lb_ScoreS5":		{"en": "xxxxxxxx"},
 	"lb_TimeS1":		{"en": "xxxxxxxx"},
 	"lb_TimeS2":		{"en": "xxxxxxxx"},
 	"lb_TimeS3":		{"en": "xxxxxxxx"},
