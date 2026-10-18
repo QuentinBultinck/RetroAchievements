@@ -956,7 +956,7 @@ dict_coreData = {
 		},
 	"c_WinCondy": { // Last Stage completion
 		// "a_Stage5": { // VERIFIED
-			// "id": 637739, "points": Ac:hievementPointClass.Free_0, "devInfo": "Complete Stage 5 (finish game)"},
+			// "id": 637739, "points": AchievementPointClass.Free_0, "devInfo": "Complete Stage 5 (finish game)"},
 		},		
 	"c_Challenge": { // Challenges
 		// CONCEPT c_Challenge
@@ -1309,7 +1309,7 @@ dict_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_Stage1": 			{"en": "Survive the horrors lurking within the mansion of Stage 1"},
 	"a_Stage2": 			{"en": "Brave the chilling depths of the haunted ice caverns of Stage 2"},
-	"a_Stage3": 			{"en": "Vvercome the terrors hidden beneath the hillside of Stage 3"},
+	"a_Stage3": 			{"en": "Overcome the terrors hidden beneath the hillside of Stage 3"},
 	"a_Stage4": 			{"en": "Make your way through the haunted bamboo forest of Stage 4"},
 	"a_Stage5": 			{"en": "Survive the horrors of the sprawling castle of Stage 5"},
 	"a_Explorer1": 		{"en": "Fully explore Stage 1"},
